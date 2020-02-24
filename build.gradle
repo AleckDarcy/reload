@@ -3,13 +3,13 @@ plugins {
 }
 
 golang {
-    packagePath = 'github.com/AleckDarcy/210A' // go import path of project to be built, NOT local file system path!
+    packagePath = 'github.com/AleckDarcy/reload' // go import path of project to be built, NOT local file system path!
 }
 
 dependencies {
     golang {
         build(
-            [name: 'github.com/antlr/antlr4', tag: '4.7.2']
+            [name: 'google.golang.org/grpc', tag: '1.14.0']
         )
     }
 }
