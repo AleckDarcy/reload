@@ -1,0 +1,15 @@
+plugins {
+    id 'com.github.blindpirate.gogradle' version '0.11.4'
+}
+
+golang {
+    packagePath = 'github.com/AleckDarcy/210A' // go import path of project to be built, NOT local file system path!
+}
+
+dependencies {
+    golang {
+        build(
+            [name: 'github.com/antlr/antlr4', tag: '4.7.2']
+        )
+    }
+}
