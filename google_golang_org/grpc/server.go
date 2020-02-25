@@ -22,6 +22,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/AleckDarcy/reload/injector"
 	"io"
 	"math"
 	"net"
@@ -52,8 +53,6 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/grpc/tap"
 )
-
-var INJECTOR_CHEATER int64
 
 const (
 	defaultServerMaxReceiveMessageSize = 1024 * 1024 * 4
@@ -1025,6 +1024,10 @@ func (s *Server) processUnaryRPC(t transport.ServerTransport, stream *transport.
 		return nil
 	}
 	ctx := NewContextWithServerTransportStream(stream.Context(), stream)
+
+	// add threadID for injector
+	ctx = injector.NewContextWithThreadID(ctx)
+
 	reply, appErr := md.Handler(srv.server, ctx, df, s.opts.unaryInt)
 	if appErr != nil {
 		appStatus, ok := status.FromError(appErr)
