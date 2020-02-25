@@ -1028,6 +1028,7 @@ func (s *Server) processUnaryRPC(t transport.ServerTransport, stream *transport.
 	// add threadID for injector
 	ctx = injector.NewContextWithThreadID(ctx)
 
+	injector.Logf("new thread id: %v", ctx.Value(injector.ThreadIDKey{}))
 	reply, appErr := md.Handler(srv.server, ctx, df, s.opts.unaryInt)
 	if appErr != nil {
 		appStatus, ok := status.FromError(appErr)
