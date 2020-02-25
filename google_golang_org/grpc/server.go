@@ -54,6 +54,8 @@ import (
 	"google.golang.org/grpc/tap"
 )
 
+var INJECTOR_CHEATER int64
+
 const (
 	defaultServerMaxReceiveMessageSize = 1024 * 1024 * 4
 	defaultServerMaxSendMessageSize    = math.MaxInt32
