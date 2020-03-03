@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package tracer;
+
+enum RecordType {
+    Record_ = 0;
+    RecordSend = 1;
+    RecordReceive = 2;
+}
+
+message Record {
+    RecordType type = 1;
+    int64 timestamp = 2;
+    string message_name = 3;
+}
+
+message Trace {
+    int64 id = 1;
+    int64 depth = 2;
+    repeated Record records = 3;
+
+    RLFI rlfi = 20;
+    TFI tfi = 21;
+}
+
+enum FaultType {
+    Fault_ = 0;
+    FaultCrash = 1;
+    FaultDelay = 2;
+}
+
+message RLFI {
+    FaultType type = 1;
+    string name = 2;
+    int64 delay = 3;
+}
+
+message TFI {
+    FaultType type = 1;
+    string name = 2;
+    int64 delay = 3;
+    repeated string after = 4;
+}

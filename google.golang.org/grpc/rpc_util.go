@@ -31,6 +31,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/AleckDarcy/reload/core/tracer"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials"
@@ -696,16 +697,20 @@ func Errorf(c codes.Code, format string, a ...interface{}) error {
 }
 
 // setCallInfoCodec should only be called after CallOptions have been applied.
-func setCallInfoCodec(c *callInfo) error {
+func setCallInfoCodec(ctx context.Context, c *callInfo) error {
 	if c.codec != nil {
 		// codec was already set by a CallOption; use it.
 		return nil
 	}
 
-	if c.contentSubtype == "" {
-		// No codec specified in CallOptions; use proto by default.
-		c.codec = encoding.GetCodec(proto.Name)
+	if c.contentSubtype == "" || c.contentSubtype == proto.Name {
+		// return proto from reload
+		c.codec = tracer.NewCodec(ctx, encoding.GetCodec(proto.Name))
 		return nil
+
+		//// No codec specified in CallOptions; use proto by default.
+		//c.codec = encoding.GetCodec(proto.Name)
+		//return nil
 	}
 
 	// c.contentSubtype is already lowercased in CallContentSubtype

@@ -1,12 +1,3 @@
 package reload
 
-import (
-	"github.com/AleckDarcy/reload/injector"
-)
-
-// cheat gradle
-
-// cheat goDep
-func A() {
-	injector.NewThreadID()
-}
+//go:generate protoc --go_out=. core/tracer/message.proto

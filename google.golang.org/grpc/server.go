@@ -22,7 +22,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/AleckDarcy/reload/injector"
 	"io"
 	"math"
 	"net"
@@ -32,6 +31,9 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	adErr "github.com/AleckDarcy/reload/core/errors"
+	"github.com/AleckDarcy/reload/core/tracer"
 
 	"io/ioutil"
 
@@ -846,8 +848,8 @@ func (s *Server) incrCallsFailed() {
 	s.czmu.Unlock()
 }
 
-func (s *Server) sendResponse(t transport.ServerTransport, stream *transport.Stream, msg interface{}, cp Compressor, opts *transport.Options, comp encoding.Compressor) error {
-	data, err := encode(s.getCodec(stream.ContentSubtype()), msg)
+func (s *Server) sendResponse(ctx context.Context, t transport.ServerTransport, stream *transport.Stream, msg interface{}, cp Compressor, opts *transport.Options, comp encoding.Compressor) error {
+	data, err := encode(s.getCodec(stream.ContentSubtype(), ctx), msg)
 	if err != nil {
 		grpclog.Errorln("grpc: server failed to encode response: ", err)
 		return err
@@ -985,6 +987,12 @@ func (s *Server) processUnaryRPC(t transport.ServerTransport, stream *transport.
 			RecvTime: time.Now(),
 		}
 	}
+
+	ctx := NewContextWithServerTransportStream(stream.Context(), stream)
+	// add threadID
+	ctx = tracer.NewContextWithThreadID(ctx)
+	//log.Logf("new thread id: %v", ctx.Value(tracer.ThreadIDKey{}))
+
 	df := func(v interface{}) error {
 		if inPayload != nil {
 			inPayload.WireLength = len(req)
@@ -1009,9 +1017,11 @@ func (s *Server) processUnaryRPC(t transport.ServerTransport, stream *transport.
 			// java implementation.
 			return status.Errorf(codes.ResourceExhausted, "grpc: received message larger than max (%d vs. %d)", len(req), s.opts.maxReceiveMessageSize)
 		}
-		if err := s.getCodec(stream.ContentSubtype()).Unmarshal(req, v); err != nil {
+		if err := s.getCodec(stream.ContentSubtype(), ctx).Unmarshal(req, v); err != nil {
+			// todo
 			return status.Errorf(codes.Internal, "grpc: error unmarshalling request: %v", err)
 		}
+
 		if inPayload != nil {
 			inPayload.Payload = v
 			inPayload.Data = req
@@ -1023,14 +1033,14 @@ func (s *Server) processUnaryRPC(t transport.ServerTransport, stream *transport.
 		}
 		return nil
 	}
-	ctx := NewContextWithServerTransportStream(stream.Context(), stream)
 
-	// add threadID for injector
-	ctx = injector.NewContextWithThreadID(ctx)
-
-	injector.Logf("new thread id: %v", ctx.Value(injector.ThreadIDKey{}))
 	reply, appErr := md.Handler(srv.server, ctx, df, s.opts.unaryInt)
 	if appErr != nil {
+		// no err being returned when delay is triggered
+		if strings.Contains(appErr.Error(), adErr.StringFI_) {
+			return nil
+		}
+
 		appStatus, ok := status.FromError(appErr)
 		if !ok {
 			// Convert appErr if it is not a grpc status error.
@@ -1051,7 +1061,7 @@ func (s *Server) processUnaryRPC(t transport.ServerTransport, stream *transport.
 	}
 	opts := &transport.Options{Last: true}
 
-	if err := s.sendResponse(t, stream, reply, cp, opts, comp); err != nil {
+	if err := s.sendResponse(ctx, t, stream, reply, cp, opts, comp); err != nil {
 		if err == io.EOF {
 			// The entire stream is done (for unary RPC only).
 			return err
@@ -1113,11 +1123,11 @@ func (s *Server) processStreamingRPC(t transport.ServerTransport, stream *transp
 	}
 	ctx := NewContextWithServerTransportStream(stream.Context(), stream)
 	ss := &serverStream{
-		ctx:   ctx,
-		t:     t,
-		s:     stream,
-		p:     &parser{r: stream},
-		codec: s.getCodec(stream.ContentSubtype()),
+		ctx:                   ctx,
+		t:                     t,
+		s:                     stream,
+		p:                     &parser{r: stream},
+		codec:                 s.getCodec(stream.ContentSubtype(), ctx),
 		maxReceiveMessageSize: s.opts.maxReceiveMessageSize,
 		maxSendMessageSize:    s.opts.maxSendMessageSize,
 		trInfo:                trInfo,
@@ -1427,17 +1437,23 @@ func init() {
 
 // contentSubtype must be lowercase
 // cannot return nil
-func (s *Server) getCodec(contentSubtype string) baseCodec {
+func (s *Server) getCodec(contentSubtype string, ctx context.Context) baseCodec {
 	if s.opts.codec != nil {
 		return s.opts.codec
 	}
-	if contentSubtype == "" {
-		return encoding.GetCodec(proto.Name)
+	if contentSubtype == "" || contentSubtype == proto.Name {
+		// return proto from reload
+		return tracer.NewCodec(ctx, encoding.GetCodec(proto.Name))
+
+		//return encoding.GetCodec(proto.Name)
 	}
 	codec := encoding.GetCodec(contentSubtype)
 	if codec == nil {
-		return encoding.GetCodec(proto.Name)
+		// return proto from reload
+		return tracer.NewCodec(ctx, encoding.GetCodec(proto.Name))
+		//return encoding.GetCodec(proto.Name)
 	}
+
 	return codec
 }
 
