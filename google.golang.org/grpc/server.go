@@ -1017,6 +1017,7 @@ func (s *Server) processUnaryRPC(t transport.ServerTransport, stream *transport.
 			// java implementation.
 			return status.Errorf(codes.ResourceExhausted, "grpc: received message larger than max (%d vs. %d)", len(req), s.opts.maxReceiveMessageSize)
 		}
+
 		if err := s.getCodec(stream.ContentSubtype(), ctx).Unmarshal(req, v); err != nil {
 			// todo
 			return status.Errorf(codes.Internal, "grpc: error unmarshalling request: %v", err)

@@ -3,8 +3,6 @@ package tracer
 import (
 	"sync"
 
-	"github.com/AleckDarcy/reload/core/log"
-
 	"github.com/AleckDarcy/reload/core/errors"
 )
 
@@ -97,8 +95,29 @@ func (s store) UpdateFunctionByThreadID(id int64, function func(*Trace)) *Trace 
 	return t
 }
 
+func (s store) DeleteByThraceID(id int64) bool {
+	s.lock.Lock()
+	_, ok := s.traces[id]
+	if ok {
+		delete(s.traces, id)
+	}
+	s.lock.Unlock()
+
+	return ok
+}
+
+func (s store) DeleteByThreadID(id int64) bool {
+	s.lock.Lock()
+	_, ok := s.threads[id]
+	if ok {
+		delete(s.threads, id)
+	}
+	s.lock.Unlock()
+
+	return ok
+}
+
 func (s store) merge(dst, src *Trace) {
-	log.Logf("merging trace %d", dst.Id)
 	for dstI, srcI, dstLen, srcLen := 0, 0, len(dst.Records), len(src.Records); dstI < dstLen && srcI < srcLen; dstI++ {
 		dstRecord, srcRecord := dst.Records[dstI], src.Records[srcI]
 		// insert srcRecord between dst.Records[dstI-1] and dst.Records[dstI]

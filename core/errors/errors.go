@@ -18,8 +18,8 @@ var (
 
 	ErrorFI_RLFI_      = errors.New("error FI: RLFI unknown triggered")
 	ErrorFI_RLFI_Crash = errors.New("error FI: RLFI crash triggered")
-	ErrorFI_RLFI_Delay = errors.New("error FI: RLFI delay triggered")
+	ErrorFI_RLFI_Delay = error(nil)
 	ErrorFI_TFI_       = errors.New("error FI: TFI unknown triggered")
 	ErrorFI_TFI_Crash  = errors.New("error FI: TFI crash triggered")
-	ErrorFI_TFI_Delay  = errors.New("error FI: TFI delay triggered")
+	ErrorFI_TFI_Delay  = error(nil)
 )

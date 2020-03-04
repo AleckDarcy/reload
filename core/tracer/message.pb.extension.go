@@ -12,7 +12,7 @@ func (m *Trace) Copy() *Trace {
 	return &newM
 }
 
-func (m *Trace) RLFI(name string) error {
+func (m *Trace) RLFI() error {
 	if rlfi := m.Rlfi; rlfi != nil {
 		lastIndex := len(m.Records) - 1
 
@@ -22,7 +22,7 @@ func (m *Trace) RLFI(name string) error {
 			} else if rlfi.Type == FaultType_FaultDelay {
 				time.Sleep(time.Duration(rlfi.Delay) * time.Millisecond)
 
-				//return errors.ErrorFI_RLFI_Delay
+				return errors.ErrorFI_RLFI_Delay
 			} else {
 				return errors.ErrorFI_RLFI_
 			}
@@ -44,28 +44,36 @@ func (m *Trace) TFI() error {
 				return nil
 			}
 
-			for i := 0; i < lastIndex; i++ {
+			for i, record := range m.Records {
+				if i == lastIndex {
+					break
+				}
+
 				if count == len(after) {
 					if tfi.Type == FaultType_FaultCrash {
 						return errors.ErrorFI_TFI_Crash
 					} else if tfi.Type == FaultType_FaultDelay {
 						time.Sleep(time.Duration(tfi.Delay) * time.Millisecond)
 
-						//return errors.ErrorFI_TFI_Delay
-						return nil
+						return errors.ErrorFI_TFI_Delay
 					} else {
 						return errors.ErrorFI_TFI_
 					}
 				}
 
-				record := m.Records[i]
-				if record.MessageName == after[count] {
+				if record.Type == RecordType_RecordReceive && record.MessageName == after[count] {
 					count++
 				}
 			}
-
 		}
 	}
 
 	return nil
+}
+
+func (m *Trace) AppendRecord(record *Record) *Trace {
+	m.Records = append(m.Records, record)
+	m.Depth = int64(len(m.Records))
+
+	return m
 }

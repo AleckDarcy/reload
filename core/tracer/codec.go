@@ -22,38 +22,38 @@ func NewCodec(ctx context.Context, basic baseCodec) *codec {
 
 func (c *codec) Marshal(v interface{}) ([]byte, error) {
 	if t, ok := v.(Tracer); ok {
-		id := c.ctx.Value(ThreadIDKey{}).(int64)
-		trace := Store.UpdateFunctionByThreadID(id, func(trace *Trace) {
-			trace.Records = append(trace.Records, &Record{
-				Type:        RecordType_RecordSend,
-				Timestamp:   time.Now().UnixNano(),
-				MessageName: t.GetFI_Name(),
+		if idVal := c.ctx.Value(ThreadIDKey{}); idVal != nil {
+			id := idVal.(int64)
+			trace := Store.UpdateFunctionByThreadID(id, func(trace *Trace) {
+				trace.Records = append(trace.Records, &Record{
+					Type:        RecordType_RecordSend,
+					Timestamp:   time.Now().UnixNano(),
+					MessageName: t.GetFI_Name(),
+				})
+				trace.Depth = int64(len(trace.Records))
 			})
-			trace.Depth = int64(len(trace.Records))
-		})
 
-		t.SetFI_Trace(trace)
+			t.SetFI_Trace(trace)
 
-		//log.Logf("thread %d trace %d start", id, trace.Id)
-		//Store.IterateByThreadID(id, func(i int, record *Record) {
-		//	log.Logf("thread %d trace %d, index %d: %s", id, trace.Id, i, record)
-		//})
-		//log.Logf("thread %d trace %d end", id, trace.Id)
+			//log.Logf("thread %d trace %d start", id, trace.Id)
+			//Store.IterateByThreadID(id, func(i int, record *Record) {
+			//	log.Logf("thread %d trace %d, index %d: %s", id, trace.Id, i, record)
+			//})
+			//log.Logf("thread %d trace %d end", id, trace.Id)
+		}
 	}
 
 	return c.basic.Marshal(v)
 }
 
 func (c *codec) Unmarshal(data []byte, v interface{}) error {
-	err := c.basic.Unmarshal(data, v)
-	if err != nil {
+	if err := c.basic.Unmarshal(data, v); err != nil {
 		return err
 	}
 
 	if t, ok := v.(Tracer); ok {
 		if idVal := c.ctx.Value(ThreadIDKey{}); idVal != nil {
 			id := idVal.(int64)
-
 			trace := t.GetFI_Trace()
 			if trace != nil {
 				trace.Records = append(trace.Records, &Record{
@@ -71,7 +71,7 @@ func (c *codec) Unmarshal(data []byte, v interface{}) error {
 				//})
 				//log.Logf("thread %d trace %d end", id, trace.Id)
 
-				if err := trace.RLFI(t.GetFI_Name()); err != nil {
+				if err := trace.RLFI(); err != nil {
 					return err
 				} else if err = trace.TFI(); err != nil {
 					return err
