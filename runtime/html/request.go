@@ -14,7 +14,7 @@ import (
 // called at the very beginning of handler()
 func Init(r *http.Request) *http.Request {
 	log.Logf("[RELOAD] Request: %v", r)
-	if traceStr := r.Header.Get("FI_Trace"); traceStr != "" {
+	if traceStr := r.Header.Get("Fi-Trace"); traceStr != "" {
 		trace := &tracer.Trace{}
 		if err := json.Unmarshal([]byte(traceStr), trace); err != nil {
 
