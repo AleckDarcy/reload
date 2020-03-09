@@ -28,6 +28,8 @@ func Init(r *http.Request) *http.Request {
 				Timestamp:   time.Now().UnixNano(),
 				MessageName: r.URL.Path,
 			})
+
+			tracer.Store.SetByThreadID(id, trace)
 		}
 	}
 

@@ -1,6 +1,7 @@
 package tracer
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/AleckDarcy/reload/core/errors"
@@ -76,4 +77,76 @@ func (m *Trace) AppendRecord(record *Record) *Trace {
 	m.Depth = int64(len(m.Records))
 
 	return m
+}
+
+func (m *Trace) JSONString() string {
+	strRecords, strRlfi, strTfi := "null", "null", "null"
+
+	if len(m.Records) != 0 {
+		for i, record := range m.Records {
+			if i == 0 {
+				strRecords = fmt.Sprintf(`
+		{"Type": "%v", "Timestamp"": "%s", "MessageName"": "%s"}`,
+					record.Type.String(), time.Unix(record.Timestamp/1e9, record.Timestamp%1e9), record.MessageName)
+			} else {
+				strRecords += fmt.Sprintf(`,
+		{"Type": "%v", "Timestamp"": "%s", "MessageName"": "%s"}`,
+					record.Type.String(), time.Unix(record.Timestamp/1e9, record.Timestamp%1e9), record.MessageName)
+			}
+		}
+	}
+
+	if m.Rlfi != nil {
+		strRlfi = fmt.Sprintf(`{
+		"Type": "%v",
+		"Name": "%s",
+		"Delay": %d
+	}`,
+			m.Rlfi.Type, m.Rlfi.Name, m.Rlfi.Delay,
+		)
+	}
+
+	if m.Tfi != nil {
+		strAfter := "null"
+		if len(m.Tfi.After) != 0 {
+			for i, after := range m.Tfi.After {
+				if i == 0 {
+					strAfter = fmt.Sprintf(`
+			"%s"`,
+						after,
+					)
+				} else {
+					strAfter = fmt.Sprintf(`,
+			"%s"`,
+						after,
+					)
+				}
+			}
+		}
+
+		strTfi = fmt.Sprintf(`{
+		"Type": "%v",
+		"Name": "%s",
+		"Delay": %d,
+		"After": [
+			%s
+		]
+	}`,
+			m.Rlfi.Type, m.Rlfi.Name, m.Rlfi.Delay, strAfter,
+		)
+	}
+
+	return fmt.Sprintf(`
+{
+	"ID": %d,
+	"Depth": %d,
+	"Records": [
+		%s
+	],
+	"Rlfi": %s,
+	"Tfi": %s
+}
+`,
+		m.Id, m.Depth, strRecords, strRlfi, strTfi,
+	)
 }

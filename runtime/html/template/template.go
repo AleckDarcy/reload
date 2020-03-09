@@ -6,12 +6,15 @@ import (
 	"io"
 
 	"github.com/AleckDarcy/reload/core/log"
-
 	"github.com/AleckDarcy/reload/core/tracer"
 )
 
 type Template struct {
 	base *template.Template
+}
+
+func MarshalTracing(trace *tracer.Trace) string {
+	return trace.JSONString()
 }
 
 func Must(t *template.Template, err error) *Template {
