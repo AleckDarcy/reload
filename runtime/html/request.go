@@ -6,11 +6,14 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/AleckDarcy/reload/core/log"
+
 	"github.com/AleckDarcy/reload/core/tracer"
 )
 
 // called at the very beginning of handler()
 func Init(r *http.Request) *http.Request {
+	log.Logf("[RELOAD] Request: %v", r)
 	if traceStr := r.Header.Get("FI_Trace"); traceStr != "" {
 		trace := &tracer.Trace{}
 		if err := json.Unmarshal([]byte(traceStr), trace); err != nil {
