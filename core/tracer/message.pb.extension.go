@@ -78,11 +78,6 @@ func (m *Trace) AppendRecord(record *Record) *Trace {
 	return m
 }
 
-const (
-	SizeInt = 4 // use int32 instead of int64
-
-)
-
 func (m *Trace) JSONString() string {
 	strRecords, strRlfi, strTfi := "null", "null", "null"
 

@@ -19,7 +19,9 @@ type ResponseHandler func(req *Request, httpRsp *http.Response) (*Response, erro
 
 type Requests struct {
 	CookieUrl string
-	Requests  []Request
+	Trace     *tracer.Trace
+
+	Requests []Request
 }
 
 type Request struct {

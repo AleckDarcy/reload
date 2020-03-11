@@ -43,7 +43,7 @@ func (t *Template) ExecuteTemplateReload(ctx context.Context, w http.ResponseWri
 			data["fi_trace"] = trace
 
 			// delete trace from tracer.Store
-			tracer.Store.DeleteByThraceID(trace.Id)
+			tracer.Store.DeleteByTraceID(trace.Id)
 			tracer.Store.DeleteByThreadID(id)
 
 			// Content-Type: application/json instead of text/html

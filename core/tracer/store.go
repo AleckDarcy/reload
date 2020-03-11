@@ -95,7 +95,7 @@ func (s store) UpdateFunctionByThreadID(id int64, function func(*Trace)) *Trace 
 	return t
 }
 
-func (s store) DeleteByThraceID(id int64) bool {
+func (s store) DeleteByTraceID(id int64) bool {
 	s.lock.Lock()
 	_, ok := s.traces[id]
 	if ok {

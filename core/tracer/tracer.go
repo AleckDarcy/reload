@@ -5,4 +5,6 @@ type Tracer interface {
 
 	GetFI_Trace() *Trace
 	SetFI_Trace(trace *Trace)
+
+	GetMessageType() MessageType
 }

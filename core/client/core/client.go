@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/cookiejar"
-	"net/url"
 	"time"
 
 	"github.com/golang/protobuf/proto"
@@ -67,30 +66,32 @@ func responseHandler(req *data.Request, httpRsp *http.Response) (*data.Response,
 }
 
 func (c *Client) SendRequests(reqs *data.Requests) (*data.Response, error) {
-	var trace *tracer.Trace
+	if reqs.Trace == nil {
+		return nil, nil
+	}
+
+	trace := &tracer.Trace{
+		Id:      reqs.Trace.Id,
+		Records: []*tracer.Record{},
+		Rlfi:    reqs.Trace.Rlfi,
+		Tfi:     reqs.Trace.Tfi,
+	}
+
 	var rsp *data.Response
 	var err error
 
 	for _, req := range reqs.Requests {
-		if trace != nil && req.Trace == nil {
-			req.Trace = trace
+		record := &tracer.Record{
+			Type:        tracer.RecordType_RecordSend,
+			Timestamp:   time.Now().Unix(),
+			MessageName: req.MessageName,
 		}
 
-		if req.Trace != nil {
-			if req.Trace.BaseTimestamp == 0 {
-				req.Trace.BaseTimestamp = time.Now().Unix()
-				req.Trace.Records = append(req.Trace.Records, &tracer.Record{
-					Type:        tracer.RecordType_RecordSend,
-					Timestamp:   0,
-					MessageName: req.MessageName,
-				})
-			} else {
-				req.Trace.Records = append(req.Trace.Records, &tracer.Record{
-					Type:        tracer.RecordType_RecordSend,
-					Timestamp:   time.Now().Unix() - req.Trace.BaseTimestamp,
-					MessageName: req.MessageName,
-				})
-			}
+		req.Trace = &tracer.Trace{
+			Id:      trace.Id,
+			Records: []*tracer.Record{},
+			Rlfi:    trace.Rlfi,
+			Tfi:     trace.Tfi,
 		}
 
 		rsp, err = c.sendRequest(&req)
@@ -98,10 +99,11 @@ func (c *Client) SendRequests(reqs *data.Requests) (*data.Response, error) {
 			return nil, err
 		}
 
-		if rsp.Trace != nil {
-			trace = rsp.Trace
-		}
+		trace.Records = append(trace.Records, record)
+		trace.Records = append(trace.Records, rsp.Trace.Records...)
 	}
+
+	rsp.Trace = trace
 
 	return rsp, nil
 }
@@ -119,16 +121,9 @@ func (c *Client) sendRequest(req *data.Request) (*data.Response, error) {
 
 		jjj, _ := json.Marshal(req.Trace)
 
-		trace := req.Trace
-		if trace.BaseTimestamp != 0 {
-			trace.BaseTimestamp = req.Trace.Records[0].Timestamp
+		traceString = string(traceBytes)
 
-			for _, record := range req.Trace.Records {
-				record.Timestamp -= trace.BaseTimestamp
-			}
-		}
-
-		traceString = url.QueryEscape(string(traceBytes))
+		//traceString = url.QueryEscape(string(traceBytes))
 		log.Logf("[RELOAD] %d vs %d", len(traceString), len(jjj))
 	}
 
