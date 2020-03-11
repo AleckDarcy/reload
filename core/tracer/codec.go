@@ -76,6 +76,8 @@ func (c *codec) Unmarshal(data []byte, v interface{}) error {
 				} else if err = trace.TFI(); err != nil {
 					return err
 				}
+
+				t.SetFI_Trace(nil)
 			}
 		}
 	}

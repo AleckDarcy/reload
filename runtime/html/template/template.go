@@ -34,7 +34,7 @@ func (t *Template) ExecuteTemplate(wr io.Writer, name string, data interface{}) 
 }
 
 func (t *Template) ExecuteTemplateReload(ctx context.Context, w http.ResponseWriter, name string, data map[string]interface{}) error {
-	log.Logf("[RELOAD] ExecuteTemplateReload, called")
+	//log.Logf("[RELOAD] ExecuteTemplateReload, called")
 	if idVal := ctx.Value(tracer.ThreadIDKey{}); idVal != nil {
 		id := idVal.(int64)
 		log.Logf("[RELOAD] ExecuteTemplateReload, thread id: %d", id)
