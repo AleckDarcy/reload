@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/cookiejar"
+	"net/url"
 	"time"
 
 	"github.com/golang/protobuf/proto"
@@ -39,7 +40,7 @@ func responseHandler(req *data.Request, httpRsp *http.Response) (*data.Response,
 
 	log.Logf("[RELOAD] Content-Type: %s", httpRsp.Header.Get(html.ContentType))
 	if httpRsp.Header.Get(html.ContentType) != html.ContentTypeJSON {
-		log.Logf("%v", httpRsp)
+		log.Logf("[RELOAD] Url: %v", req.URL)
 		log.Logf("[RELOAD] Body: %v", string(body))
 		return rsp, nil
 	}
@@ -76,11 +77,20 @@ func (c *Client) SendRequests(reqs *data.Requests) (*data.Response, error) {
 		}
 
 		if req.Trace != nil {
-			req.Trace.Records = append(req.Trace.Records, &tracer.Record{
-				Type:        tracer.RecordType_RecordSend,
-				Timestamp:   time.Now().Unix(),
-				MessageName: req.MessageName,
-			})
+			if req.Trace.BaseTimestamp == 0 {
+				req.Trace.BaseTimestamp = time.Now().Unix()
+				req.Trace.Records = append(req.Trace.Records, &tracer.Record{
+					Type:        tracer.RecordType_RecordSend,
+					Timestamp:   0,
+					MessageName: req.MessageName,
+				})
+			} else {
+				req.Trace.Records = append(req.Trace.Records, &tracer.Record{
+					Type:        tracer.RecordType_RecordSend,
+					Timestamp:   time.Now().Unix() - req.Trace.BaseTimestamp,
+					MessageName: req.MessageName,
+				})
+			}
 		}
 
 		rsp, err = c.sendRequest(&req)
@@ -118,8 +128,8 @@ func (c *Client) sendRequest(req *data.Request) (*data.Response, error) {
 			}
 		}
 
-		log.Logf("[RELOAD] %d vs %d", len(traceBytes), len(jjj))
-		traceString = string(traceBytes)
+		traceString = url.QueryEscape(string(traceBytes))
+		log.Logf("[RELOAD] %d vs %d", len(traceString), len(jjj))
 	}
 
 	switch req.Method {

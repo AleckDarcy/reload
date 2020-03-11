@@ -17,7 +17,7 @@ func TestHipsterShop(t *testing.T) {
 				Method:      data.HTTPGet,
 				URL:         "http://localhost/product/OLJCESPC7Z",
 				MessageName: "product",
-				Trace:       &tracer.Trace{Id: 6},
+				Trace:       &tracer.Trace{Id: 1},
 			},
 			{
 				Method: data.HTTPPost,

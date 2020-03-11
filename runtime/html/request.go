@@ -3,6 +3,7 @@ package html
 import (
 	"context"
 	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/golang/protobuf/proto"
@@ -14,10 +15,13 @@ import (
 // called at the very beginning of handler()
 func Init(r *http.Request) *http.Request {
 	log.Logf("[RELOAD] Init, Fi-Trace: %s", r.Header.Get("Fi-Trace"))
-	if traceStr := r.Header.Get("Fi-Trace"); traceStr != "" {
+	if traceUrlStr := r.Header.Get("Fi-Trace"); traceUrlStr != "" {
 		trace := &tracer.Trace{}
-		if err := proto.Unmarshal([]byte(traceStr), trace); err != nil {
 
+		if traceStr, err := url.QueryUnescape(traceUrlStr); err != nil {
+			log.Logf("[RELOAD] Decode trace err: %s", err)
+		} else if err = proto.Unmarshal([]byte(traceStr), trace); err != nil {
+			log.Logf("[RELOAD] Unmarshal trace err: %s", err)
 		} else {
 			id := tracer.NewThreadID()
 			log.Logf("[RELOAD] Init, thread id: %d", id)
