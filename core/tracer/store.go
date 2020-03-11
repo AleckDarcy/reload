@@ -147,7 +147,6 @@ func (s store) append(id int64, record *Record) {
 	}
 
 	c.Records = append(c.Records, record)
-	c.Depth = int64(len(c.Records))
 }
 
 func (s store) Append(id int64, record *Record) {

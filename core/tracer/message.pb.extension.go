@@ -74,10 +74,14 @@ func (m *Trace) TFI() error {
 
 func (m *Trace) AppendRecord(record *Record) *Trace {
 	m.Records = append(m.Records, record)
-	m.Depth = int64(len(m.Records))
 
 	return m
 }
+
+const (
+	SizeInt = 4 // use int32 instead of int64
+
+)
 
 func (m *Trace) JSONString() string {
 	strRecords, strRlfi, strTfi := "null", "null", "null"
@@ -139,7 +143,6 @@ func (m *Trace) JSONString() string {
 	return fmt.Sprintf(`
 {
 	"ID": %d,
-	"Depth": %d,
 	"Records": [
 		%s
 	],
@@ -147,6 +150,6 @@ func (m *Trace) JSONString() string {
 	"Tfi": %s
 }
 `,
-		m.Id, m.Depth, strRecords, strRlfi, strTfi,
+		m.Id, strRecords, strRlfi, strTfi,
 	)
 }

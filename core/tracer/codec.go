@@ -5,9 +5,17 @@ import (
 	"time"
 )
 
+type messageNameIDMap struct {
+	name2ID map[string]string
+	id2Name map[string]string
+}
+
+var MessageNameIDMap *messageNameIDMap
+
 type baseCodec interface {
 	Marshal(v interface{}) ([]byte, error)
 	Unmarshal(data []byte, v interface{}) error
+	MessageType() MessageType
 	Name() string
 }
 
@@ -27,10 +35,9 @@ func (c *codec) Marshal(v interface{}) ([]byte, error) {
 			trace := Store.UpdateFunctionByThreadID(id, func(trace *Trace) {
 				trace.Records = append(trace.Records, &Record{
 					Type:        RecordType_RecordSend,
-					Timestamp:   time.Now().UnixNano(),
+					Timestamp:   time.Now().UnixNano() - trace.BaseTimestamp,
 					MessageName: t.GetFI_Name(),
 				})
-				trace.Depth = int64(len(trace.Records))
 			})
 
 			t.SetFI_Trace(trace)
@@ -58,10 +65,9 @@ func (c *codec) Unmarshal(data []byte, v interface{}) error {
 			if trace != nil {
 				trace.Records = append(trace.Records, &Record{
 					Type:        RecordType_RecordReceive,
-					Timestamp:   time.Now().UnixNano(),
+					Timestamp:   time.Now().UnixNano() - trace.BaseTimestamp,
 					MessageName: t.GetFI_Name(),
 				})
-				trace.Depth = int64(len(trace.Records))
 
 				Store.SetByThreadID(id, trace)
 

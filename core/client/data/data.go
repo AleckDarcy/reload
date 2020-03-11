@@ -15,7 +15,12 @@ const (
 	HTTPGet
 )
 
-type ResponseHandler func(req *Request, rsp *http.Response) (*Response, error)
+type ResponseHandler func(req *Request, httpRsp *http.Response) (*Response, error)
+
+type Requests struct {
+	CookieUrl string
+	Requests  []Request
+}
 
 type Request struct {
 	Method    HTTPMethod

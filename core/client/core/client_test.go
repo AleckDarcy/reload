@@ -10,37 +10,46 @@ import (
 func TestHipsterShop(t *testing.T) {
 	client := NewClient()
 
-	reqs := []*data.Request{
-		{
-			Method:      data.HTTPGet,
-			URL:         "http://localhost/product/OLJCESPC7Z",
-			MessageName: "product",
-			Trace:       &tracer.Trace{Id: 1},
-		},
-		{
-			Method: data.HTTPPost,
-			URL:    "http://localhost/cart",
-			UrlValues: map[string][]string{
-				"product_id": {"OLJCESPC7Z"},
-				"quantity":   {"1"},
+	reqs := &data.Requests{
+		CookieUrl: "localhost",
+		Requests: []data.Request{
+			{
+				Method:      data.HTTPGet,
+				URL:         "http://localhost/product/OLJCESPC7Z",
+				MessageName: "product",
+				Trace:       &tracer.Trace{Id: 6},
 			},
-			MessageName: "cart",
-		},
-		{
-			Method: data.HTTPPost,
-			URL:    "http://localhost/cart",
-			UrlValues: map[string][]string{
-				"product_id": {"L9ECAV7KIM"},
-				"quantity":   {"1"},
+			{
+				Method: data.HTTPPost,
+				URL:    "http://localhost/cart",
+				UrlValues: map[string][]string{
+					"product_id": {"OLJCESPC7Z"},
+					"quantity":   {"1"},
+				},
+				MessageName: "cart",
 			},
-			MessageName: "cart",
+			{
+				Method: data.HTTPPost,
+				URL:    "http://localhost/cart",
+				UrlValues: map[string][]string{
+					"product_id": {"L9ECAV7KIM"},
+					"quantity":   {"1"},
+				},
+				MessageName: "cart",
+			},
+			{
+				Method:      data.HTTPGet,
+				URL:         "http://localhost/product/L9ECAV7KIM",
+				MessageName: "product",
+			},
 		},
 	}
 
-	trace, err := client.SendRequests(reqs)
+	rsp, err := client.SendRequests(reqs)
 	if err != nil {
 		t.Error(err)
 	}
 
-	t.Log(trace)
+	t.Log(string(rsp.Body))
+	t.Log(rsp.Trace)
 }

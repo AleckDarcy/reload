@@ -8,7 +8,10 @@ import (
 	"net/http/cookiejar"
 	"time"
 
+	"github.com/golang/protobuf/proto"
+
 	"github.com/AleckDarcy/reload/core/client/data"
+	"github.com/AleckDarcy/reload/core/log"
 	"github.com/AleckDarcy/reload/core/tracer"
 	"github.com/AleckDarcy/reload/runtime/html"
 )
@@ -28,21 +31,24 @@ func NewClient() *Client {
 }
 
 func responseHandler(req *data.Request, httpRsp *http.Response) (*data.Response, error) {
-	if httpRsp.Header.Get(html.ContentType) != html.ContentTypeJSON {
-		return nil, nil
-	}
-
 	body, err := ioutil.ReadAll(httpRsp.Body)
 	if err != nil {
 		return nil, err
 	}
+	rsp := &data.Response{Body: body}
+
+	log.Logf("[RELOAD] Content-Type: %s", httpRsp.Header.Get(html.ContentType))
+	if httpRsp.Header.Get(html.ContentType) != html.ContentTypeJSON {
+		log.Logf("%v", httpRsp)
+		log.Logf("[RELOAD] Body: %v", string(body))
+		return rsp, nil
+	}
 
 	jsonData := map[string]json.RawMessage{}
-	if err = json.Unmarshal(body, jsonData); err != nil {
+	if err = json.Unmarshal(body, &jsonData); err != nil {
 		return nil, err
 	}
 
-	rsp := &data.Response{Body: body}
 	if traceJSON, ok := jsonData["fi_trace"]; ok {
 		rsp.Trace = &tracer.Trace{}
 		if err = json.Unmarshal(traceJSON, rsp.Trace); err != nil {
@@ -59,10 +65,12 @@ func responseHandler(req *data.Request, httpRsp *http.Response) (*data.Response,
 	return rsp, nil
 }
 
-func (c *Client) SendRequests(reqs []*data.Request) (*tracer.Trace, error) {
-	trace := &tracer.Trace{}
+func (c *Client) SendRequests(reqs *data.Requests) (*data.Response, error) {
+	var trace *tracer.Trace
+	var rsp *data.Response
+	var err error
 
-	for _, req := range reqs {
+	for _, req := range reqs.Requests {
 		if trace != nil && req.Trace == nil {
 			req.Trace = trace
 		}
@@ -75,7 +83,7 @@ func (c *Client) SendRequests(reqs []*data.Request) (*tracer.Trace, error) {
 			})
 		}
 
-		rsp, err := c.sendRequest(req)
+		rsp, err = c.sendRequest(&req)
 		if err != nil {
 			return nil, err
 		}
@@ -85,31 +93,55 @@ func (c *Client) SendRequests(reqs []*data.Request) (*tracer.Trace, error) {
 		}
 	}
 
-	return trace, nil
+	return rsp, nil
 }
 
 func (c *Client) sendRequest(req *data.Request) (*data.Response, error) {
-	var httpRsp *http.Response
+	var httpReq *http.Request
 	var err error
+	var traceString string
+
+	if req.Trace != nil {
+		traceBytes, err := proto.Marshal(req.Trace)
+		if err != nil {
+			return nil, err
+		}
+
+		jjj, _ := json.Marshal(req.Trace)
+
+		trace := req.Trace
+		if trace.BaseTimestamp != 0 {
+			trace.BaseTimestamp = req.Trace.Records[0].Timestamp
+
+			for _, record := range req.Trace.Records {
+				record.Timestamp -= trace.BaseTimestamp
+			}
+		}
+
+		log.Logf("[RELOAD] %d vs %d", len(traceBytes), len(jjj))
+		traceString = string(traceBytes)
+	}
 
 	switch req.Method {
 	case data.HTTPGet:
-		httpRsp, err = c.Client.Get(req.URL)
+		httpReq, err = http.NewRequest("GET", req.URL, nil)
 	case data.HTTPPost:
-		if req.Trace != nil {
-			traceBytes, err := json.Marshal(req.Trace)
-			if err != nil {
-				return nil, err
-			}
-
-			req.UrlValues["Fi-Trace"] = []string{string(traceBytes)}
-		}
-
-		httpRsp, err = c.Client.PostForm(req.URL, req.UrlValues)
+		httpReq, err = http.NewRequest("POST", req.URL, nil)
+		httpReq.PostForm = req.UrlValues
 	default:
 		return nil, errors.New("unsupported http method")
 	}
 
+	if err != nil {
+		return nil, err
+	}
+
+	if traceString != "" {
+		//log.Logf("[RELOAD] Fi-Trace: %d %s", len(traceString), traceString)
+		httpReq.Header.Set("Fi-Trace", traceString)
+	}
+
+	httpRsp, err := c.Client.Do(httpReq)
 	if err != nil {
 		return nil, err
 	}
