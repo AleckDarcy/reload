@@ -15,8 +15,13 @@ var MessageNameIDMap *messageNameIDMap
 type baseCodec interface {
 	Marshal(v interface{}) ([]byte, error)
 	Unmarshal(data []byte, v interface{}) error
-	MessageType() MessageType
 	Name() string
+}
+
+type compressCode interface {
+	baseCodec
+
+	MessageType() MessageType
 }
 
 type codec struct {
