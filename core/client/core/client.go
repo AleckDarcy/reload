@@ -142,7 +142,7 @@ func (c *Client) sendRequest(req *data.Request) (*data.Response, error) {
 	}
 
 	if traceString != "" {
-		//log.Logf("[RELOAD] Fi-Trace: %d %s", len(traceString), traceString)
+		log.Logf("[RELOAD] Fi-Trace: %d %s", len(traceString), traceString)
 		httpReq.Header.Set("Fi-Trace", traceString)
 	}
 
