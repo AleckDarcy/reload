@@ -3,6 +3,8 @@ package tracer
 import (
 	"context"
 	"time"
+
+	"github.com/AleckDarcy/reload/core/log"
 )
 
 //type messageNameIDMap struct {
@@ -81,35 +83,47 @@ func (c *codec) Marshal(v interface{}) ([]byte, error) {
 		if idVal := c.ctx.Value(ThreadIDKey{}); idVal != nil {
 			id := idVal.(int64)
 
-			record := &Record{
-				Type:        RecordType_RecordSend,
-				Timestamp:   time.Now().UnixNano(),
-				MessageName: t.GetFI_Name(),
-			}
-			trace := Store.UpdateFunctionByThreadID(id, func(trace *Trace) {
-				trace.Records = append(trace.Records, record)
-			})
-
-			if t.GetMessageType() == MessageType_Message_Request {
-				trace = &Trace{
-					Id:      trace.Id,
-					Records: []*Record{},
-					Rlfi:    trace.Rlfi,
-					Tfi:     trace.Tfi,
+			if Store.CheckByThreadID(id) {
+				log.Logf("[RELOAD] Marshal, CheckByThreadID ok")
+				record := &Record{
+					Type:        RecordType_RecordSend,
+					Timestamp:   time.Now().UnixNano(),
+					MessageName: t.GetFI_Name(),
 				}
-			} else if t.GetMessageType() == MessageType_Message_Response {
 
-				// todo: can not delete when the service is called concurrently
-				Store.DeleteByTraceID(trace.Id)
-				Store.DeleteByThreadID(id)
+				updateFunction := func(trace *Trace) {
+					trace.Records = append(trace.Records, record)
+				}
+				if trace, ok := Store.UpdateFunctionByThreadID(id, updateFunction); ok {
+					if t.GetMessageType() == MessageType_Message_Request {
+						log.Logf("[RELOAD] Marshal send request")
+						trace = &Trace{
+							Id:      trace.Id,
+							Records: []*Record{},
+							Rlfi:    trace.Rlfi,
+							Tfi:     trace.Tfi,
+						}
+					} else if t.GetMessageType() == MessageType_Message_Response {
+						log.Logf("[RELOAD] Marshal send response")
+						// todo: can not delete when the service is called concurrently
+						Store.DeleteByTraceID(trace.Id)
+						Store.DeleteByThreadID(id)
+					}
+
+					t.SetFI_Trace(trace)
+					//log.Logf("thread %d trace %d start", id, trace.Id)
+					//Store.IterateByThreadID(id, func(i int, record *Record) {
+					//	log.Logf("thread %d trace %d, index %d: %s", id, trace.Id, i, record)
+					//})
+					//log.Logf("thread %d trace %d end", id, trace.Id)
+				} else {
+					log.Logf("[RELOAD] Marshal, UpdateFunctionByThreadID no")
+				}
+			} else {
+				log.Logf("[RELOAD] Marshal, CheckByThreadID no")
 			}
-
-			t.SetFI_Trace(trace)
-			//log.Logf("thread %d trace %d start", id, trace.Id)
-			//Store.IterateByThreadID(id, func(i int, record *Record) {
-			//	log.Logf("thread %d trace %d, index %d: %s", id, trace.Id, i, record)
-			//})
-			//log.Logf("thread %d trace %d end", id, trace.Id)
+		} else {
+			log.Logf("[RELOAD] Marshal, no ThreadIDKey")
 		}
 	}
 
@@ -145,13 +159,19 @@ func (c *codec) Unmarshal(data []byte, v interface{}) error {
 				}
 
 				if t.GetMessageType() == MessageType_Message_Request {
+					log.Logf("[RELOAD] Unmarshal receive request")
 					Store.SetByThreadID(id, trace)
 				} else if t.GetMessageType() == MessageType_Message_Response {
+					log.Logf("[RELOAD] Unmarshal receive response")
 					Store.UpdateFunctionByThreadID(id, func(oldTrace *Trace) {
 						oldTrace.Records = append(oldTrace.Records, trace.Records...)
 					})
 				}
+			} else {
+				log.Logf("[RELOAD] Unmarshal, no tracing data")
 			}
+		} else {
+			log.Logf("[RELOAD] Unmarshal, no ThreadIDKey")
 		}
 	}
 

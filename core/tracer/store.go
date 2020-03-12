@@ -58,6 +58,14 @@ func (s store) GetByTraceID(id int64) (*Trace, bool) {
 	return c, ok
 }
 
+func (s store) CheckByThreadID(id int64) bool {
+	s.lock.RLock()
+	_, ok := s.threads[id]
+	s.lock.RUnlock()
+
+	return ok
+}
+
 func (s store) GetByThreadID(id int64) (*Trace, bool) {
 	s.lock.RLock()
 	c, ok := s.threads[id]
@@ -82,7 +90,7 @@ func (s store) SetByThreadID(id int64, trace *Trace) {
 	s.lock.Unlock()
 }
 
-func (s store) UpdateFunctionByThreadID(id int64, function func(*Trace)) *Trace {
+func (s store) UpdateFunctionByThreadID(id int64, function func(*Trace)) (*Trace, bool) {
 	s.lock.Lock()
 	t, ok := s.threads[id]
 	if ok {
@@ -92,7 +100,7 @@ func (s store) UpdateFunctionByThreadID(id int64, function func(*Trace)) *Trace 
 	}
 	s.lock.Unlock()
 
-	return t
+	return t, ok
 }
 
 func (s store) DeleteByTraceID(id int64) bool {

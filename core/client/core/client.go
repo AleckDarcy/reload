@@ -114,12 +114,12 @@ func (c *Client) sendRequest(req *data.Request) (*data.Response, error) {
 	var traceString string
 
 	if req.Trace != nil {
-		traceBytes, err := proto.Marshal(req.Trace)
+		traceBytes, err := json.Marshal(req.Trace)
 		if err != nil {
 			return nil, err
 		}
 
-		jjj, _ := json.Marshal(req.Trace)
+		jjj, _ := proto.Marshal(req.Trace)
 
 		traceString = string(traceBytes)
 
