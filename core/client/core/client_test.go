@@ -1,6 +1,7 @@
 package core
 
 import (
+	"net/url"
 	"testing"
 
 	"github.com/AleckDarcy/reload/core/tracer"
@@ -23,7 +24,7 @@ func TestHipsterShop(t *testing.T) {
 			{
 				Method: data.HTTPPost,
 				URL:    "http://localhost/cart",
-				UrlValues: map[string][]string{
+				UrlValues: url.Values{
 					"product_id": {"OLJCESPC7Z"},
 					"quantity":   {"1"},
 				},
@@ -32,7 +33,7 @@ func TestHipsterShop(t *testing.T) {
 			{
 				Method: data.HTTPPost,
 				URL:    "http://localhost/cart",
-				UrlValues: map[string][]string{
+				UrlValues: url.Values{
 					"product_id": {"L9ECAV7KIM"},
 					"quantity":   {"1"},
 				},
@@ -52,5 +53,6 @@ func TestHipsterShop(t *testing.T) {
 	}
 
 	t.Log(string(rsp.Body))
+	t.Log(len(rsp.Trace.Records))
 	t.Log(rsp.Trace)
 }

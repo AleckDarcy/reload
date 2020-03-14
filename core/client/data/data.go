@@ -11,8 +11,8 @@ type HTTPMethod int64
 
 const (
 	_ HTTPMethod = iota
-	HTTPPost
 	HTTPGet
+	HTTPPost
 )
 
 type ResponseHandler func(req *Request, httpRsp *http.Response) (*Response, error)

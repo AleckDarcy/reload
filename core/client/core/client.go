@@ -6,9 +6,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/cookiejar"
+	"strings"
 	"time"
-
-	"github.com/golang/protobuf/proto"
 
 	"github.com/AleckDarcy/reload/core/client/data"
 	"github.com/AleckDarcy/reload/core/log"
@@ -57,7 +56,7 @@ func responseHandler(req *data.Request, httpRsp *http.Response) (*data.Response,
 
 		rsp.Trace.Records = append(rsp.Trace.Records, &tracer.Record{
 			Type:        tracer.RecordType_RecordReceive,
-			Timestamp:   time.Now().Unix(),
+			Timestamp:   time.Now().UnixNano(),
 			MessageName: req.MessageName,
 		})
 	}
@@ -83,7 +82,7 @@ func (c *Client) SendRequests(reqs *data.Requests) (*data.Response, error) {
 	for _, req := range reqs.Requests {
 		record := &tracer.Record{
 			Type:        tracer.RecordType_RecordSend,
-			Timestamp:   time.Now().Unix(),
+			Timestamp:   time.Now().UnixNano(),
 			MessageName: req.MessageName,
 		}
 
@@ -100,7 +99,9 @@ func (c *Client) SendRequests(reqs *data.Requests) (*data.Response, error) {
 		}
 
 		trace.Records = append(trace.Records, record)
-		trace.Records = append(trace.Records, rsp.Trace.Records...)
+		if rsp.Trace != nil {
+			trace.Records = append(trace.Records, rsp.Trace.Records...)
+		}
 	}
 
 	rsp.Trace = trace
@@ -119,20 +120,18 @@ func (c *Client) sendRequest(req *data.Request) (*data.Response, error) {
 			return nil, err
 		}
 
-		jjj, _ := proto.Marshal(req.Trace)
-
 		traceString = string(traceBytes)
-
-		//traceString = url.QueryEscape(string(traceBytes))
-		log.Logf("[RELOAD] %d vs %d", len(traceString), len(jjj))
 	}
 
 	switch req.Method {
 	case data.HTTPGet:
-		httpReq, err = http.NewRequest("GET", req.URL, nil)
+		httpReq, err = http.NewRequest(html.MethodGet, req.URL, nil)
 	case data.HTTPPost:
-		httpReq, err = http.NewRequest("POST", req.URL, nil)
-		httpReq.PostForm = req.UrlValues
+		body := strings.NewReader(req.UrlValues.Encode())
+		httpReq, err = http.NewRequest(html.MethodPost, req.URL, body)
+		if err == nil {
+			httpReq.Header.Set(html.ContentType, html.ContentTypeMIMEPostForm)
+		}
 	default:
 		return nil, errors.New("unsupported http method")
 	}
