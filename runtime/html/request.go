@@ -24,7 +24,7 @@ func Init(r *http.Request) *http.Request {
 			r = r.WithContext(context.WithValue(r.Context(), tracer.ThreadIDKey{}, id))
 			trace.Records = append(trace.Records, &tracer.Record{
 				Type:        tracer.RecordType_RecordReceive,
-				Timestamp:   time.Now().UnixNano() - trace.BaseTimestamp,
+				Timestamp:   time.Now().UnixNano(),
 				MessageName: r.URL.Path,
 			})
 

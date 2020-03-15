@@ -7,67 +7,11 @@ import (
 	"github.com/AleckDarcy/reload/core/log"
 )
 
-//type messageNameIDMap struct {
-//	keySize int
-//	name2ID map[string]string
-//	id2Name map[string]string
-//}
-//
-//var MessageNameIDMap *messageNameIDMap
-//
-//const HTTPHeaderLetters = "0123456789" +
-//	"abcdefghijklmnopqrstuvwxyz" +
-//	"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-//
-//const HTTPHeaderLetterSize = len(HTTPHeaderLetters)
-//
-//const (
-//	HTTPHeaderBit8Size  = 1
-//	HTTPHeaderBit16Size = 2
-//	HTTPHeaderBit32Size = 4
-//)
-//
-//func NewMessageNameIDMap(names []string) {
-//
-//}
-//
-//
-//func (m *Trace) HTTPHeaderValueSize() int {
-//	sizeId := HTTPHeaderBit32Size
-//	sizeBaseTimestamp := HTTPHeaderBit16Size
-//
-//	return sizeId + sizeBaseTimestamp
-//}
-//
-//func (m *Trace) EncodeHTTPHeaderValue(bytes []byte) error {
-//
-//	return nil
-//}
-//
-//func (m *Trace) DecodeHTTPHeaderValue() {
-//
-//}
-//
-//func (m *Record) HTTPHeaderValueSize() int {
-//	sizeType := HTTPHeaderBit8Size
-//
-//}
-//
-//func (m *Record) EncodeHTTPHeaderValue(bytes []byte) error {
-//	return nil
-//}
-
 type baseCodec interface {
 	Marshal(v interface{}) ([]byte, error)
 	Unmarshal(data []byte, v interface{}) error
 	Name() string
 }
-
-//type compressCode interface {
-//	baseCodec
-//
-//	MessageType() MessageType
-//}
 
 type codec struct {
 	ctx   context.Context
@@ -142,7 +86,7 @@ func (c *codec) Unmarshal(data []byte, v interface{}) error {
 			if trace != nil {
 				trace.Records = append(trace.Records, &Record{
 					Type:        RecordType_RecordReceive,
-					Timestamp:   time.Now().UnixNano() - trace.BaseTimestamp,
+					Timestamp:   time.Now().UnixNano(),
 					MessageName: t.GetFI_Name(),
 				})
 

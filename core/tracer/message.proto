@@ -18,12 +18,12 @@ message Record {
     RecordType type = 1;
     int64 timestamp = 2;
     string message_name = 3;
+    string uuid = 4;
 }
 
 message Trace {
     int64 id = 1;
-    int64 base_timestamp = 2;
-    repeated Record records = 3;
+    repeated Record records = 2;
 
     RLFI rlfi = 20;
     TFI tfi = 21;
