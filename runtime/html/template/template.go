@@ -35,16 +35,15 @@ func (t *Template) ExecuteTemplate(wr io.Writer, name string, data interface{}) 
 
 func (t *Template) ExecuteTemplateReload(ctx context.Context, w http.ResponseWriter, name string, data map[string]interface{}) error {
 	//log.Logf("[RELOAD] ExecuteTemplateReload, called")
-	if idVal := ctx.Value(tracer.ThreadIDKey{}); idVal != nil {
-		id := idVal.(int64)
-		log.Logf("[RELOAD] ExecuteTemplateReload, thread id: %d", id)
-		if trace, ok := tracer.Store.GetByThreadID(id); ok {
+	if metaVal := ctx.Value(tracer.ContextMetaKey{}); metaVal != nil {
+		meta := metaVal.(*tracer.ContextMeta)
+		log.Logf("[RELOAD] ExecuteTemplateReload, meta: %+v", meta)
+		if trace, ok := tracer.Store.GetByContextMeta(meta); ok {
 			log.Logf("[RELOAD] ExecuteTemplateReload, trace found")
 			data["fi_trace"] = trace
 
 			// delete trace from tracer.Store
-			tracer.Store.DeleteByTraceID(trace.Id)
-			tracer.Store.DeleteByThreadID(id)
+			tracer.Store.DeleteByContextMeta(meta)
 
 			// Content-Type: application/json instead of text/html
 			w.Header().Set(html.ContentType, html.ContentTypeJSON)

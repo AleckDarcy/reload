@@ -9,15 +9,39 @@ import (
 
 func (m *Trace) Copy() *Trace {
 	newM := *m
+	newM.Records = make([]*Record, len(m.Records))
+	copy(newM.Records, m.Records)
 
 	return &newM
 }
 
-func (m *Trace) RLFI() error {
-	if rlfi := m.Rlfi; rlfi != nil {
-		lastIndex := len(m.Records) - 1
+func (m *Trace) CalFI(records []*Record) {
+	if m.Tfi != nil {
+		for _, record := range records {
+			if record.Type == RecordType_RecordReceive {
+				for _, after := range m.Tfi.After {
+					if record.MessageName == after.Name {
+						after.Already++
+					}
+				}
+			}
+		}
+	}
+}
 
-		if rlfi.Name == m.Records[lastIndex].MessageName {
+func (m *Trace) DoFI(name string) error {
+	if err := m.RLFI(name); err != nil {
+		return err
+	} else if err = m.TFI(name); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Trace) RLFI(name string) error {
+	if rlfi := m.Rlfi; rlfi != nil {
+		if rlfi.Name == name {
 			if rlfi.Type == FaultType_FaultCrash {
 				return errors.ErrorFI_RLFI_Crash
 			} else if rlfi.Type == FaultType_FaultDelay {
@@ -33,38 +57,29 @@ func (m *Trace) RLFI() error {
 	return nil
 }
 
-func (m *Trace) TFI() error {
+func (m *Trace) TFI(name string) error {
 	if tfi := m.Tfi; tfi != nil {
-		lastIndex := len(m.Records) - 1
-
-		if tfi.Name == m.Records[lastIndex].MessageName {
-			count := 0
-			after := tfi.After
-
-			if lastIndex < len(after) {
-				return nil
+		trigger := true
+		for _, after := range tfi.After {
+			if after.Name == name {
+				after.Already++
+				if after.Already <= after.Times {
+					trigger = false
+				}
+			} else if after.Already < after.Times {
+				trigger = false
 			}
+		}
 
-			for i, record := range m.Records {
-				if i == lastIndex {
-					break
-				}
+		if tfi.Name == name && trigger {
+			if tfi.Type == FaultType_FaultCrash {
+				return errors.ErrorFI_TFI_Crash
+			} else if tfi.Type == FaultType_FaultDelay {
+				time.Sleep(time.Duration(tfi.Delay) * time.Millisecond)
 
-				if count == len(after) {
-					if tfi.Type == FaultType_FaultCrash {
-						return errors.ErrorFI_TFI_Crash
-					} else if tfi.Type == FaultType_FaultDelay {
-						time.Sleep(time.Duration(tfi.Delay) * time.Millisecond)
-
-						return errors.ErrorFI_TFI_Delay
-					} else {
-						return errors.ErrorFI_TFI_
-					}
-				}
-
-				if record.Type == RecordType_RecordReceive && record.MessageName == after[count] {
-					count++
-				}
+				return errors.ErrorFI_TFI_Delay
+			} else {
+				return errors.ErrorFI_TFI_
 			}
 		}
 	}

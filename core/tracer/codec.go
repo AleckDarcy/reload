@@ -24,50 +24,52 @@ func NewCodec(ctx context.Context, basic baseCodec) *codec {
 
 func (c *codec) Marshal(v interface{}) ([]byte, error) {
 	if t, ok := v.(Tracer); ok {
-		if idVal := c.ctx.Value(ThreadIDKey{}); idVal != nil {
-			id := idVal.(int64)
+		if metaVal := c.ctx.Value(ContextMetaKey{}); metaVal != nil {
+			meta := metaVal.(*ContextMeta)
 
-			if Store.CheckByThreadID(id) {
-				log.Logf("[RELOAD] Marshal, CheckByThreadID ok")
+			if Store.CheckByContextMeta(meta) {
+				log.Logf("[RELOAD] Marshal, CheckByContextMeta ok")
+
+				var uuid string
+				if t.GetMessageType() == MessageType_Message_Request {
+					uuid = NewUUID()
+				} else if t.GetMessageType() == MessageType_Message_Response {
+					uuid = meta.uuid
+				}
+
 				record := &Record{
 					Type:        RecordType_RecordSend,
 					Timestamp:   time.Now().UnixNano(),
 					MessageName: t.GetFI_Name(),
+					Uuid:        uuid,
 				}
 
 				updateFunction := func(trace *Trace) {
 					trace.Records = append(trace.Records, record)
 				}
-				if trace, ok := Store.UpdateFunctionByThreadID(id, updateFunction); ok {
+				if trace, ok := Store.UpdateFunctionByContextMeta(meta, updateFunction); ok {
 					if t.GetMessageType() == MessageType_Message_Request {
 						log.Logf("[RELOAD] Marshal send request")
 						trace = &Trace{
 							Id:      trace.Id,
-							Records: []*Record{},
+							Records: []*Record{record},
 							Rlfi:    trace.Rlfi,
 							Tfi:     trace.Tfi,
 						}
 					} else if t.GetMessageType() == MessageType_Message_Response {
 						log.Logf("[RELOAD] Marshal send response")
-						// todo: can not delete when the service is called concurrently
-						Store.DeleteByTraceID(trace.Id)
-						Store.DeleteByThreadID(id)
+						Store.DeleteByContextMeta(meta)
 					}
 
 					t.SetFI_Trace(trace)
-					//log.Logf("thread %d trace %d start", id, trace.Id)
-					//Store.IterateByThreadID(id, func(i int, record *Record) {
-					//	log.Logf("thread %d trace %d, index %d: %s", id, trace.Id, i, record)
-					//})
-					//log.Logf("thread %d trace %d end", id, trace.Id)
 				} else {
-					log.Logf("[RELOAD] Marshal, UpdateFunctionByThreadID no")
+					log.Logf("[RELOAD] Marshal, UpdateFunctionByContextMeta fail")
 				}
 			} else {
-				log.Logf("[RELOAD] Marshal, CheckByThreadID no")
+				log.Logf("[RELOAD] Marshal, CheckByContextMeta fail")
 			}
 		} else {
-			log.Logf("[RELOAD] Marshal, no ThreadIDKey")
+			log.Logf("[RELOAD] Marshal, no ContextMetaKey")
 		}
 	}
 
@@ -80,42 +82,58 @@ func (c *codec) Unmarshal(data []byte, v interface{}) error {
 	}
 
 	if t, ok := v.(Tracer); ok {
-		if idVal := c.ctx.Value(ThreadIDKey{}); idVal != nil {
-			id := idVal.(int64)
+		if metaVal := c.ctx.Value(ContextMetaKey{}); metaVal != nil {
+			meta := metaVal.(*ContextMeta)
+
 			trace := t.GetFI_Trace()
 			if trace != nil {
-				trace.Records = append(trace.Records, &Record{
-					Type:        RecordType_RecordReceive,
-					Timestamp:   time.Now().UnixNano(),
-					MessageName: t.GetFI_Name(),
-				})
-
-				//log.Logf("thread %d trace %d start", id, trace.Id)
-				//Store.IterateByThreadID(id, func(i int, record *Record) {
-				//	log.Logf("thread %d trace %d, index %d: %s", id, trace.Id, i, record)
-				//})
-				//log.Logf("thread %d trace %d end", id, trace.Id)
-
-				if err := trace.RLFI(); err != nil {
-					return err
-				} else if err = trace.TFI(); err != nil {
+				if err := trace.DoFI(t.GetFI_Name()); err != nil {
 					return err
 				}
 
 				if t.GetMessageType() == MessageType_Message_Request {
-					log.Logf("[RELOAD] Unmarshal receive request")
-					Store.SetByThreadID(id, trace)
+					log.Logf("[RELOAD] Unmarshal, receive request")
+					if len(trace.Records) != 1 {
+						log.Logf("[RELOAD] Unmarshal, receive invalid trace: %s", trace.JSONString())
+					} else if uuid := trace.Records[0].Uuid; uuid == "" {
+						log.Logf("[RELOAD] Unmarshal, receive invalid uuid: %s", uuid)
+					} else {
+						meta.traceID = trace.Id
+						meta.uuid = uuid
+
+						trace.Records[0] = &Record{
+							Type:        RecordType_RecordReceive,
+							Timestamp:   time.Now().UnixNano(),
+							MessageName: t.GetFI_Name(),
+							Uuid:        uuid,
+						}
+						Store.SetByContextMeta(meta, trace)
+					}
 				} else if t.GetMessageType() == MessageType_Message_Response {
-					log.Logf("[RELOAD] Unmarshal receive response")
-					Store.UpdateFunctionByThreadID(id, func(oldTrace *Trace) {
-						oldTrace.Records = append(oldTrace.Records, trace.Records...)
-					})
+					log.Logf("[RELOAD] Unmarshal, receive response")
+					if len(trace.Records) == 0 {
+						log.Logf("[RELOAD] Unmarshal, receive empty trace")
+					} else if uuid := trace.Records[0].Uuid; uuid == "" {
+						log.Logf("[RELOAD] Unmarshal, receive invalid uuid: %s", uuid)
+					} else {
+						Store.UpdateFunctionByContextMeta(meta, func(oldTrace *Trace) {
+							length := len(trace.Records) + 1
+							oldTrace.Records = append(oldTrace.Records, trace.Records...)
+							oldTrace.Records = append(oldTrace.Records, &Record{
+								Type:        RecordType_RecordReceive,
+								Timestamp:   time.Now().UnixNano(),
+								MessageName: t.GetFI_Name(),
+								Uuid:        uuid,
+							})
+							oldTrace.CalFI(oldTrace.Records[len(oldTrace.Records)-length:])
+						})
+					}
 				}
 			} else {
-				log.Logf("[RELOAD] Unmarshal, no tracing data")
+				log.Logf("[RELOAD] Unmarshal, no trace")
 			}
 		} else {
-			log.Logf("[RELOAD] Unmarshal, no ThreadIDKey")
+			log.Logf("[RELOAD] Unmarshal, no ContextMetaKey")
 		}
 	}
 

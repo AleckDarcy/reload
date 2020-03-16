@@ -1,7 +1,6 @@
 package html
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
 	"time"
@@ -17,18 +16,25 @@ func Init(r *http.Request) *http.Request {
 		trace := &tracer.Trace{}
 
 		if err := json.Unmarshal([]byte(traceStr), trace); err != nil {
-			log.Logf("[RELOAD] Unmarshal trace err: %s", err)
+			log.Logf("[RELOAD] Init, unmarshal trace err: %s", err)
 		} else {
-			id := tracer.NewThreadID()
-			log.Logf("[RELOAD] Init, thread id: %d", id)
-			r = r.WithContext(context.WithValue(r.Context(), tracer.ThreadIDKey{}, id))
-			trace.Records = append(trace.Records, &tracer.Record{
-				Type:        tracer.RecordType_RecordReceive,
-				Timestamp:   time.Now().UnixNano(),
-				MessageName: r.URL.Path,
-			})
+			if len(trace.Records) != 1 {
+				log.Logf("[RELOAD] Init, receive invalid trace: %v", trace.JSONString())
+			} else {
+				uuid := trace.Records[0].Uuid
+				log.Logf("[RELOAD] Init, uuid: %s", uuid)
 
-			tracer.Store.SetByThreadID(id, trace)
+				meta := tracer.NewContextMeta(trace.Id, uuid)
+				r = r.WithContext(tracer.NewContextWithContextMeta(r.Context(), meta))
+
+				trace.Records[0] = &tracer.Record{
+					Type:        tracer.RecordType_RecordReceive,
+					Timestamp:   time.Now().UnixNano(),
+					MessageName: r.URL.Path,
+					Uuid:        uuid,
+				}
+				tracer.Store.SetByContextMeta(meta, trace)
+			}
 		}
 	}
 

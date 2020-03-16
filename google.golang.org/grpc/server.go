@@ -989,9 +989,9 @@ func (s *Server) processUnaryRPC(t transport.ServerTransport, stream *transport.
 	}
 
 	ctx := NewContextWithServerTransportStream(stream.Context(), stream)
-	// add threadID
-	ctx = tracer.NewContextWithThreadID(ctx)
-	//log.Logf("new thread id: %v", ctx.Value(tracer.ThreadIDKey{}))
+	// add tracer.Context
+	ctx = tracer.NewContext(ctx)
+	//log.Logf("new thread: %+v", ctx.Value(tracer.ContextMetaKey{}))
 
 	df := func(v interface{}) error {
 		if inPayload != nil {
