@@ -159,11 +159,14 @@ exports.load = function load(filename, format, options) {
 exports.loadPackageDefinition = function loadPackageDefintion(packageDef) {
   const result = {};
   for (const serviceFqn in packageDef) {
+    console.log("[RELOAD] load service:", serviceFqn)
     const service = packageDef[serviceFqn];
     const nameComponents = serviceFqn.split('.');
     const serviceName = nameComponents[nameComponents.length-1];
+    console.log("[RELOAD] load service:", serviceName)
     let current = result;
     for (const packageName of nameComponents.slice(0, -1)) {
+      console.log("[RELOAD] component:", packageName)
       if (!current[packageName]) {
         current[packageName] = {};
       }

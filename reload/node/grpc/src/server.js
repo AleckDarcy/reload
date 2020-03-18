@@ -582,10 +582,19 @@ function handleUnary(call, handler, metadata) {
     try {
       emitter.request = handler.deserialize(result.read);
       if (emitter.request.hasOwnProperty("FI_Trace")) {
-        console.log("wawawawawawa!", result.read)
-        console.log("wawawawawawa!", emitter.request.fields)
-      } else {
-        console.log("nananananana!")
+        console.log("wawawawawawa!", emitter.request)
+        console.log("wawawawawawa!", emitter.request.FI_Trace)
+
+        let trace = emitter.request.FI_Trace
+        if (trace != null) {
+          if (trace.length == 1) { // request
+
+          } else { // response
+            // todo
+          }
+        } else {
+          console.log("[RELOAD] Unmarshal, no trace")
+        }
       }
     } catch (e) {
       e.code = constants.status.INTERNAL;
@@ -602,6 +611,7 @@ function handleUnary(call, handler, metadata) {
         }
         handleError(call, err);
       } else {
+
         sendUnaryResponse(call, value, handler.serialize, trailer, flags);
       }
     });
