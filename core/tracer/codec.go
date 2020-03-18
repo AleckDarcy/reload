@@ -28,7 +28,7 @@ func (c *codec) Marshal(v interface{}) ([]byte, error) {
 			meta := metaVal.(*ContextMeta)
 
 			if Store.CheckByContextMeta(meta) {
-				log.Logf("[RELOAD] Marshal, CheckByContextMeta ok")
+				log.Logf("[RELOAD] Marshal, %s, CheckByContextMeta ok", t.GetFI_Name())
 
 				var uuid string
 				if t.GetMessageType() == MessageType_Message_Request {
@@ -69,7 +69,7 @@ func (c *codec) Marshal(v interface{}) ([]byte, error) {
 				log.Logf("[RELOAD] Marshal, CheckByContextMeta fail")
 			}
 		} else {
-			log.Logf("[RELOAD] Marshal, no ContextMetaKey")
+			log.Logf("[RELOAD] Marshal, %s, no ContextMetaKey", t.GetFI_Name())
 		}
 	}
 
@@ -92,7 +92,7 @@ func (c *codec) Unmarshal(data []byte, v interface{}) error {
 				}
 
 				if t.GetMessageType() == MessageType_Message_Request {
-					log.Logf("[RELOAD] Unmarshal, receive request")
+					log.Logf("[RELOAD] Unmarshal, receive request %s", t.GetFI_Name())
 					if len(trace.Records) != 1 {
 						log.Logf("[RELOAD] Unmarshal, receive invalid trace: %s", trace.JSONString())
 					} else if uuid := trace.Records[0].Uuid; uuid == "" {
@@ -110,7 +110,7 @@ func (c *codec) Unmarshal(data []byte, v interface{}) error {
 						Store.SetByContextMeta(meta, trace)
 					}
 				} else if t.GetMessageType() == MessageType_Message_Response {
-					log.Logf("[RELOAD] Unmarshal, receive response")
+					log.Logf("[RELOAD] Unmarshal, receive response %s", t.GetFI_Name())
 					if len(trace.Records) == 0 {
 						log.Logf("[RELOAD] Unmarshal, receive empty trace")
 					} else if uuid := trace.Records[0].Uuid; uuid == "" {
@@ -130,7 +130,7 @@ func (c *codec) Unmarshal(data []byte, v interface{}) error {
 					}
 				}
 			} else {
-				log.Logf("[RELOAD] Unmarshal, no trace")
+				log.Logf("[RELOAD] Unmarshal, %s, no trace", t.GetFI_Name())
 			}
 		} else {
 			log.Logf("[RELOAD] Unmarshal, no ContextMetaKey")

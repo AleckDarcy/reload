@@ -44,6 +44,23 @@ func TestHipsterShop(t *testing.T) {
 				URL:         "http://localhost/product/L9ECAV7KIM",
 				MessageName: "product",
 			},
+			{
+				Method: data.HTTPPost,
+				URL:    "http://localhost/cart/checkout",
+				UrlValues: url.Values{
+					"email":                        {"someone@example.com"},
+					"street_address":               {"1600 Amphitheatre Parkway"},
+					"zip_code":                     {"94043"},
+					"city":                         {"Mountain View"},
+					"state":                        {"CA"},
+					"country":                      {"United States"},
+					"credit_card_number":           {"4432-8015-6152-0454"},
+					"credit_card_expiration_month": {"1"},
+					"credit_card_expiration_year":  {"2021"},
+					"credit_card_cvv":              {"672"},
+				},
+				MessageName: "checkout",
+			},
 		},
 	}
 

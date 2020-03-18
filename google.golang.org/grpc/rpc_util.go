@@ -31,6 +31,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/AleckDarcy/reload/core/log"
+
 	"github.com/AleckDarcy/reload/core/tracer"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc/codes"
@@ -714,7 +716,12 @@ func setCallInfoCodec(ctx context.Context, c *callInfo) error {
 	}
 
 	// c.contentSubtype is already lowercased in CallContentSubtype
-	c.codec = encoding.GetCodec(c.contentSubtype)
+	if c.contentSubtype == proto.Name {
+		log.Logf("[RELOAD] setCallInfoCodec, meta: %+v\n", ctx.Value(tracer.ContextMetaKey{}))
+		c.codec = tracer.NewCodec(ctx, encoding.GetCodec(proto.Name))
+	} else {
+		c.codec = encoding.GetCodec(c.contentSubtype)
+	}
 	if c.codec == nil {
 		return status.Errorf(codes.Internal, "no codec registered for content-subtype %s", c.contentSubtype)
 	}
