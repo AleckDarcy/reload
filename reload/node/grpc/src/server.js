@@ -574,23 +574,40 @@ function handleUnary(call, handler, metadata) {
   emitter.waitForCancel();
   var batch = {};
   batch[grpc.opType.RECV_MESSAGE] = true;
+
   call.startBatch(batch, function(err, result) {
     if (err) {
       handleError(call, err);
       return;
     }
+
+    let meta = {
+      hasTrace: false,
+      traceID: -1,
+      name: "",
+      uuid: "",
+    };
+
+    let trace = {};
+
     try {
       emitter.request = handler.deserialize(result.read);
       if (emitter.request.hasOwnProperty("FI_Trace")) {
-        console.log("wawawawawawa!", emitter.request)
-        console.log("wawawawawawa!", emitter.request.FI_Trace)
 
-        let trace = emitter.request.FI_Trace
+        trace = emitter.request.FI_Trace;
         if (trace != null) {
-          if (trace.length == 1) { // request
+          if (trace.records.length == 1) { // request
+            meta.hasTrace = true;
+            meta.traceID = trace.id;
+            meta.name = trace.records[0].message_name;
+            meta.uuid = trace.records[0].uuid;
+            trace.records[0].type = 2;
 
-          } else { // response
-            // todo
+            console.log("[RELOAD] Unmarshal, trace id:", meta.traceID)
+            console.log("[RELOAD] Unmarshal, name:", meta.name)
+            console.log("[RELOAD] Unmarshal, uuid:", meta.uuid)
+          } else {
+            // unreachable code
           }
         } else {
           console.log("[RELOAD] Unmarshal, no trace")
@@ -611,7 +628,14 @@ function handleUnary(call, handler, metadata) {
         }
         handleError(call, err);
       } else {
-
+        if (meta.hasTrace) {
+          trace.records[1] = {
+            type: 1,
+            timestamp: Date.now() * 1e6,
+            uuid: meta.uuid,
+          };
+          value.FI_Trace = trace;
+        }
         sendUnaryResponse(call, value, handler.serialize, trailer, flags);
       }
     });

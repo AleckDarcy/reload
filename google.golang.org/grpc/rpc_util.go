@@ -706,6 +706,7 @@ func setCallInfoCodec(ctx context.Context, c *callInfo) error {
 	}
 
 	if c.contentSubtype == "" || c.contentSubtype == proto.Name {
+		log.Logf("[RELOAD] setCallInfoCodec, meta: %+v\n", ctx.Value(tracer.ContextMetaKey{}))
 		// return proto from reload
 		c.codec = tracer.NewCodec(ctx, encoding.GetCodec(proto.Name))
 		return nil
@@ -715,13 +716,7 @@ func setCallInfoCodec(ctx context.Context, c *callInfo) error {
 		//return nil
 	}
 
-	// c.contentSubtype is already lowercased in CallContentSubtype
-	if c.contentSubtype == proto.Name {
-		log.Logf("[RELOAD] setCallInfoCodec, meta: %+v\n", ctx.Value(tracer.ContextMetaKey{}))
-		c.codec = tracer.NewCodec(ctx, encoding.GetCodec(proto.Name))
-	} else {
-		c.codec = encoding.GetCodec(c.contentSubtype)
-	}
+	c.codec = encoding.GetCodec(c.contentSubtype)
 	if c.codec == nil {
 		return status.Errorf(codes.Internal, "no codec registered for content-subtype %s", c.contentSubtype)
 	}

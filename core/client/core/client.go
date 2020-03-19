@@ -3,6 +3,7 @@ package core
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/cookiejar"
@@ -40,6 +41,7 @@ func responseHandler(req *data.Request, httpRsp *http.Response) (*data.Response,
 	if expect := req.Expect; expect == nil || expect.ContentType == html.ContentTypeJSON { // json
 		jsonData := map[string]json.RawMessage{}
 		if err = json.Unmarshal(body, &jsonData); err != nil {
+			fmt.Println(string(body))
 			return nil, err
 		}
 
