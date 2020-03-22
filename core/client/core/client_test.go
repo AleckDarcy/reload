@@ -5,6 +5,8 @@ import (
 	"net/url"
 	"testing"
 
+	"github.com/golang/protobuf/proto"
+
 	"github.com/AleckDarcy/reload/runtime/html"
 
 	"github.com/AleckDarcy/reload/core/tracer"
@@ -61,20 +63,20 @@ func TestHipsterShop(t *testing.T) {
 				MessageName: "cart",
 				Expect:      &data.ExpectedResponse{ContentType: html.ContentTypeHTML},
 			},
-			//{
-			//	Method: data.HTTPPost,
-			//	URL:    "http://localhost/cart",
-			//	UrlValues: url.Values{
-			//		"product_id": {"L9ECAV7KIM"},
-			//		"quantity":   {"1"},
-			//	},
-			//	MessageName: "cart",
-			//},
-			//{
-			//	Method:      data.HTTPGet,
-			//	URL:         "http://localhost/product/L9ECAV7KIM",
-			//	MessageName: "product",
-			//},
+			{
+				Method: data.HTTPPost,
+				URL:    "http://localhost/cart",
+				UrlValues: url.Values{
+					"product_id": {"L9ECAV7KIM"},
+					"quantity":   {"1"},
+				},
+				MessageName: "cart",
+			},
+			{
+				Method:      data.HTTPGet,
+				URL:         "http://localhost/product/L9ECAV7KIM",
+				MessageName: "product",
+			},
 			{
 				Method: data.HTTPPost,
 				URL:    "http://localhost/cart/checkout",
@@ -100,7 +102,8 @@ func TestHipsterShop(t *testing.T) {
 		t.Error(err)
 	}
 
-	t.Log(string(rsp.Body))
 	t.Log(len(rsp.Trace.Records))
-	t.Log(rsp.Trace)
+	t.Log(rsp.Trace.JSONString())
+	bytes, _ := proto.Marshal(rsp.Trace.Records[0])
+	t.Log(len(bytes))
 }

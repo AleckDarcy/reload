@@ -602,10 +602,6 @@ function handleUnary(call, handler, metadata) {
             meta.name = trace.records[0].message_name;
             meta.uuid = trace.records[0].uuid;
             trace.records[0].type = 2;
-
-            console.log("[RELOAD] Unmarshal, trace id:", meta.traceID)
-            console.log("[RELOAD] Unmarshal, name:", meta.name)
-            console.log("[RELOAD] Unmarshal, uuid:", meta.uuid)
           } else {
             // unreachable code
           }

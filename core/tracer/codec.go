@@ -127,6 +127,8 @@ func (c *codec) Unmarshal(data []byte, v interface{}) error {
 							})
 							oldTrace.CalFI(oldTrace.Records[len(oldTrace.Records)-length:])
 						})
+
+						t.SetFI_Trace(nil)
 					}
 				}
 			} else {
