@@ -1,0 +1,41 @@
+description = 'gRPC: Core'
+
+dependencies {
+    compile project(':grpc-context'),
+            libraries.gson,
+            libraries.guava,
+            libraries.errorprone,
+            libraries.jsr305
+    compile (libraries.opencensus_api) {
+        // prefer 3.0.0 from libraries instead of 3.0.1
+        exclude group: 'com.google.code.findbugs', module: 'jsr305'
+        // prefer 2.1.2 from libraries instead of 2.2.0
+        exclude group: 'com.google.errorprone', module: 'error_prone_annotations'
+        // we'll always be more up-to-date
+        exclude group: 'io.grpc', module: 'grpc-context'
+    }
+    compile (libraries.opencensus_contrib_grpc_metrics) {
+        // prefer 3.0.0 from libraries instead of 3.0.1
+        exclude group: 'com.google.code.findbugs', module: 'jsr305'
+        // we'll always be more up-to-date
+        exclude group: 'io.grpc', module: 'grpc-context'
+        // prefer 2.1.2 from libraries instead of 2.2.0
+        exclude group: 'com.google.errorprone', module: 'error_prone_annotations'
+    }
+
+    testCompile project(':grpc-context').sourceSets.test.output,
+                project(':grpc-testing')
+
+    signature "org.codehaus.mojo.signature:java16:1.1@signature"
+}
+
+javadoc {
+    // We want io.grpc.Internal, but not io.grpc.Internal*
+    exclude 'io/grpc/Internal?*.java'
+    exclude 'io/grpc/internal/**'
+}
+
+animalsniffer {
+    // Don't check sourceSets.jmh
+    sourceSets = [sourceSets.main, sourceSets.test]
+}
