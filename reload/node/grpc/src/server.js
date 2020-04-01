@@ -566,6 +566,7 @@ ServerDuplexStream.prototype.waitForCancel = waitForCancel;
  *     response data
  * @param {grpc.Metadata} metadata Metadata from the client
  */
+// RELOAD
 function handleUnary(call, handler, metadata) {
   var emitter = new ServerUnaryCall(call, metadata);
   emitter.on('error', function(error) {

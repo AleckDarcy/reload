@@ -34,9 +34,9 @@ func TestHome(t *testing.T) {
 		t.Error(err)
 	}
 
-	t.Log(string(rsp.Body))
-	t.Log(len(rsp.Trace.Records))
-	t.Log(rsp.Trace)
+	//t.Log(string(rsp.Body))
+	//t.Log(len(rsp.Trace.Records))
+	//t.Log(rsp.Trace)
 	bytes, _ := json.Marshal(rsp.Trace)
 	t.Log(string(bytes))
 }

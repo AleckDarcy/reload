@@ -16,11 +16,17 @@
 
 package io.grpc;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * A {@link ServerCall} which forwards all of it's methods to another {@link ServerCall}.
  */
 public abstract class ForwardingServerCall<ReqT, RespT>
     extends PartialForwardingServerCall<ReqT, RespT> {
+
+  private static final Logger log = Logger.getLogger(ForwardingServerCall.class.getName());
+
   /**
    * Returns the delegated {@code ServerCall}.
    */

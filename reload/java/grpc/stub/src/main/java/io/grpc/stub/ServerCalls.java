@@ -16,6 +16,9 @@
 
 package io.grpc.stub;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
@@ -32,6 +35,7 @@ import io.grpc.Status;
  * meant to be used by the generated code.
  */
 public final class ServerCalls {
+  private static final Logger logger = Logger.getLogger(ServerCalls.class.getName());
 
   @VisibleForTesting
   static final String TOO_MANY_REQUESTS = "Too many requests";
@@ -166,6 +170,29 @@ public final class ServerCalls {
               Status.INTERNAL.withDescription(MISSING_REQUEST),
               new Metadata());
           return;
+        }
+
+        if (request instanceof io.grpc.tracer.Tracer) {
+          long threadID = Thread.currentThread().getId();
+//          logger.log(Level.INFO, "[RELOAD] invoke, threadID: " + threadID);
+
+          io.grpc.tracer.Tracer tracer = (io.grpc.tracer.Tracer) request;
+          io.grpc.tracer.Message.Trace trace = tracer.GetFI_Trace();
+          if (trace != null) {
+            java.util.List<io.grpc.tracer.Message.Record> records = trace.getRecordsList();
+            if (records.size() == 1) {
+              trace = trace.copy();
+              trace.addRecord(new io.grpc.tracer.Message.Record(io.grpc.tracer.Message.RecordType.RecordReceive_VALUE, tracer.GetFI_Name(), records.get(0).getUuid()));
+              logger.log(Level.INFO, "[RELOAD] onHalfClose, set trace, thread: " + threadID + ", trace:" + trace.getId() + ", size: " + trace.getRecordsList().size());
+              io.grpc.tracer.Store.SetTrace(threadID, trace);
+            } else {
+              logger.log(Level.INFO, "[RELOAD] request is an invalid tracer:" + request.getClass() + ", records: " + records.size());
+            }
+          } else {
+//            logger.log(Level.INFO, "[RELOAD] request is an empty tracer:" + request.getClass() + ", name: " + tracer.GetFI_Name());
+          }
+        } else {
+//          logger.log(Level.INFO, "[RELOAD] request is not a tracer:" + request.getClass());
         }
 
         method.invoke(request, responseObserver);
@@ -331,6 +358,11 @@ public final class ServerCalls {
 
     @Override
     public void onNext(RespT response) {
+//      StackTraceElement[] st = Thread.currentThread().getStackTrace();
+//      for (int i = 0; i < st.length; i++) {
+//        logger.info("[RELOAD] onNext, stacktrace " + i+ ", " + st[i].toString());
+//      }
+
       if (cancelled) {
         throw Status.CANCELLED.withDescription("call already cancelled").asRuntimeException();
       }

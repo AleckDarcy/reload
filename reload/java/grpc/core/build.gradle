@@ -23,6 +23,8 @@ dependencies {
         exclude group: 'com.google.errorprone', module: 'error_prone_annotations'
     }
 
+    compile group: 'com.google.protobuf', name: 'protobuf-java', version: '3.5.1'
+
     testCompile project(':grpc-context').sourceSets.test.output,
                 project(':grpc-testing')
 
