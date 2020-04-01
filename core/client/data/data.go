@@ -1,7 +1,6 @@
 package data
 
 import (
-	"net/http"
 	"net/url"
 
 	"github.com/AleckDarcy/reload/core/tracer"
@@ -14,8 +13,6 @@ const (
 	HTTPGet
 	HTTPPost
 )
-
-type ResponseHandler func(req *Request, httpRsp *http.Response) (*Response, error)
 
 type Requests struct {
 	CookieUrl string
@@ -33,7 +30,20 @@ type Request struct {
 	MessageName string
 	Trace       *tracer.Trace
 
-	ResponseHandler ResponseHandler
+	Expect *ExpectedResponse
+}
+
+type ActionResponse int64
+
+const (
+	_ ActionResponse = iota
+	PrintResponse
+)
+
+type ExpectedResponse struct {
+	ContentType string
+
+	Action ActionResponse
 }
 
 type Response struct {

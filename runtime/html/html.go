@@ -7,3 +7,4 @@ var ContentType = "Content-Type"
 
 var ContentTypeMIMEPostForm = "application/x-www-form-urlencoded"
 var ContentTypeJSON = "application/json"
+var ContentTypeHTML = "text/html"

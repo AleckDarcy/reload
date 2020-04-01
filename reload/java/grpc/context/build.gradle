@@ -1,0 +1,6 @@
+description = 'gRPC: Context'
+
+dependencies {
+    testCompile libraries.jsr305
+    signature "org.codehaus.mojo.signature:java16:1.1@signature"
+}

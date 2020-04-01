@@ -99,22 +99,21 @@ func (m *Trace) JSONString() string {
 	if len(m.Records) != 0 {
 		for i, record := range m.Records {
 			if i == 0 {
-				strRecords = fmt.Sprintf(`
-		{"Type": "%v", "Timestamp"": "%s", "MessageName"": "%s"}`,
-					record.Type.String(), time.Unix(record.Timestamp/1e9, record.Timestamp%1e9), record.MessageName)
+				strRecords = fmt.Sprintf(`{"type": %d, "timestamp": %d, "messageName": "%s"}`,
+					record.Type, record.Timestamp, record.MessageName)
 			} else {
 				strRecords += fmt.Sprintf(`,
-		{"Type": "%v", "Timestamp"": "%s", "MessageName"": "%s"}`,
-					record.Type.String(), time.Unix(record.Timestamp/1e9, record.Timestamp%1e9), record.MessageName)
+		{"type": %d, "timestamp": %d, "messageName": "%s"}`,
+					record.Type, record.Timestamp, record.MessageName)
 			}
 		}
 	}
 
 	if m.Rlfi != nil {
 		strRlfi = fmt.Sprintf(`{
-		"Type": "%v",
-		"Name": "%s",
-		"Delay": %d
+		"type": "%v",
+		"name": "%s",
+		"delay": %d
 	}`,
 			m.Rlfi.Type, m.Rlfi.Name, m.Rlfi.Delay,
 		)
@@ -139,10 +138,10 @@ func (m *Trace) JSONString() string {
 		}
 
 		strTfi = fmt.Sprintf(`{
-		"Type": "%v",
-		"Name": "%s",
-		"Delay": %d,
-		"After": [
+		"type": "%v",
+		"name": "%s",
+		"delay": %d,
+		"after": [
 			%s
 		]
 	}`,
@@ -152,12 +151,12 @@ func (m *Trace) JSONString() string {
 
 	return fmt.Sprintf(`
 {
-	"ID": %d,
-	"Records": [
+	"id": %d,
+	"records": [
 		%s
 	],
-	"Rlfi": %s,
-	"Tfi": %s
+	"rlfi": %s,
+	"tfi": %s
 }
 `,
 		m.Id, strRecords, strRlfi, strTfi,

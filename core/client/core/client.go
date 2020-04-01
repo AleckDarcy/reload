@@ -3,6 +3,7 @@ package core
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/cookiejar"
@@ -37,28 +38,30 @@ func responseHandler(req *data.Request, httpRsp *http.Response) (*data.Response,
 	rsp := &data.Response{Body: body}
 
 	log.Logf("[RELOAD] Content-Type: %s", httpRsp.Header.Get(html.ContentType))
-	if httpRsp.Header.Get(html.ContentType) != html.ContentTypeJSON {
-		log.Logf("[RELOAD] Url: %v", req.URL)
-		log.Logf("[RELOAD] Body: %v", string(body))
-		return rsp, nil
-	}
-
-	jsonData := map[string]json.RawMessage{}
-	if err = json.Unmarshal(body, &jsonData); err != nil {
-		return nil, err
-	}
-
-	if traceJSON, ok := jsonData["fi_trace"]; ok {
-		rsp.Trace = &tracer.Trace{}
-		if err = json.Unmarshal(traceJSON, rsp.Trace); err != nil {
+	if expect := req.Expect; expect == nil || expect.ContentType == html.ContentTypeJSON { // json
+		jsonData := map[string]json.RawMessage{}
+		if err = json.Unmarshal(body, &jsonData); err != nil {
+			fmt.Println(string(body))
 			return nil, err
 		}
 
-		rsp.Trace.Records = append(rsp.Trace.Records, &tracer.Record{
-			Type:        tracer.RecordType_RecordReceive,
-			Timestamp:   time.Now().UnixNano(),
-			MessageName: req.MessageName,
-		})
+		if traceJSON, ok := jsonData["fi_trace"]; ok {
+			rsp.Trace = &tracer.Trace{}
+			if err = json.Unmarshal(traceJSON, rsp.Trace); err != nil {
+				return nil, err
+			}
+
+			rsp.Trace.Records = append(rsp.Trace.Records, &tracer.Record{
+				Type:        tracer.RecordType_RecordReceive,
+				Timestamp:   time.Now().UnixNano(),
+				MessageName: req.MessageName,
+			})
+		}
+	} else if expect.ContentType == html.ContentTypeHTML {
+		if expect.Action == data.PrintResponse {
+			log.Logf("[RELOAD] Url: %v", req.URL)
+			log.Logf("[RELOAD] Body: %v", string(body))
+		}
 	}
 
 	return rsp, nil
@@ -148,10 +151,6 @@ func (c *Client) sendRequest(req *data.Request) (*data.Response, error) {
 	httpRsp, err := c.Client.Do(httpReq)
 	if err != nil {
 		return nil, err
-	}
-
-	if req.ResponseHandler != nil {
-		return req.ResponseHandler(req, httpRsp)
 	}
 
 	return responseHandler(req, httpRsp)
