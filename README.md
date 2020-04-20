@@ -9,4 +9,6 @@ html/template<br>
 
 # Third Party Libraries
 
-go-grpc: 1.14.0<br>
+GRPC-Go: 1.14.0<br>
+GRPC-NodeJS: 1.12.4<br>
+GRPC-Java: 1.10.1<br>

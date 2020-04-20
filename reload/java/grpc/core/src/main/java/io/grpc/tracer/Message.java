@@ -1242,6 +1242,68 @@ public final class Message {
       records_ = java.util.Collections.emptyList();
     }
 
+    public final boolean DoFI(java.lang.String name) {
+      if (this.RLFI(name)) {
+        return true;
+      } else if (this.TFI(name)) {
+        return true;
+      }
+
+      return false;
+    }
+
+    public final boolean RLFI(java.lang.String name) {
+      RLFI rlfi = this.rlfi_;
+      if (rlfi != null) {
+        if (rlfi.type_ == FaultType.FaultCrash_VALUE) {
+          logger.log(Level.INFO, "[RELOAD] rlfi crash")
+          return true;
+        } else if (rlfi.type_ == FaultType.FaultDelay_VALUE) {
+          try {
+            logger.log(Level.INFO, "[RELOAD] rlfi delay")
+            java.lang.Thread.sleep(rlfi_.delay_);
+          } catch (java.lang.InterruptedException e) {
+
+          }
+        }
+      }
+
+      return false;
+    }
+
+    public final boolean TFI(java.lang.String name) {
+      TFI tfi = this.tfi_;
+      if (tfi != null) {
+        for (int i = 0; i < tfi.after_.length; i++) {
+          TFIMeta after = tfi.after_.get(i);
+          if (after.name_ == name) {
+            after.already_++;
+            if after.already_ <= after.times_ {
+              return false;
+            }
+          } else if (after.already_ < after.times_) {
+            return false;
+          }
+        }
+
+        if (tfi.name_ == name) {
+          if (tfi.type_ == FaultType.FaultCrash_VALUE) {
+            logger.log(Level.INFO, "[RELOAD] tfi crash")
+            return true;
+          } else if (tfi.type_ == FaultType.FaultDelay_VALUE) {
+            try {
+              logger.log(Level.INFO, "[RELOAD] tfi delay")
+              java.lang.Thread.sleep(tfi.delay_);
+            } catch (java.lang.InterruptedException e) {
+
+            }
+          }
+        }
+      }
+
+      return false;
+    }
+
     public final Trace copy() {
       Trace t = new Trace();
       t.id_ = this.id_;

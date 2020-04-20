@@ -172,6 +172,7 @@ public final class ServerCalls {
           return;
         }
 
+        boolean crashed = false;
         if (request instanceof io.grpc.tracer.Tracer) {
           long threadID = Thread.currentThread().getId();
 //          logger.log(Level.INFO, "[RELOAD] invoke, threadID: " + threadID);
@@ -181,6 +182,8 @@ public final class ServerCalls {
           if (trace != null) {
             java.util.List<io.grpc.tracer.Message.Record> records = trace.getRecordsList();
             if (records.size() == 1) {
+              crashed = trace.DoFI(tracer.GetFI_Name());
+
               trace = trace.copy();
               trace.addRecord(new io.grpc.tracer.Message.Record(io.grpc.tracer.Message.RecordType.RecordReceive_VALUE, tracer.GetFI_Name(), records.get(0).getUuid()));
               logger.log(Level.INFO, "[RELOAD] onHalfClose, set trace, thread: " + threadID + ", trace:" + trace.getId() + ", size: " + trace.getRecordsList().size());
@@ -193,6 +196,12 @@ public final class ServerCalls {
           }
         } else {
 //          logger.log(Level.INFO, "[RELOAD] request is not a tracer:" + request.getClass());
+        }
+
+        if crashed {
+          logger.log(Level.INFO, "[RELOAD] service crashed");
+
+          return;
         }
 
         method.invoke(request, responseObserver);
