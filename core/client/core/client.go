@@ -57,6 +57,7 @@ func responseHandler(req *data.Request, httpRsp *http.Response) (*data.Response,
 				MessageName: req.MessageName,
 			})
 		}
+
 	} else if expect.ContentType == html.ContentTypeHTML {
 		if expect.Action == data.PrintResponse {
 			log.Logf("[RELOAD] Url: %v", req.URL)

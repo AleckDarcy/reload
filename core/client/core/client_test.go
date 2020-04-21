@@ -41,6 +41,83 @@ func TestHome(t *testing.T) {
 	t.Log(string(bytes))
 }
 
+func TestHome_RLFI_Java_AdRequest(t *testing.T) {
+	client := NewClient()
+
+	reqs := &data.Requests{
+		CookieUrl: "localhost",
+		Trace: &tracer.Trace{
+			Id: 1,
+			Rlfi: &tracer.RLFI{
+				Type: tracer.FaultType_FaultCrash,
+				Name: "AdRequest",
+			},
+		},
+		Requests: []data.Request{
+			{
+				Method:      data.HTTPGet,
+				URL:         "http://localhost",
+				MessageName: "home",
+				Expect: &data.ExpectedResponse{
+					ContentType: html.ContentTypeHTML,
+					Action:      data.PrintResponse,
+				},
+			},
+		},
+	}
+
+	rsp, err := client.SendRequests(reqs)
+	if err != nil {
+		t.Error(err)
+	}
+
+	//t.Log(string(rsp.Body))
+	//t.Log(len(rsp.Trace.Records))
+	//t.Log(rsp.Trace)
+	bytes, _ := json.Marshal(rsp.Trace)
+	t.Log(string(bytes))
+}
+
+func TestHome_TFI_Java_AdRequest(t *testing.T) {
+	client := NewClient()
+
+	reqs := &data.Requests{
+		CookieUrl: "localhost",
+		Trace: &tracer.Trace{
+			Id: 1,
+			Tfi: &tracer.TFI{
+				Type: tracer.FaultType_FaultCrash,
+				Name: "AdRequest",
+				After: []*tracer.TFIMeta{
+					{Name: "GetSupportedCurrenciesRequest", Times: 1},
+				},
+			},
+		},
+		Requests: []data.Request{
+			{
+				Method:      data.HTTPGet,
+				URL:         "http://localhost",
+				MessageName: "home",
+				Expect: &data.ExpectedResponse{
+					ContentType: html.ContentTypeHTML,
+					Action:      data.PrintResponse,
+				},
+			},
+		},
+	}
+
+	rsp, err := client.SendRequests(reqs)
+	if err != nil {
+		t.Error(err)
+	}
+
+	//t.Log(string(rsp.Body))
+	//t.Log(len(rsp.Trace.Records))
+	//t.Log(rsp.Trace)
+	bytes, _ := json.Marshal(rsp.Trace)
+	t.Log(string(bytes))
+}
+
 func TestHipsterShop(t *testing.T) {
 	client := NewClient()
 

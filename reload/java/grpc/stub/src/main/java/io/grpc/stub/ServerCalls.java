@@ -182,11 +182,13 @@ public final class ServerCalls {
           if (trace != null) {
             java.util.List<io.grpc.tracer.Message.Record> records = trace.getRecordsList();
             if (records.size() == 1) {
+              logger.log(Level.INFO, "[RELOAD] onHalfClose, trace: " + trace + ", name: " + tracer.GetFI_Name());
               crashed = trace.DoFI(tracer.GetFI_Name());
+              logger.log(Level.INFO, "[RELOAD] onHalfClose, crashed: " + crashed);
 
               trace = trace.copy();
               trace.addRecord(new io.grpc.tracer.Message.Record(io.grpc.tracer.Message.RecordType.RecordReceive_VALUE, tracer.GetFI_Name(), records.get(0).getUuid()));
-              logger.log(Level.INFO, "[RELOAD] onHalfClose, set trace, thread: " + threadID + ", trace:" + trace.getId() + ", size: " + trace.getRecordsList().size());
+              logger.log(Level.INFO, "[RELOAD] onHalfClose, set trace, thread: " + threadID + ", trace:" + trace.getId() + ", size: " + records.size());
               io.grpc.tracer.Store.SetTrace(threadID, trace);
             } else {
               logger.log(Level.INFO, "[RELOAD] request is an invalid tracer:" + request.getClass() + ", records: " + records.size());
@@ -198,7 +200,7 @@ public final class ServerCalls {
 //          logger.log(Level.INFO, "[RELOAD] request is not a tracer:" + request.getClass());
         }
 
-        if crashed {
+        if (crashed) {
           logger.log(Level.INFO, "[RELOAD] service crashed");
 
           return;
