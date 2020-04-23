@@ -6,6 +6,8 @@ import (
 	"github.com/hashicorp/go-uuid"
 )
 
+var ServiceUUID = NewUUID()
+
 type TraceID = int64
 type UUID = string
 

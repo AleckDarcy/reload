@@ -187,7 +187,12 @@ public final class ServerCalls {
               logger.log(Level.INFO, "[RELOAD] onHalfClose, crashed: " + crashed);
 
               trace = trace.copy();
-              trace.addRecord(new io.grpc.tracer.Message.Record(io.grpc.tracer.Message.RecordType.RecordReceive_VALUE, tracer.GetFI_Name(), records.get(0).getUuid()));
+              trace.addRecord(
+                new io.grpc.tracer.Message.Record(
+                  io.grpc.tracer.Message.RecordType.RecordReceive_VALUE,
+                  tracer.GetFI_Name(),
+                  records.get(0).getUuid(),
+                  io.grpc.tracer.Store.uuid));
               logger.log(Level.INFO, "[RELOAD] onHalfClose, set trace, thread: " + threadID + ", trace:" + trace.getId() + ", size: " + records.size());
               io.grpc.tracer.Store.SetTrace(threadID, trace);
             } else {

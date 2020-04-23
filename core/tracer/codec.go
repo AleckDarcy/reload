@@ -42,6 +42,7 @@ func (c *codec) Marshal(v interface{}) ([]byte, error) {
 					Timestamp:   time.Now().UnixNano(),
 					MessageName: t.GetFI_Name(),
 					Uuid:        uuid,
+					Service:     ServiceUUID,
 				}
 
 				updateFunction := func(trace *Trace) {
@@ -106,6 +107,7 @@ func (c *codec) Unmarshal(data []byte, v interface{}) error {
 							Timestamp:   time.Now().UnixNano(),
 							MessageName: t.GetFI_Name(),
 							Uuid:        uuid,
+							Service:     ServiceUUID,
 						}
 						Store.SetByContextMeta(meta, trace)
 					}

@@ -5,8 +5,11 @@ import java.lang.String;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class Store {
+    public static String uuid = UUID.randomUUID().toString();
+
     private static ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     private static Map<Long, Message.Trace> traces = new HashMap<Long, Message.Trace>();
 

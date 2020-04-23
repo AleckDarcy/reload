@@ -19,6 +19,7 @@ message Record {
     int64 timestamp = 2;
     string message_name = 3;
     string uuid = 4;
+    string service = 5;
 }
 
 message Trace {
