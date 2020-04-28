@@ -186,15 +186,15 @@ public final class ServerCalls {
               crashed = trace.DoFI(tracer.GetFI_Name());
               logger.log(Level.INFO, "[RELOAD] onHalfClose, crashed: " + crashed);
 
-              trace = trace.copy();
-              trace.addRecord(
+              io.grpc.tracer.Message.Trace trace1 = trace.copy();
+              trace1.replaceRecord(0,
                 new io.grpc.tracer.Message.Record(
                   io.grpc.tracer.Message.RecordType.RecordReceive_VALUE,
                   tracer.GetFI_Name(),
                   records.get(0).getUuid(),
                   io.grpc.tracer.Store.uuid));
-              logger.log(Level.INFO, "[RELOAD] onHalfClose, set trace, thread: " + threadID + ", trace:" + trace.getId() + ", size: " + records.size());
-              io.grpc.tracer.Store.SetTrace(threadID, trace);
+              logger.log(Level.INFO, "[RELOAD] onHalfClose, set trace, thread: " + threadID + ", trace:" + trace1);
+              io.grpc.tracer.Store.SetTrace(threadID, trace1);
             } else {
               logger.log(Level.INFO, "[RELOAD] request is an invalid tracer:" + request.getClass() + ", records: " + records.size());
             }

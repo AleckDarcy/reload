@@ -126,6 +126,7 @@ func (c *codec) Unmarshal(data []byte, v interface{}) error {
 								Timestamp:   time.Now().UnixNano(),
 								MessageName: t.GetFI_Name(),
 								Uuid:        uuid,
+								Service:     ServiceUUID,
 							})
 							oldTrace.CalFI(oldTrace.Records[len(oldTrace.Records)-length:])
 						})

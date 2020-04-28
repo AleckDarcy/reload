@@ -30,6 +30,9 @@ var constants = require('./constants');
 
 var stream = require('stream');
 
+var uuid = require('uuid');
+var serviceUUID = uuid.v4();
+
 var Readable = stream.Readable;
 var Writable = stream.Writable;
 var Duplex = stream.Duplex;
@@ -602,7 +605,9 @@ function handleUnary(call, handler, metadata) {
             meta.traceID = trace.id;
             meta.name = trace.records[0].message_name;
             meta.uuid = trace.records[0].uuid;
+
             trace.records[0].type = 2;
+            trace.records[0].service = serviceUUID;
 
             let rlfi = trace.Rlfi
             let tfi = trace.Tfi
@@ -675,6 +680,7 @@ function handleUnary(call, handler, metadata) {
             type: 1,
             timestamp: Date.now() * 1e6,
             uuid: meta.uuid,
+            service: serviceUUID,
           };
           value.FI_Trace = trace;
         }

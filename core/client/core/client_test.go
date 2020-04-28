@@ -5,8 +5,6 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/golang/protobuf/proto"
-
 	"github.com/AleckDarcy/reload/runtime/html"
 
 	"github.com/AleckDarcy/reload/core/tracer"
@@ -20,6 +18,41 @@ func TestHome(t *testing.T) {
 	reqs := &data.Requests{
 		CookieUrl: "localhost",
 		Trace:     &tracer.Trace{Id: 1},
+		Requests: []data.Request{
+			{
+				Method:      data.HTTPGet,
+				URL:         "http://localhost",
+				MessageName: "home",
+			},
+		},
+	}
+
+	rsp, err := client.SendRequests(reqs)
+	if err != nil {
+		t.Error(err)
+	}
+
+	//t.Log(string(rsp.Body))
+	//t.Log(len(rsp.Trace.Records))
+	//t.Log(rsp.Trace)
+	bytes, _ := json.Marshal(rsp.Trace)
+	t.Log(string(bytes))
+}
+
+func TestHomeCrashCurrency1(t *testing.T) {
+	client := NewClient()
+
+	reqs := &data.Requests{
+		CookieUrl: "localhost",
+		Trace: &tracer.Trace{
+			Id: 1,
+			Tfi: &tracer.TFI{
+				Type:  0,
+				Name:  "",
+				Delay: 0,
+				After: nil,
+			},
+		},
 		Requests: []data.Request{
 			{
 				Method:      data.HTTPGet,
@@ -123,7 +156,7 @@ func TestHipsterShop(t *testing.T) {
 
 	reqs := &data.Requests{
 		CookieUrl: "localhost",
-		Trace:     &tracer.Trace{Id: 1},
+		Trace:     &tracer.Trace{Id: 2},
 		Requests: []data.Request{
 			{
 				Method:      data.HTTPGet,
@@ -154,6 +187,35 @@ func TestHipsterShop(t *testing.T) {
 				URL:         "http://localhost/product/L9ECAV7KIM",
 				MessageName: "product",
 			},
+			//{
+			//	Method: data.HTTPPost,
+			//	URL:    "http://localhost/cart/checkout",
+			//	UrlValues: url.Values{
+			//		"email":                        {"someone@example.com"},
+			//		"street_address":               {"1600 Amphitheatre Parkway"},
+			//		"zip_code":                     {"94043"},
+			//		"city":                         {"Mountain View"},
+			//		"state":                        {"CA"},
+			//		"country":                      {"United States"},
+			//		"credit_card_number":           {"4432-8015-6152-0454"},
+			//		"credit_card_expiration_month": {"1"},
+			//		"credit_card_expiration_year":  {"2021"},
+			//		"credit_card_cvv":              {"672"},
+			//	},
+			//	MessageName: "checkout",
+			//},
+		},
+	}
+
+	rsp, err := client.SendRequests(reqs)
+	if err != nil {
+		t.Error(err)
+	}
+
+	reqs = &data.Requests{
+		CookieUrl: "localhost",
+		Trace:     &tracer.Trace{Id: 3},
+		Requests: []data.Request{
 			{
 				Method: data.HTTPPost,
 				URL:    "http://localhost/cart/checkout",
@@ -174,13 +236,13 @@ func TestHipsterShop(t *testing.T) {
 		},
 	}
 
-	rsp, err := client.SendRequests(reqs)
+	rsp, err = client.SendRequests(reqs)
 	if err != nil {
 		t.Error(err)
 	}
 
 	t.Log(len(rsp.Trace.Records))
 	t.Log(rsp.Trace.JSONString())
-	bytes, _ := proto.Marshal(rsp.Trace.Records[0])
-	t.Log(len(bytes))
+	bytes, _ := json.Marshal(rsp.Trace)
+	t.Log(string(bytes))
 }

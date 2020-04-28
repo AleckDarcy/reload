@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"io"
 	"net/http"
+	"time"
 
 	"github.com/AleckDarcy/reload/runtime/html"
 
@@ -40,6 +41,14 @@ func (t *Template) ExecuteTemplateReload(ctx context.Context, w http.ResponseWri
 		log.Logf("[RELOAD] ExecuteTemplateReload, meta: %+v", meta)
 		if trace, ok := tracer.Store.GetByContextMeta(meta); ok {
 			log.Logf("[RELOAD] ExecuteTemplateReload, trace found")
+
+			trace.Records = append(trace.Records, &tracer.Record{
+				Type:        tracer.RecordType_RecordSend,
+				Timestamp:   time.Now().UnixNano(),
+				MessageName: meta.Url(),
+				Uuid:        meta.UUID(),
+				Service:     tracer.ServiceUUID,
+			})
 			data["fi_trace"] = trace
 
 			// delete trace from tracer.Store

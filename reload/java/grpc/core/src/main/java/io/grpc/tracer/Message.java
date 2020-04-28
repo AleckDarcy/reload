@@ -1472,13 +1472,22 @@ public final class Message {
       return t;
     }
 
+    public final void replaceRecord(int i, Record record) {
+      this.records_.set(i, record);
+    }
+
     public final void addRecord(Record record) {
+      logger.log(Level.INFO, "[RELOAD] addRecord, size: " + this.records_.size());
       java.util.ArrayList<Record> records = new java.util.ArrayList<Record>();
       for (int i = 0; i < this.records_.size(); i++) {
+        logger.log(Level.INFO, "[RELOAD] addRecord, i: " + i);
         records.add(this.records_.get(i));
       }
 
+      records.add(record);
+
       this.records_ = records;
+      logger.log(Level.INFO, "[RELOAD] addRecord, size: " + this.records_.size());
     }
 
     @java.lang.Override
@@ -5039,17 +5048,17 @@ public final class Message {
   static {
     java.lang.String[] descriptorData = {
       "\n\rmessage.proto\022\006tracer\"r\n\006Record\022 \n\004typ" +
-      "e\030\001 \001(\0162\022.RecordType\022\021\n\ttimestamp" +
+      "e\030\001 \001(\0162\022.tracer.RecordType\022\021\n\ttimestamp" +
       "\030\002 \001(\003\022\024\n\014message_name\030\003 \001(\t\022\014\n\004uuid\030\004 \001" +
       "(\t\022\017\n\007service\030\005 \001(\t\"j\n\005Trace\022\n\n\002id\030\001 \001(\003" +
-      "\022\037\n\007records\030\002 \003(\0132\016.Record\022\032\n\004rlf" +
-      "i\030\024 \001(\0132\014.RLFI\022\030\n\003tfi\030\025 \001(\0132\013.tra" +
-      "cer.TFI\"D\n\004RLFI\022\037\n\004type\030\001 \001(\0162\021.F" +
+      "\022\037\n\007records\030\002 \003(\0132\016.tracer.Record\022\032\n\004rlf" +
+      "i\030\024 \001(\0132\014.tracer.RLFI\022\030\n\003tfi\030\025 \001(\0132\013.tra" +
+      "cer.TFI\"D\n\004RLFI\022\037\n\004type\030\001 \001(\0162\021.tracer.F" +
       "aultType\022\014\n\004name\030\002 \001(\t\022\r\n\005delay\030\003 \001(\003\"7\n" +
       "\007TFIMeta\022\014\n\004name\030\001 \001(\t\022\r\n\005times\030\002 \001(\003\022\017\n" +
       "\007already\030\003 \001(\003\"c\n\003TFI\022\037\n\004type\030\001 \001(\0162\021.tr" +
       "acer.FaultType\022\014\n\004name\030\002 \001(\t\022\r\n\005delay\030\003 " +
-      "\001(\003\022\036\n\005after\030\004 \003(\0132\017.TFIMeta*F\n\013M" +
+      "\001(\003\022\036\n\005after\030\004 \003(\0132\017.tracer.TFIMeta*F\n\013M" +
       "essageType\022\014\n\010Message_\020\000\022\023\n\017Message_Requ" +
       "est\020\001\022\024\n\020Message_Response\020\002*<\n\nRecordTyp" +
       "e\022\013\n\007Record_\020\000\022\016\n\nRecordSend\020\001\022\021\n\rRecord" +
