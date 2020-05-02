@@ -515,7 +515,11 @@ func encode(c baseCodec, msg interface{}) ([]byte, error) {
 	}
 	b, err := c.Marshal(msg)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "grpc: error while marshaling: %v", err.Error())
+		if err.Error() == "transport is closing" {
+			return nil, status.Errorf(codes.Unavailable, "%v", err.Error())
+		} else {
+			return nil, status.Errorf(codes.Internal, "grpc: error while marshaling: %v", err.Error())
+		}
 	}
 	if uint(len(b)) > math.MaxUint32 {
 		return nil, status.Errorf(codes.ResourceExhausted, "grpc: message too large (%d bytes)", len(b))

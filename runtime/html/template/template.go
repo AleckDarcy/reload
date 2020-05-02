@@ -57,6 +57,14 @@ func (t *Template) ExecuteTemplateReload(ctx context.Context, w http.ResponseWri
 			// Content-Type: application/json instead of text/html
 			w.Header().Set(html.ContentType, html.ContentTypeJSON)
 
+			if err, ok := data["error"]; ok {
+				if errStr, ok := err.(string); ok {
+					if errStr != "" {
+						return t.base.ExecuteTemplate(w, name, data)
+					}
+				}
+			}
+
 			return json.NewEncoder(w).Encode(data)
 		}
 	}
