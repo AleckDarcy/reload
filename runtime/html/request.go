@@ -24,7 +24,7 @@ func Init(r *http.Request) *http.Request {
 				uuid := trace.Records[0].Uuid
 				log.Logf("[RELOAD] Init, uuid: %s", uuid)
 
-				meta := tracer.NewContextMeta(trace.Id, uuid)
+				meta := tracer.NewContextMeta(trace.Id, uuid, r.URL.Path)
 				r = r.WithContext(tracer.NewContextWithContextMeta(r.Context(), meta))
 
 				trace.Records[0] = &tracer.Record{
@@ -32,6 +32,7 @@ func Init(r *http.Request) *http.Request {
 					Timestamp:   time.Now().UnixNano(),
 					MessageName: r.URL.Path,
 					Uuid:        uuid,
+					Service:     tracer.ServiceUUID,
 				}
 				tracer.Store.SetByContextMeta(meta, trace)
 			}

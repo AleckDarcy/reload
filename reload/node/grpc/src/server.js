@@ -30,6 +30,9 @@ var constants = require('./constants');
 
 var stream = require('stream');
 
+var uuid = require('uuid');
+var serviceUUID = uuid.v4();
+
 var Readable = stream.Readable;
 var Writable = stream.Writable;
 var Duplex = stream.Duplex;
@@ -591,10 +594,10 @@ function handleUnary(call, handler, metadata) {
 
     let trace = {};
 
+    let crashed = false;
     try {
       emitter.request = handler.deserialize(result.read);
       if (emitter.request.hasOwnProperty("FI_Trace")) {
-
         trace = emitter.request.FI_Trace;
         if (trace != null) {
           if (trace.records.length == 1) { // request
@@ -602,7 +605,50 @@ function handleUnary(call, handler, metadata) {
             meta.traceID = trace.id;
             meta.name = trace.records[0].message_name;
             meta.uuid = trace.records[0].uuid;
+
             trace.records[0].type = 2;
+            trace.records[0].service = serviceUUID;
+
+            let rlfi = trace.Rlfi
+            let tfi = trace.Tfi
+            if (rlfi != null) {
+              if (rlfi.Name == meta.name) {
+                if (rlfi.type == 1) { // crash
+                  console.log("[RELOAD] error FI: RLFI crash triggered");
+                  crashed = true;
+                } else if (rlfi.type == 2) { // delay
+                  console.log("[RELOAD] error FI: RLFI delay triggered");
+                  var sleep = require('sleep');
+                  sleep.msleep(rlfi.Delay);
+                }
+              }
+            } else if (tfi != null && tfi.Name == meta.name) {
+              let trigger = true;
+              for (let i = 0; i < tfi.After.length; i++) {
+                let after = tfi.After[i];
+                if (after.Name == meta.name) {
+                  after.Already++;
+                  if (after.Already <= after.Times) {
+                    trigger = false;
+                    break
+                  }
+                } else if (after.Already < after.Times) {
+                  trigger = false
+                  break
+                }
+              }
+
+              if (trigger) {
+                if (tfi.type == 1) { // crash
+                  console.log("[RELOAD] error FI: TFI crash triggered");
+                  crashed = true;
+                } else if (tfi.type == 2) { // delay
+                  console.log("[RELOAD] error FI: TFI delay triggered");
+                  var sleep = require('sleep');
+                  sleep.msleep(tfi.Delay);
+                }
+              }
+            }
           } else {
             // unreachable code
           }
@@ -613,6 +659,10 @@ function handleUnary(call, handler, metadata) {
     } catch (e) {
       e.code = constants.status.INTERNAL;
       handleError(call, e);
+      return;
+    }
+
+    if (crashed) {
       return;
     }
     if (emitter.cancelled) {
@@ -630,6 +680,7 @@ function handleUnary(call, handler, metadata) {
             type: 1,
             timestamp: Date.now() * 1e6,
             uuid: meta.uuid,
+            service: serviceUUID,
           };
           value.FI_Trace = trace;
         }

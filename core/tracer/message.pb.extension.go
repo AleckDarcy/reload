@@ -59,19 +59,18 @@ func (m *Trace) RLFI(name string) error {
 
 func (m *Trace) TFI(name string) error {
 	if tfi := m.Tfi; tfi != nil {
-		trigger := true
 		for _, after := range tfi.After {
 			if after.Name == name {
 				after.Already++
 				if after.Already <= after.Times {
-					trigger = false
+					return nil
 				}
 			} else if after.Already < after.Times {
-				trigger = false
+				return nil
 			}
 		}
 
-		if tfi.Name == name && trigger {
+		if tfi.Name == name {
 			if tfi.Type == FaultType_FaultCrash {
 				return errors.ErrorFI_TFI_Crash
 			} else if tfi.Type == FaultType_FaultDelay {

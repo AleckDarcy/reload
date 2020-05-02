@@ -372,6 +372,16 @@ public final class Message {
      */
     com.google.protobuf.ByteString
         getUuidBytes();
+
+    /**
+     * <code>string service = 5;</code>
+     */
+    java.lang.String getService();
+    /**
+     * <code>string service = 5;</code>
+     */
+    com.google.protobuf.ByteString
+        getServiceBytes();
   }
   /**
    * Protobuf type {@code tracer.Record}
@@ -390,6 +400,7 @@ public final class Message {
       timestamp_ = 0L;
       messageName_ = "";
       uuid_ = "";
+      service_ = "";
     }
 
     @java.lang.Override
@@ -444,6 +455,12 @@ public final class Message {
               java.lang.String s = input.readStringRequireUtf8();
 
               uuid_ = s;
+              break;
+            }
+            case 42: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              service_ = s;
               break;
             }
           }
@@ -563,6 +580,40 @@ public final class Message {
       }
     }
 
+    public static final int SERVICE_FIELD_NUMBER = 5;
+    private volatile java.lang.Object service_;
+    /**
+     * <code>string service = 5;</code>
+     */
+    public java.lang.String getService() {
+      java.lang.Object ref = service_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        service_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string service = 5;</code>
+     */
+    public com.google.protobuf.ByteString
+        getServiceBytes() {
+      java.lang.Object ref = service_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        service_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -587,6 +638,9 @@ public final class Message {
       if (!getUuidBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 4, uuid_);
       }
+      if (!getServiceBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 5, service_);
+      }
       unknownFields.writeTo(output);
     }
 
@@ -608,6 +662,9 @@ public final class Message {
       }
       if (!getUuidBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, uuid_);
+      }
+      if (!getServiceBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, service_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -632,6 +689,8 @@ public final class Message {
           .equals(other.getMessageName());
       result = result && getUuid()
           .equals(other.getUuid());
+      result = result && getService()
+          .equals(other.getService());
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -652,6 +711,8 @@ public final class Message {
       hash = (53 * hash) + getMessageName().hashCode();
       hash = (37 * hash) + UUID_FIELD_NUMBER;
       hash = (53 * hash) + getUuid().hashCode();
+      hash = (37 * hash) + SERVICE_FIELD_NUMBER;
+      hash = (53 * hash) + getService().hashCode();
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -789,6 +850,8 @@ public final class Message {
 
         uuid_ = "";
 
+        service_ = "";
+
         return this;
       }
 
@@ -815,6 +878,7 @@ public final class Message {
         result.timestamp_ = timestamp_;
         result.messageName_ = messageName_;
         result.uuid_ = uuid_;
+        result.service_ = service_;
         onBuilt();
         return result;
       }
@@ -868,6 +932,10 @@ public final class Message {
         }
         if (!other.getUuid().isEmpty()) {
           uuid_ = other.uuid_;
+          onChanged();
+        }
+        if (!other.getService().isEmpty()) {
+          service_ = other.service_;
           onChanged();
         }
         this.mergeUnknownFields(other.unknownFields);
@@ -1101,6 +1169,75 @@ public final class Message {
   checkByteStringIsUtf8(value);
         
         uuid_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object service_ = "";
+      /**
+       * <code>string service = 5;</code>
+       */
+      public java.lang.String getService() {
+        java.lang.Object ref = service_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          service_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string service = 5;</code>
+       */
+      public com.google.protobuf.ByteString
+          getServiceBytes() {
+        java.lang.Object ref = service_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          service_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string service = 5;</code>
+       */
+      public Builder setService(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        service_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string service = 5;</code>
+       */
+      public Builder clearService() {
+        
+        service_ = getDefaultInstance().getService();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string service = 5;</code>
+       */
+      public Builder setServiceBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        service_ = value;
         onChanged();
         return this;
       }
@@ -4786,23 +4923,23 @@ public final class Message {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\rmessage.proto\022\006tracer\"a\n\006Record\022 \n\004typ" +
+      "\n\rmessage.proto\022\006tracer\"r\n\006Record\022 \n\004typ" +
       "e\030\001 \001(\0162\022.tracer.RecordType\022\021\n\ttimestamp" +
       "\030\002 \001(\003\022\024\n\014message_name\030\003 \001(\t\022\014\n\004uuid\030\004 \001" +
-      "(\t\"j\n\005Trace\022\n\n\002id\030\001 \001(\003\022\037\n\007records\030\002 \003(\013" +
-      "2\016.tracer.Record\022\032\n\004rlfi\030\024 \001(\0132\014.tracer." +
-      "RLFI\022\030\n\003tfi\030\025 \001(\0132\013.tracer.TFI\"D\n\004RLFI\022\037" +
-      "\n\004type\030\001 \001(\0162\021.tracer.FaultType\022\014\n\004name\030" +
-      "\002 \001(\t\022\r\n\005delay\030\003 \001(\003\"7\n\007TFIMeta\022\014\n\004name\030" +
-      "\001 \001(\t\022\r\n\005times\030\002 \001(\003\022\017\n\007already\030\003 \001(\003\"c\n" +
-      "\003TFI\022\037\n\004type\030\001 \001(\0162\021.tracer.FaultType\022\014\n" +
-      "\004name\030\002 \001(\t\022\r\n\005delay\030\003 \001(\003\022\036\n\005after\030\004 \003(" +
-      "\0132\017.tracer.TFIMeta*F\n\013MessageType\022\014\n\010Mes" +
-      "sage_\020\000\022\023\n\017Message_Request\020\001\022\024\n\020Message_" +
-      "Response\020\002*<\n\nRecordType\022\013\n\007Record_\020\000\022\016\n" +
-      "\nRecordSend\020\001\022\021\n\rRecordReceive\020\002*7\n\tFaul" +
-      "tType\022\n\n\006Fault_\020\000\022\016\n\nFaultCrash\020\001\022\016\n\nFau" +
-      "ltDelay\020\002b\006proto3"
+      "(\t\022\017\n\007service\030\005 \001(\t\"j\n\005Trace\022\n\n\002id\030\001 \001(\003" +
+      "\022\037\n\007records\030\002 \003(\0132\016.tracer.Record\022\032\n\004rlf" +
+      "i\030\024 \001(\0132\014.tracer.RLFI\022\030\n\003tfi\030\025 \001(\0132\013.tra" +
+      "cer.TFI\"D\n\004RLFI\022\037\n\004type\030\001 \001(\0162\021.tracer.F" +
+      "aultType\022\014\n\004name\030\002 \001(\t\022\r\n\005delay\030\003 \001(\003\"7\n" +
+      "\007TFIMeta\022\014\n\004name\030\001 \001(\t\022\r\n\005times\030\002 \001(\003\022\017\n" +
+      "\007already\030\003 \001(\003\"c\n\003TFI\022\037\n\004type\030\001 \001(\0162\021.tr" +
+      "acer.FaultType\022\014\n\004name\030\002 \001(\t\022\r\n\005delay\030\003 " +
+      "\001(\003\022\036\n\005after\030\004 \003(\0132\017.tracer.TFIMeta*F\n\013M" +
+      "essageType\022\014\n\010Message_\020\000\022\023\n\017Message_Requ" +
+      "est\020\001\022\024\n\020Message_Response\020\002*<\n\nRecordTyp" +
+      "e\022\013\n\007Record_\020\000\022\016\n\nRecordSend\020\001\022\021\n\rRecord" +
+      "Receive\020\002*7\n\tFaultType\022\n\n\006Fault_\020\000\022\016\n\nFa" +
+      "ultCrash\020\001\022\016\n\nFaultDelay\020\002b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -4821,7 +4958,7 @@ public final class Message {
     internal_static_tracer_Record_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_tracer_Record_descriptor,
-        new java.lang.String[] { "Type", "Timestamp", "MessageName", "Uuid", });
+        new java.lang.String[] { "Type", "Timestamp", "MessageName", "Uuid", "Service", });
     internal_static_tracer_Trace_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_tracer_Trace_fieldAccessorTable = new
