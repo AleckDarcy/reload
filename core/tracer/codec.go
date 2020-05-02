@@ -2,6 +2,7 @@ package tracer
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/AleckDarcy/reload/core/log"
@@ -50,7 +51,32 @@ func (c *codec) Marshal(v interface{}) ([]byte, error) {
 				}
 				if trace, ok := Store.UpdateFunctionByContextMeta(meta, updateFunction); ok {
 					if t.GetMessageType() == MessageType_Message_Request {
+						if rlfi := trace.Rlfi; rlfi != nil && rlfi.Type == FaultType_FaultCrash {
+							if rlfi.Name == t.GetFI_Name() {
+								log.Logf("[RELOAD] Marshal rlfi crash triggered")
+
+								return nil, errors.New("transport is closing")
+							}
+						} else if tfi := trace.Tfi; tfi != nil && tfi.Type == FaultType_FaultCrash {
+							if tfi.Name == t.GetFI_Name() {
+								crash := true
+								for _, after := range tfi.After {
+									if after.Already < after.Times {
+										crash = false
+										break
+									}
+								}
+
+								if crash {
+									log.Logf("[RELOAD] Marshal tfi crash triggered")
+
+									return nil, errors.New("transport is closing")
+								}
+							}
+						}
+
 						log.Logf("[RELOAD] Marshal send request")
+
 						trace = &Trace{
 							Id:      trace.Id,
 							Records: []*Record{record},

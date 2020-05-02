@@ -39,18 +39,56 @@ func TestHome(t *testing.T) {
 	t.Log(string(bytes))
 }
 
+func TestHomeCrashCurrency0(t *testing.T) {
+	client := NewClient()
+
+	reqs := &data.Requests{
+		CookieUrl: "localhost",
+		Trace: &tracer.Trace{
+			Id: 2,
+			Tfi: &tracer.TFI{
+				Type:  tracer.FaultType_FaultCrash,
+				Name:  "CurrencyConversionRequest",
+				Delay: 0,
+				After: []*tracer.TFIMeta{{Name: "CurrencyConversionRequest", Times: 0}},
+			},
+		},
+		Requests: []data.Request{
+			{
+				Method:      data.HTTPGet,
+				URL:         "http://localhost",
+				MessageName: "home",
+				Expect: &data.ExpectedResponse{
+					ContentType: html.ContentTypeHTML,
+					Action:      data.PrintResponse,
+				},
+			},
+		},
+	}
+
+	rsp, err := client.SendRequests(reqs)
+	if err != nil {
+		t.Error(err)
+	}
+
+	bytes, _ := json.Marshal(rsp)
+	t.Log(string(bytes))
+	bytes, _ = json.Marshal(rsp.Trace)
+	t.Log(string(bytes))
+}
+
 func TestHomeCrashCurrency1(t *testing.T) {
 	client := NewClient()
 
 	reqs := &data.Requests{
 		CookieUrl: "localhost",
 		Trace: &tracer.Trace{
-			Id: 1,
+			Id: 3,
 			Tfi: &tracer.TFI{
-				Type:  0,
-				Name:  "",
+				Type:  tracer.FaultType_FaultCrash,
+				Name:  "CurrencyConversionRequest",
 				Delay: 0,
-				After: nil,
+				After: []*tracer.TFIMeta{{Name: "CurrencyConversionRequest", Times: 1}},
 			},
 		},
 		Requests: []data.Request{
@@ -67,9 +105,6 @@ func TestHomeCrashCurrency1(t *testing.T) {
 		t.Error(err)
 	}
 
-	//t.Log(string(rsp.Body))
-	//t.Log(len(rsp.Trace.Records))
-	//t.Log(rsp.Trace)
 	bytes, _ := json.Marshal(rsp.Trace)
 	t.Log(string(bytes))
 }

@@ -597,63 +597,78 @@ function handleUnary(call, handler, metadata) {
     let crashed = false;
     try {
       emitter.request = handler.deserialize(result.read);
+      console.log("[RELOAD] handleUnary, request:", emitter.request);
       if (emitter.request.hasOwnProperty("FI_Trace")) {
         trace = emitter.request.FI_Trace;
+        console.log("[RELOAD] handleUnary, trace != null:", trace != null);
         if (trace != null) {
+          console.log("[RELOAD] handleUnary, records:", trace.records);
+          console.log("[RELOAD] handleUnary, records:", trace['records']);
           if (trace.records.length == 1) { // request
             meta.hasTrace = true;
             meta.traceID = trace.id;
             meta.name = trace.records[0].message_name;
             meta.uuid = trace.records[0].uuid;
 
+            console.log("[RELOAD] handleUnary, meta:", meta);
+
             trace.records[0].type = 2;
             trace.records[0].service = serviceUUID;
 
-            let rlfi = trace.Rlfi
-            let tfi = trace.Tfi
+            let rlfi = trace.rlfi;
+            let tfi = trace.tfi;
+
             if (rlfi != null) {
-              if (rlfi.Name == meta.name) {
-                if (rlfi.type == 1) { // crash
-                  console.log("[RELOAD] error FI: RLFI crash triggered");
+              if (rlfi.name == meta.name) {
+                if (rlfi.type == "FaultCrash") { // 1
+                  console.log("[RELOAD] handleUnary, error FI: RLFI crash triggered");
                   crashed = true;
-                } else if (rlfi.type == 2) { // delay
-                  console.log("[RELOAD] error FI: RLFI delay triggered");
+                } else if (rlfi.type == "FaultDelay") { // 2
+                  console.log("[RELOAD] handleUnary, error FI: RLFI delay triggered");
                   var sleep = require('sleep');
-                  sleep.msleep(rlfi.Delay);
+                  sleep.msleep(rlfi.delay);
                 }
               }
-            } else if (tfi != null && tfi.Name == meta.name) {
-              let trigger = true;
-              for (let i = 0; i < tfi.After.length; i++) {
-                let after = tfi.After[i];
-                if (after.Name == meta.name) {
-                  after.Already++;
-                  if (after.Already <= after.Times) {
+            } else if (tfi != null) {
+              console.log("[RELOAD] handleUnary, tfi.name == meta.Name:", tfi.name == meta.name);
+              if (tfi.name == meta.name) {
+                let trigger = true;
+                for (let i = 0; i < tfi.after.length; i++) {
+                  let after = tfi.after[i];
+                  console.log("[RELOAD] handleUnary, after:", after);
+
+                  if (after.name == meta.name) {
+                    after.already++;
+                    if (after.already <= after.times) {
+                      console.log("[RELOAD] handleUnary, do not trigger 1");
+
+                      trigger = false;
+                      break
+                    }
+                  } else if (after.already < after.times) {
+                    console.log("[RELOAD] handleUnary, do not trigger 2");
                     trigger = false;
                     break
                   }
-                } else if (after.Already < after.Times) {
-                  trigger = false
-                  break
                 }
-              }
 
-              if (trigger) {
-                if (tfi.type == 1) { // crash
-                  console.log("[RELOAD] error FI: TFI crash triggered");
-                  crashed = true;
-                } else if (tfi.type == 2) { // delay
-                  console.log("[RELOAD] error FI: TFI delay triggered");
-                  var sleep = require('sleep');
-                  sleep.msleep(tfi.Delay);
+                if (trigger) {
+                  if (tfi.type == "FaultCrash") { // 1
+                    console.log("[RELOAD] handleUnary, error FI: TFI crash triggered");
+                    crashed = true;
+                  } else if (tfi.type == "FaultDelay") { // 2
+                    console.log("[RELOAD] handleUnary, error FI: TFI delay triggered");
+                    var sleep = require('sleep');
+                    sleep.msleep(tfi.delay);
+                  }
                 }
               }
             }
           } else {
-            // unreachable code
+            console.log("[RELOAD] handleUnary, records length must be 1");
           }
         } else {
-          console.log("[RELOAD] Unmarshal, no trace")
+          console.log("[RELOAD] handleUnary, Unmarshal, no trace");
         }
       }
     } catch (e) {
@@ -663,6 +678,13 @@ function handleUnary(call, handler, metadata) {
     }
 
     if (crashed) {
+      var batch = {
+        [grpc.opType.RECV_INITIAL_METADATA]: true,
+        [grpc.opType.RECV_MESSAGE]: true,
+        [grpc.opType.SEND_CLOSE_FROM_CLIENT]: true
+      };
+      call.startBatch(batch, function(){});
+
       return;
     }
     if (emitter.cancelled) {
