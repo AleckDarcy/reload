@@ -2,8 +2,10 @@ package core
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/url"
 	"testing"
+	"time"
 
 	"github.com/AleckDarcy/reload/runtime/html"
 
@@ -11,6 +13,106 @@ import (
 
 	"github.com/AleckDarcy/reload/core/client/data"
 )
+
+const NTests = 1000
+
+func TestConcurrency(t *testing.T) {
+	nClients := []int{1, 2, 4, 8}
+
+	traces := []*tracer.Trace{
+		nil,
+		{},
+		{
+
+			Rlfi: &tracer.RLFI{
+				Type: tracer.FaultType_FaultCrash,
+				Name: "GetSupportedCurrenciesRequest",
+			},
+		},
+		{
+
+			Rlfi: &tracer.RLFI{
+				Type: tracer.FaultType_FaultCrash,
+				Name: "CurrencyConversionRequest",
+			},
+		},
+		{
+			Tfi: &tracer.TFI{
+				Type: tracer.FaultType_FaultCrash,
+				Name: "CurrencyConversionRequest",
+				After: []*tracer.TFIMeta{
+					{Name: "CurrencyConversionRequest", Times: 2},
+				},
+			},
+		},
+	}
+
+	for j, trace := range traces {
+		print(fmt.Sprintf("| %d |", j))
+		for _, nCLient := range nClients {
+			nTest := NTests / nCLient
+			clients := make([]*Client, nCLient)
+			signals := make(chan struct{}, nCLient)
+			reqss := make([]*data.Requests, nCLient)
+
+			for i := 0; i < nCLient; i++ {
+				clients[i] = NewClient()
+
+				reqss[i] = &data.Requests{
+					CookieUrl: "localhost",
+					Trace:     trace,
+					Requests: []data.Request{
+						{
+							Method:      data.HTTPGet,
+							URL:         "http://localhost",
+							MessageName: "home",
+							Expect: &data.ExpectedResponse{
+								ContentType: html.ContentTypeHTML,
+								//Action:      data.PrintResponse,
+							},
+						},
+					},
+				}
+
+				if reqss[i].Trace != nil {
+					reqss[i].Trace.Id = int64(i*NTests + 1)
+				}
+			}
+
+			t.Log(nCLient, nTest)
+			start := time.Now()
+
+			for i := 0; i < nCLient; i++ {
+				go func(i int, signals chan struct{}) {
+					client := clients[i]
+					reqs := reqss[i]
+
+					for k := 0; k < nTest; k++ {
+						_, err := client.SendRequests(reqs)
+						if err != nil {
+							t.Error(err)
+						}
+
+						if reqs.Trace != nil {
+							reqs.Trace.Id++
+						}
+					}
+
+					signals <- struct{}{}
+				}(i, signals)
+			}
+
+			for i := 0; i < nCLient; i++ {
+				<-signals
+			}
+
+			end := time.Now()
+
+			print(fmt.Sprintf(" %v |", end.Sub(start).Seconds()))
+		}
+		print("\n")
+	}
+}
 
 func TestHome(t *testing.T) {
 	client := NewClient()
@@ -96,6 +198,10 @@ func TestHomeCrashCurrency1(t *testing.T) {
 				Method:      data.HTTPGet,
 				URL:         "http://localhost",
 				MessageName: "home",
+				Expect: &data.ExpectedResponse{
+					ContentType: html.ContentTypeHTML,
+					Action:      data.PrintResponse,
+				},
 			},
 		},
 	}

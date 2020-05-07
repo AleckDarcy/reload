@@ -37,7 +37,7 @@ func responseHandler(req *data.Request, httpRsp *http.Response) (*data.Response,
 	}
 	rsp := &data.Response{Body: body}
 
-	log.Logf("[RELOAD] Content-Type: %s", httpRsp.Header.Get(html.ContentType))
+	//log.Logf("[RELOAD] Content-Type: %s", httpRsp.Header.Get(html.ContentType))
 	if expect := req.Expect; expect == nil || expect.ContentType == html.ContentTypeJSON { // json
 		jsonData := map[string]json.RawMessage{}
 		if err = json.Unmarshal(body, &jsonData); err != nil {
@@ -72,7 +72,9 @@ func responseHandler(req *data.Request, httpRsp *http.Response) (*data.Response,
 
 func (c *Client) SendRequests(reqs *data.Requests) (*data.Response, error) {
 	if reqs.Trace == nil {
-		return nil, nil
+		for _, req := range reqs.Requests {
+			return c.sendRequest(&req)
+		}
 	}
 
 	trace := &tracer.Trace{
@@ -149,7 +151,7 @@ func (c *Client) sendRequest(req *data.Request) (*data.Response, error) {
 	}
 
 	if traceString != "" {
-		log.Logf("[RELOAD] Fi-Trace: %d %s", len(traceString), traceString)
+		//log.Logf("[RELOAD] Fi-Trace: %s", traceString)
 		httpReq.Header.Set("Fi-Trace", traceString)
 	}
 

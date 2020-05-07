@@ -597,20 +597,20 @@ function handleUnary(call, handler, metadata) {
     let crashed = false;
     try {
       emitter.request = handler.deserialize(result.read);
-      console.log("[RELOAD] handleUnary, request:", emitter.request);
+      // console.log("[RELOAD] handleUnary, request:", emitter.request);
       if (emitter.request.hasOwnProperty("FI_Trace")) {
         trace = emitter.request.FI_Trace;
-        console.log("[RELOAD] handleUnary, trace != null:", trace != null);
+        // console.log("[RELOAD] handleUnary, trace != null:", trace != null);
         if (trace != null) {
-          console.log("[RELOAD] handleUnary, records:", trace.records);
-          console.log("[RELOAD] handleUnary, records:", trace['records']);
+          // console.log("[RELOAD] handleUnary, records:", trace.records);
+          // console.log("[RELOAD] handleUnary, records:", trace['records']);
           if (trace.records.length == 1) { // request
             meta.hasTrace = true;
             meta.traceID = trace.id;
             meta.name = trace.records[0].message_name;
             meta.uuid = trace.records[0].uuid;
 
-            console.log("[RELOAD] handleUnary, meta:", meta);
+            // console.log("[RELOAD] handleUnary, meta:", meta);
 
             trace.records[0].type = 2;
             trace.records[0].service = serviceUUID;
@@ -621,32 +621,32 @@ function handleUnary(call, handler, metadata) {
             if (rlfi != null) {
               if (rlfi.name == meta.name) {
                 if (rlfi.type == "FaultCrash") { // 1
-                  console.log("[RELOAD] handleUnary, error FI: RLFI crash triggered");
+                  // console.log("[RELOAD] handleUnary, error FI: RLFI crash triggered");
                   crashed = true;
                 } else if (rlfi.type == "FaultDelay") { // 2
-                  console.log("[RELOAD] handleUnary, error FI: RLFI delay triggered");
+                  // console.log("[RELOAD] handleUnary, error FI: RLFI delay triggered");
                   var sleep = require('sleep');
                   sleep.msleep(rlfi.delay);
                 }
               }
             } else if (tfi != null) {
-              console.log("[RELOAD] handleUnary, tfi.name == meta.Name:", tfi.name == meta.name);
+              // console.log("[RELOAD] handleUnary, tfi.name == meta.Name:", tfi.name == meta.name);
               if (tfi.name == meta.name) {
                 let trigger = true;
                 for (let i = 0; i < tfi.after.length; i++) {
                   let after = tfi.after[i];
-                  console.log("[RELOAD] handleUnary, after:", after);
+                  // console.log("[RELOAD] handleUnary, after:", after);
 
                   if (after.name == meta.name) {
                     after.already++;
                     if (after.already <= after.times) {
-                      console.log("[RELOAD] handleUnary, do not trigger 1");
+                      // console.log("[RELOAD] handleUnary, do not trigger 1");
 
                       trigger = false;
                       break
                     }
                   } else if (after.already < after.times) {
-                    console.log("[RELOAD] handleUnary, do not trigger 2");
+                    // console.log("[RELOAD] handleUnary, do not trigger 2");
                     trigger = false;
                     break
                   }
@@ -654,10 +654,10 @@ function handleUnary(call, handler, metadata) {
 
                 if (trigger) {
                   if (tfi.type == "FaultCrash") { // 1
-                    console.log("[RELOAD] handleUnary, error FI: TFI crash triggered");
+                    // console.log("[RELOAD] handleUnary, error FI: TFI crash triggered");
                     crashed = true;
                   } else if (tfi.type == "FaultDelay") { // 2
-                    console.log("[RELOAD] handleUnary, error FI: TFI delay triggered");
+                    // console.log("[RELOAD] handleUnary, error FI: TFI delay triggered");
                     var sleep = require('sleep');
                     sleep.msleep(tfi.delay);
                   }
@@ -665,10 +665,10 @@ function handleUnary(call, handler, metadata) {
               }
             }
           } else {
-            console.log("[RELOAD] handleUnary, records length must be 1");
+            // console.log("[RELOAD] handleUnary, records length must be 1");
           }
         } else {
-          console.log("[RELOAD] handleUnary, Unmarshal, no trace");
+          // console.log("[RELOAD] handleUnary, Unmarshal, no trace");
         }
       }
     } catch (e) {

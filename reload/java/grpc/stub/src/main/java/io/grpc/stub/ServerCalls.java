@@ -175,16 +175,16 @@ public final class ServerCalls {
         boolean crashed = false;
         if (request instanceof io.grpc.tracer.Tracer) {
           long threadID = Thread.currentThread().getId();
-//          logger.log(Level.INFO, "[RELOAD] invoke, threadID: " + threadID);
+//          logger.log(Level., "[RELOAD] invoke, threadID: " + threadID);
 
           io.grpc.tracer.Tracer tracer = (io.grpc.tracer.Tracer) request;
           io.grpc.tracer.Message.Trace trace = tracer.GetFI_Trace();
           if (trace != null) {
             java.util.List<io.grpc.tracer.Message.Record> records = trace.getRecordsList();
             if (records.size() == 1) {
-              logger.log(Level.INFO, "[RELOAD] onHalfClose, trace: " + trace + ", name: " + tracer.GetFI_Name());
+//               logger.log(Level.INFO, "[RELOAD] onHalfClose, trace: " + trace + ", name: " + tracer.GetFI_Name());
               crashed = trace.DoFI(tracer.GetFI_Name());
-              logger.log(Level.INFO, "[RELOAD] onHalfClose, crashed: " + crashed);
+//               logger.log(Level.INFO, "[RELOAD] onHalfClose, crashed: " + crashed);
 
               io.grpc.tracer.Message.Trace trace1 = trace.copy();
               trace1.replaceRecord(0,
@@ -193,20 +193,20 @@ public final class ServerCalls {
                   tracer.GetFI_Name(),
                   records.get(0).getUuid(),
                   io.grpc.tracer.Store.uuid));
-              logger.log(Level.INFO, "[RELOAD] onHalfClose, set trace, thread: " + threadID + ", trace:" + trace1);
+//               logger.log(Level.INFO, "[RELOAD] onHalfClose, set trace, thread: " + threadID + ", trace:" + trace1);
               io.grpc.tracer.Store.SetTrace(threadID, trace1);
             } else {
-              logger.log(Level.INFO, "[RELOAD] request is an invalid tracer:" + request.getClass() + ", records: " + records.size());
+//               logger.log(Level.INFO, "[RELOAD] request is an invalid tracer:" + request.getClass() + ", records: " + records.size());
             }
           } else {
-//            logger.log(Level.INFO, "[RELOAD] request is an empty tracer:" + request.getClass() + ", name: " + tracer.GetFI_Name());
+//            logger.log(Level., "[RELOAD] request is an empty tracer:" + request.getClass() + ", name: " + tracer.GetFI_Name());
           }
         } else {
-//          logger.log(Level.INFO, "[RELOAD] request is not a tracer:" + request.getClass());
+//          logger.log(Level., "[RELOAD] request is not a tracer:" + request.getClass());
         }
 
         if (crashed) {
-          logger.log(Level.INFO, "[RELOAD] service crashed");
+//           logger.log(Level.INFO, "[RELOAD] service crashed");
 
           return;
         }
@@ -374,11 +374,6 @@ public final class ServerCalls {
 
     @Override
     public void onNext(RespT response) {
-//      StackTraceElement[] st = Thread.currentThread().getStackTrace();
-//      for (int i = 0; i < st.length; i++) {
-//        logger.info("[RELOAD] onNext, stacktrace " + i+ ", " + st[i].toString());
-//      }
-
       if (cancelled) {
         throw Status.CANCELLED.withDescription("call already cancelled").asRuntimeException();
       }
