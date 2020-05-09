@@ -8,19 +8,58 @@ import (
 )
 
 func TestName(t *testing.T) {
+	//// home
+	//var names = []string{
+	//	"GetSupportedCurrenciesRequest",
+	//	"ListProductsRequest",
+	//	"GetCartRequest",
+	//	"CurrencyConversionRequest",
+	//	"CurrencyConversionRequest",
+	//	"CurrencyConversionRequest",
+	//	"CurrencyConversionRequest",
+	//	"CurrencyConversionRequest",
+	//	"CurrencyConversionRequest",
+	//	"CurrencyConversionRequest",
+	//	"CurrencyConversionRequest",
+	//	"CurrencyConversionRequest",
+	//	"AdRequest",
+	//}
+
+	//// product
+	//var names = []string{
+	//	"GetProductRequest",
+	//	"GetSupportedCurrenciesRequest",
+	//	"GetCartRequest",
+	//	"CurrencyConversionRequest",
+	//	"ListRecommendationsRequest",
+	//	"GetProductRequest",
+	//	"GetProductRequest",
+	//	"GetProductRequest",
+	//	"GetProductRequest",
+	//	"GetProductRequest",
+	//	"AdRequest",
+	//}
+
+	// checkout
 	var names = []string{
-		"GetSupportedCurrenciesRequest",
-		"ListProductsRequest",
+		"PlaceOrderRequest",
+		"GetCartRequest",
+		"GetProductRequest",
 		"CurrencyConversionRequest",
+		"GetProductRequest",
 		"CurrencyConversionRequest",
+		"GetQuoteRequest",
 		"CurrencyConversionRequest",
-		"CurrencyConversionRequest",
-		"CurrencyConversionRequest",
-		"CurrencyConversionRequest",
-		"CurrencyConversionRequest",
-		"CurrencyConversionRequest",
-		"CurrencyConversionRequest",
-		"AdRequest",
+		"ChargeRequest",
+		"ShipOrderRequest",
+		"EmptyCartRequest",
+		"SendOrderConfirmationRequest",
+		"ListRecommendationsRequest",
+		"GetProductRequest",
+		"GetProductRequest",
+		"GetProductRequest",
+		"GetProductRequest",
+		"GetProductRequest",
 	}
 
 	resultChan := make(chan *Faults, 1)
