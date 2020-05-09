@@ -25,14 +25,14 @@ func NewGenerator(names []string) *Generator {
 		if count, ok := nameCount[name]; ok {
 			faults[i] = &TFI{
 				Type:  FaultType_FaultCrash,
-				Name:  name,
+				Name:  []string{name},
 				After: []*TFIMeta{{Name: name, Times: count}},
 			}
 			nameCount[name] = count + 1
 		} else {
 			faults[i] = &TFI{
 				Type:  FaultType_FaultCrash,
-				Name:  name,
+				Name:  []string{name},
 				After: []*TFIMeta{},
 			}
 			nameCount[name] = 1
