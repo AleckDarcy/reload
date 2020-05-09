@@ -1428,7 +1428,7 @@ public final class Message {
           } else if (rlfi.type_ == FaultType.FaultDelay_VALUE) {
             try {
 //            logger.log(Level.INFO, "[RELOAD] RLFI, delay");
-              java.lang.Thread.sleep(rlfi_.delay_);
+              java.lang.Thread.sleep(rlfi.delay_);
             } catch (java.lang.InterruptedException e) {
 
             }
@@ -1441,16 +1441,15 @@ public final class Message {
 
     public final boolean TFIs(java.lang.String name) {
       for (TFI tfi: this.tfis_) {
-        TFI tfi = this.tfi_;
 //         logger.log(Level.INFO, "[RELOAD] TFI, name: " + name + ", tfi: " + tfi);
         if (tfi != null) {
           for (int i = 0; i < tfi.after_.size(); i++) {
             TFIMeta after = tfi.after_.get(i);
 //             logger.log(Level.INFO, "[RELOAD] TFI, i: " + i + ", after: " + after);
             if (after.name_ == name) {
-//               after.already_++;
+              after.already_++;
 //               logger.log(Level.INFO, "[RELOAD] TFI, 1 after: " + after.name_ + ", times: " + after.times_ + ", already: " + after.already_);
-              if (after.already_ != after.times_) {
+              if (after.already_ != after.times_ + 1) {
                 return false;
               }
             } else if (after.already_ < after.times_) {
@@ -1493,8 +1492,8 @@ public final class Message {
         t.records_.add(record);
       }
 
-      t.rlfi_ = this.rlfi_;
-      t.tfi_ = this.tfi_;
+      t.rlfis_ = this.rlfis_;
+      t.tfis_ = this.tfis_;
 
       return t;
     }

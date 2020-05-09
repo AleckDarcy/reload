@@ -615,51 +615,61 @@ function handleUnary(call, handler, metadata) {
             trace.records[0].type = 2;
             trace.records[0].service = serviceUUID;
 
-            let rlfi = trace.rlfi;
-            let tfi = trace.tfi;
+            let rlfis = trace.rlfis;
+            let tfis = trace.tfis;
 
-            if (rlfi != null) {
-              if (rlfi.name == meta.name) {
-                if (rlfi.type == "FaultCrash") { // 1
-                  // console.log("[RELOAD] handleUnary, error FI: RLFI crash triggered");
-                  crashed = true;
-                } else if (rlfi.type == "FaultDelay") { // 2
-                  // console.log("[RELOAD] handleUnary, error FI: RLFI delay triggered");
-                  var sleep = require('sleep');
-                  sleep.msleep(rlfi.delay);
+            if (rlfis != null) {
+              for (let i = 0; i < rlfis.length; i++) {
+                let rlfi = rlfis[i];
+                if (rlfi.name == meta.name) {
+                  if (rlfi.type == "FaultCrash") { // 1
+                    // console.log("[RELOAD] handleUnary, error FI: RLFI crash triggered");
+                    crashed = true;
+                    break;
+                  } else if (rlfi.type == "FaultDelay") { // 2
+                    // console.log("[RELOAD] handleUnary, error FI: RLFI delay triggered");
+                    var sleep = require('sleep');
+                    sleep.msleep(rlfi.delay);
+                    break;
+                  }
                 }
               }
-            } else if (tfi != null) {
+            } else if (tfis != null) {
               // console.log("[RELOAD] handleUnary, tfi.name == meta.Name:", tfi.name == meta.name);
-              if (tfi.name == meta.name) {
-                let trigger = true;
-                for (let i = 0; i < tfi.after.length; i++) {
-                  let after = tfi.after[i];
-                  // console.log("[RELOAD] handleUnary, after:", after);
+              for (let i = 0; i < tfis.length; i++) {
+                let tfi = tfis[i];
+                if (tfi.name == meta.name) {
+                  let trigger = true;
+                  for (let j = 0; j < tfi.after.length; j++) {
+                    let after = tfi.after[j];
+                    // console.log("[RELOAD] handleUnary, after:", after);
 
-                  if (after.name == meta.name) {
-                    after.already++;
-                    if (after.already <= after.times) {
-                      // console.log("[RELOAD] handleUnary, do not trigger 1");
+                    if (after.name == meta.name) {
+                      after.already++;
+                      if (after.already <= after.times) {
+                        // console.log("[RELOAD] handleUnary, do not trigger 1");
 
+                        trigger = false;
+                        break
+                      }
+                    } else if (after.already < after.times) {
+                      // console.log("[RELOAD] handleUnary, do not trigger 2");
                       trigger = false;
                       break
                     }
-                  } else if (after.already < after.times) {
-                    // console.log("[RELOAD] handleUnary, do not trigger 2");
-                    trigger = false;
-                    break
                   }
-                }
 
-                if (trigger) {
-                  if (tfi.type == "FaultCrash") { // 1
-                    // console.log("[RELOAD] handleUnary, error FI: TFI crash triggered");
-                    crashed = true;
-                  } else if (tfi.type == "FaultDelay") { // 2
-                    // console.log("[RELOAD] handleUnary, error FI: TFI delay triggered");
-                    var sleep = require('sleep');
-                    sleep.msleep(tfi.delay);
+                  if (trigger) {
+                    if (tfi.type == "FaultCrash") { // 1
+                      // console.log("[RELOAD] handleUnary, error FI: TFI crash triggered");
+                      crashed = true;
+                    } else if (tfi.type == "FaultDelay") { // 2
+                      // console.log("[RELOAD] handleUnary, error FI: TFI delay triggered");
+                      var sleep = require('sleep');
+                      sleep.msleep(tfi.delay);
+                    }
+
+                    break;
                   }
                 }
               }
