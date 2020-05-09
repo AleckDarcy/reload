@@ -1407,10 +1407,10 @@ public final class Message {
     public final boolean DoFI(java.lang.String name) {
 //       logger.log(Level.INFO, "[RELOAD] DoFI, trace: " + this);
 
-      if (this.RLFI(name)) {
+      if (this.RLFIs(name)) {
 //         logger.log(Level.INFO, "[RELOAD] DoFI, RLFI: " + this.rlfi_);
         return true;
-      } else if (this.TFI(name)) {
+      } else if (this.TFIs(name)) {
 //         logger.log(Level.INFO, "[RELOAD] DoFI, TFI: " + this.tfi_);
         return true;
       }
@@ -1418,19 +1418,20 @@ public final class Message {
       return false;
     }
 
-    public final boolean RLFI(java.lang.String name) {
-      RLFI rlfi = this.rlfi_;
+    public final boolean RLFIs(java.lang.String name) {
+      for (RLFI rlfi: this.rlfis_) {
 //       logger.log(Level.INFO, "[RELOAD] RLFI, name: " + name + ", rlfi: " + rlfi);
-      if (rlfi != null) {
-        if (rlfi.type_ == FaultType.FaultCrash_VALUE) {
-//           logger.log(Level.INFO, "[RELOAD] RLFI, crash");
-          return true;
-        } else if (rlfi.type_ == FaultType.FaultDelay_VALUE) {
-          try {
-//             logger.log(Level.INFO, "[RELOAD] RLFI, delay");
-            java.lang.Thread.sleep(rlfi_.delay_);
-          } catch (java.lang.InterruptedException e) {
+        if (rlfi != null) {
+          if (rlfi.type_ == FaultType.FaultCrash_VALUE) {
+//          logger.log(Level.INFO, "[RELOAD] RLFI, crash");
+            return true;
+          } else if (rlfi.type_ == FaultType.FaultDelay_VALUE) {
+            try {
+//            logger.log(Level.INFO, "[RELOAD] RLFI, delay");
+              java.lang.Thread.sleep(rlfi_.delay_);
+            } catch (java.lang.InterruptedException e) {
 
+            }
           }
         }
       }
@@ -1438,41 +1439,43 @@ public final class Message {
       return false;
     }
 
-    public final boolean TFI(java.lang.String name) {
-      TFI tfi = this.tfi_;
-//       logger.log(Level.INFO, "[RELOAD] TFI, name: " + name + ", tfi: " + tfi);
-      if (tfi != null) {
-        for (int i = 0; i < tfi.after_.size(); i++) {
-          TFIMeta after = tfi.after_.get(i);
-//           logger.log(Level.INFO, "[RELOAD] TFI, i: " + i + ", after: " + after);
-          if (after.name_ == name) {
-            after.already_++;
-//             logger.log(Level.INFO, "[RELOAD] TFI, 1 after: " + after.name_ + ", times: " + after.times_ + ", already: " + after.already_);
-            if (after.already_ <= after.times_) {
+    public final boolean TFIs(java.lang.String name) {
+      for (TFI tfi: this.tfis_) {
+        TFI tfi = this.tfi_;
+//         logger.log(Level.INFO, "[RELOAD] TFI, name: " + name + ", tfi: " + tfi);
+        if (tfi != null) {
+          for (int i = 0; i < tfi.after_.size(); i++) {
+            TFIMeta after = tfi.after_.get(i);
+//             logger.log(Level.INFO, "[RELOAD] TFI, i: " + i + ", after: " + after);
+            if (after.name_ == name) {
+//               after.already_++;
+//               logger.log(Level.INFO, "[RELOAD] TFI, 1 after: " + after.name_ + ", times: " + after.times_ + ", already: " + after.already_);
+              if (after.already_ != after.times_) {
+                return false;
+              }
+            } else if (after.already_ < after.times_) {
+//               logger.log(Level.INFO, "[RELOAD] TFI, 2 after: " + after.name_ + ", times: " + after.times_ + ", already: " + after.already_);
               return false;
+            } else {
+//               logger.log(Level.INFO, "[RELOAD] TFI, 3 after: " + after.name_ + ", times: " + after.times_ + ", already: " + after.already_);
             }
-          } else if (after.already_ < after.times_) {
-//             logger.log(Level.INFO, "[RELOAD] TFI, 2 after: " + after.name_ + ", times: " + after.times_ + ", already: " + after.already_);
-            return false;
-          } else {
-//             logger.log(Level.INFO, "[RELOAD] TFI, 3 after: " + after.name_ + ", times: " + after.times_ + ", already: " + after.already_);
           }
-        }
 
-//         logger.log(Level.INFO, "[RELOAD] TFI, " + tfi.name_ + " == " + name + " = " + java.lang.String.valueOf(tfi.name_ == name) + ", a.equals(b) = " + java.lang.String.valueOf(tfi.name_.equals(name)));
-        if (tfi.name_.equals(name)) {
-          if (tfi.type_ == FaultType.FaultCrash_VALUE) {
-//             logger.log(Level.INFO, "[RELOAD] TFI, crash");
-            return true;
-          } else if (tfi.type_ == FaultType.FaultDelay_VALUE) {
-            try {
-//               logger.log(Level.INFO, "[RELOAD] TFI, delay");
-              java.lang.Thread.sleep(tfi.delay_);
-            } catch (java.lang.InterruptedException e) {
+//           logger.log(Level.INFO, "[RELOAD] TFI, " + tfi.name_ + " == " + name + " = " + java.lang.String.valueOf(tfi.name_ == name) + ", a.equals(b) = " + java.lang.String.valueOf(tfi.name_.equals(name)));
+          if (tfi.name_.equals(name)) {
+            if (tfi.type_ == FaultType.FaultCrash_VALUE) {
+//               logger.log(Level.INFO, "[RELOAD] TFI, crash");
+              return true;
+            } else if (tfi.type_ == FaultType.FaultDelay_VALUE) {
+              try {
+//                 logger.log(Level.INFO, "[RELOAD] TFI, delay");
+                java.lang.Thread.sleep(tfi.delay_);
+              } catch (java.lang.InterruptedException e) {
 
+              }
+            } else {
+//               logger.log(Level.INFO, "[RELOAD] TFI, unknown fault type: " + tfi.type_);
             }
-          } else {
-//             logger.log(Level.INFO, "[RELOAD] TFI, unknown fault type: " + tfi.type_);
           }
         }
       }
