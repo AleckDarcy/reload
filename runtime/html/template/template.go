@@ -49,8 +49,8 @@ func (t *Template) ExecuteTemplateReload(ctx context.Context, w http.ResponseWri
 				Service:     tracer.ServiceUUID,
 			})
 
-			trace.Rlfi = nil
-			trace.Tfi = nil
+			trace.Rlfis = nil
+			trace.Tfis = nil
 
 			data["fi_trace"] = trace
 
