@@ -24,24 +24,30 @@ func TestConcurrency(t *testing.T) {
 		{},
 		{
 
-			Rlfi: &tracer.RLFI{
-				Type: tracer.FaultType_FaultCrash,
-				Name: "GetSupportedCurrenciesRequest",
+			Rlfis: []*tracer.RLFI{
+				{
+					Type: tracer.FaultType_FaultCrash,
+					Name: "GetSupportedCurrenciesRequest",
+				},
 			},
 		},
 		{
 
-			Rlfi: &tracer.RLFI{
-				Type: tracer.FaultType_FaultCrash,
-				Name: "CurrencyConversionRequest",
+			Rlfis: []*tracer.RLFI{
+				{
+					Type: tracer.FaultType_FaultCrash,
+					Name: "CurrencyConversionRequest",
+				},
 			},
 		},
 		{
-			Tfi: &tracer.TFI{
-				Type: tracer.FaultType_FaultCrash,
-				Name: "CurrencyConversionRequest",
-				After: []*tracer.TFIMeta{
-					{Name: "CurrencyConversionRequest", Times: 2},
+			Tfis: []*tracer.TFI{
+				{
+					Type: tracer.FaultType_FaultCrash,
+					Name: []string{"CurrencyConversionRequest"},
+					After: []*tracer.TFIMeta{
+						{Name: "CurrencyConversionRequest", Times: 2},
+					},
 				},
 			},
 		},
@@ -148,11 +154,13 @@ func TestHomeCrashCurrency0(t *testing.T) {
 		CookieUrl: "localhost",
 		Trace: &tracer.Trace{
 			Id: 2,
-			Tfi: &tracer.TFI{
-				Type:  tracer.FaultType_FaultCrash,
-				Name:  "CurrencyConversionRequest",
-				Delay: 0,
-				After: []*tracer.TFIMeta{{Name: "CurrencyConversionRequest", Times: 0}},
+			Tfis: []*tracer.TFI{
+				{
+					Type:  tracer.FaultType_FaultCrash,
+					Name:  []string{"CurrencyConversionRequest"},
+					Delay: 0,
+					After: []*tracer.TFIMeta{{Name: "CurrencyConversionRequest", Times: 0}},
+				},
 			},
 		},
 		Requests: []data.Request{
@@ -186,11 +194,13 @@ func TestHomeCrashCurrency1(t *testing.T) {
 		CookieUrl: "localhost",
 		Trace: &tracer.Trace{
 			Id: 3,
-			Tfi: &tracer.TFI{
-				Type:  tracer.FaultType_FaultCrash,
-				Name:  "CurrencyConversionRequest",
-				Delay: 0,
-				After: []*tracer.TFIMeta{{Name: "CurrencyConversionRequest", Times: 1}},
+			Tfis: []*tracer.TFI{
+				{
+					Type:  tracer.FaultType_FaultCrash,
+					Name:  []string{"CurrencyConversionRequest"},
+					Delay: 0,
+					After: []*tracer.TFIMeta{{Name: "CurrencyConversionRequest", Times: 1}},
+				},
 			},
 		},
 		Requests: []data.Request{
@@ -222,9 +232,11 @@ func TestHome_RLFI_Java_AdRequest(t *testing.T) {
 		CookieUrl: "localhost",
 		Trace: &tracer.Trace{
 			Id: 1,
-			Rlfi: &tracer.RLFI{
-				Type: tracer.FaultType_FaultCrash,
-				Name: "AdRequest",
+			Rlfis: []*tracer.RLFI{
+				{
+					Type: tracer.FaultType_FaultCrash,
+					Name: "AdRequest",
+				},
 			},
 		},
 		Requests: []data.Request{
@@ -259,11 +271,13 @@ func TestHome_TFI_Java_AdRequest(t *testing.T) {
 		CookieUrl: "localhost",
 		Trace: &tracer.Trace{
 			Id: 1,
-			Tfi: &tracer.TFI{
-				Type: tracer.FaultType_FaultCrash,
-				Name: "AdRequest",
-				After: []*tracer.TFIMeta{
-					{Name: "GetSupportedCurrenciesRequest", Times: 1},
+			Tfis: []*tracer.TFI{
+				{
+					Type: tracer.FaultType_FaultCrash,
+					Name: []string{"AdRequest"},
+					After: []*tracer.TFIMeta{
+						{Name: "GetSupportedCurrenciesRequest", Times: 1},
+					},
 				},
 			},
 		},

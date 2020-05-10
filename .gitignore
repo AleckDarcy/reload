@@ -2,3 +2,4 @@
 .gogradle
 .gradle
 vendor/
+*.html

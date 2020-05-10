@@ -80,8 +80,8 @@ func (c *Client) SendRequests(reqs *data.Requests) (*data.Response, error) {
 	trace := &tracer.Trace{
 		Id:      reqs.Trace.Id,
 		Records: []*tracer.Record{},
-		Rlfi:    reqs.Trace.Rlfi,
-		Tfi:     reqs.Trace.Tfi,
+		Rlfis:   reqs.Trace.Rlfis,
+		Tfis:    reqs.Trace.Tfis,
 	}
 
 	var rsp *data.Response
@@ -99,8 +99,8 @@ func (c *Client) SendRequests(reqs *data.Requests) (*data.Response, error) {
 		req.Trace = &tracer.Trace{
 			Id:      trace.Id,
 			Records: []*tracer.Record{record},
-			Rlfi:    trace.Rlfi,
-			Tfi:     trace.Tfi,
+			Rlfis:   trace.Rlfis,
+			Tfis:    trace.Tfis,
 		}
 
 		rsp, err = c.sendRequest(&req)
