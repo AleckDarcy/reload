@@ -2,13 +2,10 @@ package template
 
 import (
 	"context"
-	"encoding/json"
 	"html/template"
 	"io"
 	"net/http"
 	"time"
-
-	"github.com/AleckDarcy/reload/runtime/html"
 
 	"github.com/AleckDarcy/reload/core/tracer"
 )
@@ -57,18 +54,18 @@ func (t *Template) ExecuteTemplateReload(ctx context.Context, w http.ResponseWri
 			// delete trace from tracer.Store
 			tracer.Store.DeleteByContextMeta(meta)
 
-			// Content-Type: application/json instead of text/html
-			w.Header().Set(html.ContentType, html.ContentTypeJSON)
-
-			if err, ok := data["error"]; ok {
-				if errStr, ok := err.(string); ok {
-					if errStr != "" {
-						return t.base.ExecuteTemplate(w, name, data)
-					}
-				}
-			}
-
-			return json.NewEncoder(w).Encode(data)
+			//// Content-Type: application/json instead of text/html
+			//w.Header().Set(html.ContentType, html.ContentTypeJSON)
+			//
+			//if err, ok := data["error"]; ok {
+			//	if errStr, ok := err.(string); ok {
+			//		if errStr != "" {
+			//			return t.base.ExecuteTemplate(w, name, data)
+			//		}
+			//	}
+			//}
+			//
+			//return json.NewEncoder(w).Encode(data)
 		}
 	}
 

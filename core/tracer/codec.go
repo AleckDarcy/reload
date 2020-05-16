@@ -71,6 +71,8 @@ func (c *codec) Marshal(v interface{}) ([]byte, error) {
 												crash = false
 												break
 											}
+
+											after.Already++
 										}
 
 										if crash {
