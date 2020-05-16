@@ -16,6 +16,91 @@ import (
 
 const NTests = 1000
 
+func Test1(t *testing.T) {
+	traces := []*tracer.Trace{
+		{ // RLFI: crash CurrencyService, Fault: no
+			Tfis: []*tracer.TFI{
+				{
+					Type: tracer.FaultType_FaultCrash,
+					Name: []string{"GetSupportedCurrenciesRequest"},
+				},
+				{
+					Type: tracer.FaultType_FaultCrash,
+					Name: []string{"CurrencyConversionRequest"},
+				},
+			},
+		},
+		{ // RLFI: crash AdService, Fault: no
+			Tfis: []*tracer.TFI{
+				{
+					Type: tracer.FaultType_FaultCrash,
+					Name: []string{"AdRequest"},
+				},
+			},
+		},
+		{ // RLFI: crash CurrencyService and AdService, Fault: yes
+			Tfis: []*tracer.TFI{
+				{
+					Type: tracer.FaultType_FaultCrash,
+					Name: []string{"GetSupportedCurrenciesRequest"},
+				},
+				{
+					Type: tracer.FaultType_FaultCrash,
+					Name: []string{"CurrencyConversionRequest"},
+				},
+				{
+					Type: tracer.FaultType_FaultCrash,
+					Name: []string{"AdRequest"},
+				},
+			},
+		},
+		{ // TFI: crash CurrencyService when receiving CurrencyConversionRequest two times, Fault: yes
+			Tfis: []*tracer.TFI{
+				{
+					Type: tracer.FaultType_FaultCrash,
+					Name: []string{"CurrencyConversionRequest"},
+					After: []*tracer.TFIMeta{
+						{Name: "CurrencyConversionRequest", Times: 1},
+					},
+				},
+			},
+		},
+	}
+
+	for i := 0; i < len(traces); i++ {
+		if i != 3 {
+			continue
+		}
+
+		client := NewClient()
+
+		reqs := &data.Requests{
+			CookieUrl: "localhost",
+			Trace:     traces[i],
+			Requests: []data.Request{
+				{
+					Method:      data.HTTPGet,
+					URL:         "http://localhost",
+					MessageName: "home",
+					Trace:       traces[i],
+					Expect: &data.ExpectedResponse{
+						ContentType: html.ContentTypeHTML,
+						//Action:      data.PrintResponse,
+					},
+				},
+			},
+		}
+		reqs.Trace.Id = time.Now().UnixNano()
+
+		rsp, err := client.SendRequests(reqs)
+		if err != nil {
+			t.Errorf("%d err: %v", i, err)
+		} else {
+			t.Logf("body: %s", string(rsp.Body))
+		}
+	}
+}
+
 func TestConcurrency(t *testing.T) {
 	nClients := []int{1, 2, 4, 8}
 

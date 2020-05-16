@@ -37,7 +37,7 @@ func responseHandler(req *data.Request, httpRsp *http.Response) (*data.Response,
 	}
 	rsp := &data.Response{Body: body}
 
-	//log.Logf("[RELOAD] Content-Type: %s", httpRsp.Header.Get(html.ContentType))
+	log.Logf("[RELOAD] Content-Type: %s", httpRsp.Header.Get(html.ContentType))
 	if expect := req.Expect; expect == nil || expect.ContentType == html.ContentTypeJSON { // json
 		jsonData := map[string]json.RawMessage{}
 		if err = json.Unmarshal(body, &jsonData); err != nil {
