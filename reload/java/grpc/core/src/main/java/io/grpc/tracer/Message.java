@@ -399,7 +399,7 @@ public final class Message {
     // [RELOAD]
     public Record(int type, java.lang.String name, java.lang.String uuid, java.lang.String service) {
       this.type_ = type;
-      this.timestamp_ = System.nanoTime();
+      this.timestamp_ = System.currentTimeMillis() * 1000000;
       this.messageName_ = name;
       this.uuid_ = uuid;
       this.service_ = service;
