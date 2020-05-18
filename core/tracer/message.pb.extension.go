@@ -98,12 +98,12 @@ func (m *Trace) JSONString() string {
 	if len(m.Records) != 0 {
 		for i, record := range m.Records {
 			if i == 0 {
-				strRecords = fmt.Sprintf(`{"type": %d, "timestamp": %d, "messageName": "%s"}`,
-					record.Type, record.Timestamp, record.MessageName)
+				strRecords = fmt.Sprintf(`{"type": %d, "timestamp": %d, "uuid": "%s", messageName": "%s"}`,
+					record.Type, record.Timestamp, record.Uuid, record.MessageName)
 			} else {
 				strRecords += fmt.Sprintf(`,
-		{"type": %d, "timestamp": %d, "messageName": "%s"}`,
-					record.Type, record.Timestamp, record.MessageName)
+		{"type": %d, "timestamp": %d, "uuid": "%s", "messageName": "%s"}`,
+					record.Type, record.Timestamp, record.Uuid, record.MessageName)
 			}
 		}
 	}
