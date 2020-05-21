@@ -1,7 +1,7 @@
 package tracer
 
 import (
-	"fmt"
+	"encoding/json"
 	"time"
 
 	"github.com/AleckDarcy/reload/core/errors"
@@ -93,104 +93,108 @@ func (m *Trace) AppendRecord(record *Record) *Trace {
 }
 
 func (m *Trace) JSONString() string {
-	strRecords, strRlfi, strTfi := "null", "null", "null"
+	bytes, _ := json.Marshal(m)
 
-	if len(m.Records) != 0 {
-		for i, record := range m.Records {
-			if i == 0 {
-				strRecords = fmt.Sprintf(`{"type": %d, "timestamp": %d, "uuid": "%s", messageName": "%s"}`,
-					record.Type, record.Timestamp, record.Uuid, record.MessageName)
-			} else {
-				strRecords += fmt.Sprintf(`,
-		{"type": %d, "timestamp": %d, "uuid": "%s", "messageName": "%s"}`,
-					record.Type, record.Timestamp, record.Uuid, record.MessageName)
-			}
-		}
-	}
+	return string(bytes)
 
-	if len(m.Rlfis) != 0 {
-		for i, rlfi := range m.Rlfis {
-			if i == 0 {
-				strRlfi = fmt.Sprintf(`{
-		"type": "%v",
-		"name": "%s",
-		"delay": %d
-	}`,
-					rlfi.Type, rlfi.Name, rlfi.Delay,
-				)
-			} else {
-				strRlfi = fmt.Sprintf(`,
-	{
-		"type": "%v",
-		"name": "%s",
-		"delay": %d
-	}`,
-					rlfi.Type, rlfi.Name, rlfi.Delay,
-				)
-			}
-		}
-	}
-
-	if len(m.Tfis) != 0 {
-		for i, tfi := range m.Tfis {
-			strAfter := "null"
-			if len(tfi.After) != 0 {
-				for i, after := range tfi.After {
-					if i == 0 {
-						strAfter = fmt.Sprintf(`
-			"%s"`,
-							after,
-						)
-					} else {
-						strAfter = fmt.Sprintf(`,
-			"%s"`,
-							after,
-						)
-					}
-				}
-			}
-
-			if i == 0 {
-				strTfi = fmt.Sprintf(`{
-		"type": "%v",
-		"name": "%s",
-		"delay": %d,
-		"after": [
-			%s
-		]
-	}`,
-					tfi.Type, tfi.Name, tfi.Delay, strAfter,
-				)
-			} else {
-				strTfi = fmt.Sprintf(`,
-	{
-		"type": "%v",
-		"name": "%s",
-		"delay": %d,
-		"after": [
-			%s
-		]
-	}`,
-					tfi.Type, tfi.Name, tfi.Delay, strAfter,
-				)
-			}
-		}
-	}
-
-	return fmt.Sprintf(`
-{
-	"id": %d,
-	"records": [
-		%s
-	],
-	"rlfi": [
-		%s
-	],
-	"tfi": [
-		%s
-	]
-}
-`,
-		m.Id, strRecords, strRlfi, strTfi,
-	)
+	//	strRecords, strRlfi, strTfi := "null", "null", "null"
+	//
+	//	if len(m.Records) != 0 {
+	//		for i, record := range m.Records {
+	//			if i == 0 {
+	//				strRecords = fmt.Sprintf(`{"type": %d, "timestamp": %d, "uuid": "%s", "messageName": "%s"}`,
+	//					record.Type, record.Timestamp, record.Uuid, record.MessageName)
+	//			} else {
+	//				strRecords += fmt.Sprintf(`,
+	//		{"type": %d, "timestamp": %d, "uuid": "%s", "messageName": "%s"}`,
+	//					record.Type, record.Timestamp, record.Uuid, record.MessageName)
+	//			}
+	//		}
+	//	}
+	//
+	//	if len(m.Rlfis) != 0 {
+	//		for i, rlfi := range m.Rlfis {
+	//			if i == 0 {
+	//				strRlfi = fmt.Sprintf(`{
+	//		"type": "%v",
+	//		"name": "%s",
+	//		"delay": %d
+	//	}`,
+	//					rlfi.Type, rlfi.Name, rlfi.Delay,
+	//				)
+	//			} else {
+	//				strRlfi = fmt.Sprintf(`,
+	//	{
+	//		"type": "%v",
+	//		"name": "%s",
+	//		"delay": %d
+	//	}`,
+	//					rlfi.Type, rlfi.Name, rlfi.Delay,
+	//				)
+	//			}
+	//		}
+	//	}
+	//
+	//	if len(m.Tfis) != 0 {
+	//		for i, tfi := range m.Tfis {
+	//			strAfter := "null"
+	//			if len(tfi.After) != 0 {
+	//				for i, after := range tfi.After {
+	//					if i == 0 {
+	//						strAfter = fmt.Sprintf(`
+	//			"%s"`,
+	//							after,
+	//						)
+	//					} else {
+	//						strAfter = fmt.Sprintf(`,
+	//			"%s"`,
+	//							after,
+	//						)
+	//					}
+	//				}
+	//			}
+	//
+	//			if i == 0 {
+	//				strTfi = fmt.Sprintf(`{
+	//		"type": "%v",
+	//		"name": "%s",
+	//		"delay": %d,
+	//		"after": [
+	//			%s
+	//		]
+	//	}`,
+	//					tfi.Type, tfi.Name, tfi.Delay, strAfter,
+	//				)
+	//			} else {
+	//				strTfi = fmt.Sprintf(`,
+	//	{
+	//		"type": "%v",
+	//		"name": "%s",
+	//		"delay": %d,
+	//		"after": [
+	//			%s
+	//		]
+	//	}`,
+	//					tfi.Type, tfi.Name, tfi.Delay, strAfter,
+	//				)
+	//			}
+	//		}
+	//	}
+	//
+	//	return fmt.Sprintf(`
+	//{
+	//	"id": %d,
+	//	"records": [
+	//		%s
+	//	],
+	//	"rlfi": [
+	//		%s
+	//	],
+	//	"tfi": [
+	//		%s
+	//	]
+	//}
+	//`,
+	//		m.Id, strRecords, strRlfi, strTfi,
+	//	)
 }
