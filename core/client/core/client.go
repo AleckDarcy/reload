@@ -10,10 +10,13 @@ import (
 	"strings"
 	"time"
 
+	rHtml "github.com/AleckDarcy/reload/runtime/html"
+
 	"github.com/AleckDarcy/reload/core/client/data"
+	"github.com/AleckDarcy/reload/core/client/parser"
 	"github.com/AleckDarcy/reload/core/log"
 	"github.com/AleckDarcy/reload/core/tracer"
-	"github.com/AleckDarcy/reload/runtime/html"
+	"golang.org/x/net/html"
 )
 
 type Client struct {
@@ -37,8 +40,19 @@ func responseHandler(req *data.Request, httpRsp *http.Response) (*data.Response,
 	}
 	rsp := &data.Response{Body: body}
 
-	log.Logf("[RELOAD] Content-Type: %s", httpRsp.Header.Get(html.ContentType))
-	if expect := req.Expect; expect == nil || expect.ContentType == html.ContentTypeJSON { // json
+	log.Logf("[RELOAD] Content-Type: %s", httpRsp.Header.Get(rHtml.ContentType))
+	if expect := req.Expect; expect == nil || expect.ContentType == rHtml.ContentTypeHTML {
+		if expect == nil || expect.Action == data.PrintResponse {
+			log.Logf("[RELOAD] Url: %v", req.URL)
+
+			node, _ := html.Parse(strings.NewReader(string(body)))
+			if trace := parser.GetElementByClass(node, "trace"); trace != nil {
+				log.Logf("[RELOAD] Trace: %v", parser.GetJSON(trace))
+			}
+
+			log.Logf("[RELOAD] Body: %v", string(body))
+		}
+	} else if expect.ContentType == rHtml.ContentTypeJSON { // json
 		jsonData := map[string]json.RawMessage{}
 		if err = json.Unmarshal(body, &jsonData); err != nil {
 			fmt.Println(string(body))
@@ -59,12 +73,6 @@ func responseHandler(req *data.Request, httpRsp *http.Response) (*data.Response,
 				Service:     "client",
 			})
 		}
-
-	} else if expect.ContentType == html.ContentTypeHTML {
-		if expect.Action == data.PrintResponse {
-			log.Logf("[RELOAD] Url: %v", req.URL)
-			log.Logf("[RELOAD] Body: %v", string(body))
-		}
 	}
 
 	return rsp, nil
@@ -72,14 +80,16 @@ func responseHandler(req *data.Request, httpRsp *http.Response) (*data.Response,
 
 func (c *Client) SendRequests(reqs *data.Requests) (*data.Response, error) {
 	if reqs.Trace == nil {
-		return nil, nil
+		for _, req := range reqs.Requests {
+			return c.sendRequest(&req)
+		}
 	}
 
 	trace := &tracer.Trace{
 		Id:      reqs.Trace.Id,
 		Records: []*tracer.Record{},
-		Rlfi:    reqs.Trace.Rlfi,
-		Tfi:     reqs.Trace.Tfi,
+		Rlfis:   reqs.Trace.Rlfis,
+		Tfis:    reqs.Trace.Tfis,
 	}
 
 	var rsp *data.Response
@@ -97,8 +107,8 @@ func (c *Client) SendRequests(reqs *data.Requests) (*data.Response, error) {
 		req.Trace = &tracer.Trace{
 			Id:      trace.Id,
 			Records: []*tracer.Record{record},
-			Rlfi:    trace.Rlfi,
-			Tfi:     trace.Tfi,
+			Rlfis:   trace.Rlfis,
+			Tfis:    trace.Tfis,
 		}
 
 		rsp, err = c.sendRequest(&req)
@@ -133,12 +143,12 @@ func (c *Client) sendRequest(req *data.Request) (*data.Response, error) {
 
 	switch req.Method {
 	case data.HTTPGet:
-		httpReq, err = http.NewRequest(html.MethodGet, req.URL, nil)
+		httpReq, err = http.NewRequest(rHtml.MethodGet, req.URL, nil)
 	case data.HTTPPost:
 		body := strings.NewReader(req.UrlValues.Encode())
-		httpReq, err = http.NewRequest(html.MethodPost, req.URL, body)
+		httpReq, err = http.NewRequest(rHtml.MethodPost, req.URL, body)
 		if err == nil {
-			httpReq.Header.Set(html.ContentType, html.ContentTypeMIMEPostForm)
+			httpReq.Header.Set(rHtml.ContentType, rHtml.ContentTypeMIMEPostForm)
 		}
 	default:
 		return nil, errors.New("unsupported http method")
@@ -149,7 +159,7 @@ func (c *Client) sendRequest(req *data.Request) (*data.Response, error) {
 	}
 
 	if traceString != "" {
-		log.Logf("[RELOAD] Fi-Trace: %d %s", len(traceString), traceString)
+		//log.Logf("[RELOAD] Fi-Trace: %s", traceString)
 		httpReq.Header.Set("Fi-Trace", traceString)
 	}
 

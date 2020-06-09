@@ -10,7 +10,7 @@ dependencies {
     golang {
         build(
             [name: 'github.com/google/uuid', tag: 'v1.1.1'],
-            [name: 'google.golang.org/grpc', tag: '1.14.0']
+            [name: 'google.golang.org/grpc', tag: '1.14.0'],
         )
     }
 }

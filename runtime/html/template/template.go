@@ -2,15 +2,11 @@ package template
 
 import (
 	"context"
-	"encoding/json"
 	"html/template"
 	"io"
 	"net/http"
 	"time"
 
-	"github.com/AleckDarcy/reload/runtime/html"
-
-	"github.com/AleckDarcy/reload/core/log"
 	"github.com/AleckDarcy/reload/core/tracer"
 )
 
@@ -38,9 +34,9 @@ func (t *Template) ExecuteTemplateReload(ctx context.Context, w http.ResponseWri
 	//log.Logf("[RELOAD] ExecuteTemplateReload, called")
 	if metaVal := ctx.Value(tracer.ContextMetaKey{}); metaVal != nil {
 		meta := metaVal.(*tracer.ContextMeta)
-		log.Logf("[RELOAD] ExecuteTemplateReload, meta: %+v", meta)
+		//log.Logf("[RELOAD] ExecuteTemplateReload, meta: %+v", meta)
 		if trace, ok := tracer.Store.GetByContextMeta(meta); ok {
-			log.Logf("[RELOAD] ExecuteTemplateReload, trace found")
+			//log.Logf("[RELOAD] ExecuteTemplateReload, trace found")
 
 			trace.Records = append(trace.Records, &tracer.Record{
 				Type:        tracer.RecordType_RecordSend,
@@ -49,23 +45,27 @@ func (t *Template) ExecuteTemplateReload(ctx context.Context, w http.ResponseWri
 				Uuid:        meta.UUID(),
 				Service:     tracer.ServiceUUID,
 			})
+
+			trace.Rlfis = nil
+			trace.Tfis = nil
+
 			data["fi_trace"] = trace
 
 			// delete trace from tracer.Store
 			tracer.Store.DeleteByContextMeta(meta)
 
-			// Content-Type: application/json instead of text/html
-			w.Header().Set(html.ContentType, html.ContentTypeJSON)
-
-			if err, ok := data["error"]; ok {
-				if errStr, ok := err.(string); ok {
-					if errStr != "" {
-						return t.base.ExecuteTemplate(w, name, data)
-					}
-				}
-			}
-
-			return json.NewEncoder(w).Encode(data)
+			//// Content-Type: application/json instead of text/html
+			//w.Header().Set(html.ContentType, html.ContentTypeJSON)
+			//
+			//if err, ok := data["error"]; ok {
+			//	if errStr, ok := err.(string); ok {
+			//		if errStr != "" {
+			//			return t.base.ExecuteTemplate(w, name, data)
+			//		}
+			//	}
+			//}
+			//
+			//return json.NewEncoder(w).Encode(data)
 		}
 	}
 

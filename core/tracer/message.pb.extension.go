@@ -1,7 +1,7 @@
 package tracer
 
 import (
-	"fmt"
+	"encoding/json"
 	"time"
 
 	"github.com/AleckDarcy/reload/core/errors"
@@ -16,10 +16,10 @@ func (m *Trace) Copy() *Trace {
 }
 
 func (m *Trace) CalFI(records []*Record) {
-	if m.Tfi != nil {
+	for _, tfi := range m.Tfis {
 		for _, record := range records {
 			if record.Type == RecordType_RecordReceive {
-				for _, after := range m.Tfi.After {
+				for _, after := range tfi.After {
 					if record.MessageName == after.Name {
 						after.Already++
 					}
@@ -40,7 +40,7 @@ func (m *Trace) DoFI(name string) error {
 }
 
 func (m *Trace) RLFI(name string) error {
-	if rlfi := m.Rlfi; rlfi != nil {
+	for _, rlfi := range m.Rlfis {
 		if rlfi.Name == name {
 			if rlfi.Type == FaultType_FaultCrash {
 				return errors.ErrorFI_RLFI_Crash
@@ -58,11 +58,11 @@ func (m *Trace) RLFI(name string) error {
 }
 
 func (m *Trace) TFI(name string) error {
-	if tfi := m.Tfi; tfi != nil {
+	for _, tfi := range m.Tfis {
 		for _, after := range tfi.After {
 			if after.Name == name {
 				after.Already++
-				if after.Already <= after.Times {
+				if after.Already != after.Times+1 {
 					return nil
 				}
 			} else if after.Already < after.Times {
@@ -70,7 +70,7 @@ func (m *Trace) TFI(name string) error {
 			}
 		}
 
-		if tfi.Name == name {
+		if tfi.Name[0] == name {
 			if tfi.Type == FaultType_FaultCrash {
 				return errors.ErrorFI_TFI_Crash
 			} else if tfi.Type == FaultType_FaultDelay {
@@ -93,71 +93,108 @@ func (m *Trace) AppendRecord(record *Record) *Trace {
 }
 
 func (m *Trace) JSONString() string {
-	strRecords, strRlfi, strTfi := "null", "null", "null"
+	bytes, _ := json.Marshal(m)
 
-	if len(m.Records) != 0 {
-		for i, record := range m.Records {
-			if i == 0 {
-				strRecords = fmt.Sprintf(`{"type": %d, "timestamp": %d, "messageName": "%s"}`,
-					record.Type, record.Timestamp, record.MessageName)
-			} else {
-				strRecords += fmt.Sprintf(`,
-		{"type": %d, "timestamp": %d, "messageName": "%s"}`,
-					record.Type, record.Timestamp, record.MessageName)
-			}
-		}
-	}
+	return string(bytes)
 
-	if m.Rlfi != nil {
-		strRlfi = fmt.Sprintf(`{
-		"type": "%v",
-		"name": "%s",
-		"delay": %d
-	}`,
-			m.Rlfi.Type, m.Rlfi.Name, m.Rlfi.Delay,
-		)
-	}
-
-	if m.Tfi != nil {
-		strAfter := "null"
-		if len(m.Tfi.After) != 0 {
-			for i, after := range m.Tfi.After {
-				if i == 0 {
-					strAfter = fmt.Sprintf(`
-			"%s"`,
-						after,
-					)
-				} else {
-					strAfter = fmt.Sprintf(`,
-			"%s"`,
-						after,
-					)
-				}
-			}
-		}
-
-		strTfi = fmt.Sprintf(`{
-		"type": "%v",
-		"name": "%s",
-		"delay": %d,
-		"after": [
-			%s
-		]
-	}`,
-			m.Rlfi.Type, m.Rlfi.Name, m.Rlfi.Delay, strAfter,
-		)
-	}
-
-	return fmt.Sprintf(`
-{
-	"id": %d,
-	"records": [
-		%s
-	],
-	"rlfi": %s,
-	"tfi": %s
-}
-`,
-		m.Id, strRecords, strRlfi, strTfi,
-	)
+	//	strRecords, strRlfi, strTfi := "null", "null", "null"
+	//
+	//	if len(m.Records) != 0 {
+	//		for i, record := range m.Records {
+	//			if i == 0 {
+	//				strRecords = fmt.Sprintf(`{"type": %d, "timestamp": %d, "uuid": "%s", "messageName": "%s"}`,
+	//					record.Type, record.Timestamp, record.Uuid, record.MessageName)
+	//			} else {
+	//				strRecords += fmt.Sprintf(`,
+	//		{"type": %d, "timestamp": %d, "uuid": "%s", "messageName": "%s"}`,
+	//					record.Type, record.Timestamp, record.Uuid, record.MessageName)
+	//			}
+	//		}
+	//	}
+	//
+	//	if len(m.Rlfis) != 0 {
+	//		for i, rlfi := range m.Rlfis {
+	//			if i == 0 {
+	//				strRlfi = fmt.Sprintf(`{
+	//		"type": "%v",
+	//		"name": "%s",
+	//		"delay": %d
+	//	}`,
+	//					rlfi.Type, rlfi.Name, rlfi.Delay,
+	//				)
+	//			} else {
+	//				strRlfi = fmt.Sprintf(`,
+	//	{
+	//		"type": "%v",
+	//		"name": "%s",
+	//		"delay": %d
+	//	}`,
+	//					rlfi.Type, rlfi.Name, rlfi.Delay,
+	//				)
+	//			}
+	//		}
+	//	}
+	//
+	//	if len(m.Tfis) != 0 {
+	//		for i, tfi := range m.Tfis {
+	//			strAfter := "null"
+	//			if len(tfi.After) != 0 {
+	//				for i, after := range tfi.After {
+	//					if i == 0 {
+	//						strAfter = fmt.Sprintf(`
+	//			"%s"`,
+	//							after,
+	//						)
+	//					} else {
+	//						strAfter = fmt.Sprintf(`,
+	//			"%s"`,
+	//							after,
+	//						)
+	//					}
+	//				}
+	//			}
+	//
+	//			if i == 0 {
+	//				strTfi = fmt.Sprintf(`{
+	//		"type": "%v",
+	//		"name": "%s",
+	//		"delay": %d,
+	//		"after": [
+	//			%s
+	//		]
+	//	}`,
+	//					tfi.Type, tfi.Name, tfi.Delay, strAfter,
+	//				)
+	//			} else {
+	//				strTfi = fmt.Sprintf(`,
+	//	{
+	//		"type": "%v",
+	//		"name": "%s",
+	//		"delay": %d,
+	//		"after": [
+	//			%s
+	//		]
+	//	}`,
+	//					tfi.Type, tfi.Name, tfi.Delay, strAfter,
+	//				)
+	//			}
+	//		}
+	//	}
+	//
+	//	return fmt.Sprintf(`
+	//{
+	//	"id": %d,
+	//	"records": [
+	//		%s
+	//	],
+	//	"rlfi": [
+	//		%s
+	//	],
+	//	"tfi": [
+	//		%s
+	//	]
+	//}
+	//`,
+	//		m.Id, strRecords, strRlfi, strTfi,
+	//	)
 }

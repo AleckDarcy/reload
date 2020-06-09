@@ -26,8 +26,8 @@ message Trace {
     int64 id = 1;
     repeated Record records = 2;
 
-    RLFI rlfi = 20;
-    TFI tfi = 21;
+    repeated RLFI rlfis = 20;
+    repeated TFI tfis = 21;
 }
 
 enum FaultType {
@@ -50,7 +50,7 @@ message TFIMeta {
 
 message TFI {
     FaultType type = 1;
-    string name = 2;
+    repeated string name = 2;
     int64 delay = 3;
     repeated TFIMeta after = 4;
 }
