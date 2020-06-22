@@ -8,22 +8,40 @@ import (
 )
 
 func TestName(t *testing.T) {
-	//// home
-	//var names = []string{
-	//	"GetSupportedCurrenciesRequest",
-	//	"ListProductsRequest",
-	//	"GetCartRequest",
-	//	"CurrencyConversionRequest",
-	//	"CurrencyConversionRequest",
-	//	"CurrencyConversionRequest",
-	//	"CurrencyConversionRequest",
-	//	"CurrencyConversionRequest",
-	//	"CurrencyConversionRequest",
-	//	"CurrencyConversionRequest",
-	//	"CurrencyConversionRequest",
-	//	"CurrencyConversionRequest",
-	//	"AdRequest",
-	//}
+	getSupportedCurrenciesRequest := &NameMeta{
+		Service: "currencyservice",
+		Name:    "GetSupportedCurrenciesRequest",
+	}
+	currencyConversionRequest := &NameMeta{
+		Service: "currencyservice",
+		Name:    "CurrencyConversionRequest",
+	}
+
+	// home
+	var names = []*NameMeta{
+		getSupportedCurrenciesRequest,
+		{
+			Service: "productcatalogservice",
+			Name:    "ListProductsRequest",
+		},
+		{
+			Service: "cartservice",
+			Name:    "GetCartRequest",
+		},
+		currencyConversionRequest,
+		currencyConversionRequest,
+		currencyConversionRequest,
+		currencyConversionRequest,
+		currencyConversionRequest,
+		currencyConversionRequest,
+		currencyConversionRequest,
+		currencyConversionRequest,
+		currencyConversionRequest,
+		{
+			Service: "adservice",
+			Name:    "AdRequest",
+		},
+	}
 
 	//// product
 	//var names = []string{
@@ -40,27 +58,27 @@ func TestName(t *testing.T) {
 	//	"AdRequest",
 	//}
 
-	// checkout
-	var names = []string{
-		"PlaceOrderRequest",
-		"GetCartRequest",
-		"GetProductRequest",
-		"CurrencyConversionRequest",
-		"GetProductRequest",
-		"CurrencyConversionRequest",
-		"GetQuoteRequest",
-		"CurrencyConversionRequest",
-		"ChargeRequest",
-		"ShipOrderRequest",
-		"EmptyCartRequest",
-		"SendOrderConfirmationRequest",
-		"ListRecommendationsRequest",
-		"GetProductRequest",
-		"GetProductRequest",
-		"GetProductRequest",
-		"GetProductRequest",
-		"GetProductRequest",
-	}
+	//// checkout
+	//var names = []string{
+	//	"PlaceOrderRequest",
+	//	"GetCartRequest",
+	//	"GetProductRequest",
+	//	"CurrencyConversionRequest",
+	//	"GetProductRequest",
+	//	"CurrencyConversionRequest",
+	//	"GetQuoteRequest",
+	//	"CurrencyConversionRequest",
+	//	"ChargeRequest",
+	//	"ShipOrderRequest",
+	//	"EmptyCartRequest",
+	//	"SendOrderConfirmationRequest",
+	//	"ListRecommendationsRequest",
+	//	"GetProductRequest",
+	//	"GetProductRequest",
+	//	"GetProductRequest",
+	//	"GetProductRequest",
+	//	"GetProductRequest",
+	//}
 
 	resultChan := make(chan *Faults, 1)
 
@@ -70,7 +88,7 @@ func TestName(t *testing.T) {
 		fmt.Println("TFIs:", string(jsonBytes))
 		for i := 1; i <= len(names); i++ {
 			c.SetLen(i)
-			c.Generate(resultChan)
+			c.GenerateCombinartorial(resultChan)
 		}
 	}()
 
@@ -83,7 +101,7 @@ func TestName(t *testing.T) {
 			case result := <-resultChan:
 				jsonBytes, _ := json.Marshal(result)
 				fmt.Println(string(jsonBytes))
-
+				_ = jsonBytes
 				count++
 				if count == expect {
 					signal <- struct{}{}

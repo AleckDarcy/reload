@@ -40,8 +40,10 @@ func responseHandler(req *data.Request, httpRsp *http.Response) (*data.Response,
 	}
 	rsp := &data.Response{Body: body}
 
-	log.Logf("[RELOAD] Content-Type: %s", httpRsp.Header.Get(rHtml.ContentType))
-	if expect := req.Expect; expect == nil || expect.ContentType == rHtml.ContentTypeHTML {
+	//log.Logf("[RELOAD] Content-Type: %s", httpRsp.Header.Get(rHtml.ContentType))
+	if req.Trace == nil {
+
+	} else if expect := req.Expect; expect == nil || expect.ContentType == rHtml.ContentTypeHTML {
 		if expect == nil || expect.Action == data.PrintResponse {
 			log.Logf("[RELOAD] Url: %v", req.URL)
 

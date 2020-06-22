@@ -13,7 +13,16 @@ import (
 	"github.com/AleckDarcy/reload/core/tracer"
 )
 
-const NTests = 1000
+func TestName1(t *testing.T) {
+	t.Log(time.Now().UnixNano())
+}
+
+const NTests = 100
+const NRound = 10
+
+var addr = "http://34.83.111.165"
+
+//var addr = "http://localhost"
 
 func Test1(t *testing.T) {
 	traces := []*tracer.Trace{
@@ -101,106 +110,142 @@ func Test1(t *testing.T) {
 }
 
 func TestConcurrency(t *testing.T) {
-	nClients := []int{1, 2, 4, 8}
+	nClients := []int{1, 2, 4}
 
 	traces := []*tracer.Trace{
 		nil,
-		{},
-		{
-
-			Rlfis: []*tracer.RLFI{
-				{
-					Type: tracer.FaultType_FaultCrash,
-					Name: "GetSupportedCurrenciesRequest",
-				},
-			},
-		},
-		{
-
-			Rlfis: []*tracer.RLFI{
-				{
-					Type: tracer.FaultType_FaultCrash,
-					Name: "CurrencyConversionRequest",
-				},
-			},
-		},
-		{
-			Tfis: []*tracer.TFI{
-				{
-					Type: tracer.FaultType_FaultCrash,
-					Name: []string{"CurrencyConversionRequest"},
-					After: []*tracer.TFIMeta{
-						{Name: "CurrencyConversionRequest", Times: 2},
-					},
-				},
-			},
-		},
+		//{},
+		//{
+		//	Tfis: []*tracer.TFI{
+		//		{
+		//			Type: tracer.FaultType_FaultCrash,
+		//			Name: []string{"GetSupportedCurrenciesRequest"},
+		//		},
+		//		{
+		//			Type: tracer.FaultType_FaultCrash,
+		//			Name: []string{"CurrencyConversionRequest"},
+		//		},
+		//		//{
+		//		//	Type: tracer.FaultType_FaultCrash,
+		//		//	Name: []string{"AdRequest"},
+		//		//},
+		//	},
+		//},
+		//{
+		//	Tfis: []*tracer.TFI{
+		//		{
+		//			Type: tracer.FaultType_FaultCrash,
+		//			Name: []string{"CurrencyConversionRequest"},
+		//			After: []*tracer.TFIMeta{
+		//				{Name: "CurrencyConversionRequest", Times: 2},
+		//			},
+		//		},
+		//	},
+		//},
 	}
 
+	perf := make([][][]float64, len(traces))
 	for j, trace := range traces {
-		print(fmt.Sprintf("| %d |", j))
-		for _, nCLient := range nClients {
-			nTest := NTests / nCLient
-			clients := make([]*Client, nCLient)
-			signals := make(chan struct{}, nCLient)
-			reqss := make([]*data.Requests, nCLient)
+		perfT := make([][]float64, NRound)
+		perf[j] = perfT
 
-			for i := 0; i < nCLient; i++ {
-				clients[i] = NewClient()
+		for r := 0; r < NRound; r++ {
+			perfR := make([]float64, len(nClients))
+			perfT[r] = perfR
 
-				reqss[i] = &data.Requests{
-					CookieUrl: "localhost",
-					Trace:     trace,
-					Requests: []data.Request{
-						{
-							Method:      data.HTTPGet,
-							URL:         "http://localhost",
-							MessageName: "home",
-							Expect: &data.ExpectedResponse{
-								ContentType: rHtml.ContentTypeHTML,
-								//Action:      data.PrintResponse,
+			errCount := 0
+
+			fmt.Printf("| %d |", j)
+			for c, nCLient := range nClients {
+				nTest := NTests / nCLient
+				clients := make([]*Client, nCLient)
+				signals := make(chan struct{}, nCLient)
+				reqss := make([]*data.Requests, nCLient)
+
+				offset := time.Now().UnixNano()
+				for i := 0; i < nCLient; i++ {
+					clients[i] = NewClient()
+
+					reqss[i] = &data.Requests{
+						CookieUrl: "localhost",
+						Trace:     trace,
+						Requests: []data.Request{
+							{
+								Method:      data.HTTPGet,
+								URL:         addr,
+								MessageName: "home",
+								Expect: &data.ExpectedResponse{
+									ContentType: rHtml.ContentTypeHTML,
+									//Action:      data.PrintResponse,
+								},
 							},
 						},
-					},
-				}
-
-				if reqss[i].Trace != nil {
-					reqss[i].Trace.Id = int64(i*NTests + 1)
-				}
-			}
-
-			t.Log(nCLient, nTest)
-			start := time.Now()
-
-			for i := 0; i < nCLient; i++ {
-				go func(i int, signals chan struct{}) {
-					client := clients[i]
-					reqs := reqss[i]
-
-					for k := 0; k < nTest; k++ {
-						_, err := client.SendRequests(reqs)
-						if err != nil {
-							t.Error(err)
-						}
-
-						if reqs.Trace != nil {
-							reqs.Trace.Id++
-						}
 					}
 
-					signals <- struct{}{}
-				}(i, signals)
+					if reqss[i].Trace != nil {
+						reqss[i].Trace.Id = int64(i*NTests+1) + offset
+					}
+				}
+
+				//t.Log(nCLient, nTest)
+				start := time.Now()
+
+				for i := 0; i < nCLient; i++ {
+					go func(i int, signals chan struct{}) {
+						client := clients[i]
+						reqs := reqss[i]
+
+						for k := 0; k < nTest; k++ {
+							_, err := client.SendRequests(reqs)
+							if err != nil {
+								t.Error(err)
+								errCount++
+							}
+
+							if reqs.Trace != nil {
+								reqs.Trace.Id++
+							}
+						}
+
+						signals <- struct{}{}
+					}(i, signals)
+				}
+
+				for i := 0; i < nCLient; i++ {
+					<-signals
+				}
+
+				end := time.Now()
+
+				fmt.Printf(" %v |", end.Sub(start).Seconds())
+
+				perfR[c] = end.Sub(start).Seconds()
 			}
+			fmt.Println("", errCount, "|")
+			errCount = 0
+		}
+	}
 
-			for i := 0; i < nCLient; i++ {
-				<-signals
+	//fmt.Println(perf)
+
+	for trace := range perf {
+		perfT := perf[trace]
+		perfAvg := make([]float64, len(nClients))
+
+		for r := 0; r < NRound; r++ {
+			perfR := perfT[r]
+
+			for c := range nClients {
+				perfAvg[c] += perfR[c] / NRound
 			}
+		}
 
-			end := time.Now()
-
-			print(fmt.Sprintf(" %v |", end.Sub(start).Seconds()))
+		print(fmt.Sprintf("| %d |", trace))
+		for c := range nClients {
+			print(fmt.Sprintf(" %v |", perfAvg[c]))
 		}
 		print("\n")
+		//fmt.Println(perfAvg)
 	}
 }
 
@@ -209,11 +254,11 @@ func TestHome(t *testing.T) {
 
 	reqs := &data.Requests{
 		CookieUrl: "localhost",
-		Trace:     &tracer.Trace{Id: 1},
+		Trace:     &tracer.Trace{Id: time.Now().UnixNano()},
 		Requests: []data.Request{
 			{
 				Method:      data.HTTPGet,
-				URL:         "http://localhost",
+				URL:         addr,
 				MessageName: "home",
 			},
 		},
@@ -326,7 +371,7 @@ func TestHome_RLFI_Java_AdRequest(t *testing.T) {
 		Requests: []data.Request{
 			{
 				Method:      data.HTTPGet,
-				URL:         "http://localhost",
+				URL:         addr,
 				MessageName: "home",
 				Expect: &data.ExpectedResponse{
 					ContentType: rHtml.ContentTypeHTML,

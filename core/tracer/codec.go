@@ -51,17 +51,7 @@ func (c *codec) Marshal(v interface{}) ([]byte, error) {
 				}
 				if trace, ok := Store.UpdateFunctionByContextMeta(meta, updateFunction); ok {
 					if t.GetMessageType() == MessageType_Message_Request {
-						if rlfis := trace.Rlfis; len(rlfis) != 0 {
-							for _, rlfi := range rlfis {
-								if rlfi.Type == FaultType_FaultCrash {
-									if rlfi.Name == t.GetFI_Name() {
-										//log.Logf("[RELOAD] Marshal rlfi crash triggered")
-
-										return nil, errors.New("transport is closing")
-									}
-								}
-							}
-						} else if tfis := trace.Tfis; len(tfis) != 0 {
+						if tfis := trace.Tfis; tfis != nil {
 							for _, tfi := range tfis {
 								if tfi.Type == FaultType_FaultCrash {
 									if tfi.Name[0] == t.GetFI_Name() {

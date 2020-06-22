@@ -1,52 +1,90 @@
 package tracer
 
+import "fmt"
+
+type NameMeta struct {
+	Service string
+	Name    string
+}
+
 type Generator struct {
-	names  []string
-	ids    []int
-	faults []*TFI
+	names           []*NameMeta
+	ids             []int
+	faults          []*TFI
+	serviceCount    map[string]int64
+	request2Service map[string]string
 
 	combineLen int
 }
 
+type FIType int64
+
+const (
+	FI_TFI FIType = iota
+	FI_RLFI
+)
+
 type Faults struct {
+	FIType FIType
 	IDs    []int
 	Faults []*TFI
 }
 
-func NewGenerator(names []string) *Generator {
-	ids := make([]int, len(names))
-	for i := 0; i < len(names); i++ {
+func NewGenerator(nameLists []*NameMeta) *Generator {
+	ids := make([]int, len(nameLists))
+	for i := 0; i < len(nameLists); i++ {
 		ids[i] = i
 	}
 
-	faults := make([]*TFI, len(names))
-	nameCount := map[string]int64{}
-	for i, name := range names {
-		if count, ok := nameCount[name]; ok {
-			faults[i] = &TFI{
-				Type:  FaultType_FaultCrash,
-				Name:  []string{name},
-				After: []*TFIMeta{{Name: name, Times: count}},
-			}
-			nameCount[name] = count + 1
-		} else {
-			faults[i] = &TFI{
-				Type:  FaultType_FaultCrash,
-				Name:  []string{name},
-				After: []*TFIMeta{},
-			}
-			nameCount[name] = 1
-		}
+	serviceCount := map[string]int64{}
+	request2Service := map[string]string{}
+	for _, names := range nameLists {
+		serviceCount[names.Service] = serviceCount[names.Service] + 1
+		request2Service[names.Name] = names.Service
 	}
 
-	return &Generator{names: names, ids: ids, faults: faults}
+	faults := make([]*TFI, len(nameLists))
+	serviceNameCount := map[string]map[string]int64{}
+	for i, names := range nameLists {
+		tfi := &TFI{
+			Type:  FaultType_FaultCrash,
+			Name:  []string{names.Name},
+			After: []*TFIMeta{},
+		}
+
+		nameCount, ok := serviceNameCount[names.Service]
+		if !ok {
+			nameCount = map[string]int64{}
+			serviceNameCount[names.Service] = nameCount
+		}
+
+		for name, count := range nameCount {
+			tfi.After = append(tfi.After, &TFIMeta{Name: name, Times: count})
+		}
+
+		nameCount[names.Name] = nameCount[names.Name] + 1
+
+		faults[i] = tfi
+
+		fmt.Println(tfi)
+	}
+
+	fmt.Println(serviceCount)
+
+	return &Generator{
+		names:           nameLists,
+		ids:             ids,
+		faults:          faults,
+		serviceCount:    serviceCount,
+		request2Service: request2Service,
+	}
 }
 
 func (c *Generator) SetLen(length int) {
 	c.combineLen = length
 }
 
-func (c *Generator) Generate(resultChan chan *Faults) {
+func (c *Generator) GenerateCombinartorial(resultChan chan *Faults) {
 	arrLen := len(c.ids) - c.combineLen
 	for i := 0; i <= arrLen; i++ {
 		result := make([]int, c.combineLen)
@@ -89,11 +127,52 @@ func copyArr(rawArr []int, target []int) {
 	}
 }
 
-func (c *Generator) GetFaults(arr []int) *Faults {
+func (c *Generator) GetFaults(ids []int) *Faults {
+	arr := make([]int, len(ids))
+	copy(arr, ids)
+
 	faults := make([]*TFI, 0, len(arr))
+
+	tmpServiceCount := map[string]int64{}
+	serviceNameCount := map[string]map[string]int64{}
+
 	for _, i := range arr {
-		faults = append(faults, c.faults[i])
+		fault := c.faults[i]
+
+		service := c.request2Service[fault.Name[0]]
+		tmpServiceCount[service] = tmpServiceCount[service] + 1
+		nameCount, ok := serviceNameCount[service]
+		if !ok {
+			nameCount = map[string]int64{}
+			serviceNameCount[service] = nameCount
+		}
+
+		nameCount[fault.Name[0]] = nameCount[fault.Name[0]] + 1
 	}
 
-	return &Faults{IDs: arr, Faults: faults}
+	serviceRIFI := map[string]struct{}{}
+
+	fiType := FI_RLFI
+	for _, i := range arr {
+		fault := c.faults[i]
+
+		service := c.request2Service[fault.Name[0]]
+		if tmpServiceCount[service] != c.serviceCount[service] {
+			fiType = FI_TFI
+			faults = append(faults, c.faults[i])
+		} else {
+			if _, ok := serviceRIFI[service]; !ok {
+				for name := range serviceNameCount[service] {
+					faults = append(faults, &TFI{
+						Type: FaultType_FaultCrash,
+						Name: []string{name},
+					})
+				}
+
+				serviceRIFI[service] = struct{}{}
+			}
+		}
+	}
+
+	return &Faults{FIType: fiType, IDs: arr, Faults: faults}
 }

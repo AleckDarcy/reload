@@ -7,6 +7,10 @@ import (
 	"github.com/AleckDarcy/reload/core/errors"
 )
 
+func (m *Trace) Compress() []byte {
+	return nil
+}
+
 func (m *Trace) Copy() *Trace {
 	newM := *m
 	newM.Records = make([]*Record, len(m.Records))
@@ -197,4 +201,14 @@ func (m *Trace) JSONString() string {
 	//`,
 	//		m.Id, strRecords, strRlfi, strTfi,
 	//	)
+}
+
+func (m *TFI) NameIn(name string) bool {
+	for _, name_ := range m.Name {
+		if name == name_ {
+			return true
+		}
+	}
+
+	return false
 }
