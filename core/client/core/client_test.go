@@ -3,7 +3,9 @@ package core
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"net/url"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -18,11 +20,11 @@ func TestName1(t *testing.T) {
 }
 
 const NTests = 100
-const NRound = 10
+const NRound = 1
 
-var addr = "http://34.83.111.165"
+//var addr = "http://34.105.33.153"
 
-//var addr = "http://localhost"
+var addr = "http://localhost"
 
 func Test1(t *testing.T) {
 	traces := []*tracer.Trace{
@@ -109,10 +111,53 @@ func Test1(t *testing.T) {
 	}
 }
 
-func TestConcurrency(t *testing.T) {
-	nClients := []int{1, 2, 4}
+type perf struct {
+	PerfCases []perfCase
+}
 
-	traces := []*tracer.Trace{
+type perfCase struct {
+	PerfNClients []perfNClient
+}
+
+type perfNClient struct {
+	PerfRoundsAvg perfRoundsAvg
+
+	PerfRounds []perfRound `json:"-"`
+}
+
+type perfRound struct {
+	PerfRequestsAvg perfRequestsAvg
+	PerfRequests    []perfRequest
+
+	ErrorCount int64
+	Throughput float64
+}
+
+type perfRoundsAvg struct {
+	NClient         int
+	PerfRequestsAvg perfRequestsAvg
+
+	ErrorCount float64
+	Throughput float64
+}
+
+type perfRequest struct {
+	Latency   int64
+	FELatency int64
+}
+
+type perfRequestsAvg struct {
+	Max, Min int64
+	Avg      float64
+
+	FEMax, FEMin int64
+	FEAvg        float64
+}
+
+func TestConcurrency(t *testing.T) {
+	nClients := []int{1, 2, 4, 8, 16, 32, 64, 128}
+
+	cases := []*tracer.Trace{
 		nil,
 		//{},
 		//{
@@ -144,66 +189,87 @@ func TestConcurrency(t *testing.T) {
 		//},
 	}
 
-	perf := make([][][]float64, len(traces))
-	for j, trace := range traces {
-		perfT := make([][]float64, NRound)
-		perf[j] = perfT
+	p := &perf{
+		PerfCases: make([]perfCase, len(cases)),
+	}
 
-		for r := 0; r < NRound; r++ {
-			perfR := make([]float64, len(nClients))
-			perfT[r] = perfR
+	for caseI, case_ := range cases {
+		perfCase := &p.PerfCases[caseI]
+		perfCase.PerfNClients = make([]perfNClient, len(nClients))
 
-			errCount := 0
+		for nClientI, nCLient := range nClients {
+			fmt.Printf("case %d, nClient %d\n", caseI, nCLient)
 
-			fmt.Printf("| %d |", j)
-			for c, nCLient := range nClients {
-				nTest := NTests / nCLient
-				clients := make([]*Client, nCLient)
-				signals := make(chan struct{}, nCLient)
-				reqss := make([]*data.Requests, nCLient)
+			perfNClient := &perfCase.PerfNClients[nClientI]
+			perfNClient.PerfRounds = make([]perfRound, NRound)
 
-				offset := time.Now().UnixNano()
-				for i := 0; i < nCLient; i++ {
-					clients[i] = NewClient()
+			clients := make([]*Client, nCLient)
+			signals := make(chan struct{}, nCLient)
+			requests := make([]*data.Requests, nCLient)
 
-					reqss[i] = &data.Requests{
-						CookieUrl: "localhost",
-						Trace:     trace,
-						Requests: []data.Request{
-							{
-								Method:      data.HTTPGet,
-								URL:         addr,
-								MessageName: "home",
-								Expect: &data.ExpectedResponse{
-									ContentType: rHtml.ContentTypeHTML,
-									//Action:      data.PrintResponse,
-								},
+			for i := 0; i < nCLient; i++ {
+				clients[i] = NewClient()
+
+				request := &data.Requests{
+					CookieUrl: "localhost",
+					Trace:     case_,
+					Requests: []data.Request{
+						{
+							Method:      data.HTTPGet,
+							URL:         addr,
+							MessageName: "home",
+							Expect: &data.ExpectedResponse{
+								ContentType: rHtml.ContentTypeHTML,
+								Action:      data.DeserializeTrace,
 							},
 						},
-					}
-
-					if reqss[i].Trace != nil {
-						reqss[i].Trace.Id = int64(i*NTests+1) + offset
-					}
+					},
 				}
 
-				//t.Log(nCLient, nTest)
+				if case_ != nil {
+					trace := *case_
+					request.Trace = &trace
+				}
+
+				requests[i] = request
+			}
+
+			for roundI := 0; roundI < NRound; roundI++ {
+				perfRound := &perfNClient.PerfRounds[roundI]
+				perfRound.PerfRequests = make([]perfRequest, NTests)
+
+				traceIDOffset := time.Now().UnixNano()
+				traceID := int64(0)
+
 				start := time.Now()
 
 				for i := 0; i < nCLient; i++ {
 					go func(i int, signals chan struct{}) {
 						client := clients[i]
-						reqs := reqss[i]
+						reqs := requests[i]
 
-						for k := 0; k < nTest; k++ {
-							_, err := client.SendRequests(reqs)
-							if err != nil {
-								t.Error(err)
-								errCount++
+						for {
+							traceID := atomic.AddInt64(&traceID, 1)
+							if traceID > NTests {
+								break
 							}
 
 							if reqs.Trace != nil {
-								reqs.Trace.Id++
+								reqs.Trace.Id = traceID + traceIDOffset
+							}
+
+							perfRequest := &perfRound.PerfRequests[traceID-1]
+
+							rsp, err := client.SendRequests(reqs)
+							perfRequest.Latency = rsp.Latency
+
+							if err != nil {
+								t.Error(err)
+								atomic.AddInt64(&perfRound.ErrorCount, 1)
+							} else if trace := rsp.Trace; trace != nil {
+								if entryCount := len(trace.Records); entryCount >= 4 {
+									perfRequest.FELatency = trace.Records[entryCount-2].Timestamp - trace.Records[1].Timestamp
+								}
 							}
 						}
 
@@ -217,35 +283,105 @@ func TestConcurrency(t *testing.T) {
 
 				end := time.Now()
 
-				fmt.Printf(" %v |", end.Sub(start).Seconds())
+				perfRequestsAvg := &perfRound.PerfRequestsAvg
+				perfRequestsAvg.Min = math.MaxInt64
+				perfRequestsAvg.FEMin = math.MaxInt64
 
-				perfR[c] = end.Sub(start).Seconds()
+				FECount := 1.0
+				for _, perfRequest := range perfRound.PerfRequests {
+					perfRequestsAvg.Avg += float64(perfRequest.Latency) / NTests
+					perfRequestsAvg.FEAvg += float64(perfRequest.FELatency) / NTests
+
+					if perfRequest.Latency > perfRequestsAvg.Max {
+						perfRequestsAvg.Max = perfRequest.Latency
+					}
+					if perfRequest.Latency < perfRequestsAvg.Min {
+						perfRequestsAvg.Min = perfRequest.Latency
+					}
+
+					if perfRequest.FELatency != 0 {
+						FECount++
+						if perfRequest.FELatency > perfRequestsAvg.FEMax {
+							perfRequestsAvg.FEMax = perfRequest.FELatency
+						}
+
+						if perfRequest.FELatency < perfRequestsAvg.FEMin {
+							perfRequestsAvg.FEMin = perfRequest.FELatency
+						}
+					}
+				}
+
+				perfRequestsAvg.FEAvg *= NTests / FECount
+
+				perfRound.Throughput = NTests * 1e9 / float64(end.Sub(start).Nanoseconds())
 			}
-			fmt.Println("", errCount, "|")
-			errCount = 0
 		}
 	}
 
-	//fmt.Println(perf)
+	for caseI := range p.PerfCases {
+		perfCase := &p.PerfCases[caseI]
+		for nClientI := range perfCase.PerfNClients {
+			perfNClient := &perfCase.PerfNClients[nClientI]
 
-	for trace := range perf {
-		perfT := perf[trace]
-		perfAvg := make([]float64, len(nClients))
+			PerfRoundsAvg := &perfNClient.PerfRoundsAvg
+			PerfRoundsAvg.NClient = nClients[nClientI]
+			perfRequestsAvg := &PerfRoundsAvg.PerfRequestsAvg
 
-		for r := 0; r < NRound; r++ {
-			perfR := perfT[r]
+			perfRequestsAvg.Min = math.MaxInt64
+			perfRequestsAvg.FEMin = math.MaxInt64
 
-			for c := range nClients {
-				perfAvg[c] += perfR[c] / NRound
+			for roundI := range perfNClient.PerfRounds {
+				perfRound := &perfNClient.PerfRounds[roundI]
+
+				PerfRoundsAvg.ErrorCount += float64(perfRound.ErrorCount) / NRound
+				PerfRoundsAvg.Throughput += perfRound.Throughput / NRound
+				PerfRoundsAvg.PerfRequestsAvg.Avg += perfRound.PerfRequestsAvg.Avg / NRound
+				PerfRoundsAvg.PerfRequestsAvg.FEAvg += perfRound.PerfRequestsAvg.FEAvg / NRound
+
+				if perfRound.PerfRequestsAvg.Max > perfRequestsAvg.Max {
+					perfRequestsAvg.Max = perfRound.PerfRequestsAvg.Max
+				}
+
+				if perfRound.PerfRequestsAvg.Min < perfRequestsAvg.Min {
+					perfRequestsAvg.Min = perfRound.PerfRequestsAvg.Min
+				}
+
+				if perfRound.PerfRequestsAvg.FEMax > perfRequestsAvg.FEMax {
+					perfRequestsAvg.FEMax = perfRound.PerfRequestsAvg.FEMax
+				}
+
+				if perfRound.PerfRequestsAvg.FEMin < perfRequestsAvg.FEMin {
+					perfRequestsAvg.FEMin = perfRound.PerfRequestsAvg.FEMin
+				}
+			}
+		}
+	}
+
+	jsonBytes, _ := json.Marshal(p)
+	t.Log(string(jsonBytes))
+
+	for caseI, perfCase := range p.PerfCases {
+		latencies := ""
+		throughputs := ""
+		feLatencies := ""
+
+		for nClientsI, perfNClients := range perfCase.PerfNClients {
+			perfRoundsAvg := &perfNClients.PerfRoundsAvg
+			if nClientsI == 0 {
+				latencies += fmt.Sprintf("%d", int(perfRoundsAvg.PerfRequestsAvg.Avg/1e6))
+				throughputs += fmt.Sprintf("%d", int(perfRoundsAvg.Throughput))
+				feLatencies += fmt.Sprintf("%d", int(perfRoundsAvg.PerfRequestsAvg.FEAvg/1e6))
+			} else {
+				latencies += fmt.Sprintf(",%d", int(perfRoundsAvg.PerfRequestsAvg.Avg/1e6))
+				throughputs += fmt.Sprintf(",%d", int(perfRoundsAvg.Throughput))
+				feLatencies += fmt.Sprintf(",%d", int(perfRoundsAvg.PerfRequestsAvg.FEAvg/1e6))
 			}
 		}
 
-		print(fmt.Sprintf("| %d |", trace))
-		for c := range nClients {
-			print(fmt.Sprintf(" %v |", perfAvg[c]))
-		}
-		print("\n")
-		//fmt.Println(perfAvg)
+		fmt.Printf("case %d\n", caseI)
+		fmt.Printf("x=[%s]\n", throughputs)
+		fmt.Printf("y=[%s]\n", latencies)
+		fmt.Printf("z=[%s]\n", feLatencies)
 	}
 }
 

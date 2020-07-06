@@ -36,8 +36,8 @@ type Request struct {
 type ActionResponse int64
 
 const (
-	_ ActionResponse = iota
-	PrintResponse
+	PrintResponse ActionResponse = iota << 1
+	DeserializeTrace
 )
 
 type ExpectedResponse struct {
@@ -47,6 +47,7 @@ type ExpectedResponse struct {
 }
 
 type Response struct {
-	Body  []byte
-	Trace *tracer.Trace
+	Latency int64
+	Body    []byte
+	Trace   *tracer.Trace
 }
