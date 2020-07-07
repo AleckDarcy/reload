@@ -22,9 +22,9 @@ func TestName1(t *testing.T) {
 const NTests = 100
 const NRound = 1
 
-//var addr = "http://34.105.33.153"
+var addr = "http://34.83.167.255"
 
-var addr = "http://localhost"
+//var addr = "http://localhost"
 
 func Test1(t *testing.T) {
 	traces := []*tracer.Trace{
