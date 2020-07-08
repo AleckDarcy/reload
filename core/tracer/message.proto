@@ -54,3 +54,7 @@ message TFI {
     int64 delay = 3;
     repeated TFIMeta after = 4;
 }
+
+message Request {
+    int64 id = 1;
+}

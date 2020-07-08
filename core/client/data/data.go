@@ -6,7 +6,7 @@ import (
 	"github.com/AleckDarcy/reload/core/tracer"
 )
 
-type HTTPMethod int64
+type HTTPMethod = int64
 
 const (
 	_ HTTPMethod = iota
