@@ -1,4 +1,4 @@
-package perf
+package core
 
 import (
 	"fmt"
@@ -6,7 +6,6 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/AleckDarcy/reload/core/client/core"
 	"github.com/AleckDarcy/reload/core/client/data"
 )
 
@@ -58,7 +57,7 @@ type LatencyAvg struct {
 	Avg      float64
 }
 
-func Run(nTests int64, nRound int64, nClients []int, caseConfs []CaseConf) *Perf {
+func RunPerf(nTests int64, nRound int64, nClients []int, caseConfs []CaseConf) *Perf {
 	fTests, fRound := float64(nTests), float64(nRound)
 
 	p := &Perf{
@@ -75,12 +74,12 @@ func Run(nTests int64, nRound int64, nClients []int, caseConfs []CaseConf) *Perf
 			perfNClient := &perfCase.NClients[nClientI]
 			perfNClient.Rounds = make([]Round, nRound)
 
-			clients := make([]*core.Client, nClient)
+			clients := make([]*Client, nClient)
 			signals := make(chan struct{}, nClient)
 			requests := make([]*data.Requests, nClient)
 
 			for i := 0; i < nClient; i++ {
-				clients[i] = core.NewClient()
+				clients[i] = NewClient()
 
 				request := &data.Requests{
 					CookieUrl: "localhost",
