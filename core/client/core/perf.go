@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	Running int64 = iota
-	Idle
+	Idle int64 = iota
+	Running
 )
 
 type Status struct {
