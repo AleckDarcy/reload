@@ -9,6 +9,17 @@ import (
 	"github.com/AleckDarcy/reload/core/client/data"
 )
 
+const (
+	Running int64 = iota
+	Idle
+)
+
+type Status struct {
+	Status  int64
+	CaseID  int
+	NClient int
+}
+
 type CaseConf struct {
 	Request *data.Request
 }
@@ -57,7 +68,7 @@ type LatencyAvg struct {
 	Avg      float64
 }
 
-func RunPerf(nTests int64, nRound int64, nClients []int, caseConfs []CaseConf) *Perf {
+func RunPerf(nTests int64, nRound int64, nClients []int, caseConfs []CaseConf, status *Status) *Perf {
 	fTests, fRound := float64(nTests), float64(nRound)
 
 	p := &Perf{
@@ -69,7 +80,8 @@ func RunPerf(nTests int64, nRound int64, nClients []int, caseConfs []CaseConf) *
 		perfCase.NClients = make([]NClient, len(nClients))
 
 		for nClientI, nClient := range nClients {
-			fmt.Printf("case %d, nClient %d\n", caseI, nClient)
+			status.CaseID, status.NClient = caseI, nClient
+			//fmt.Printf("case %d, nClient %d\n", caseI, nClient)
 
 			perfNClient := &perfCase.NClients[nClientI]
 			perfNClient.Rounds = make([]Round, nRound)
