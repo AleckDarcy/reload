@@ -37,15 +37,14 @@ func (c *Client) responseHandler(req *data.Request, httpReq *http.Request) (*dat
 	start := time.Now().UnixNano()
 	httpRsp, err := c.Client.Do(httpReq)
 	if err != nil {
-		return nil, err
+		return &data.Response{Latency: time.Now().UnixNano() - start}, err
 	}
 
 	body, err := ioutil.ReadAll(httpRsp.Body)
-	end := time.Now().UnixNano()
+	rsp := &data.Response{Latency: time.Now().UnixNano() - start, Body: body}
 	if err != nil {
-		return nil, err
+		return rsp, err
 	}
-	rsp := &data.Response{Latency: end - start, Body: body}
 
 	//log.Logf("[RELOAD] Content-Type: %s", httpRsp.Header.Get(rHtml.ContentType))
 	if req.Trace == nil || req.Expect == nil {
@@ -69,7 +68,7 @@ func (c *Client) responseHandler(req *data.Request, httpReq *http.Request) (*dat
 
 				rsp.Trace = &tracer.Trace{}
 				if err = json.Unmarshal([]byte(traceString), rsp.Trace); err != nil {
-					return nil, err
+					return rsp, err
 				}
 
 				rsp.Trace.Records = append(rsp.Trace.Records, &tracer.Record{
@@ -85,14 +84,14 @@ func (c *Client) responseHandler(req *data.Request, httpReq *http.Request) (*dat
 		jsonData := map[string]json.RawMessage{}
 		if err = json.Unmarshal(body, &jsonData); err != nil {
 			fmt.Println(string(body))
-			return nil, err
+			return rsp, err
 		}
 
 		if traceJSON, ok := jsonData["fi_trace"]; ok {
 			rsp.Trace = &tracer.Trace{}
 
 			if err = json.Unmarshal(traceJSON, rsp.Trace); err != nil {
-				return nil, err
+				return rsp, err
 			}
 
 			rsp.Trace.Records = append(rsp.Trace.Records, &tracer.Record{
@@ -143,7 +142,7 @@ func (c *Client) SendRequests(reqs *data.Requests) (*data.Response, error) {
 
 		rsp, err = c.sendRequest(&req)
 		if err != nil {
-			return nil, err
+			return rsp, err
 		}
 
 		trace.Records = append(trace.Records, record)
@@ -165,7 +164,7 @@ func (c *Client) sendRequest(req *data.Request) (*data.Response, error) {
 	if req.Trace != nil {
 		traceBytes, err := json.Marshal(req.Trace)
 		if err != nil {
-			return nil, err
+			return &data.Response{}, err
 		}
 
 		traceString = string(traceBytes)
@@ -181,11 +180,11 @@ func (c *Client) sendRequest(req *data.Request) (*data.Response, error) {
 			httpReq.Header.Set(rHtml.ContentType, rHtml.ContentTypeMIMEPostForm)
 		}
 	default:
-		return nil, errors.New("unsupported http method")
+		return &data.Response{}, errors.New("unsupported http method")
 	}
 
 	if err != nil {
-		return nil, err
+		return &data.Response{}, err
 	}
 
 	if traceString != "" {
