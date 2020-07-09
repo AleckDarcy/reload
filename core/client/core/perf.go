@@ -15,7 +15,9 @@ const (
 )
 
 type Status struct {
-	Status  int64
+	Status int64
+
+	ID      int
 	CaseID  int
 	NClient int
 }
