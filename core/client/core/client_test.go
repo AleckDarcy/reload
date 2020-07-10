@@ -103,13 +103,13 @@ func TestConcurrency(t *testing.T) {
 		for nClientsI, perfNClients := range perfCase.NClients {
 			perfRoundsAvg := &perfNClients.RoundsAvg
 			if nClientsI == 0 {
-				latencies += fmt.Sprintf("%d", int(perfRoundsAvg.RequestsAvg.E2ELatencyAvg.Avg/1e6))
+				latencies += fmt.Sprintf("%d", int(perfRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean/1e6))
 				throughputs += fmt.Sprintf("%d", int(perfRoundsAvg.Throughput))
-				feLatencies += fmt.Sprintf("%d", int(perfRoundsAvg.RequestsAvg.FELatencyAvg.Avg/1e6))
+				feLatencies += fmt.Sprintf("%d", int(perfRoundsAvg.RequestsAvg.FELatencyAvg.Mean/1e6))
 			} else {
-				latencies += fmt.Sprintf(",%d", int(perfRoundsAvg.RequestsAvg.E2ELatencyAvg.Avg/1e6))
+				latencies += fmt.Sprintf(",%d", int(perfRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean/1e6))
 				throughputs += fmt.Sprintf(",%d", int(perfRoundsAvg.Throughput))
-				feLatencies += fmt.Sprintf(",%d", int(perfRoundsAvg.RequestsAvg.FELatencyAvg.Avg/1e6))
+				feLatencies += fmt.Sprintf(",%d", int(perfRoundsAvg.RequestsAvg.FELatencyAvg.Mean/1e6))
 			}
 		}
 

@@ -53,8 +53,8 @@ type RoundsAvg struct {
 	NClient     int
 	RequestsAvg RequestsAvg
 
-	ErrorCount float64
-	Throughput float64
+	ErrorCount    float64
+	ThroughputAvg ThroughputAvg
 }
 
 type Request struct {
@@ -69,7 +69,14 @@ type RequestsAvg struct {
 
 type LatencyAvg struct {
 	Max, Min int64
-	Avg      float64
+	Mean     float64
+	StdDev   float64
+}
+
+type ThroughputAvg struct {
+	Max, Min float64
+	Mean     float64
+	StdDev   float64
 }
 
 func RunPerf(nTests int64, nRound int64, nClients []int, caseConfs []CaseConf, status *Status) *Perf {
@@ -166,10 +173,12 @@ func RunPerf(nTests int64, nRound int64, nClients []int, caseConfs []CaseConf, s
 				perfRequestsAvg.E2ELatencyAvg.Min = math.MaxInt64
 				perfRequestsAvg.FELatencyAvg.Min = math.MaxInt64
 
-				feCount := 1.0
-				for _, perfRequest := range perfRound.Requests {
-					perfRequestsAvg.E2ELatencyAvg.Avg += float64(perfRequest.E2ELatency) / fTests
-					perfRequestsAvg.FELatencyAvg.Avg += float64(perfRequest.FELatency) / fTests
+				e2eLatencies := make([]float64, len(perfRound.Requests))
+				feLatencies := make([]float64, len(perfRound.Requests))
+
+				for requestI, perfRequest := range perfRound.Requests {
+					e2eLatencies[requestI] = float64(perfRequest.E2ELatency)
+					feLatencies[requestI] = float64(perfRequest.FELatency)
 
 					if perfRequest.E2ELatency > perfRequestsAvg.E2ELatencyAvg.Max {
 						perfRequestsAvg.E2ELatencyAvg.Max = perfRequest.E2ELatency
@@ -179,19 +188,17 @@ func RunPerf(nTests int64, nRound int64, nClients []int, caseConfs []CaseConf, s
 						perfRequestsAvg.E2ELatencyAvg.Min = perfRequest.E2ELatency
 					}
 
-					if perfRequest.FELatency != 0 {
-						feCount++
-						if perfRequest.FELatency > perfRequestsAvg.FELatencyAvg.Max {
-							perfRequestsAvg.FELatencyAvg.Max = perfRequest.FELatency
-						}
+					if perfRequest.FELatency > perfRequestsAvg.FELatencyAvg.Max {
+						perfRequestsAvg.FELatencyAvg.Max = perfRequest.FELatency
+					}
 
-						if perfRequest.FELatency < perfRequestsAvg.FELatencyAvg.Min {
-							perfRequestsAvg.FELatencyAvg.Min = perfRequest.FELatency
-						}
+					if perfRequest.FELatency < perfRequestsAvg.FELatencyAvg.Min {
+						perfRequestsAvg.FELatencyAvg.Min = perfRequest.FELatency
 					}
 				}
 
-				perfRequestsAvg.FELatencyAvg.Avg *= fTests / feCount
+				perfRequestsAvg.E2ELatencyAvg.Mean, perfRequestsAvg.E2ELatencyAvg.StdDev = MeanAndStdDev(e2eLatencies)
+				perfRequestsAvg.FELatencyAvg.Mean, perfRequestsAvg.FELatencyAvg.StdDev = MeanAndStdDev(feLatencies)
 
 				perfRound.Throughput = fTests * 1e9 / float64(end.Sub(start).Nanoseconds())
 			}
@@ -206,17 +213,22 @@ func RunPerf(nTests int64, nRound int64, nClients []int, caseConfs []CaseConf, s
 			perfRoundsAvg := &perfNClient.RoundsAvg
 			perfRoundsAvg.NClient = nClients[nClientI]
 			perfRequestsAvg := &perfRoundsAvg.RequestsAvg
-
 			perfRequestsAvg.E2ELatencyAvg.Min = math.MaxInt64
 			perfRequestsAvg.FELatencyAvg.Min = math.MaxInt64
 
+			throughputAvg := &perfRoundsAvg.ThroughputAvg
+			throughputAvg.Min = math.MaxFloat64
+
+			e2eLatencies := make([]float64, len(perfNClient.Rounds))
+			feLatencies := make([]float64, len(perfNClient.Rounds))
+
+			roundThroughputs := make([]float64, len(perfNClient.Rounds))
 			for roundI := range perfNClient.Rounds {
 				perfRound := &perfNClient.Rounds[roundI]
 
 				perfRoundsAvg.ErrorCount += float64(perfRound.ErrorCount) / fRound
-				perfRoundsAvg.Throughput += perfRound.Throughput / fRound
-				perfRoundsAvg.RequestsAvg.E2ELatencyAvg.Avg += perfRound.RequestsAvg.E2ELatencyAvg.Avg / fRound
-				perfRoundsAvg.RequestsAvg.FELatencyAvg.Avg += perfRound.RequestsAvg.FELatencyAvg.Avg / fRound
+				e2eLatencies[roundI] = perfRound.RequestsAvg.E2ELatencyAvg.Mean
+				feLatencies[roundI] = perfRound.RequestsAvg.FELatencyAvg.Mean
 
 				if perfRound.RequestsAvg.E2ELatencyAvg.Max > perfRequestsAvg.E2ELatencyAvg.Max {
 					perfRequestsAvg.E2ELatencyAvg.Max = perfRound.RequestsAvg.E2ELatencyAvg.Max
@@ -233,9 +245,40 @@ func RunPerf(nTests int64, nRound int64, nClients []int, caseConfs []CaseConf, s
 				if perfRound.RequestsAvg.FELatencyAvg.Min < perfRequestsAvg.FELatencyAvg.Min {
 					perfRequestsAvg.FELatencyAvg.Min = perfRound.RequestsAvg.FELatencyAvg.Min
 				}
+
+				roundThroughputs[roundI] = perfRound.Throughput
+
+				if perfRound.Throughput > perfRoundsAvg.ThroughputAvg.Max {
+					perfRoundsAvg.ThroughputAvg.Max = perfRound.Throughput
+				}
+
+				if perfRound.Throughput < perfRoundsAvg.ThroughputAvg.Min {
+					perfRoundsAvg.ThroughputAvg.Min = perfRound.Throughput
+				}
 			}
+
+			perfRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean, perfRoundsAvg.RequestsAvg.E2ELatencyAvg.StdDev = MeanAndStdDev(e2eLatencies)
+			perfRoundsAvg.RequestsAvg.FELatencyAvg.Mean, perfRoundsAvg.RequestsAvg.FELatencyAvg.StdDev = MeanAndStdDev(feLatencies)
+
+			throughputAvg.Mean, throughputAvg.StdDev = MeanAndStdDev(roundThroughputs)
 		}
 	}
 
 	return p
+}
+
+func MeanAndStdDev(nums []float64) (mean float64, sd float64) {
+	length := float64(len(nums))
+
+	for _, num := range nums {
+		mean += num / length
+	}
+
+	for _, num := range nums {
+		sd += math.Pow(num-mean, 2)
+	}
+
+	sd = math.Sqrt(sd / 10)
+
+	return
 }
