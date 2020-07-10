@@ -16,10 +16,12 @@ const (
 
 type Status struct {
 	Status int64
+	TaskID int64
 
 	ID      int
 	CaseID  int
 	NClient int
+	Round   int
 }
 
 type CaseConf struct {
@@ -111,6 +113,7 @@ func RunPerf(nTests int64, nRound int64, nClients []int, caseConfs []CaseConf, s
 			}
 
 			for roundI := int64(0); roundI < nRound; roundI++ {
+				status.Round = int(roundI)
 				perfRound := &perfNClient.Rounds[roundI]
 				perfRound.Requests = make([]Request, nTests)
 
