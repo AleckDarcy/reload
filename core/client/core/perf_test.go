@@ -27,32 +27,32 @@ func TestGetReport(t *testing.T) {
 	json.Unmarshal([]byte(jsonStrs[0]), perf)
 	report := GetReport(perf)
 
-	fmt.Printf("\"trace_off_throughputs\":[%s],\n", report.cases[0].ThroughputsMean)
-	fmt.Printf("\"trace_off_e2eLatencies\":[%s],\n", report.cases[0].E2ELatenciesMean)
-	fmt.Printf("\"trace_off_throughputs_error_bar\":[%s],\n", report.cases[0].ThroughputErrorBar)
-	fmt.Printf("\"trace_off_e2eLatency_error_bar\":[%s],\n", report.cases[0].E2ELatenciesErrorBar)
+	fmt.Printf("\"trace_off_throughputs\":[%s],\n", report.Cases[0].ThroughputsMean)
+	fmt.Printf("\"trace_off_e2eLatencies\":[%s],\n", report.Cases[0].E2ELatenciesMean)
+	fmt.Printf("\"trace_off_throughputs_error_bar\":[%s],\n", report.Cases[0].ThroughputErrorBar)
+	fmt.Printf("\"trace_off_e2eLatency_error_bar\":[%s],\n", report.Cases[0].E2ELatenciesErrorBar)
 
 	perf = &Perf{}
 	json.Unmarshal([]byte(jsonStrs[1]), perf)
 	report = GetReport(perf)
 
-	fmt.Printf("\"trace_on_throughputs\":[%s],\n", report.cases[0].ThroughputsMean)
-	fmt.Printf("\"trace_on_e2eLatencies\":[%s],\n", report.cases[0].E2ELatenciesMean)
-	fmt.Printf("\"trace_on_throughputs_error_bar\":[%s],\n", report.cases[0].ThroughputErrorBar)
-	fmt.Printf("\"trace_on_e2eLatencies_error_bar\":[%s],\n", report.cases[0].E2ELatenciesErrorBar)
+	fmt.Printf("\"trace_on_throughputs\":[%s],\n", report.Cases[0].ThroughputsMean)
+	fmt.Printf("\"trace_on_e2eLatencies\":[%s],\n", report.Cases[0].E2ELatenciesMean)
+	fmt.Printf("\"trace_on_throughputs_error_bar\":[%s],\n", report.Cases[0].ThroughputErrorBar)
+	fmt.Printf("\"trace_on_e2eLatencies_error_bar\":[%s],\n", report.Cases[0].E2ELatenciesErrorBar)
 
 	perf = &Perf{}
 	json.Unmarshal([]byte(jsonStrs[2]), perf)
 	report = GetReport(perf)
-	fmt.Printf("\"trace_on_feLatencies\":[%s],\n", report.cases[0].FELatenciesMean)
-	fmt.Printf("\"trace_on_feLatencies_error_bar\":[%s],\n", report.cases[0].FELatenciesErrorBar)
+	fmt.Printf("\"trace_on_feLatencies\":[%s],\n", report.Cases[0].FELatenciesMean)
+	fmt.Printf("\"trace_on_feLatencies_error_bar\":[%s],\n", report.Cases[0].FELatenciesErrorBar)
 
 	perf = &Perf{}
 	json.Unmarshal([]byte(jsonStrs[3]), perf)
 	report = GetReport(perf)
 
-	fmt.Printf("\"jaeger_on_throughputs\":[%s],\n", report.cases[0].ThroughputsMean)
-	fmt.Printf("\"jaeger_on_e2eLatencies\":[%s],\n", report.cases[0].E2ELatenciesMean)
-	fmt.Printf("\"jaeger_on_throughputs_error_bar\":[%s],\n", report.cases[0].ThroughputErrorBar)
-	fmt.Printf("\"jaeger_on_e2eLatencies_error_bar\":[%s]\n", report.cases[0].E2ELatenciesErrorBar)
+	fmt.Printf("\"jaeger_on_throughputs\":[%s],\n", report.Cases[0].ThroughputsMean)
+	fmt.Printf("\"jaeger_on_e2eLatencies\":[%s],\n", report.Cases[0].E2ELatenciesMean)
+	fmt.Printf("\"jaeger_on_throughputs_error_bar\":[%s],\n", report.Cases[0].ThroughputErrorBar)
+	fmt.Printf("\"jaeger_on_e2eLatencies_error_bar\":[%s]\n", report.Cases[0].E2ELatenciesErrorBar)
 }

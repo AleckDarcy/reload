@@ -288,7 +288,7 @@ func MeanAndStdDevAndStdErr(nums []float64) (mean, stdDev, stdErr float64) {
 }
 
 type Report struct {
-	cases []ReportCase
+	Cases []ReportCase
 }
 
 type ReportCase struct {
@@ -302,7 +302,7 @@ type ReportCase struct {
 }
 
 func GetReport(perf *Perf) *Report {
-	r := &Report{cases: make([]ReportCase, len(perf.Cases))}
+	r := &Report{Cases: make([]ReportCase, len(perf.Cases))}
 
 	for caseI, perfCase := range perf.Cases {
 		e2eLatenciesMean := ""
@@ -334,7 +334,7 @@ func GetReport(perf *Perf) *Report {
 			}
 		}
 
-		r.cases[caseI] = ReportCase{
+		r.Cases[caseI] = ReportCase{
 			E2ELatenciesMean: e2eLatenciesMean,
 			ThroughputsMean:  throughputsMean,
 			FELatenciesMean:  feLatenciesMean,
