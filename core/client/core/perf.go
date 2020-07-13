@@ -286,3 +286,64 @@ func MeanAndStdDevAndStdErr(nums []float64) (mean, stdDev, stdErr float64) {
 
 	return
 }
+
+type Report struct {
+	cases []ReportCase
+}
+
+type ReportCase struct {
+	E2ELatenciesMean string
+	ThroughputsMean  string
+	FELatenciesMean  string
+
+	E2ELatenciesErrorBar string
+	ThroughputErrorBar   string
+	FELatenciesErrorBar  string
+}
+
+func GetReport(perf *Perf) *Report {
+	r := &Report{cases: make([]ReportCase, len(perf.Cases))}
+
+	for caseI, perfCase := range perf.Cases {
+		e2eLatenciesMean := ""
+		throughputsMean := ""
+		feLatenciesMean := ""
+
+		e2eLatenciesErrorBar := ""
+		throughputsErrorBar := ""
+		feLatenciesErrorBar := ""
+
+		for nClientsI, perfNClients := range perfCase.NClients {
+			perfRoundsAvg := &perfNClients.RoundsAvg
+			if nClientsI == 0 {
+				e2eLatenciesMean += fmt.Sprintf("%d", int(perfRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean/1e6))
+				throughputsMean += fmt.Sprintf("%d", int(perfRoundsAvg.ThroughputAvg.Mean))
+				feLatenciesMean += fmt.Sprintf("%d", int(perfRoundsAvg.RequestsAvg.FELatencyAvg.Mean/1e6))
+
+				e2eLatenciesErrorBar += fmt.Sprintf("%f", perfRoundsAvg.RequestsAvg.E2ELatencyAvg.StdErr/1e6)
+				throughputsErrorBar += fmt.Sprintf("%f", perfRoundsAvg.ThroughputAvg.StdErr)
+				feLatenciesErrorBar += fmt.Sprintf("%f", perfRoundsAvg.RequestsAvg.FELatencyAvg.StdErr/1e6)
+			} else {
+				e2eLatenciesMean += fmt.Sprintf(",%d", int(perfRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean/1e6))
+				throughputsMean += fmt.Sprintf(",%d", int(perfRoundsAvg.ThroughputAvg.Mean))
+				feLatenciesMean += fmt.Sprintf(",%d", int(perfRoundsAvg.RequestsAvg.FELatencyAvg.Mean/1e6))
+
+				e2eLatenciesErrorBar += fmt.Sprintf(",%f", perfRoundsAvg.RequestsAvg.E2ELatencyAvg.StdErr/1e6)
+				throughputsErrorBar += fmt.Sprintf(",%f", perfRoundsAvg.ThroughputAvg.StdErr)
+				feLatenciesErrorBar += fmt.Sprintf(",%f", perfRoundsAvg.RequestsAvg.FELatencyAvg.StdErr/1e6)
+			}
+		}
+
+		r.cases[caseI] = ReportCase{
+			E2ELatenciesMean: e2eLatenciesMean,
+			ThroughputsMean:  throughputsMean,
+			FELatenciesMean:  feLatenciesMean,
+
+			E2ELatenciesErrorBar: e2eLatenciesErrorBar,
+			ThroughputErrorBar:   throughputsErrorBar,
+			FELatenciesErrorBar:  feLatenciesErrorBar,
+		}
+	}
+
+	return r
+}

@@ -2,7 +2,6 @@ package core
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/url"
 	"testing"
 	"time"
@@ -94,30 +93,6 @@ func TestConcurrency(t *testing.T) {
 
 	jsonBytes, _ := json.Marshal(p)
 	t.Log(string(jsonBytes))
-
-	for caseI, perfCase := range p.Cases {
-		latencies := ""
-		throughputs := ""
-		feLatencies := ""
-
-		for nClientsI, perfNClients := range perfCase.NClients {
-			perfRoundsAvg := &perfNClients.RoundsAvg
-			if nClientsI == 0 {
-				latencies += fmt.Sprintf("%d", int(perfRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean/1e6))
-				throughputs += fmt.Sprintf("%d", int(perfRoundsAvg.Throughput))
-				feLatencies += fmt.Sprintf("%d", int(perfRoundsAvg.RequestsAvg.FELatencyAvg.Mean/1e6))
-			} else {
-				latencies += fmt.Sprintf(",%d", int(perfRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean/1e6))
-				throughputs += fmt.Sprintf(",%d", int(perfRoundsAvg.Throughput))
-				feLatencies += fmt.Sprintf(",%d", int(perfRoundsAvg.RequestsAvg.FELatencyAvg.Mean/1e6))
-			}
-		}
-
-		fmt.Printf("case %d\n", caseI)
-		fmt.Printf("x=[%s]\n", throughputs)
-		fmt.Printf("y=[%s]\n", latencies)
-		fmt.Printf("z=[%s]\n", feLatencies)
-	}
 }
 
 func Test1(t *testing.T) {
