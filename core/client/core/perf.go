@@ -297,7 +297,7 @@ type ReportCase struct {
 	FELatenciesMean  string
 
 	E2ELatenciesErrorBar string
-	ThroughputErrorBar   string
+	ThroughputsErrorBar  string
 	FELatenciesErrorBar  string
 }
 
@@ -340,10 +340,120 @@ func GetReport(perf *Perf) *Report {
 			FELatenciesMean:  feLatenciesMean,
 
 			E2ELatenciesErrorBar: e2eLatenciesErrorBar,
-			ThroughputErrorBar:   throughputsErrorBar,
+			ThroughputsErrorBar:  throughputsErrorBar,
 			FELatenciesErrorBar:  feLatenciesErrorBar,
 		}
 	}
 
 	return r
+}
+
+type Overhead struct {
+	Cases []OverheadCase
+}
+
+type OverheadCase struct {
+	E2ELatencies string
+	Throughputs  string
+}
+
+func GetOverhead(base *Perf, perf *Perf) *Overhead {
+	o := &Overhead{Cases: make([]OverheadCase, len(base.Cases))}
+
+	for caseI, baseCase := range base.Cases {
+		perfCase := perf.Cases[caseI]
+
+		e2eLatencies := ""
+		throughputs := ""
+
+		for nClientsI, baseNClients := range baseCase.NClients {
+			perfNClients := perfCase.NClients[nClientsI]
+
+			baseRoundsAvg := &baseNClients.RoundsAvg
+			perfRoundsAvg := &perfNClients.RoundsAvg
+			if nClientsI == 0 {
+				e2eLatencies += fmt.Sprintf("%f", perfRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean/baseRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean*100-100)
+				throughputs += fmt.Sprintf("%f", perfRoundsAvg.ThroughputAvg.Mean/baseRoundsAvg.ThroughputAvg.Mean*100-100)
+			} else {
+				e2eLatencies += fmt.Sprintf(",%f", perfRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean/baseRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean*100-100)
+				throughputs += fmt.Sprintf(",%f", perfRoundsAvg.ThroughputAvg.Mean/baseRoundsAvg.ThroughputAvg.Mean*100-100)
+			}
+		}
+
+		o.Cases[caseI] = OverheadCase{
+			E2ELatencies: e2eLatencies,
+			Throughputs:  throughputs,
+		}
+	}
+
+	return o
+}
+
+type Table struct {
+	Cases []TableCase
+}
+
+type TableCase struct {
+	Throughput string
+	Latency    string
+}
+
+func GetTable(base, _3MileBeach, jaeger *Perf) *Table {
+	t := &Table{Cases: make([]TableCase, len(base.Cases))}
+
+	for caseI, baseCase := range base.Cases {
+		_3MileBeachCase := _3MileBeach.Cases[caseI]
+		jaegerCase := jaeger.Cases[caseI]
+
+		throughput := ""
+		latency := ""
+
+		for nClientsI, baseNClients := range baseCase.NClients {
+			_3MileBeachNClients := _3MileBeachCase.NClients[nClientsI]
+			jaegerNClients := jaegerCase.NClients[nClientsI]
+
+			baseRoundsAvg := &baseNClients.RoundsAvg
+			_3MileBeachRoundsAvg := &_3MileBeachNClients.RoundsAvg
+			jaegerRoundsAvg := &jaegerNClients.RoundsAvg
+
+			throughput += fmt.Sprintf(""+
+				"%d & %d & %d(%0.2fx) & %d(%0.2fx) \\\\\n",
+				baseRoundsAvg.NClient, int(baseRoundsAvg.ThroughputAvg.Mean),
+				int(_3MileBeachRoundsAvg.ThroughputAvg.Mean), _3MileBeachRoundsAvg.ThroughputAvg.Mean/baseRoundsAvg.ThroughputAvg.Mean,
+				int(jaegerRoundsAvg.ThroughputAvg.Mean), jaegerRoundsAvg.ThroughputAvg.Mean/baseRoundsAvg.ThroughputAvg.Mean,
+			)
+			latency += fmt.Sprintf(""+
+				"%d & %d & %d(%0.2fx) & %d(%0.2fx) \\\\\n",
+				baseRoundsAvg.NClient, int(baseRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean)/1e6,
+				int(_3MileBeachRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean)/1e6, _3MileBeachRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean/baseRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean,
+				int(jaegerRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean)/1e6, jaegerRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean/baseRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean,
+			)
+		}
+
+		t.Cases[caseI].Throughput = throughput
+		t.Cases[caseI].Latency = latency
+	}
+
+	return t
+}
+
+func GetProcessLatency(perf *Perf) string {
+	perfCase := perf.Cases[0]
+
+	result := ""
+
+	for _, perfNClients := range perfCase.NClients {
+
+		perfRoundsAvg := &perfNClients.RoundsAvg
+
+		result += fmt.Sprintf(""+
+			"%d & %d & %d(%0.2fx) & %d \\\\\n",
+			perfRoundsAvg.NClient, int(perfRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean/1e6),
+			int(perfRoundsAvg.RequestsAvg.FELatencyAvg.Mean/1e6),
+			perfRoundsAvg.RequestsAvg.FELatencyAvg.Mean/perfRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean,
+			int(perfRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean/1e6)-int(perfRoundsAvg.RequestsAvg.FELatencyAvg.Mean/1e6),
+		)
+	}
+
+	return result
 }
