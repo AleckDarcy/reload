@@ -30,6 +30,8 @@ type CaseConf struct {
 
 type Perf struct {
 	Cases []Case
+
+	Customize interface{}
 }
 
 type Case struct {
