@@ -81,7 +81,9 @@ type ThroughputAvg struct {
 	StdErr   float64
 }
 
-func RunPerf(nTests int64, nRound int64, nClients []int, caseConfs []CaseConf, status *Status, rspFunc func(rsp *data.Response)) *Perf {
+type RspFunc func(rsp *data.Response)
+
+func RunPerf(nTests int64, nRound int64, nClients []int, caseConfs []CaseConf, status *Status, rspFunc RspFunc) *Perf {
 	fTests, fRound := float64(nTests), float64(nRound)
 
 	p := &Perf{
