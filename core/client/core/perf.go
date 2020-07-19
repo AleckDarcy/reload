@@ -81,7 +81,7 @@ type ThroughputAvg struct {
 	StdErr   float64
 }
 
-func RunPerf(nTests int64, nRound int64, nClients []int, caseConfs []CaseConf, status *Status) *Perf {
+func RunPerf(nTests int64, nRound int64, nClients []int, caseConfs []CaseConf, status *Status, rspFunc func(rsp *data.Response)) *Perf {
 	fTests, fRound := float64(nTests), float64(nRound)
 
 	p := &Perf{
@@ -157,6 +157,12 @@ func RunPerf(nTests int64, nRound int64, nClients []int, caseConfs []CaseConf, s
 							} else if trace := rsp.Trace; trace != nil {
 								if entryCount := len(trace.Records); entryCount >= 4 {
 									perfRequest.FELatency = trace.Records[entryCount-2].Timestamp - trace.Records[1].Timestamp
+								}
+
+								if case_.Request.Expect.Action&data.ServiceLatency != 0 {
+									if rspFunc != nil {
+										go rspFunc(rsp)
+									}
 								}
 							}
 						}

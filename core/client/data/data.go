@@ -38,6 +38,7 @@ type ActionResponse int64
 const (
 	PrintResponse ActionResponse = iota << 1
 	DeserializeTrace
+	ServiceLatency
 )
 
 type ExpectedResponse struct {
