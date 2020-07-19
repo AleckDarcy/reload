@@ -165,7 +165,7 @@ func RunPerf(nTests int64, nRound int64, nClients []int, caseConfs []CaseConf, s
 
 								if case_.Request.Expect.Action&data.ServiceLatency != 0 {
 									if rspFunc != nil {
-										go rspFunc(rsp)
+										rspFunc(rsp)
 									}
 								}
 							}
@@ -291,8 +291,8 @@ func MeanAndStdDevAndStdErr(nums []float64) (mean, stdDev, stdErr float64) {
 		stdDev += math.Pow(num-mean, 2)
 	}
 
-	stdDev = math.Sqrt(stdDev / 10)
-	stdErr = stdDev / math.Sqrt(10)
+	stdDev = math.Sqrt(stdDev / length)
+	stdErr = stdDev / math.Sqrt(length)
 
 	return
 }
