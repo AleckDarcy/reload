@@ -123,7 +123,7 @@ func RunPerf(nTests int64, nRound int64, nClients []int, caseConfs []CaseConf, s
 		perfCase.NClients = make([]NClient, len(nClients))
 
 		for nClientI, nClient := range nClients {
-			c.RoundInit()
+			c.NClientInit()
 
 			status.CaseID, status.NClient = caseI, nClient
 			//fmt.Printf("case %d, nClient %d\n", caseI, nClient)
