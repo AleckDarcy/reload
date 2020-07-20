@@ -83,10 +83,31 @@ type ThroughputAvg struct {
 	StdErr   float64
 }
 
+type Customizer interface {
+	NClientInit()
+	RoundInit()
+	RspFunc(rsp *data.Response)
+
+	NClientFinish() interface{}
+	RoundFinish() interface{}
+}
+
+type defaultCustomizer struct{}
+
+func (c *defaultCustomizer) NClientInit()               {}
+func (c *defaultCustomizer) RoundInit()                 {}
+func (c *defaultCustomizer) RspFunc(rsp *data.Response) {}
+func (c *defaultCustomizer) NClientFinish() interface{} { return nil }
+func (c *defaultCustomizer) RoundFinish() interface{}   { return nil }
+
 type RspFunc func(rsp *data.Response)
 
-func RunPerf(nTests int64, nRound int64, nClients []int, caseConfs []CaseConf, status *Status, rspFunc RspFunc) *Perf {
+func RunPerf(nTests int64, nRound int64, nClients []int, caseConfs []CaseConf, status *Status, c Customizer) *Perf {
 	fTests, fRound := float64(nTests), float64(nRound)
+
+	if c == nil {
+		c = &defaultCustomizer{}
+	}
 
 	p := &Perf{
 		Cases: make([]Case, len(caseConfs)),
@@ -97,6 +118,8 @@ func RunPerf(nTests int64, nRound int64, nClients []int, caseConfs []CaseConf, s
 		perfCase.NClients = make([]NClient, len(nClients))
 
 		for nClientI, nClient := range nClients {
+			c.RoundInit()
+
 			status.CaseID, status.NClient = caseI, nClient
 			//fmt.Printf("case %d, nClient %d\n", caseI, nClient)
 
@@ -126,6 +149,8 @@ func RunPerf(nTests int64, nRound int64, nClients []int, caseConfs []CaseConf, s
 			}
 
 			for roundI := int64(0); roundI < nRound; roundI++ {
+				c.RoundInit()
+
 				status.Round = int(roundI)
 				perfRound := &perfNClient.Rounds[roundI]
 				perfRound.Requests = make([]Request, nTests)
@@ -163,10 +188,8 @@ func RunPerf(nTests int64, nRound int64, nClients []int, caseConfs []CaseConf, s
 									perfRequest.FELatency = trace.Records[entryCount-2].Timestamp - trace.Records[1].Timestamp
 								}
 
-								if case_.Request.Expect.Action&data.ServiceLatency != 0 {
-									if rspFunc != nil {
-										rspFunc(rsp)
-									}
+								if case_.Request.Expect.Action&data.CustomizedRspFunc != 0 {
+									c.RspFunc(rsp)
 								}
 							}
 						}
@@ -214,7 +237,11 @@ func RunPerf(nTests int64, nRound int64, nClients []int, caseConfs []CaseConf, s
 				e2eLatencyAvg.Mean, e2eLatencyAvg.StdDev, e2eLatencyAvg.StdErr = MeanAndStdDevAndStdErr(e2eLatencies)
 				feLatencyAvg.Mean, feLatencyAvg.StdDev, feLatencyAvg.StdErr = MeanAndStdDevAndStdErr(feLatencies)
 				perfRound.Throughput = fTests * 1e9 / float64(end.Sub(start).Nanoseconds())
+
+				c.RoundFinish()
 			}
+
+			c.NClientFinish()
 		}
 	}
 

@@ -89,7 +89,7 @@ func TestConcurrency(t *testing.T) {
 		//		},
 		//	},
 		//},
-	}, &Status{})
+	}, &Status{}, nil)
 
 	jsonBytes, _ := json.Marshal(p)
 	t.Log(string(jsonBytes))
