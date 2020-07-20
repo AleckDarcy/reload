@@ -41,6 +41,8 @@ type Case struct {
 type NClient struct {
 	RoundsAvg RoundsAvg
 	Rounds    []Round `json:"-"`
+
+	Customize interface{}
 }
 
 type Round struct {
@@ -49,6 +51,8 @@ type Round struct {
 
 	ErrorCount int64
 	Throughput float64
+
+	Customize interface{}
 }
 
 type RoundsAvg struct {
@@ -86,6 +90,7 @@ type ThroughputAvg struct {
 type Customizer interface {
 	NClientInit()
 	RoundInit()
+
 	RspFunc(rsp *data.Response)
 
 	NClientFinish() interface{}
@@ -237,11 +242,10 @@ func RunPerf(nTests int64, nRound int64, nClients []int, caseConfs []CaseConf, s
 				e2eLatencyAvg.Mean, e2eLatencyAvg.StdDev, e2eLatencyAvg.StdErr = MeanAndStdDevAndStdErr(e2eLatencies)
 				feLatencyAvg.Mean, feLatencyAvg.StdDev, feLatencyAvg.StdErr = MeanAndStdDevAndStdErr(feLatencies)
 				perfRound.Throughput = fTests * 1e9 / float64(end.Sub(start).Nanoseconds())
-
-				c.RoundFinish()
+				perfRound.Customize = c.RoundFinish()
 			}
 
-			c.NClientFinish()
+			perfNClient.Customize = c.NClientFinish()
 		}
 	}
 
