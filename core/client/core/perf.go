@@ -95,6 +95,7 @@ type Customizer interface {
 
 	NClientFinish() interface{}
 	RoundFinish() interface{}
+	TestFinish() interface{}
 }
 
 type defaultCustomizer struct{}
@@ -104,8 +105,7 @@ func (c *defaultCustomizer) RoundInit()                 {}
 func (c *defaultCustomizer) RspFunc(rsp *data.Response) {}
 func (c *defaultCustomizer) NClientFinish() interface{} { return nil }
 func (c *defaultCustomizer) RoundFinish() interface{}   { return nil }
-
-type RspFunc func(rsp *data.Response)
+func (c *defaultCustomizer) TestFinish() interface{}    { return nil }
 
 func RunPerf(nTests int64, nRound int64, nClients []int, caseConfs []CaseConf, status *Status, c Customizer) *Perf {
 	fTests, fRound := float64(nTests), float64(nRound)
@@ -248,6 +248,8 @@ func RunPerf(nTests int64, nRound int64, nClients []int, caseConfs []CaseConf, s
 			perfNClient.Customize = c.NClientFinish()
 		}
 	}
+
+	p.Customize = c.TestFinish()
 
 	for caseI := range p.Cases {
 		perfCase := &p.Cases[caseI]
@@ -483,16 +485,29 @@ func GetProcessLatency(perf *Perf) string {
 
 	result := ""
 
-	for _, perfNClients := range perfCase.NClients {
+	baseEE := float64(0)
+	baseFE := float64(0)
+	baseRT := float64(0)
 
+	fmt.Println("\\# & E2E Latency & Rate & Process Latency & Rate & Round Trip Latency & Rate \\\\")
+	for i, perfNClients := range perfCase.NClients {
 		perfRoundsAvg := &perfNClients.RoundsAvg
 
+		if i == 0 {
+			baseEE = perfRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean
+			baseFE = perfRoundsAvg.RequestsAvg.FELatencyAvg.Mean
+			baseRT = perfRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean - perfRoundsAvg.RequestsAvg.FELatencyAvg.Mean
+		}
+
 		result += fmt.Sprintf(""+
-			"%d & %d & %d(%0.2fx) & %d \\\\\n",
+			"%d & %d & %0.2f & %d(%0.2fx) & %0.2f & %0.2f & %0.2f \\\\\n",
 			perfRoundsAvg.NClient, int(perfRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean/1e6),
+			perfRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean/baseEE,
 			int(perfRoundsAvg.RequestsAvg.FELatencyAvg.Mean/1e6),
 			perfRoundsAvg.RequestsAvg.FELatencyAvg.Mean/perfRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean,
-			int(perfRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean/1e6)-int(perfRoundsAvg.RequestsAvg.FELatencyAvg.Mean/1e6),
+			perfRoundsAvg.RequestsAvg.FELatencyAvg.Mean/baseFE,
+			(perfRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean-perfRoundsAvg.RequestsAvg.FELatencyAvg.Mean)/1e6,
+			(perfRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean-perfRoundsAvg.RequestsAvg.FELatencyAvg.Mean)/baseRT,
 		)
 	}
 
