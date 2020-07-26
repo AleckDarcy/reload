@@ -65,9 +65,9 @@ func (t *Template) ExecuteTemplateReload(ctx context.Context, w http.ResponseWri
 			//}
 
 			// Content-Type: application/json instead of text/html
-			w.Header().Set(html.ContentType, html.ContentTypeJSON)
-
-			return json.NewEncoder(w).Encode(data)
+			//w.Header().Set(html.ContentType, html.ContentTypeJSON)
+			//
+			//return json.NewEncoder(w).Encode(data)
 		}
 	}
 
