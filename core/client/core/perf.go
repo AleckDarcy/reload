@@ -460,16 +460,16 @@ func GetTable(base, _3MileBeach, jaeger *Perf) *Table {
 			jaegerRoundsAvg := &jaegerNClients.RoundsAvg
 
 			throughput += fmt.Sprintf(""+
-				"%d & %d & %d(%0.2fx) & %d(%0.2fx) \\\\\n",
-				baseRoundsAvg.NClient, int(baseRoundsAvg.ThroughputAvg.Mean),
-				int(_3MileBeachRoundsAvg.ThroughputAvg.Mean), _3MileBeachRoundsAvg.ThroughputAvg.Mean/baseRoundsAvg.ThroughputAvg.Mean,
-				int(jaegerRoundsAvg.ThroughputAvg.Mean), jaegerRoundsAvg.ThroughputAvg.Mean/baseRoundsAvg.ThroughputAvg.Mean,
+				"%d & %0.0f & %0.0f(%0.2fx) & %0.0f(%0.2fx) \\\\\n",
+				baseRoundsAvg.NClient, baseRoundsAvg.ThroughputAvg.Mean,
+				_3MileBeachRoundsAvg.ThroughputAvg.Mean, _3MileBeachRoundsAvg.ThroughputAvg.Mean/baseRoundsAvg.ThroughputAvg.Mean,
+				jaegerRoundsAvg.ThroughputAvg.Mean, jaegerRoundsAvg.ThroughputAvg.Mean/baseRoundsAvg.ThroughputAvg.Mean,
 			)
 			latency += fmt.Sprintf(""+
-				"%d & %d & %d(%0.2fx) & %d(%0.2fx) \\\\\n",
-				baseRoundsAvg.NClient, int(baseRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean)/1e6,
-				int(_3MileBeachRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean)/1e6, _3MileBeachRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean/baseRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean,
-				int(jaegerRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean)/1e6, jaegerRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean/baseRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean,
+				"%d & %0.2f & %0.2f(%0.2fx) & %0.2f(%0.2fx) \\\\\n",
+				baseRoundsAvg.NClient, baseRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean/1e6,
+				_3MileBeachRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean/1e6, _3MileBeachRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean/baseRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean,
+				jaegerRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean/1e6, jaegerRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean/baseRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean,
 			)
 		}
 
@@ -500,10 +500,10 @@ func GetProcessLatency(perf *Perf) string {
 		}
 
 		result += fmt.Sprintf(""+
-			"%d & %d & %0.2f & %d(%0.2fx) & %0.2f & %0.2f & %0.2f \\\\\n",
-			perfRoundsAvg.NClient, int(perfRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean/1e6),
+			"%d & %0.2f & %0.2f & %0.2f(%0.2fx) & %0.2f & %0.2f & %0.2f \\\\\n",
+			perfRoundsAvg.NClient, perfRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean/1e6,
 			perfRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean/baseEE,
-			int(perfRoundsAvg.RequestsAvg.FELatencyAvg.Mean/1e6),
+			perfRoundsAvg.RequestsAvg.FELatencyAvg.Mean/1e6,
 			perfRoundsAvg.RequestsAvg.FELatencyAvg.Mean/perfRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean,
 			perfRoundsAvg.RequestsAvg.FELatencyAvg.Mean/baseFE,
 			(perfRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean-perfRoundsAvg.RequestsAvg.FELatencyAvg.Mean)/1e6,

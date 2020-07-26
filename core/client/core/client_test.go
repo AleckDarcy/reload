@@ -159,7 +159,7 @@ func Test1(t *testing.T) {
 			Requests: []data.Request{
 				{
 					Method:      data.HTTPGet,
-					URL:         "http://localhost",
+					URL:         "http://localhost/?render=json",
 					MessageName: "home",
 					Trace:       traces[i],
 					Expect: &data.ExpectedResponse{
@@ -189,8 +189,12 @@ func TestHome(t *testing.T) {
 		Requests: []data.Request{
 			{
 				Method:      data.HTTPGet,
-				URL:         addr,
+				URL:         addr + "/?render=json",
 				MessageName: "home",
+				Expect: &data.ExpectedResponse{
+					ContentType: rHtml.ContentTypeJSON,
+					Action:      data.DeserializeTrace,
+				},
 			},
 		},
 	}

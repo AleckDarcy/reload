@@ -2,12 +2,14 @@ package template
 
 import (
 	"context"
+	"encoding/json"
 	"html/template"
 	"io"
 	"net/http"
 	"time"
 
 	"github.com/AleckDarcy/reload/core/tracer"
+	"github.com/AleckDarcy/reload/runtime/html"
 )
 
 type Template struct {
@@ -51,12 +53,9 @@ func (t *Template) ExecuteTemplateReload(ctx context.Context, w http.ResponseWri
 
 			data["fi_trace"] = trace
 
-			// delete trace from tracer.Store
+			//delete trace from tracer.Store
 			tracer.Store.DeleteByContextMeta(meta)
 
-			//// Content-Type: application/json instead of text/html
-			//w.Header().Set(html.ContentType, html.ContentTypeJSON)
-			//
 			//if err, ok := data["error"]; ok {
 			//	if errStr, ok := err.(string); ok {
 			//		if errStr != "" {
@@ -64,9 +63,14 @@ func (t *Template) ExecuteTemplateReload(ctx context.Context, w http.ResponseWri
 			//		}
 			//	}
 			//}
-			//
-			//return json.NewEncoder(w).Encode(data)
+
+			// Content-Type: application/json instead of text/html
+			w.Header().Set(html.ContentType, html.ContentTypeJSON)
 		}
+	}
+
+	if data["render"] == "json" {
+		return json.NewEncoder(w).Encode(data)
 	}
 
 	return t.base.ExecuteTemplate(w, name, data)
