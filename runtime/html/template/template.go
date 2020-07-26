@@ -72,6 +72,8 @@ func (t *Template) ExecuteTemplateReload(ctx context.Context, w http.ResponseWri
 	}
 
 	if data["render"] == "json" {
+		w.Header().Set(html.ContentType, html.ContentTypeJSON)
+
 		return json.NewEncoder(w).Encode(data)
 	}
 
