@@ -66,7 +66,7 @@ func NewGenerator(nameLists []*NameMeta) *Generator {
 
 		faults[i] = tfi
 
-		fmt.Println(tfi)
+		fmt.Println(i, tfi)
 	}
 
 	fmt.Println(serviceCount)

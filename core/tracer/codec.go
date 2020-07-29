@@ -52,26 +52,33 @@ func (c *codec) Marshal(v interface{}) ([]byte, error) {
 				if trace, ok := Store.UpdateFunctionByContextMeta(meta, updateFunction); ok {
 					if t.GetMessageType() == MessageType_Message_Request {
 						if tfis := trace.Tfis; tfis != nil {
+							crash, found := true, false
 							for _, tfi := range tfis {
 								if tfi.Type == FaultType_FaultCrash {
-									if tfi.Name[0] == t.GetFI_Name() {
-										crash := true
+									if found = tfi.Name[0] == t.GetFI_Name(); found {
 										for _, after := range tfi.After {
-											if after.Already != after.Times {
+											if after.Times != 0 && after.Already != after.Times {
 												crash = false
 												break
 											}
-
-											after.Already++
 										}
 
-										if crash {
-											//log.Logf("[RELOAD] Marshal tfi crash triggered")
+										break
+									}
+								}
+							}
 
-											return nil, errors.New("transport is closing")
+							if crash && found {
+								//log.Logf("[RELOAD] Marshal tfi crash triggered")
+								for _, tfi := range tfis {
+									for _, after := range tfi.After {
+										if after.Name == t.GetFI_Name() {
+											after.Already++
 										}
 									}
 								}
+
+								return nil, errors.New("transport is closing")
 							}
 						}
 
