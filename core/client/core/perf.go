@@ -26,6 +26,8 @@ type Status struct {
 
 type CaseConf struct {
 	Request *data.Request
+
+	Sample int64
 }
 
 type Perf struct {
@@ -91,7 +93,7 @@ type Customizer interface {
 	NClientInit()
 	RoundInit()
 
-	RspFunc(rsp *data.Response)
+	RspFunc(req *data.Request, rsp *data.Response)
 
 	NClientFinish() interface{}
 	RoundFinish() interface{}
@@ -100,14 +102,14 @@ type Customizer interface {
 
 type defaultCustomizer struct{}
 
-func (c *defaultCustomizer) NClientInit()               {}
-func (c *defaultCustomizer) RoundInit()                 {}
-func (c *defaultCustomizer) RspFunc(rsp *data.Response) {}
-func (c *defaultCustomizer) NClientFinish() interface{} { return nil }
-func (c *defaultCustomizer) RoundFinish() interface{}   { return nil }
-func (c *defaultCustomizer) TestFinish() interface{}    { return nil }
+func (c *defaultCustomizer) NClientInit()                                  {}
+func (c *defaultCustomizer) RoundInit()                                    {}
+func (c *defaultCustomizer) RspFunc(req *data.Request, rsp *data.Response) {}
+func (c *defaultCustomizer) NClientFinish() interface{}                    { return nil }
+func (c *defaultCustomizer) RoundFinish() interface{}                      { return nil }
+func (c *defaultCustomizer) TestFinish() interface{}                       { return nil }
 
-func RunPerf(nTests int64, nRound int64, nClients []int, caseConfs []CaseConf, status *Status, c Customizer) *Perf {
+func RunPerf(nTests, nRound int64, nClients []int, caseConfs []CaseConf, status *Status, c Customizer) *Perf {
 	fTests, fRound := float64(nTests), float64(nRound)
 
 	if c == nil {
@@ -119,6 +121,8 @@ func RunPerf(nTests int64, nRound int64, nClients []int, caseConfs []CaseConf, s
 	}
 
 	for caseI, case_ := range caseConfs {
+		nSample := case_.Sample
+
 		perfCase := &p.Cases[caseI]
 		perfCase.NClients = make([]NClient, len(nClients))
 
@@ -176,6 +180,11 @@ func RunPerf(nTests int64, nRound int64, nClients []int, caseConfs []CaseConf, s
 								break
 							}
 
+							tmpTrace := reqs.Trace
+							if traceID%nSample != 0 {
+								reqs.Trace = nil
+							}
+
 							if reqs.Trace != nil {
 								reqs.Trace.Id = traceID + traceIDOffset
 							}
@@ -194,9 +203,11 @@ func RunPerf(nTests int64, nRound int64, nClients []int, caseConfs []CaseConf, s
 								}
 
 								if case_.Request.Expect.Action&data.CustomizedRspFunc != 0 {
-									c.RspFunc(rsp)
+									c.RspFunc(&reqs.Requests[0], rsp)
 								}
 							}
+
+							reqs.Trace = tmpTrace
 						}
 
 						signals <- struct{}{}
@@ -478,6 +489,24 @@ func GetTable(base, _3MileBeach, jaeger *Perf) *Table {
 	}
 
 	return t
+}
+
+func GetSampleRate(perf *Perf) string {
+	result := ""
+
+	baseEE, baseTP := 0.0, 0.0
+
+	for caseI, case_ := range perf.Cases {
+		ee := case_.NClients[0].RoundsAvg.RequestsAvg.E2ELatencyAvg.Mean
+		tp := case_.NClients[0].RoundsAvg.ThroughputAvg.Mean
+		if caseI == 0 {
+			baseEE, baseTP = ee, tp
+		}
+
+		result += fmt.Sprintf(" & %0.2f(%0.2f%%) & %0.2f(%0.2f%%)\n", ee/1e6, (ee/baseEE-1)*100, tp, (tp/baseTP-1)*100)
+	}
+
+	return result
 }
 
 func GetProcessLatency(perf *Perf) string {

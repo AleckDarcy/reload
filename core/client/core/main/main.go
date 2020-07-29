@@ -33,35 +33,42 @@ var homeNames = []*tracer.NameMeta{
 		Name:    "GetCartRequest",
 	},
 	currencyConversionRequest,
-	currencyConversionRequest,
-	currencyConversionRequest,
-	currencyConversionRequest,
-	currencyConversionRequest,
-	currencyConversionRequest,
-	currencyConversionRequest,
-	currencyConversionRequest,
-	currencyConversionRequest,
+	//currencyConversionRequest,
+	//currencyConversionRequest,
+	//currencyConversionRequest,
+	//currencyConversionRequest,
+	//currencyConversionRequest,
+	//currencyConversionRequest,
+	//currencyConversionRequest,
+	//currencyConversionRequest,
 	{
 		Service: "adservice",
 		Name:    "AdRequest",
 	},
-	currencyConversionRequest,
+	{"1", "1"},
+	{"2", "2"},
+	{"3", "3"},
+	{"4", "4"},
+	//currencyConversionRequest,
 }
 
 func main() {
 	var names = homeNames
 
 	resultChan := make(chan *tracer.Faults, 1)
-
+	expect := int64(math.Pow(2, float64(len(names))) - 1)
+	fmt.Println("expect:", expect)
+	c := tracer.NewGenerator(names)
 	go func() {
-		c := tracer.NewGenerator(names)
+		//resultChan <- c.GetFaults([]int{0, 3, 12})
+		//expect = 1
+
 		for i := 1; i <= len(names); i++ {
 			c.SetLen(i)
 			c.GenerateCombinartorial(resultChan)
 		}
 	}()
 
-	expect := int64(math.Pow(2, float64(len(names))) - 1)
 	count := int64(0)
 	traceID := time.Now().UnixNano()
 
@@ -70,9 +77,12 @@ func main() {
 	traceIDOffset := time.Now().UnixNano()
 
 	//expect = 10
-	errorCount := 0
-
+	errorCount := int64(0)
+	okCount := int64(0)
 	start := time.Now()
+
+	tmp := []int{0, 3, 10, 11, 12}
+	_ = tmp
 
 	for i := 0; i < 4; i++ {
 		go func(signal chan struct{}) {
@@ -108,19 +118,39 @@ func main() {
 					//_ = jsonBytes
 
 					if result.FIType == tracer.FI_TFI || result.FIType == tracer.FI_RLFI {
+						//fmt.Print(".")
+						//if reflect.DeepEqual(result.IDs, []int{0, 3, 12}) {
+						//	reqs.Trace.Id = 110
+						//}
+
 						//fmt.Println(result.Faults)
 						rsp, err := client.SendRequests(reqs)
 						_ = rsp
-						if err != nil {
-							errorCount++
 
-							fmt.Println(result)
+						if err != nil {
+							atomic.AddInt64(&errorCount, 1)
+
+							fmt.Println(result.IDs)
 							//if reflect.DeepEqual(result.IDs, []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}) && rsp != nil {
 							//	t.Log(string(rsp.Body))
 							//}
 							fmt.Println(err)
 							//errCount++
+						} else {
+							atomic.AddInt64(&okCount, 1)
+							//fmt.Println("hahahah")
 						}
+
+						//if reflect.DeepEqual(result.IDs, tmp) {
+						//	if err != nil {
+						//		fmt.Println("guale")
+						//	}
+						//	if rsp != nil {
+						//		fmt.Println(result)
+						//		fmt.Println(string(rsp.Body))
+						//		//	os.Exit(0)
+						//	}
+						//}
 					}
 
 					if tmp := atomic.AddInt64(&count, 1); tmp == expect {
