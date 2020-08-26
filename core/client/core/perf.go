@@ -450,6 +450,12 @@ type Table struct {
 type TableCase struct {
 	Throughput string
 	Latency    string
+
+	ThroughputLoss  string
+	LatencyOverhead string
+
+	ThroughputSDC string
+	LatencySDC    string
 }
 
 func GetTable(base, _3MileBeach, jaeger *Perf) *Table {
@@ -461,6 +467,10 @@ func GetTable(base, _3MileBeach, jaeger *Perf) *Table {
 
 		throughput := ""
 		latency := ""
+		throughputLoss := ""
+		latencyOverhead := ""
+		throughputSDC := ""
+		latencySDC := ""
 
 		for nClientsI, baseNClients := range baseCase.NClients {
 			_3MileBeachNClients := _3MileBeachCase.NClients[nClientsI]
@@ -471,21 +481,53 @@ func GetTable(base, _3MileBeach, jaeger *Perf) *Table {
 			jaegerRoundsAvg := &jaegerNClients.RoundsAvg
 
 			throughput += fmt.Sprintf(""+
-				"%d & %0.0f & %0.0f(%0.2fx) & %0.0f(%0.2fx) \\\\\n",
+				"%d & %0.0f & %0.0f & %0.0f \\\\\n",
 				baseRoundsAvg.NClient, baseRoundsAvg.ThroughputAvg.Mean,
-				_3MileBeachRoundsAvg.ThroughputAvg.Mean, _3MileBeachRoundsAvg.ThroughputAvg.Mean/baseRoundsAvg.ThroughputAvg.Mean,
-				jaegerRoundsAvg.ThroughputAvg.Mean, jaegerRoundsAvg.ThroughputAvg.Mean/baseRoundsAvg.ThroughputAvg.Mean,
+				_3MileBeachRoundsAvg.ThroughputAvg.Mean,
+				jaegerRoundsAvg.ThroughputAvg.Mean,
 			)
 			latency += fmt.Sprintf(""+
-				"%d & %0.2f & %0.2f(%0.2fx) & %0.2f(%0.2fx) \\\\\n",
+				"%d & %0.2f & %0.2f & %0.2f \\\\\n",
 				baseRoundsAvg.NClient, baseRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean/1e6,
-				_3MileBeachRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean/1e6, _3MileBeachRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean/baseRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean,
-				jaegerRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean/1e6, jaegerRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean/baseRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean,
+				_3MileBeachRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean/1e6,
+				jaegerRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean/1e6,
+			)
+
+			throughputLoss += fmt.Sprintf(""+
+				"%d & %0.1f\\%% & %0.1f\\%% \\\\\n",
+				baseRoundsAvg.NClient,
+				100*_3MileBeachRoundsAvg.ThroughputAvg.Mean/baseRoundsAvg.ThroughputAvg.Mean-100,
+				100*jaegerRoundsAvg.ThroughputAvg.Mean/baseRoundsAvg.ThroughputAvg.Mean-100,
+			)
+			latencyOverhead += fmt.Sprintf(""+
+				"%d & %0.1f\\%% & %0.1f\\%% \\\\\n",
+				baseRoundsAvg.NClient,
+				100*_3MileBeachRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean/baseRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean-100,
+				100*jaegerRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean/baseRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean-100,
+			)
+
+			throughputSDC += fmt.Sprintf(""+
+				"%d & %0.2f\\%% & %0.2f\\%% & %0.2f\\%% \\\\\n",
+				baseRoundsAvg.NClient,
+				100*baseRoundsAvg.ThroughputAvg.StdErr/baseRoundsAvg.ThroughputAvg.Mean,
+				100*_3MileBeachRoundsAvg.ThroughputAvg.StdErr/_3MileBeachRoundsAvg.ThroughputAvg.Mean,
+				100*jaegerRoundsAvg.ThroughputAvg.StdErr/jaegerRoundsAvg.ThroughputAvg.Mean,
+			)
+			latencySDC += fmt.Sprintf(""+
+				"%d & %0.2f\\%% & %0.2f\\%% & %0.2f\\%% \\\\\n",
+				baseRoundsAvg.NClient,
+				100*baseRoundsAvg.RequestsAvg.E2ELatencyAvg.StdErr/baseRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean,
+				100*_3MileBeachRoundsAvg.RequestsAvg.E2ELatencyAvg.StdErr/_3MileBeachRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean,
+				100*jaegerRoundsAvg.RequestsAvg.E2ELatencyAvg.StdErr/jaegerRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean,
 			)
 		}
 
 		t.Cases[caseI].Throughput = throughput
 		t.Cases[caseI].Latency = latency
+		t.Cases[caseI].ThroughputLoss = throughputLoss
+		t.Cases[caseI].LatencyOverhead = latencyOverhead
+		t.Cases[caseI].ThroughputSDC = throughputSDC
+		t.Cases[caseI].LatencySDC = latencySDC
 	}
 
 	return t
@@ -503,7 +545,8 @@ func GetSampleRate(perf *Perf) string {
 			baseEE, baseTP = ee, tp
 		}
 
-		result += fmt.Sprintf(" & %0.2f(%0.2f%%) & %0.2f(%0.2f%%)\n", ee/1e6, (ee/baseEE-1)*100, tp, (tp/baseTP-1)*100)
+		//result += fmt.Sprintf(" & %0.2f(%0.2f\\%%) & %0.2f(%0.2f\\%%)\n", ee/1e6, (ee/baseEE-1)*100, tp, (tp/baseTP-1)*100)
+		result += fmt.Sprintf(" & %0.2f\\%% & %0.2f\\%%\n", (ee/baseEE-1)*100, (tp/baseTP-1)*100)
 	}
 
 	return result

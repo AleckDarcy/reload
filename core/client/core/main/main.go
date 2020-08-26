@@ -1,10 +1,18 @@
 package main
 
 import (
+	"bufio"
+	"encoding/json"
+	"flag"
 	"fmt"
 	"math"
+	"os"
 	"sync/atomic"
 	"time"
+
+	"github.com/AleckDarcy/reload/core/log"
+
+	"github.com/AleckDarcy/reload/core/client/kubectl"
 
 	"github.com/AleckDarcy/reload/core/client/core"
 	"github.com/AleckDarcy/reload/core/client/data"
@@ -53,6 +61,111 @@ var homeNames = []*tracer.NameMeta{
 }
 
 func main() {
+	start := int64(0)
+	end := int64(0)
+
+	flag.Int64Var(&start, "start", 0, "start id")
+	flag.Int64Var(&start, "end", 0, "end id")
+	flag.Parse()
+
+	chaos(start, end)
+}
+
+func chaos(start, end int64) {
+	names := []string{
+		"adservice",
+		"cartservice",
+		"currencyservice",
+		"productcatalogservice",
+		"checkoutservice",
+		"emailservice",
+		"paymentservice",
+		"recommendationservice",
+		"shippingservice",
+	}
+	g := kubectl.NewGenerator(names)
+
+	file, _ := os.OpenFile("result.jsons", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0666)
+	defer file.Close()
+	fw := bufio.NewWriter(file)
+
+	resultChan := make(chan []int, 1)
+
+	go func() {
+		for i := 1; i <= len(names); i++ {
+			g.SetLen(i)
+			g.GenerateCombinartorial(resultChan)
+		}
+	}()
+
+	expect := int64(math.Pow(2, float64(len(names))) - 1)
+	if end <= start {
+		end = expect
+	}
+
+	count := int64(0)
+
+	services := make([]*kubectl.Service, len(names))
+	for i, name := range names {
+		services[i] = &kubectl.Service{
+			Name:      name,
+			NameSpace: "default",
+			Replicas:  1,
+		}
+	}
+
+	client := core.NewClient()
+	reqs := &data.Requests{
+		CookieUrl: "localhost",
+		Trace:     &tracer.Trace{Id: time.Now().UnixNano()},
+		Requests: []data.Request{
+			{
+				Method:      data.HTTPGet,
+				URL:         "http://localhost",
+				MessageName: "home",
+				Expect: &data.ExpectedResponse{
+					ContentType: rHtml.ContentTypeHTML,
+					Action:      data.DeserializeTrace,
+				},
+			},
+		},
+	}
+
+	var res *core.ChaosResult
+	svc := make([]*kubectl.Service, 0, len(names))
+
+	log.Logf("start task, range: [%d, %d]", start, end)
+	for {
+		select {
+		case result := <-resultChan:
+			if count < start {
+				break
+			}
+
+			svc = svc[:len(result)]
+			for i, id := range result {
+				svc[i] = services[id]
+			}
+
+			res = core.Chaos(count, client, reqs, svc, result)
+
+			jsonBytes, _ := json.Marshal(res)
+			jsonStr := string(jsonBytes)
+			fw.WriteString(jsonStr)
+			fw.WriteByte('\n')
+			fw.Flush()
+			log.Logf("%v\n", jsonStr)
+		}
+
+		if count++; count == expect || count == end {
+			break
+		} else if count%100 == 0 {
+			fmt.Println("=============", count, "=============")
+		}
+	}
+}
+
+func chaosStyle() {
 	var names = homeNames
 
 	resultChan := make(chan *tracer.Faults, 1)
