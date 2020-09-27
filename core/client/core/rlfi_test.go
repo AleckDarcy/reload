@@ -73,6 +73,7 @@ var homeNames = []*tracer.NameMeta{
 		Name:    "AdRequest",
 	},
 	currencyConversionRequest,
+	{Service: "5", Name: "5"},
 	{Service: "6", Name: "6"},
 	{Service: "7", Name: "7"},
 	{Service: "8", Name: "8"},
@@ -179,7 +180,7 @@ func TestChaosStyle(t *testing.T) {
 	//expect = 10
 	errorCount := 0
 
-	for i := 0; i < 1; i++ {
+	for i := 0; i < 4; i++ {
 		go func(signal chan struct{}) {
 			client := NewClient()
 			_ = client
@@ -239,5 +240,5 @@ func TestChaosStyle(t *testing.T) {
 
 	<-countSignal
 
-	t.Log(errorCount)
+	t.Log(errorCount, "out of", expect)
 }

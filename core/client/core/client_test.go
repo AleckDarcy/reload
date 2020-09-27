@@ -185,7 +185,51 @@ func TestHome(t *testing.T) {
 
 	reqs := &data.Requests{
 		CookieUrl: "localhost",
-		Trace:     &tracer.Trace{Id: time.Now().UnixNano()},
+		Trace: &tracer.Trace{
+			Id: time.Now().UnixNano(),
+
+			Tfis: []*tracer.TFI{
+				//// product fail
+				//{
+				//	Type: tracer.FaultType_FaultCrash,
+				//	Name: []string{"ListProductsRequest"},
+				//},
+				//// ad fail when product calls
+				//{
+				//	Type: tracer.FaultType_FaultCrash,
+				//	Name: []string{"AdRequest"},
+				//	After: []*tracer.TFIMeta{
+				//		{
+				//			Name: "AdRequest", Times: 0,
+				//		},
+				//	},
+				//},
+				//// fallback success
+				{
+					Type: tracer.FaultType_FaultCrash,
+					Name: []string{"AdRequest"},
+					After: []*tracer.TFIMeta{
+						{
+							Name: "AdRequest", Times: 1,
+						},
+					},
+				},
+				//// fallback fail
+				//{
+				//	Type: tracer.FaultType_FaultCrash,
+				//	Name: []string{"AdRequest"},
+				//	After: []*tracer.TFIMeta{
+				//		{
+				//			Name: "AdRequest", Times: 1,
+				//		},
+				//	},
+				//},
+				//{
+				//	Type: tracer.FaultType_FaultCrash,
+				//	Name: []string{"GetQuoteRequest"},
+				//},
+			},
+		},
 		Requests: []data.Request{
 			{
 				Method:      data.HTTPGet,

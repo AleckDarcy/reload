@@ -22,7 +22,7 @@ func (m *Trace) Copy() *Trace {
 func (m *Trace) CalFI(records []*Record) {
 	for _, tfi := range m.Tfis {
 		for _, record := range records {
-			if record.Type == RecordType_RecordReceive {
+			if record.Type == RecordType_RecordSend {
 				for _, after := range tfi.After {
 					if record.MessageName == after.Name {
 						after.Already++

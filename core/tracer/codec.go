@@ -57,7 +57,7 @@ func (c *codec) Marshal(v interface{}) ([]byte, error) {
 								if tfi.Type == FaultType_FaultCrash {
 									if found = tfi.Name[0] == t.GetFI_Name(); found {
 										for _, after := range tfi.After {
-											if after.Times != 0 && after.Already != after.Times {
+											if after.Times != -1 && after.Already != after.Times {
 												crash = false
 												break
 											}

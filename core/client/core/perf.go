@@ -370,17 +370,17 @@ func GetReport(perf *Perf) *Report {
 		for nClientsI, perfNClients := range perfCase.NClients {
 			perfRoundsAvg := &perfNClients.RoundsAvg
 			if nClientsI == 0 {
-				e2eLatenciesMean += fmt.Sprintf("%d", int(perfRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean/1e6))
-				throughputsMean += fmt.Sprintf("%d", int(perfRoundsAvg.ThroughputAvg.Mean))
-				feLatenciesMean += fmt.Sprintf("%d", int(perfRoundsAvg.RequestsAvg.FELatencyAvg.Mean/1e6))
+				e2eLatenciesMean += fmt.Sprintf("%0.2f", perfRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean/1e6)
+				throughputsMean += fmt.Sprintf("%0.2f", perfRoundsAvg.ThroughputAvg.Mean)
+				feLatenciesMean += fmt.Sprintf("%0.2f", perfRoundsAvg.RequestsAvg.FELatencyAvg.Mean/1e6)
 
 				e2eLatenciesErrorBar += fmt.Sprintf("%f", perfRoundsAvg.RequestsAvg.E2ELatencyAvg.StdErr/1e6)
 				throughputsErrorBar += fmt.Sprintf("%f", perfRoundsAvg.ThroughputAvg.StdErr)
 				feLatenciesErrorBar += fmt.Sprintf("%f", perfRoundsAvg.RequestsAvg.FELatencyAvg.StdErr/1e6)
 			} else {
-				e2eLatenciesMean += fmt.Sprintf(",%d", int(perfRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean/1e6))
-				throughputsMean += fmt.Sprintf(",%d", int(perfRoundsAvg.ThroughputAvg.Mean))
-				feLatenciesMean += fmt.Sprintf(",%d", int(perfRoundsAvg.RequestsAvg.FELatencyAvg.Mean/1e6))
+				e2eLatenciesMean += fmt.Sprintf(",%0.2f", perfRoundsAvg.RequestsAvg.E2ELatencyAvg.Mean/1e6)
+				throughputsMean += fmt.Sprintf(",%0.2f", perfRoundsAvg.ThroughputAvg.Mean)
+				feLatenciesMean += fmt.Sprintf(",%0.2f", perfRoundsAvg.RequestsAvg.FELatencyAvg.Mean/1e6)
 
 				e2eLatenciesErrorBar += fmt.Sprintf(",%f", perfRoundsAvg.RequestsAvg.E2ELatencyAvg.StdErr/1e6)
 				throughputsErrorBar += fmt.Sprintf(",%f", perfRoundsAvg.ThroughputAvg.StdErr)
@@ -537,16 +537,18 @@ func GetSampleRate(perf *Perf) string {
 	result := ""
 
 	baseEE, baseTP := 0.0, 0.0
-
+	_, _ = baseEE, baseTP
 	for caseI, case_ := range perf.Cases {
 		ee := case_.NClients[0].RoundsAvg.RequestsAvg.E2ELatencyAvg.Mean
 		tp := case_.NClients[0].RoundsAvg.ThroughputAvg.Mean
 		if caseI == 0 {
 			baseEE, baseTP = ee, tp
+			result += fmt.Sprintf(" & %0.2f\\%% & %0.0f\\%%\n", ee/1e6, tp)
+		} else {
+			//result += fmt.Sprintf(" & %0.2f(%0.2f\\%%) & %0.2f(%0.2f\\%%)\n", ee/1e6, (ee/baseEE-1)*100, tp, (tp/baseTP-1)*100)
+			//result += fmt.Sprintf(" & %0.2f\\%% & %0.0f\\%%\n", (ee-baseEE)/1e6, tp-baseTP)
+			result += fmt.Sprintf(" & %0.2f\\%% & %0.0f\\%%\n", (ee)/1e6, tp)
 		}
-
-		//result += fmt.Sprintf(" & %0.2f(%0.2f\\%%) & %0.2f(%0.2f\\%%)\n", ee/1e6, (ee/baseEE-1)*100, tp, (tp/baseTP-1)*100)
-		result += fmt.Sprintf(" & %0.2f\\%% & %0.2f\\%%\n", (ee/baseEE-1)*100, (tp/baseTP-1)*100)
 	}
 
 	return result
