@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Implementation-Title: grpc-gae-interop-testing-jdk7
+Target-Compatibility: 1.6
+Implementation-Version: 1.10.1
+Built-By: aleck
+Source-Compatibility: 1.6
+Built-JDK: 1.8.0_241
+

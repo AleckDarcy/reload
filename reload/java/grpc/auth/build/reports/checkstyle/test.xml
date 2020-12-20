@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="6.17">
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/auth/src/test/java/io/grpc/auth/ClientAuthInterceptorTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/auth/src/test/java/io/grpc/auth/GoogleAuthLibraryCallCredentialsTest.java">
+</file>
+</checkstyle>

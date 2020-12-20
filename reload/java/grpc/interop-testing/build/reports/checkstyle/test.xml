@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="6.17">
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/interop-testing/src/test/java/io/grpc/ChannelAndServerBuilderTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/interop-testing/src/test/java/io/grpc/stub/StubConfigTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/interop-testing/src/test/java/io/grpc/testing/integration/AutoWindowSizingOnTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/interop-testing/src/test/java/io/grpc/testing/integration/CascadingTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/interop-testing/src/test/java/io/grpc/testing/integration/CompressionTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/interop-testing/src/test/java/io/grpc/testing/integration/ConcurrencyTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/interop-testing/src/test/java/io/grpc/testing/integration/Http2NettyLocalChannelTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/interop-testing/src/test/java/io/grpc/testing/integration/Http2NettyTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/interop-testing/src/test/java/io/grpc/testing/integration/Http2OkHttpTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/interop-testing/src/test/java/io/grpc/testing/integration/InProcessTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/interop-testing/src/test/java/io/grpc/testing/integration/MoreInProcessTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/interop-testing/src/test/java/io/grpc/testing/integration/NettyFlowControlTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/interop-testing/src/test/java/io/grpc/testing/integration/ProxyTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/interop-testing/src/test/java/io/grpc/testing/integration/StressTestClientTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/interop-testing/src/test/java/io/grpc/testing/integration/TestCasesTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/interop-testing/src/test/java/io/grpc/testing/integration/TestServiceClientTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/interop-testing/src/test/java/io/grpc/testing/integration/TlsTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/interop-testing/src/test/java/io/grpc/testing/integration/TrafficControlProxy.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/interop-testing/src/test/java/io/grpc/testing/integration/TransportCompressionTest.java">
+</file>
+</checkstyle>

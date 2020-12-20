@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="6.17">
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/protobuf-lite/src/main/java/io/grpc/protobuf/lite/ProtoInputStream.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/protobuf-lite/src/main/java/io/grpc/protobuf/lite/ProtoLiteUtils.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/protobuf-lite/src/main/java/io/grpc/protobuf/lite/package-info.java">
+</file>
+</checkstyle>

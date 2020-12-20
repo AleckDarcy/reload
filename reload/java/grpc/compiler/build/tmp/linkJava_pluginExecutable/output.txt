@@ -1,0 +1,4 @@
+See file:///Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/compiler/build/tmp/linkJava_pluginExecutable/output.txt for all output for linkJava_pluginExecutable.
+linking protoc-gen-grpc-java successful.
+
+Finished linkJava_pluginExecutable, see full log file:///Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/compiler/build/tmp/linkJava_pluginExecutable/output.txt.

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="6.17">
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/services/src/main/java/io/grpc/protobuf/services/ProtoReflectionService.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/services/src/main/java/io/grpc/services/BinaryLog.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/services/src/main/java/io/grpc/services/HealthServiceImpl.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/services/src/main/java/io/grpc/services/HealthStatusManager.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/services/src/main/java/io/grpc/services/MonitoringService.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/services/src/main/java/io/grpc/services/MonitoringUtil.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/services/src/main/java/io/grpc/services/package-info.java">
+</file>
+</checkstyle>

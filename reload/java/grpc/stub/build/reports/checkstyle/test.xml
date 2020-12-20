@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="6.17">
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/stub/src/test/java/io/grpc/stub/AbstractStubTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/stub/src/test/java/io/grpc/stub/ClientCallsTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/stub/src/test/java/io/grpc/stub/ServerCallsTest.java">
+</file>
+</checkstyle>

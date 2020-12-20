@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="6.17">
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/main/java/io/grpc/netty/AbstractHttp2Headers.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/main/java/io/grpc/netty/AbstractNettyHandler.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/main/java/io/grpc/netty/CancelClientStreamCommand.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/main/java/io/grpc/netty/CancelServerStreamCommand.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/main/java/io/grpc/netty/ClientTransportLifecycleManager.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/main/java/io/grpc/netty/CreateStreamCommand.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/main/java/io/grpc/netty/ForcefulCloseCommand.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/main/java/io/grpc/netty/GracefulCloseCommand.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/main/java/io/grpc/netty/GrpcHttp2ConnectionHandler.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/main/java/io/grpc/netty/GrpcHttp2HeadersUtils.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/main/java/io/grpc/netty/GrpcHttp2OutboundHeaders.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/main/java/io/grpc/netty/GrpcSslContexts.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/main/java/io/grpc/netty/HandlerSettings.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/main/java/io/grpc/netty/InternalHandlerSettings.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/main/java/io/grpc/netty/InternalNettyChannelBuilder.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/main/java/io/grpc/netty/InternalNettyServerBuilder.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/main/java/io/grpc/netty/JettyTlsUtil.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/main/java/io/grpc/netty/KeepAliveEnforcer.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/main/java/io/grpc/netty/MaxConnectionIdleManager.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/main/java/io/grpc/netty/NegotiationType.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/main/java/io/grpc/netty/NettyChannelBuilder.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/main/java/io/grpc/netty/NettyChannelProvider.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/main/java/io/grpc/netty/NettyClientHandler.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/main/java/io/grpc/netty/NettyClientStream.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/main/java/io/grpc/netty/NettyClientTransport.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/main/java/io/grpc/netty/NettyHandlerSettings.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/main/java/io/grpc/netty/NettyReadableBuffer.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/main/java/io/grpc/netty/NettyServer.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/main/java/io/grpc/netty/NettyServerBuilder.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/main/java/io/grpc/netty/NettyServerHandler.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/main/java/io/grpc/netty/NettyServerProvider.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/main/java/io/grpc/netty/NettyServerStream.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/main/java/io/grpc/netty/NettyServerTransport.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/main/java/io/grpc/netty/NettyWritableBuffer.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/main/java/io/grpc/netty/NettyWritableBufferAllocator.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/main/java/io/grpc/netty/ProtocolNegotiator.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/main/java/io/grpc/netty/ProtocolNegotiators.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/main/java/io/grpc/netty/SendGrpcFrameCommand.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/main/java/io/grpc/netty/SendPingCommand.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/main/java/io/grpc/netty/SendResponseHeadersCommand.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/main/java/io/grpc/netty/StreamIdHolder.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/main/java/io/grpc/netty/Utils.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/main/java/io/grpc/netty/WriteQueue.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/main/java/io/grpc/netty/package-info.java">
+</file>
+</checkstyle>

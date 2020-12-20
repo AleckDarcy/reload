@@ -1,0 +1,8 @@
+-o
+/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/compiler/build/exe/java_plugin/protoc-gen-grpc-java
+/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/compiler/build/objs/java_plugin/java_pluginCpp/4d8kwy0qldx8h5krf96egeid3/java_generator.o
+/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/compiler/build/objs/java_plugin/java_pluginCpp/5s14asl2d8v43f48ri3jzw5cu/java_plugin.o
+/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/compiler/build/objs/java_plugin/java_pluginCpp/cmkx8cb9wgxcy6i9dx7v2pqn9/java_generator.o
+-lprotoc
+-lprotobuf
+-m64

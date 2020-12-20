@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="6.17">
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/testing/src/main/java/io/grpc/internal/NoopClientCall.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/testing/src/main/java/io/grpc/internal/NoopServerCall.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/testing/src/main/java/io/grpc/internal/TestingAccessor.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/testing/src/main/java/io/grpc/internal/testing/AbstractClientTransportFactoryTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/testing/src/main/java/io/grpc/internal/testing/AbstractTransportTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/testing/src/main/java/io/grpc/internal/testing/SingleMessageProducer.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/testing/src/main/java/io/grpc/internal/testing/StatsTestUtils.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/testing/src/main/java/io/grpc/internal/testing/StreamRecorder.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/testing/src/main/java/io/grpc/internal/testing/TestClientStreamTracer.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/testing/src/main/java/io/grpc/internal/testing/TestServerStreamTracer.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/testing/src/main/java/io/grpc/internal/testing/TestStreamTracer.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/testing/src/main/java/io/grpc/internal/testing/TestUtils.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/testing/src/main/java/io/grpc/testing/GrpcServerRule.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/testing/src/main/java/io/grpc/testing/StreamRecorder.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/testing/src/main/java/io/grpc/testing/TestMethodDescriptors.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/testing/src/main/java/io/grpc/testing/TestUtils.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/testing/src/main/java/io/grpc/testing/TlsTesting.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/testing/src/main/java/io/grpc/testing/package-info.java">
+</file>
+</checkstyle>

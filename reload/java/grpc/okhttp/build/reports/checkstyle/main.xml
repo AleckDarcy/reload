@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="6.17">
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/okhttp/src/main/java/io/grpc/okhttp/AsyncFrameWriter.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/okhttp/src/main/java/io/grpc/okhttp/Headers.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/okhttp/src/main/java/io/grpc/okhttp/NegotiationType.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/okhttp/src/main/java/io/grpc/okhttp/OkHttpChannelBuilder.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/okhttp/src/main/java/io/grpc/okhttp/OkHttpChannelProvider.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/okhttp/src/main/java/io/grpc/okhttp/OkHttpClientStream.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/okhttp/src/main/java/io/grpc/okhttp/OkHttpClientTransport.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/okhttp/src/main/java/io/grpc/okhttp/OkHttpProtocolNegotiator.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/okhttp/src/main/java/io/grpc/okhttp/OkHttpReadableBuffer.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/okhttp/src/main/java/io/grpc/okhttp/OkHttpSettingsUtil.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/okhttp/src/main/java/io/grpc/okhttp/OkHttpTlsUpgrader.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/okhttp/src/main/java/io/grpc/okhttp/OkHttpWritableBuffer.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/okhttp/src/main/java/io/grpc/okhttp/OkHttpWritableBufferAllocator.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/okhttp/src/main/java/io/grpc/okhttp/OutboundFlowController.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/okhttp/src/main/java/io/grpc/okhttp/Utils.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/okhttp/src/main/java/io/grpc/okhttp/package-info.java">
+</file>
+</checkstyle>

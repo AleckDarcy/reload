@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="6.17">
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/protobuf/src/main/java/io/grpc/protobuf/ProtoFileDescriptorSupplier.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/protobuf/src/main/java/io/grpc/protobuf/ProtoMethodDescriptorSupplier.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/protobuf/src/main/java/io/grpc/protobuf/ProtoServiceDescriptorSupplier.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/protobuf/src/main/java/io/grpc/protobuf/ProtoUtils.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/protobuf/src/main/java/io/grpc/protobuf/StatusProto.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/protobuf/src/main/java/io/grpc/protobuf/package-info.java">
+</file>
+</checkstyle>

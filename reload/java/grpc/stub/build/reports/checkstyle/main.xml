@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="6.17">
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/stub/src/main/java/io/grpc/stub/AbstractStub.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/stub/src/main/java/io/grpc/stub/CallStreamObserver.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/stub/src/main/java/io/grpc/stub/ClientCallStreamObserver.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/stub/src/main/java/io/grpc/stub/ClientCalls.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/stub/src/main/java/io/grpc/stub/ClientResponseObserver.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/stub/src/main/java/io/grpc/stub/MetadataUtils.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/stub/src/main/java/io/grpc/stub/ServerCallStreamObserver.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/stub/src/main/java/io/grpc/stub/ServerCalls.java">
+<error line="19" column="8" severity="error" message="Unused import - java.util.logging.Level." source="com.puppycrawl.tools.checkstyle.checks.imports.UnusedImportsCheck"/>
+<error line="22" severity="error" message="Import statement for &apos;com.google.common.base.Preconditions.checkNotNull&apos; is in the wrong order. Should be in the &apos;STATIC&apos; group, expecting not assigned imports on this line." source="com.puppycrawl.tools.checkstyle.checks.imports.CustomImportOrderCheck"/>
+<error line="23" severity="error" message="Import statement for &apos;com.google.common.base.Preconditions.checkState&apos; is in the wrong order. Should be in the &apos;STATIC&apos; group, expecting not assigned imports on this line." source="com.puppycrawl.tools.checkstyle.checks.imports.CustomImportOrderCheck"/>
+<error line="25" severity="error" message="Wrong lexicographical order for &apos;com.google.common.annotations.VisibleForTesting&apos; import. Should be before &apos;java.util.logging.Logger&apos;." source="com.puppycrawl.tools.checkstyle.checks.imports.CustomImportOrderCheck"/>
+<error line="26" severity="error" message="Wrong lexicographical order for &apos;com.google.common.base.Preconditions&apos; import. Should be before &apos;java.util.logging.Logger&apos;." source="com.puppycrawl.tools.checkstyle.checks.imports.CustomImportOrderCheck"/>
+<error line="27" severity="error" message="Wrong lexicographical order for &apos;io.grpc.Metadata&apos; import. Should be before &apos;java.util.logging.Logger&apos;." source="com.puppycrawl.tools.checkstyle.checks.imports.CustomImportOrderCheck"/>
+<error line="28" severity="error" message="Wrong lexicographical order for &apos;io.grpc.MethodDescriptor&apos; import. Should be before &apos;java.util.logging.Logger&apos;." source="com.puppycrawl.tools.checkstyle.checks.imports.CustomImportOrderCheck"/>
+<error line="29" severity="error" message="Wrong lexicographical order for &apos;io.grpc.ServerCall&apos; import. Should be before &apos;java.util.logging.Logger&apos;." source="com.puppycrawl.tools.checkstyle.checks.imports.CustomImportOrderCheck"/>
+<error line="30" severity="error" message="Wrong lexicographical order for &apos;io.grpc.ServerCallHandler&apos; import. Should be before &apos;java.util.logging.Logger&apos;." source="com.puppycrawl.tools.checkstyle.checks.imports.CustomImportOrderCheck"/>
+<error line="31" severity="error" message="Wrong lexicographical order for &apos;io.grpc.Status&apos; import. Should be before &apos;java.util.logging.Logger&apos;." source="com.puppycrawl.tools.checkstyle.checks.imports.CustomImportOrderCheck"/>
+<error line="177" severity="error" message="Abbreviation in name &apos;threadID&apos; must contain no more than &apos;1&apos; capital letters." source="com.puppycrawl.tools.checkstyle.checks.naming.AbbreviationAsWordInNameCheck"/>
+<error line="178" severity="error" message="Comment has incorrect indentation level 0, expected is 10, indentation should be the same level as line 180." source="com.puppycrawl.tools.checkstyle.checks.indentation.CommentsIndentationCheck"/>
+<error line="185" severity="error" message="Comment has incorrect indentation level 0, expected is 14, indentation should be the same level as line 186." source="com.puppycrawl.tools.checkstyle.checks.indentation.CommentsIndentationCheck"/>
+<error line="185" severity="error" message="Line is longer than 100 characters (found 116)." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
+<error line="187" severity="error" message="Comment has incorrect indentation level 0, expected is 14, indentation should be the same level as line 189." source="com.puppycrawl.tools.checkstyle.checks.indentation.CommentsIndentationCheck"/>
+<error line="191" severity="error" message="&apos;new&apos; have incorrect indentation level 16, expected level should be 18." source="com.puppycrawl.tools.checkstyle.checks.indentation.IndentationCheck"/>
+<error line="196" severity="error" message="Comment has incorrect indentation level 0, expected is 14, indentation should be the same level as line 197." source="com.puppycrawl.tools.checkstyle.checks.indentation.CommentsIndentationCheck"/>
+<error line="196" severity="error" message="Line is longer than 100 characters (found 118)." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
+<error line="199" severity="error" message="Comment has incorrect indentation level 0, expected is 12, indentation should be the same level as line 200." source="com.puppycrawl.tools.checkstyle.checks.indentation.CommentsIndentationCheck"/>
+<error line="199" severity="error" message="Line is longer than 100 characters (found 136)." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
+<error line="202" severity="error" message="Comment has incorrect indentation level 0, expected is 10, indentation should be the same level as line 203." source="com.puppycrawl.tools.checkstyle.checks.indentation.CommentsIndentationCheck"/>
+<error line="202" severity="error" message="Line is longer than 100 characters (found 129)." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
+<error line="205" severity="error" message="Comment has incorrect indentation level 0, expected is 8, indentation should be the same level as line 206." source="com.puppycrawl.tools.checkstyle.checks.indentation.CommentsIndentationCheck"/>
+<error line="209" severity="error" message="Comment has incorrect indentation level 0, expected is 10, indentation should be the same level as line 211." source="com.puppycrawl.tools.checkstyle.checks.indentation.CommentsIndentationCheck"/>
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/stub/src/main/java/io/grpc/stub/StreamObserver.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/stub/src/main/java/io/grpc/stub/StreamObservers.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/stub/src/main/java/io/grpc/stub/package-info.java">
+</file>
+</checkstyle>

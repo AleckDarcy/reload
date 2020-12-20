@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="6.17">
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/interop-testing/src/main/java/io/grpc/testing/integration/AbstractInteropTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/interop-testing/src/main/java/io/grpc/testing/integration/Http2Client.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/interop-testing/src/main/java/io/grpc/testing/integration/Http2TestCases.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/interop-testing/src/main/java/io/grpc/testing/integration/ReconnectTestClient.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/interop-testing/src/main/java/io/grpc/testing/integration/StressTestClient.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/interop-testing/src/main/java/io/grpc/testing/integration/TestCases.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/interop-testing/src/main/java/io/grpc/testing/integration/TestServiceClient.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/interop-testing/src/main/java/io/grpc/testing/integration/TestServiceImpl.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/interop-testing/src/main/java/io/grpc/testing/integration/TestServiceServer.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/interop-testing/src/main/java/io/grpc/testing/integration/Util.java">
+</file>
+</checkstyle>

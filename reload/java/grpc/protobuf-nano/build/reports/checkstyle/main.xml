@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="6.17">
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/protobuf-nano/src/main/java/io/grpc/protobuf/nano/MessageNanoFactory.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/protobuf-nano/src/main/java/io/grpc/protobuf/nano/NanoProtoInputStream.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/protobuf-nano/src/main/java/io/grpc/protobuf/nano/NanoUtils.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/protobuf-nano/src/main/java/io/grpc/protobuf/nano/package-info.java">
+</file>
+</checkstyle>

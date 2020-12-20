@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="6.17">
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/auth/src/main/java/io/grpc/auth/ClientAuthInterceptor.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/auth/src/main/java/io/grpc/auth/GoogleAuthLibraryCallCredentials.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/auth/src/main/java/io/grpc/auth/MoreCallCredentials.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/auth/src/main/java/io/grpc/auth/package-info.java">
+</file>
+</checkstyle>

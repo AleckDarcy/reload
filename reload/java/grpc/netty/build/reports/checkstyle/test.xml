@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="6.17">
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/test/java/io/grpc/netty/AbstractHttp2HeadersTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/test/java/io/grpc/netty/GrpcHttp2HeadersUtilsTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/test/java/io/grpc/netty/GrpcHttp2InboundHeadersTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/test/java/io/grpc/netty/GrpcSslContextsTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/test/java/io/grpc/netty/KeepAliveEnforcerTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/test/java/io/grpc/netty/MaxConnectionIdleManagerTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/test/java/io/grpc/netty/NettyChannelBuilderTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/test/java/io/grpc/netty/NettyChannelProviderTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/test/java/io/grpc/netty/NettyClientHandlerTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/test/java/io/grpc/netty/NettyClientStreamTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/test/java/io/grpc/netty/NettyClientTransportFactoryTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/test/java/io/grpc/netty/NettyClientTransportTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/test/java/io/grpc/netty/NettyHandlerTestBase.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/test/java/io/grpc/netty/NettyReadableBufferTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/test/java/io/grpc/netty/NettyServerBuilderTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/test/java/io/grpc/netty/NettyServerHandlerTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/test/java/io/grpc/netty/NettyServerProviderTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/test/java/io/grpc/netty/NettyServerStreamTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/test/java/io/grpc/netty/NettyServerTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/test/java/io/grpc/netty/NettyServerTransportTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/test/java/io/grpc/netty/NettyStreamTestBase.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/test/java/io/grpc/netty/NettyTestUtil.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/test/java/io/grpc/netty/NettyTransportTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/test/java/io/grpc/netty/NettyWritableBufferAllocatorTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/test/java/io/grpc/netty/NettyWritableBufferTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/test/java/io/grpc/netty/ProtocolNegotiatorsTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/test/java/io/grpc/netty/UtilsTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/src/test/java/io/grpc/netty/WriteQueueTest.java">
+</file>
+</checkstyle>

@@ -1,0 +1,10 @@
+-x
+c++
+-c
+-DGRPC_VERSION=1.10.1
+--std=c++0x
+-mmacosx-version-min=10.7
+-stdlib=libc++
+-I
+/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/compiler/src/java_plugin/headers
+-m64

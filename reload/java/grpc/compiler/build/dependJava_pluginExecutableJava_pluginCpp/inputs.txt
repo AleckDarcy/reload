@@ -1,0 +1,15 @@
+/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/compiler/src/java_plugin/cpp/java_generator.h
+/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/compiler/src/java_plugin/headers/algorithm
+/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/compiler/src/java_plugin/headers/google/protobuf/compiler/code_generator.h
+/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/compiler/src/java_plugin/headers/google/protobuf/compiler/java/java_names.h
+/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/compiler/src/java_plugin/headers/google/protobuf/compiler/plugin.h
+/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/compiler/src/java_plugin/headers/google/protobuf/descriptor.h
+/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/compiler/src/java_plugin/headers/google/protobuf/io/printer.h
+/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/compiler/src/java_plugin/headers/google/protobuf/io/zero_copy_stream.h
+/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/compiler/src/java_plugin/headers/iostream
+/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/compiler/src/java_plugin/headers/iterator
+/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/compiler/src/java_plugin/headers/map
+/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/compiler/src/java_plugin/headers/memory
+/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/compiler/src/java_plugin/headers/stdlib.h
+/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/compiler/src/java_plugin/headers/string
+/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/compiler/src/java_plugin/headers/vector

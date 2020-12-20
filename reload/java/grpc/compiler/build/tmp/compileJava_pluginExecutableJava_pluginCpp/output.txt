@@ -1,0 +1,8 @@
+See file:///Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/compiler/build/tmp/compileJava_pluginExecutableJava_pluginCpp/output.txt for all output for compileJava_pluginExecutableJava_pluginCpp.
+compiling java_generator.h successful.
+
+compiling java_plugin.cpp successful.
+
+compiling java_generator.cpp successful.
+
+Finished compileJava_pluginExecutableJava_pluginCpp, see full log file:///Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/compiler/build/tmp/compileJava_pluginExecutableJava_pluginCpp/output.txt.

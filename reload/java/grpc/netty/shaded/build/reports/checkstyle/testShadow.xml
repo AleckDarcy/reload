@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="6.17">
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/netty/shaded/src/testShadow/java/io/grpc/netty/shaded/ShadingTest.java">
+</file>
+</checkstyle>

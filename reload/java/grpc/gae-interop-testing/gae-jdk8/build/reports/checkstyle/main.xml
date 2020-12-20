@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="6.17">
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/gae-interop-testing/gae-jdk8/src/main/java/io/grpc/testing/integration/LongLivedChannel.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/gae-interop-testing/gae-jdk8/src/main/java/io/grpc/testing/integration/NettyClientInteropServlet.java">
+</file>
+</checkstyle>

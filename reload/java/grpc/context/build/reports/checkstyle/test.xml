@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="6.17">
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/context/src/test/java/io/grpc/ContextTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/context/src/test/java/io/grpc/DeadlineTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/context/src/test/java/io/grpc/PersistentHashArrayMappedTrieTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/context/src/test/java/io/grpc/StaticTestingClassLoader.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/context/src/test/java/io/grpc/testing/DeadlineSubject.java">
+</file>
+</checkstyle>

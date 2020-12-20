@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="6.17">
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/context/src/main/java/io/grpc/Context.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/context/src/main/java/io/grpc/Deadline.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/context/src/main/java/io/grpc/PersistentHashArrayMappedTrie.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/context/src/main/java/io/grpc/ThreadLocalContextStorage.java">
+</file>
+</checkstyle>

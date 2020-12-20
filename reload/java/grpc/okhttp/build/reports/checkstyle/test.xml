@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="6.17">
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/okhttp/src/test/java/io/grpc/internal/AccessProtectedHack.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/okhttp/src/test/java/io/grpc/okhttp/HeadersTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/okhttp/src/test/java/io/grpc/okhttp/OkHttpChannelBuilderTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/okhttp/src/test/java/io/grpc/okhttp/OkHttpChannelProviderTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/okhttp/src/test/java/io/grpc/okhttp/OkHttpClientStreamTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/okhttp/src/test/java/io/grpc/okhttp/OkHttpClientTransportFactoryTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/okhttp/src/test/java/io/grpc/okhttp/OkHttpClientTransportTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/okhttp/src/test/java/io/grpc/okhttp/OkHttpProtocolNegotiatorTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/okhttp/src/test/java/io/grpc/okhttp/OkHttpReadableBufferTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/okhttp/src/test/java/io/grpc/okhttp/OkHttpTlsUpgraderTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/okhttp/src/test/java/io/grpc/okhttp/OkHttpTransportTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/okhttp/src/test/java/io/grpc/okhttp/OkHttpWritableBufferAllocatorTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/okhttp/src/test/java/io/grpc/okhttp/OkHttpWritableBufferTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/okhttp/src/test/java/io/grpc/okhttp/OptionalMethodTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/okhttp/src/test/java/io/grpc/okhttp/UtilsTest.java">
+</file>
+</checkstyle>

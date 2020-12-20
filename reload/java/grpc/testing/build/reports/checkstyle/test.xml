@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="6.17">
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/testing/src/test/java/io/grpc/internal/testing/TestUtilsTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/testing/src/test/java/io/grpc/testing/GrpcServerRuleTest.java">
+</file>
+<file name="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/grpc/testing/src/test/java/io/grpc/testing/TlsTestingTest.java">
+</file>
+</checkstyle>
