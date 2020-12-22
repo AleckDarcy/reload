@@ -22,11 +22,13 @@ package org.apache.zookeeper.server.quorum;
 import org.apache.jute.*;
 import org.apache.jute.Record; // JDK14 needs explicit import due to clash with java.lang.Record
 import org.apache.yetus.audience.InterfaceAudience;
+import org.apache.zookeeper.trace.Trace;
 @InterfaceAudience.Public
 public class QuorumAuthPacket implements Record {
   private long magic;
   private int status;
   private byte[] token;
+  private org.apache.zookeeper.trace.Trace trace;
   public QuorumAuthPacket() {
   }
   public QuorumAuthPacket(
@@ -55,6 +57,8 @@ public class QuorumAuthPacket implements Record {
   public void setToken(byte[] m_) {
     token=m_;
   }
+  public org.apache.zookeeper.trace.Trace getTrace() { return trace; }
+  public void setTrace(org.apache.zookeeper.trace.Trace t_) { trace = t_; }
   public void serialize(OutputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(this,tag);
     a_.writeLong(magic,"magic");

@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: org.apache.zookeeper.common.ZKTrustManagerTest
+-------------------------------------------------------------------------------
+Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.548 s - in org.apache.zookeeper.common.ZKTrustManagerTest

@@ -1,0 +1,57 @@
+2020-12-21 19:43:42,140 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.
+2020-12-21 19:43:42,143 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.
+2020-12-21 19:43:42,186 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING unbalancedIpv6LiteralsInClientConfigFailToBeParsed
+2020-12-21 19:43:42,186 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD unbalancedIpv6LiteralsInClientConfigFailToBeParsed
+2020-12-21 19:43:42,217 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@103] - TEST METHOD unbalancedIpv6LiteralsInClientConfigFailToBeParsed THREW EXPECTED EXCEPTION class org.apache.zookeeper.server.quorum.QuorumPeerConfig$ConfigException
+2020-12-21 19:43:42,217 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED unbalancedIpv6LiteralsInClientConfigFailToBeParsed
+2020-12-21 19:43:42,218 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED unbalancedIpv6LiteralsInClientConfigFailToBeParsed
+2020-12-21 19:43:42,218 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testToString
+2020-12-21 19:43:42,219 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testToString
+2020-12-21 19:43:42,231 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 10357
+2020-12-21 19:43:42,231 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:43:42,231 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testToString
+2020-12-21 19:43:42,231 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testToString
+2020-12-21 19:43:42,231 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testToString
+2020-12-21 19:43:42,232 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING shouldAllowMultipleAddressesWhenMultiAddressFeatureIsEnabled
+2020-12-21 19:43:42,232 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD shouldAllowMultipleAddressesWhenMultiAddressFeatureIsEnabled
+2020-12-21 19:43:42,234 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 10357
+2020-12-21 19:43:42,234 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:43:42,234 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD shouldAllowMultipleAddressesWhenMultiAddressFeatureIsEnabled
+2020-12-21 19:43:42,234 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED shouldAllowMultipleAddressesWhenMultiAddressFeatureIsEnabled
+2020-12-21 19:43:42,235 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED shouldAllowMultipleAddressesWhenMultiAddressFeatureIsEnabled
+2020-12-21 19:43:42,235 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testWildcard
+2020-12-21 19:43:42,235 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testWildcard
+2020-12-21 19:43:42,236 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 10357
+2020-12-21 19:43:42,236 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:43:42,237 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testWildcard
+2020-12-21 19:43:42,237 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testWildcard
+2020-12-21 19:43:42,237 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testWildcard
+2020-12-21 19:43:42,237 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING constructionUnderstandsIpv6LiteralsInServerConfig
+2020-12-21 19:43:42,237 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD constructionUnderstandsIpv6LiteralsInServerConfig
+2020-12-21 19:43:42,238 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 10357
+2020-12-21 19:43:42,238 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:43:42,238 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD constructionUnderstandsIpv6LiteralsInServerConfig
+2020-12-21 19:43:42,239 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED constructionUnderstandsIpv6LiteralsInServerConfig
+2020-12-21 19:43:42,239 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED constructionUnderstandsIpv6LiteralsInServerConfig
+2020-12-21 19:43:42,239 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING unbalancedIpv6LiteralsInServerConfigFailToBeParsed
+2020-12-21 19:43:42,239 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD unbalancedIpv6LiteralsInServerConfigFailToBeParsed
+2020-12-21 19:43:42,240 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@103] - TEST METHOD unbalancedIpv6LiteralsInServerConfigFailToBeParsed THREW EXPECTED EXCEPTION class org.apache.zookeeper.server.quorum.QuorumPeerConfig$ConfigException
+2020-12-21 19:43:42,240 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED unbalancedIpv6LiteralsInServerConfigFailToBeParsed
+2020-12-21 19:43:42,240 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED unbalancedIpv6LiteralsInServerConfigFailToBeParsed
+2020-12-21 19:43:42,241 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING shouldNotAllowMultipleAddressesWhenMultiAddressFeatureIsDisabled
+2020-12-21 19:43:42,241 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD shouldNotAllowMultipleAddressesWhenMultiAddressFeatureIsDisabled
+2020-12-21 19:43:42,241 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@103] - TEST METHOD shouldNotAllowMultipleAddressesWhenMultiAddressFeatureIsDisabled THREW EXPECTED EXCEPTION class org.apache.zookeeper.server.quorum.QuorumPeerConfig$ConfigException
+2020-12-21 19:43:42,241 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED shouldNotAllowMultipleAddressesWhenMultiAddressFeatureIsDisabled
+2020-12-21 19:43:42,242 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED shouldNotAllowMultipleAddressesWhenMultiAddressFeatureIsDisabled
+2020-12-21 19:43:42,242 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING constructionUnderstandsIpv6LiteralsInClientConfig
+2020-12-21 19:43:42,242 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD constructionUnderstandsIpv6LiteralsInClientConfig
+2020-12-21 19:43:42,243 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 10867
+2020-12-21 19:43:42,243 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:43:42,243 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD constructionUnderstandsIpv6LiteralsInClientConfig
+2020-12-21 19:43:42,243 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED constructionUnderstandsIpv6LiteralsInClientConfig
+2020-12-21 19:43:42,243 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED constructionUnderstandsIpv6LiteralsInClientConfig
+2020-12-21 19:43:42,244 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testDuplicate
+2020-12-21 19:43:42,244 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testDuplicate
+2020-12-21 19:43:42,339 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@103] - TEST METHOD testDuplicate THREW EXPECTED EXCEPTION class org.apache.zookeeper.KeeperException$BadArgumentsException
+2020-12-21 19:43:42,339 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testDuplicate
+2020-12-21 19:43:42,339 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testDuplicate

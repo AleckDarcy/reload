@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: org.apache.zookeeper.server.quorum.UnifiedServerSocketTest
+-------------------------------------------------------------------------------
+Tests run: 72, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 25.515 s - in org.apache.zookeeper.server.quorum.UnifiedServerSocketTest

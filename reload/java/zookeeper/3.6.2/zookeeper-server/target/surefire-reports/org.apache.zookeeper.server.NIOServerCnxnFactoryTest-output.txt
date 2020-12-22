@@ -1,0 +1,17 @@
+2020-12-21 19:35:09,442 [myid:] - INFO  [main:PortAssignment@154] - Test process 7/8 using ports from 27379 - 30071.
+2020-12-21 19:35:09,467 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 27380 from range 27379 - 30071.
+2020-12-21 19:35:09,573 [myid:] - WARN  [main:ServerCnxnFactory@309] - maxCnxns is not configured, using default value 0.
+2020-12-21 19:35:09,692 [myid:] - INFO  [main:NIOServerCnxnFactory@666] - Configuring NIO connection handler with 10s sessionless connection timeout, 2 selector thread(s), 16 worker threads, and 64 kB direct buffers.
+2020-12-21 19:35:09,701 [myid:] - INFO  [main:NIOServerCnxnFactory@674] - binding to port 0.0.0.0/0.0.0.0:27380
+2020-12-21 19:35:09,711 [myid:] - INFO  [ConnnectionExpirer:NIOServerCnxnFactory$ConnectionExpirerThread@578] - ConnnectionExpirerThread interrupted
+2020-12-21 19:35:09,712 [myid:] - INFO  [NIOServerCxnFactory.AcceptThread:0.0.0.0/0.0.0.0:27380:NIOServerCnxnFactory$AcceptThread@209] - accept thread exitted run method
+2020-12-21 19:35:09,712 [myid:] - INFO  [NIOServerCxnFactory.SelectorThread-0:NIOServerCnxnFactory$SelectorThread@411] - selector thread exitted run method
+2020-12-21 19:35:09,712 [myid:] - INFO  [NIOServerCxnFactory.SelectorThread-1:NIOServerCnxnFactory$SelectorThread@411] - selector thread exitted run method
+2020-12-21 19:35:09,734 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 27381 from range 27379 - 30071.
+2020-12-21 19:35:09,734 [myid:] - WARN  [main:ServerCnxnFactory@309] - maxCnxns is not configured, using default value 0.
+2020-12-21 19:35:09,734 [myid:] - INFO  [main:NIOServerCnxnFactory@666] - Configuring NIO connection handler with 10s sessionless connection timeout, 2 selector thread(s), 16 worker threads, and 64 kB direct buffers.
+2020-12-21 19:35:09,735 [myid:] - INFO  [main:NIOServerCnxnFactory@674] - binding to port 0.0.0.0/0.0.0.0:27381
+2020-12-21 19:35:09,737 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 27382 from range 27379 - 30071.
+2020-12-21 19:35:09,738 [myid:] - WARN  [main:ServerCnxnFactory@309] - maxCnxns is not configured, using default value 0.
+2020-12-21 19:35:09,738 [myid:] - INFO  [main:NIOServerCnxnFactory@666] - Configuring NIO connection handler with 10s sessionless connection timeout, 2 selector thread(s), 16 worker threads, and 64 kB direct buffers.
+2020-12-21 19:35:09,740 [myid:] - INFO  [main:NIOServerCnxnFactory@674] - binding to port 0.0.0.0/0.0.0.0:27382

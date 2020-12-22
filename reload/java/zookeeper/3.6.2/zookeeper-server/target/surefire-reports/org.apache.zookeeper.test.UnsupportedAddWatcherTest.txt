@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: org.apache.zookeeper.test.UnsupportedAddWatcherTest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.023 s - in org.apache.zookeeper.test.UnsupportedAddWatcherTest

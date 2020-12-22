@@ -1,0 +1,9 @@
+2020-12-21 19:35:05,575 [myid:] - INFO  [main:MessageTracker@110] - No buffered timestamps for messages receivedBuffer from 127.0.0.1
+2020-12-21 19:35:05,580 [myid:] - INFO  [main:MessageTracker@110] - No buffered timestamps for messages sentBuffer to 127.0.0.1
+2020-12-21 19:35:05,580 [myid:] - INFO  [main:MessageTracker@110] - No buffered timestamps for messages receivedBuffer from 127.0.0.1
+2020-12-21 19:35:05,581 [myid:] - WARN  [main:MessageTracker@112] - Last 1 timestamps for messages sentBuffer to 127.0.0.1:
+2020-12-21 19:35:05,582 [myid:] - WARN  [main:MessageTracker@114] - sentBuffer to 127.0.0.1  TimeStamp: 2020-12-21 19:35:05,560
+2020-12-21 19:35:05,582 [myid:] - WARN  [main:MessageTracker@112] - Last 1 timestamps for messages receivedBuffer from 127.0.0.1:
+2020-12-21 19:35:05,583 [myid:] - WARN  [main:MessageTracker@114] - receivedBuffer from 127.0.0.1  TimeStamp: 2020-12-21 19:35:05,560
+2020-12-21 19:35:05,583 [myid:] - WARN  [main:MessageTracker@112] - Last 1 timestamps for messages sentBuffer to 127.0.0.1:
+2020-12-21 19:35:05,584 [myid:] - WARN  [main:MessageTracker@114] - sentBuffer to 127.0.0.1  TimeStamp: 2020-12-21 19:35:05,560

@@ -22,9 +22,11 @@ package org.apache.zookeeper.proto;
 import org.apache.jute.*;
 import org.apache.jute.Record; // JDK14 needs explicit import due to clash with java.lang.Record
 import org.apache.yetus.audience.InterfaceAudience;
+import org.apache.zookeeper.trace.Trace;
 @InterfaceAudience.Public
 public class GetEphemeralsResponse implements Record {
   private java.util.List<String> ephemerals;
+  private org.apache.zookeeper.trace.Trace trace;
   public GetEphemeralsResponse() {
   }
   public GetEphemeralsResponse(
@@ -37,6 +39,8 @@ public class GetEphemeralsResponse implements Record {
   public void setEphemerals(java.util.List<String> m_) {
     ephemerals=m_;
   }
+  public org.apache.zookeeper.trace.Trace getTrace() { return trace; }
+  public void setTrace(org.apache.zookeeper.trace.Trace t_) { trace = t_; }
   public void serialize(OutputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(this,tag);
     {

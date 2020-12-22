@@ -1,0 +1,10 @@
+2020-12-21 19:26:36,658 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.
+2020-12-21 19:26:36,661 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.
+2020-12-21 19:26:36,675 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testSaslClientDisabled
+2020-12-21 19:26:36,726 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testSaslClientDisabled
+2020-12-21 19:26:36,748 [myid:] - INFO  [main:X509Util@77] - Setting -D jdk.tls.rejectClientInitiatedRenegotiation=true to disable client-initiated TLS renegotiation
+2020-12-21 19:26:36,754 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 9812
+2020-12-21 19:26:36,754 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:26:36,755 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testSaslClientDisabled
+2020-12-21 19:26:36,756 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testSaslClientDisabled
+2020-12-21 19:26:36,757 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testSaslClientDisabled

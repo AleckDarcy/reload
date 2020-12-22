@@ -1,0 +1,86 @@
+2020-12-21 19:47:28,162 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.
+2020-12-21 19:47:28,164 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.
+2020-12-21 19:47:28,177 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testWriterSuccessNE
+2020-12-21 19:47:28,178 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testWriterSuccessNE
+2020-12-21 19:47:28,204 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 9808
+2020-12-21 19:47:28,204 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:47:28,204 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testWriterSuccessNE
+2020-12-21 19:47:28,205 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testWriterSuccessNE
+2020-12-21 19:47:28,205 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testWriterSuccessNE
+2020-12-21 19:47:28,207 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testWriterFailureIOException
+2020-12-21 19:47:28,207 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testWriterFailureIOException
+2020-12-21 19:47:28,269 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 9808
+2020-12-21 19:47:28,270 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:47:28,270 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testWriterFailureIOException
+2020-12-21 19:47:28,270 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testWriterFailureIOException
+2020-12-21 19:47:28,270 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testWriterFailureIOException
+2020-12-21 19:47:28,272 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testOutputStreamFailureError
+2020-12-21 19:47:28,273 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testOutputStreamFailureError
+2020-12-21 19:47:28,276 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 9808
+2020-12-21 19:47:28,276 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:47:28,276 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testOutputStreamFailureError
+2020-12-21 19:47:28,276 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testOutputStreamFailureError
+2020-12-21 19:47:28,276 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testOutputStreamFailureError
+2020-12-21 19:47:28,277 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testOutputStreamSuccess
+2020-12-21 19:47:28,277 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testOutputStreamSuccess
+2020-12-21 19:47:28,279 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 10322
+2020-12-21 19:47:28,279 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:47:28,279 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testOutputStreamSuccess
+2020-12-21 19:47:28,280 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testOutputStreamSuccess
+2020-12-21 19:47:28,280 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testOutputStreamSuccess
+2020-12-21 19:47:28,280 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testOutputStreamFailureNE
+2020-12-21 19:47:28,280 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testOutputStreamFailureNE
+2020-12-21 19:47:28,282 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 10322
+2020-12-21 19:47:28,282 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:47:28,282 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testOutputStreamFailureNE
+2020-12-21 19:47:28,282 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testOutputStreamFailureNE
+2020-12-21 19:47:28,282 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testOutputStreamFailureNE
+2020-12-21 19:47:28,283 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testWriterSuccess
+2020-12-21 19:47:28,283 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testWriterSuccess
+2020-12-21 19:47:28,285 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 10322
+2020-12-21 19:47:28,285 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:47:28,286 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testWriterSuccess
+2020-12-21 19:47:28,286 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testWriterSuccess
+2020-12-21 19:47:28,286 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testWriterSuccess
+2020-12-21 19:47:28,286 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testOutputStreamFailure
+2020-12-21 19:47:28,286 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testOutputStreamFailure
+2020-12-21 19:47:28,288 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 10322
+2020-12-21 19:47:28,289 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:47:28,289 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testOutputStreamFailure
+2020-12-21 19:47:28,289 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testOutputStreamFailure
+2020-12-21 19:47:28,289 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testOutputStreamFailure
+2020-12-21 19:47:28,289 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testWriterFailure
+2020-12-21 19:47:28,290 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testWriterFailure
+2020-12-21 19:47:28,292 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 10322
+2020-12-21 19:47:28,292 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:47:28,292 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testWriterFailure
+2020-12-21 19:47:28,292 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testWriterFailure
+2020-12-21 19:47:28,293 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testWriterFailure
+2020-12-21 19:47:28,293 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testOutputStreamFailureIOException
+2020-12-21 19:47:28,293 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testOutputStreamFailureIOException
+2020-12-21 19:47:28,295 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 10322
+2020-12-21 19:47:28,295 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:47:28,295 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testOutputStreamFailureIOException
+2020-12-21 19:47:28,295 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testOutputStreamFailureIOException
+2020-12-21 19:47:28,296 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testOutputStreamFailureIOException
+2020-12-21 19:47:28,296 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testWriterFailureError
+2020-12-21 19:47:28,296 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testWriterFailureError
+2020-12-21 19:47:28,298 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 10322
+2020-12-21 19:47:28,298 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:47:28,298 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testWriterFailureError
+2020-12-21 19:47:28,298 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testWriterFailureError
+2020-12-21 19:47:28,298 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testWriterFailureError
+2020-12-21 19:47:28,299 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testOutputStreamSuccessNE
+2020-12-21 19:47:28,300 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testOutputStreamSuccessNE
+2020-12-21 19:47:28,301 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 10322
+2020-12-21 19:47:28,301 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:47:28,301 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testOutputStreamSuccessNE
+2020-12-21 19:47:28,302 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testOutputStreamSuccessNE
+2020-12-21 19:47:28,302 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testOutputStreamSuccessNE
+2020-12-21 19:47:28,302 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testWriterFailureNE
+2020-12-21 19:47:28,302 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testWriterFailureNE
+2020-12-21 19:47:28,304 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 10832
+2020-12-21 19:47:28,304 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:47:28,304 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testWriterFailureNE
+2020-12-21 19:47:28,304 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testWriterFailureNE
+2020-12-21 19:47:28,304 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testWriterFailureNE

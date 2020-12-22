@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: org.apache.zookeeper.server.quorum.FuzzySnapshotRelatedTest
+-------------------------------------------------------------------------------
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 58.647 s - in org.apache.zookeeper.server.quorum.FuzzySnapshotRelatedTest

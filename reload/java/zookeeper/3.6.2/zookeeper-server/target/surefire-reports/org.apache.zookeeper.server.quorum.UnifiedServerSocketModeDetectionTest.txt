@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: org.apache.zookeeper.server.quorum.UnifiedServerSocketModeDetectionTest
+-------------------------------------------------------------------------------
+Tests run: 64, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.62 s - in org.apache.zookeeper.server.quorum.UnifiedServerSocketModeDetectionTest

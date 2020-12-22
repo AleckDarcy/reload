@@ -28,6 +28,7 @@ import org.apache.jute.OutputArchive;
 import org.apache.jute.Record;
 import org.apache.zookeeper.data.Stat;
 import org.apache.zookeeper.data.StatPersisted;
+import org.apache.zookeeper.trace.Trace;
 
 /**
  * This class contains the data for a node in the data tree.
@@ -67,6 +68,11 @@ public class DataNode implements Record {
     private Set<String> children = null;
 
     private static final Set<String> EMPTY_SET = Collections.emptySet();
+
+    /**
+     * 3MileBeach
+     */
+    private org.apache.zookeeper.trace.Trace trace;
 
     /**
      * default constructor for the datanode
@@ -170,6 +176,18 @@ public class DataNode implements Record {
         }
         return stat.getEphemeralOwner();
     }
+
+    /**
+     * 3MileBeach
+     * @return trace
+     */
+    public org.apache.zookeeper.trace.Trace getTrace() { return trace; }
+
+    /**
+     * 3MileBeach
+     * @param trace
+     */
+    public void setTrace(org.apache.zookeeper.trace.Trace t_) { trace = t_; }
 
     public synchronized void deserialize(InputArchive archive, String tag) throws IOException {
         archive.startRecord("node");

@@ -1,0 +1,5 @@
+org/apache/zookeeper/server/ExitCode.class
+org/apache/zookeeper/version/util/VerGen$Version.class
+org/apache/zookeeper/version/VersionInfoMain.class
+org/apache/zookeeper/version/util/VerGen.class
+org/apache/zookeeper/version/Info.class

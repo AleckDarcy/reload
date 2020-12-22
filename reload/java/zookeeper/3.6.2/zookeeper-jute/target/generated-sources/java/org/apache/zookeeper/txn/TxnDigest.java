@@ -22,10 +22,12 @@ package org.apache.zookeeper.txn;
 import org.apache.jute.*;
 import org.apache.jute.Record; // JDK14 needs explicit import due to clash with java.lang.Record
 import org.apache.yetus.audience.InterfaceAudience;
+import org.apache.zookeeper.trace.Trace;
 @InterfaceAudience.Public
 public class TxnDigest implements Record {
   private int version;
   private long treeDigest;
+  private org.apache.zookeeper.trace.Trace trace;
   public TxnDigest() {
   }
   public TxnDigest(
@@ -46,6 +48,8 @@ public class TxnDigest implements Record {
   public void setTreeDigest(long m_) {
     treeDigest=m_;
   }
+  public org.apache.zookeeper.trace.Trace getTrace() { return trace; }
+  public void setTrace(org.apache.zookeeper.trace.Trace t_) { trace = t_; }
   public void serialize(OutputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(this,tag);
     a_.writeInt(version,"version");

@@ -1,0 +1,51 @@
+2020-12-21 19:30:56,622 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.
+2020-12-21 19:30:56,625 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.
+2020-12-21 19:30:56,645 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testOverwriteFile
+2020-12-21 19:30:56,914 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testOverwriteFile
+2020-12-21 19:30:57,151 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 9746
+2020-12-21 19:30:57,151 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:30:57,151 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testOverwriteFile
+2020-12-21 19:30:57,220 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testOverwriteFile
+2020-12-21 19:30:57,221 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testOverwriteFile
+2020-12-21 19:30:57,222 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testAbortNewFileAfterFlush
+2020-12-21 19:30:57,280 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testAbortNewFileAfterFlush
+2020-12-21 19:30:57,355 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 10770
+2020-12-21 19:30:57,355 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:30:57,356 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testAbortNewFileAfterFlush
+2020-12-21 19:30:57,384 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testAbortNewFileAfterFlush
+2020-12-21 19:30:57,385 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testAbortNewFileAfterFlush
+2020-12-21 19:30:57,388 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testAbortNewFile
+2020-12-21 19:30:57,452 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testAbortNewFile
+2020-12-21 19:30:57,518 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 10772
+2020-12-21 19:30:57,519 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:30:57,519 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testAbortNewFile
+2020-12-21 19:30:57,547 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testAbortNewFile
+2020-12-21 19:30:57,548 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testAbortNewFile
+2020-12-21 19:30:57,549 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testAbortExistingFileAfterFlush
+2020-12-21 19:30:57,653 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testAbortExistingFileAfterFlush
+2020-12-21 19:30:57,930 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 10772
+2020-12-21 19:30:57,930 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:30:57,930 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testAbortExistingFileAfterFlush
+2020-12-21 19:30:57,989 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testAbortExistingFileAfterFlush
+2020-12-21 19:30:57,989 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testAbortExistingFileAfterFlush
+2020-12-21 19:30:57,990 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testAbortExistingFile
+2020-12-21 19:30:58,054 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testAbortExistingFile
+2020-12-21 19:30:58,255 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 10772
+2020-12-21 19:30:58,256 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:30:58,256 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testAbortExistingFile
+2020-12-21 19:30:58,324 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testAbortExistingFile
+2020-12-21 19:30:58,324 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testAbortExistingFile
+2020-12-21 19:30:58,325 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testWriteNewFile
+2020-12-21 19:30:58,374 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testWriteNewFile
+2020-12-21 19:30:58,477 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 10772
+2020-12-21 19:30:58,478 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:30:58,478 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testWriteNewFile
+2020-12-21 19:30:58,534 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testWriteNewFile
+2020-12-21 19:30:58,534 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testWriteNewFile
+2020-12-21 19:30:58,535 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testFailToFlush
+2020-12-21 19:30:58,652 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testFailToFlush
+2020-12-21 19:30:58,788 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 10772
+2020-12-21 19:30:58,788 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:30:58,788 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testFailToFlush
+2020-12-21 19:30:58,818 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testFailToFlush
+2020-12-21 19:30:58,819 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testFailToFlush

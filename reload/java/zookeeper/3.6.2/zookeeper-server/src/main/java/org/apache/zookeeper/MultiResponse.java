@@ -31,6 +31,7 @@ import org.apache.zookeeper.proto.GetChildrenResponse;
 import org.apache.zookeeper.proto.GetDataResponse;
 import org.apache.zookeeper.proto.MultiHeader;
 import org.apache.zookeeper.proto.SetDataResponse;
+import org.apache.zookeeper.trace.Trace;
 
 /**
  * Handles the response from a multi request.  Such a response consists of
@@ -42,6 +43,11 @@ import org.apache.zookeeper.proto.SetDataResponse;
 public class MultiResponse implements Record, Iterable<OpResult> {
 
     private List<OpResult> results = new ArrayList<OpResult>();
+
+    /**
+     * 3MileBeach
+     */
+    private org.apache.zookeeper.trace.Trace trace;
 
     public void add(OpResult x) {
         results.add(x);
@@ -55,6 +61,18 @@ public class MultiResponse implements Record, Iterable<OpResult> {
     public int size() {
         return results.size();
     }
+
+    /**
+     * 3MileBeach
+     * @return trace
+     */
+    public org.apache.zookeeper.trace.Trace getTrace() { return trace; }
+
+    /**
+     * 3MileBeach
+     * @param trace
+     */
+    public void setTrace(org.apache.zookeeper.trace.Trace t_) { trace = t_; }
 
     @Override
     public void serialize(OutputArchive archive, String tag) throws IOException {

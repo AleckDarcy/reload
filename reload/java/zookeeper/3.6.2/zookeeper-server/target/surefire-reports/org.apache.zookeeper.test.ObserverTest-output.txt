@@ -1,0 +1,64 @@
+2020-12-21 19:31:47,906 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.
+2020-12-21 19:31:47,912 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.
+2020-12-21 19:31:47,970 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testObserverWithStandlone
+2020-12-21 19:31:47,970 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testObserverWithStandlone
+2020-12-21 19:31:48,237 [myid:] - INFO  [main:PortAssignment@154] - Test process 4/8 using ports from 19300 - 21992.
+2020-12-21 19:31:48,264 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 19301 from range 19300 - 21992.
+2020-12-21 19:31:48,264 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 19302 from range 19300 - 21992.
+2020-12-21 19:31:48,264 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 19303 from range 19300 - 21992.
+2020-12-21 19:31:48,265 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 19304 from range 19300 - 21992.
+2020-12-21 19:31:48,265 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 19305 from range 19300 - 21992.
+2020-12-21 19:31:48,343 [myid:] - INFO  [main:QuorumPeerTestBase$MainThread@122] - id = 1 tmpDir = /Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/zookeeper/3.6.2/zookeeper-server/target/surefire/test449644026067846270.junit.dir clientPort = 19301
+2020-12-21 19:31:48,542 [myid:] - INFO  [Thread-0:QuorumPeerConfig@174] - Reading configuration from: /Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/zookeeper/3.6.2/zookeeper-server/target/surefire/test449644026067846270.junit.dir/zoo.cfg
+2020-12-21 19:31:48,668 [myid:] - INFO  [Thread-0:QuorumPeerConfig@460] - clientPortAddress is 0.0.0.0:19301
+2020-12-21 19:31:48,668 [myid:] - INFO  [Thread-0:QuorumPeerConfig@464] - secureClientPort is not set
+2020-12-21 19:31:48,669 [myid:] - INFO  [Thread-0:QuorumPeerConfig@480] - observerMasterPort is not set
+2020-12-21 19:31:48,669 [myid:] - INFO  [Thread-0:QuorumPeerConfig@497] - metricsProvider.className is org.apache.zookeeper.metrics.impl.DefaultMetricsProvider
+2020-12-21 19:31:48,899 [myid:] - ERROR [Thread-0:QuorumPeerConfig@722] - Invalid configuration, only one server specified (ignoring)
+2020-12-21 19:31:48,900 [myid:] - ERROR [Thread-0:QuorumPeerTestBase$MainThread@332] - unexpected exception in run
+org.apache.zookeeper.server.quorum.QuorumPeerConfig$ConfigException: Error processing /Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/zookeeper/3.6.2/zookeeper-server/target/surefire/test449644026067846270.junit.dir/zoo.cfg
+	at org.apache.zookeeper.server.quorum.QuorumPeerConfig.parse(QuorumPeerConfig.java:198)
+	at org.apache.zookeeper.server.quorum.QuorumPeerMain.initializeAndRun(QuorumPeerMain.java:124)
+	at org.apache.zookeeper.server.quorum.QuorumPeerTestBase$MainThread.run(QuorumPeerTestBase.java:329)
+	at java.base/java.lang.Thread.run(Thread.java:832)
+Caused by: java.lang.IllegalArgumentException: Observers w/o quorum is an invalid configuration
+	at org.apache.zookeeper.server.quorum.QuorumPeerConfig.parseDynamicConfig(QuorumPeerConfig.java:724)
+	at org.apache.zookeeper.server.quorum.QuorumPeerConfig.setupQuorumPeerConfig(QuorumPeerConfig.java:679)
+	at org.apache.zookeeper.server.quorum.QuorumPeerConfig.parseProperties(QuorumPeerConfig.java:507)
+	at org.apache.zookeeper.server.quorum.QuorumPeerConfig.parse(QuorumPeerConfig.java:194)
+	... 3 more
+2020-12-21 19:31:48,907 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 13742
+2020-12-21 19:31:48,908 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:31:48,908 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testObserverWithStandlone
+2020-12-21 19:31:48,908 [myid:] - INFO  [main:QuorumPeerTestBase@64] - No servers to shutdown!
+2020-12-21 19:31:48,909 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testObserverWithStandlone
+2020-12-21 19:31:48,909 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testObserverWithStandlone
+2020-12-21 19:31:48,910 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testObserverOnly
+2020-12-21 19:31:48,910 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testObserverOnly
+2020-12-21 19:31:48,911 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 19306 from range 19300 - 21992.
+2020-12-21 19:31:48,911 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 19307 from range 19300 - 21992.
+2020-12-21 19:31:48,911 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 19308 from range 19300 - 21992.
+2020-12-21 19:31:48,991 [myid:] - INFO  [main:QuorumPeerTestBase$MainThread@122] - id = 1 tmpDir = /Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/zookeeper/3.6.2/zookeeper-server/target/surefire/test10475146644201032323.junit.dir clientPort = 19306
+2020-12-21 19:31:49,131 [myid:] - INFO  [Thread-1:QuorumPeerConfig@174] - Reading configuration from: /Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/zookeeper/3.6.2/zookeeper-server/target/surefire/test10475146644201032323.junit.dir/zoo.cfg
+2020-12-21 19:31:49,133 [myid:] - INFO  [Thread-1:QuorumPeerConfig@460] - clientPortAddress is 0.0.0.0:19306
+2020-12-21 19:31:49,133 [myid:] - INFO  [Thread-1:QuorumPeerConfig@464] - secureClientPort is not set
+2020-12-21 19:31:49,134 [myid:] - INFO  [Thread-1:QuorumPeerConfig@480] - observerMasterPort is not set
+2020-12-21 19:31:49,134 [myid:] - INFO  [Thread-1:QuorumPeerConfig@497] - metricsProvider.className is org.apache.zookeeper.metrics.impl.DefaultMetricsProvider
+2020-12-21 19:31:49,134 [myid:] - ERROR [Thread-1:QuorumPeerTestBase$MainThread@332] - unexpected exception in run
+org.apache.zookeeper.server.quorum.QuorumPeerConfig$ConfigException: Error processing /Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/zookeeper/3.6.2/zookeeper-server/target/surefire/test10475146644201032323.junit.dir/zoo.cfg
+	at org.apache.zookeeper.server.quorum.QuorumPeerConfig.parse(QuorumPeerConfig.java:198)
+	at org.apache.zookeeper.server.quorum.QuorumPeerMain.initializeAndRun(QuorumPeerMain.java:124)
+	at org.apache.zookeeper.server.quorum.QuorumPeerTestBase$MainThread.run(QuorumPeerTestBase.java:329)
+	at java.base/java.lang.Thread.run(Thread.java:832)
+Caused by: java.lang.IllegalArgumentException: Observers w/o participants is an invalid configuration
+	at org.apache.zookeeper.server.quorum.QuorumPeerConfig.parseDynamicConfig(QuorumPeerConfig.java:715)
+	at org.apache.zookeeper.server.quorum.QuorumPeerConfig.setupQuorumPeerConfig(QuorumPeerConfig.java:679)
+	at org.apache.zookeeper.server.quorum.QuorumPeerConfig.parseProperties(QuorumPeerConfig.java:507)
+	at org.apache.zookeeper.server.quorum.QuorumPeerConfig.parse(QuorumPeerConfig.java:194)
+	... 3 more
+2020-12-21 19:31:49,135 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 13869
+2020-12-21 19:31:49,135 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:31:49,135 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testObserverOnly
+2020-12-21 19:31:49,135 [myid:] - INFO  [main:QuorumPeerTestBase@64] - No servers to shutdown!
+2020-12-21 19:31:49,136 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testObserverOnly
+2020-12-21 19:31:49,136 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testObserverOnly

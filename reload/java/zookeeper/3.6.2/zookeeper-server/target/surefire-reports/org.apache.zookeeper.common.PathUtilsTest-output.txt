@@ -1,0 +1,112 @@
+2020-12-21 19:47:38,556 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.
+2020-12-21 19:47:38,562 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.
+2020-12-21 19:47:38,591 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testValidatePath_ValidPath
+2020-12-21 19:47:38,591 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testValidatePath_ValidPath
+2020-12-21 19:47:38,615 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 9030
+2020-12-21 19:47:38,615 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:47:38,615 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testValidatePath_ValidPath
+2020-12-21 19:47:38,615 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testValidatePath_ValidPath
+2020-12-21 19:47:38,615 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testValidatePath_ValidPath
+2020-12-21 19:47:38,618 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testValidatePath_ContainsNullCharacter
+2020-12-21 19:47:38,618 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testValidatePath_ContainsNullCharacter
+2020-12-21 19:47:38,619 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@103] - TEST METHOD testValidatePath_ContainsNullCharacter THREW EXPECTED EXCEPTION class java.lang.IllegalArgumentException
+2020-12-21 19:47:38,619 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testValidatePath_ContainsNullCharacter
+2020-12-21 19:47:38,620 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testValidatePath_ContainsNullCharacter
+2020-12-21 19:47:38,621 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testValidatePath_EmptyString
+2020-12-21 19:47:38,621 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testValidatePath_EmptyString
+2020-12-21 19:47:38,622 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@103] - TEST METHOD testValidatePath_EmptyString THREW EXPECTED EXCEPTION class java.lang.IllegalArgumentException
+2020-12-21 19:47:38,623 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testValidatePath_EmptyString
+2020-12-21 19:47:38,623 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testValidatePath_EmptyString
+2020-12-21 19:47:38,623 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testValidatePath_NameContainingPeriod
+2020-12-21 19:47:38,623 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testValidatePath_NameContainingPeriod
+2020-12-21 19:47:38,623 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 9529
+2020-12-21 19:47:38,624 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:47:38,624 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testValidatePath_NameContainingPeriod
+2020-12-21 19:47:38,624 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testValidatePath_NameContainingPeriod
+2020-12-21 19:47:38,624 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testValidatePath_NameContainingPeriod
+2020-12-21 19:47:38,624 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testValidatePath_SupplementaryChar
+2020-12-21 19:47:38,625 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testValidatePath_SupplementaryChar
+2020-12-21 19:47:38,625 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@103] - TEST METHOD testValidatePath_SupplementaryChar THREW EXPECTED EXCEPTION class java.lang.IllegalArgumentException
+2020-12-21 19:47:38,625 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testValidatePath_SupplementaryChar
+2020-12-21 19:47:38,625 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testValidatePath_SupplementaryChar
+2020-12-21 19:47:38,626 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testValidatePath_0x01
+2020-12-21 19:47:38,626 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testValidatePath_0x01
+2020-12-21 19:47:38,627 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@103] - TEST METHOD testValidatePath_0x01 THREW EXPECTED EXCEPTION class java.lang.IllegalArgumentException
+2020-12-21 19:47:38,627 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testValidatePath_0x01
+2020-12-21 19:47:38,627 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testValidatePath_0x01
+2020-12-21 19:47:38,627 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testValidatePath_0x1F
+2020-12-21 19:47:38,628 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testValidatePath_0x1F
+2020-12-21 19:47:38,628 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@103] - TEST METHOD testValidatePath_0x1F THREW EXPECTED EXCEPTION class java.lang.IllegalArgumentException
+2020-12-21 19:47:38,628 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testValidatePath_0x1F
+2020-12-21 19:47:38,628 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testValidatePath_0x1F
+2020-12-21 19:47:38,629 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testValidatePath_0x20
+2020-12-21 19:47:38,629 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testValidatePath_0x20
+2020-12-21 19:47:38,629 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 9529
+2020-12-21 19:47:38,629 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:47:38,630 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testValidatePath_0x20
+2020-12-21 19:47:38,630 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testValidatePath_0x20
+2020-12-21 19:47:38,630 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testValidatePath_0x20
+2020-12-21 19:47:38,630 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testValidatePath_0x7e
+2020-12-21 19:47:38,630 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testValidatePath_0x7e
+2020-12-21 19:47:38,630 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 9529
+2020-12-21 19:47:38,631 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:47:38,631 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testValidatePath_0x7e
+2020-12-21 19:47:38,631 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testValidatePath_0x7e
+2020-12-21 19:47:38,631 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testValidatePath_0x7e
+2020-12-21 19:47:38,631 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testValidatePath_0x7f
+2020-12-21 19:47:38,632 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testValidatePath_0x7f
+2020-12-21 19:47:38,632 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@103] - TEST METHOD testValidatePath_0x7f THREW EXPECTED EXCEPTION class java.lang.IllegalArgumentException
+2020-12-21 19:47:38,632 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testValidatePath_0x7f
+2020-12-21 19:47:38,632 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testValidatePath_0x7f
+2020-12-21 19:47:38,633 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testValidatePath_0x9f
+2020-12-21 19:47:38,633 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testValidatePath_0x9f
+2020-12-21 19:47:38,633 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@103] - TEST METHOD testValidatePath_0x9f THREW EXPECTED EXCEPTION class java.lang.IllegalArgumentException
+2020-12-21 19:47:38,633 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testValidatePath_0x9f
+2020-12-21 19:47:38,634 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testValidatePath_0x9f
+2020-12-21 19:47:38,634 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testValidatePath_Null
+2020-12-21 19:47:38,634 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testValidatePath_Null
+2020-12-21 19:47:38,634 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@103] - TEST METHOD testValidatePath_Null THREW EXPECTED EXCEPTION class java.lang.IllegalArgumentException
+2020-12-21 19:47:38,635 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testValidatePath_Null
+2020-12-21 19:47:38,635 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testValidatePath_Null
+2020-12-21 19:47:38,635 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testValidatePath_DoublePeriod
+2020-12-21 19:47:38,635 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testValidatePath_DoublePeriod
+2020-12-21 19:47:38,636 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@103] - TEST METHOD testValidatePath_DoublePeriod THREW EXPECTED EXCEPTION class java.lang.IllegalArgumentException
+2020-12-21 19:47:38,636 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testValidatePath_DoublePeriod
+2020-12-21 19:47:38,636 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testValidatePath_DoublePeriod
+2020-12-21 19:47:38,636 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testValidatePath_NotAbsolutePath
+2020-12-21 19:47:38,636 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testValidatePath_NotAbsolutePath
+2020-12-21 19:47:38,637 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@103] - TEST METHOD testValidatePath_NotAbsolutePath THREW EXPECTED EXCEPTION class java.lang.IllegalArgumentException
+2020-12-21 19:47:38,637 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testValidatePath_NotAbsolutePath
+2020-12-21 19:47:38,637 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testValidatePath_NotAbsolutePath
+2020-12-21 19:47:38,637 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testValidatePath_DoubleSlash
+2020-12-21 19:47:38,638 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testValidatePath_DoubleSlash
+2020-12-21 19:47:38,638 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@103] - TEST METHOD testValidatePath_DoubleSlash THREW EXPECTED EXCEPTION class java.lang.IllegalArgumentException
+2020-12-21 19:47:38,638 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testValidatePath_DoubleSlash
+2020-12-21 19:47:38,638 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testValidatePath_DoubleSlash
+2020-12-21 19:47:38,639 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testValidatePath_SinglePeriod
+2020-12-21 19:47:38,639 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testValidatePath_SinglePeriod
+2020-12-21 19:47:38,639 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@103] - TEST METHOD testValidatePath_SinglePeriod THREW EXPECTED EXCEPTION class java.lang.IllegalArgumentException
+2020-12-21 19:47:38,640 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testValidatePath_SinglePeriod
+2020-12-21 19:47:38,640 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testValidatePath_SinglePeriod
+2020-12-21 19:47:38,640 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testValidatePath_EndsWithSlash
+2020-12-21 19:47:38,640 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testValidatePath_EndsWithSlash
+2020-12-21 19:47:38,641 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@103] - TEST METHOD testValidatePath_EndsWithSlash THREW EXPECTED EXCEPTION class java.lang.IllegalArgumentException
+2020-12-21 19:47:38,641 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testValidatePath_EndsWithSlash
+2020-12-21 19:47:38,641 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testValidatePath_EndsWithSlash
+2020-12-21 19:47:38,642 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testValidatePath_HighestAllowableChar
+2020-12-21 19:47:38,642 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testValidatePath_HighestAllowableChar
+2020-12-21 19:47:38,642 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 10043
+2020-12-21 19:47:38,642 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:47:38,642 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testValidatePath_HighestAllowableChar
+2020-12-21 19:47:38,642 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testValidatePath_HighestAllowableChar
+2020-12-21 19:47:38,643 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testValidatePath_HighestAllowableChar
+2020-12-21 19:47:38,643 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testValidatePath_ud800
+2020-12-21 19:47:38,643 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testValidatePath_ud800
+2020-12-21 19:47:38,644 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@103] - TEST METHOD testValidatePath_ud800 THREW EXPECTED EXCEPTION class java.lang.IllegalArgumentException
+2020-12-21 19:47:38,644 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testValidatePath_ud800
+2020-12-21 19:47:38,644 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testValidatePath_ud800
+2020-12-21 19:47:38,644 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testValidatePath_uf8ff
+2020-12-21 19:47:38,645 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testValidatePath_uf8ff
+2020-12-21 19:47:38,645 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@103] - TEST METHOD testValidatePath_uf8ff THREW EXPECTED EXCEPTION class java.lang.IllegalArgumentException
+2020-12-21 19:47:38,645 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testValidatePath_uf8ff
+2020-12-21 19:47:38,645 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testValidatePath_uf8ff

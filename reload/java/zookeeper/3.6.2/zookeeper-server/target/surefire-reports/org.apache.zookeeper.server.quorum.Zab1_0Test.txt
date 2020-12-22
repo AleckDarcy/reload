@@ -1,0 +1,9 @@
+-------------------------------------------------------------------------------
+Test set: org.apache.zookeeper.server.quorum.Zab1_0Test
+-------------------------------------------------------------------------------
+Tests run: 12, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 27.98 s <<< FAILURE! - in org.apache.zookeeper.server.quorum.Zab1_0Test
+testNormalFollowerRunWithDiff(org.apache.zookeeper.server.quorum.Zab1_0Test)  Time elapsed: 1.486 s  <<< FAILURE!
+java.lang.AssertionError
+	at org.apache.zookeeper.server.quorum.Zab1_0Test.testFollowerConversation(Zab1_0Test.java:444)
+	at org.apache.zookeeper.server.quorum.Zab1_0Test.testNormalFollowerRunWithDiff(Zab1_0Test.java:705)
+

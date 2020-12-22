@@ -5,4 +5,5 @@ org.apache.zookeeper.data
 org.apache.zookeeper.proto
 org.apache.zookeeper.server.persistence
 org.apache.zookeeper.server.quorum
+org.apache.zookeeper.trace
 org.apache.zookeeper.txn

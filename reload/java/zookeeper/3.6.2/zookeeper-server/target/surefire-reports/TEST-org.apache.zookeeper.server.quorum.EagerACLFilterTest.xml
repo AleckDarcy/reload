@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" name="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="126.904" tests="72" errors="0" skipped="0" failures="0">
+  <properties>
+    <property name="build.test.dir" value="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/zookeeper/3.6.2/zookeeper-server/target/surefire"/>
+    <property name="java.specification.version" value="15"/>
+    <property name="sun.jnu.encoding" value="UTF-8"/>
+    <property name="java.class.path" value="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/zookeeper/3.6.2/zookeeper-server/target/test-classes:/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/zookeeper/3.6.2/zookeeper-server/target/classes:/Users/aleck/.m2/repository/com/github/spotbugs/spotbugs-annotations/4.0.2/spotbugs-annotations-4.0.2.jar:/Users/aleck/.m2/repository/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar:/Users/aleck/.m2/repository/org/hamcrest/hamcrest-all/1.3/hamcrest-all-1.3.jar:/Users/aleck/.m2/repository/commons-collections/commons-collections/3.2.2/commons-collections-3.2.2.jar:/Users/aleck/.m2/repository/commons-lang/commons-lang/2.6/commons-lang-2.6.jar:/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/zookeeper/3.6.2/zookeeper-jute/target/zookeeper-jute-3.6.2.jar:/Users/aleck/.m2/repository/commons-cli/commons-cli/1.2/commons-cli-1.2.jar:/Users/aleck/.m2/repository/org/apache/yetus/audience-annotations/0.5.0/audience-annotations-0.5.0.jar:/Users/aleck/.m2/repository/io/netty/netty-handler/4.1.50.Final/netty-handler-4.1.50.Final.jar:/Users/aleck/.m2/repository/io/netty/netty-common/4.1.50.Final/netty-common-4.1.50.Final.jar:/Users/aleck/.m2/repository/io/netty/netty-resolver/4.1.50.Final/netty-resolver-4.1.50.Final.jar:/Users/aleck/.m2/repository/io/netty/netty-buffer/4.1.50.Final/netty-buffer-4.1.50.Final.jar:/Users/aleck/.m2/repository/io/netty/netty-transport/4.1.50.Final/netty-transport-4.1.50.Final.jar:/Users/aleck/.m2/repository/io/netty/netty-codec/4.1.50.Final/netty-codec-4.1.50.Final.jar:/Users/aleck/.m2/repository/io/netty/netty-transport-native-epoll/4.1.50.Final/netty-transport-native-epoll-4.1.50.Final.jar:/Users/aleck/.m2/repository/io/netty/netty-transport-native-unix-common/4.1.50.Final/netty-transport-native-unix-common-4.1.50.Final.jar:/Users/aleck/.m2/repository/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar:/Users/aleck/.m2/repository/org/slf4j/slf4j-log4j12/1.7.25/slf4j-log4j12-1.7.25.jar:/Users/aleck/.m2/repository/org/eclipse/jetty/jetty-server/9.4.24.v20191120/jetty-server-9.4.24.v20191120.jar:/Users/aleck/.m2/repository/javax/servlet/javax.servlet-api/3.1.0/javax.servlet-api-3.1.0.jar:/Users/aleck/.m2/repository/org/eclipse/jetty/jetty-http/9.4.24.v20191120/jetty-http-9.4.24.v20191120.jar:/Users/aleck/.m2/repository/org/eclipse/jetty/jetty-util/9.4.24.v20191120/jetty-util-9.4.24.v20191120.jar:/Users/aleck/.m2/repository/org/eclipse/jetty/jetty-io/9.4.24.v20191120/jetty-io-9.4.24.v20191120.jar:/Users/aleck/.m2/repository/org/eclipse/jetty/jetty-servlet/9.4.24.v20191120/jetty-servlet-9.4.24.v20191120.jar:/Users/aleck/.m2/repository/org/eclipse/jetty/jetty-security/9.4.24.v20191120/jetty-security-9.4.24.v20191120.jar:/Users/aleck/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.10.3/jackson-databind-2.10.3.jar:/Users/aleck/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.10.3/jackson-annotations-2.10.3.jar:/Users/aleck/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.10.3/jackson-core-2.10.3.jar:/Users/aleck/.m2/repository/com/googlecode/json-simple/json-simple/1.1.1/json-simple-1.1.1.jar:/Users/aleck/.m2/repository/org/bouncycastle/bcprov-jdk15on/1.60/bcprov-jdk15on-1.60.jar:/Users/aleck/.m2/repository/org/bouncycastle/bcpkix-jdk15on/1.60/bcpkix-jdk15on-1.60.jar:/Users/aleck/.m2/repository/jline/jline/2.14.6/jline-2.14.6.jar:/Users/aleck/.m2/repository/io/dropwizard/metrics/metrics-core/3.2.5/metrics-core-3.2.5.jar:/Users/aleck/.m2/repository/log4j/log4j/1.2.17/log4j-1.2.17.jar:/Users/aleck/.m2/repository/org/apache/kerby/kerb-core/2.0.0/kerb-core-2.0.0.jar:/Users/aleck/.m2/repository/org/apache/kerby/kerby-pkix/2.0.0/kerby-pkix-2.0.0.jar:/Users/aleck/.m2/repository/org/apache/kerby/kerby-asn1/2.0.0/kerby-asn1-2.0.0.jar:/Users/aleck/.m2/repository/org/apache/kerby/kerby-util/2.0.0/kerby-util-2.0.0.jar:/Users/aleck/.m2/repository/org/apache/kerby/kerb-simplekdc/2.0.0/kerb-simplekdc-2.0.0.jar:/Users/aleck/.m2/repository/org/apache/kerby/kerb-client/2.0.0/kerb-client-2.0.0.jar:/Users/aleck/.m2/repository/org/apache/kerby/kerb-common/2.0.0/kerb-common-2.0.0.jar:/Users/aleck/.m2/repository/org/apache/kerby/kerb-crypto/2.0.0/kerb-crypto-2.0.0.jar:/Users/aleck/.m2/repository/commons-io/commons-io/2.6/commons-io-2.6.jar:/Users/aleck/.m2/repository/org/apache/kerby/kerb-util/2.0.0/kerb-util-2.0.0.jar:/Users/aleck/.m2/repository/org/apache/kerby/token-provider/2.0.0/token-provider-2.0.0.jar:/Users/aleck/.m2/repository/com/nimbusds/nimbus-jose-jwt/4.41.2/nimbus-jose-jwt-4.41.2.jar:/Users/aleck/.m2/repository/com/github/stephenc/jcip/jcip-annotations/1.0-1/jcip-annotations-1.0-1.jar:/Users/aleck/.m2/repository/net/minidev/json-smart/2.3/json-smart-2.3.jar:/Users/aleck/.m2/repository/net/minidev/accessors-smart/1.2/accessors-smart-1.2.jar:/Users/aleck/.m2/repository/org/ow2/asm/asm/5.0.4/asm-5.0.4.jar:/Users/aleck/.m2/repository/org/apache/kerby/kerb-admin/2.0.0/kerb-admin-2.0.0.jar:/Users/aleck/.m2/repository/org/apache/kerby/kerb-server/2.0.0/kerb-server-2.0.0.jar:/Users/aleck/.m2/repository/org/apache/kerby/kerb-identity/2.0.0/kerb-identity-2.0.0.jar:/Users/aleck/.m2/repository/org/apache/kerby/kerby-xdr/2.0.0/kerby-xdr-2.0.0.jar:/Users/aleck/.m2/repository/org/apache/kerby/kerby-config/2.0.0/kerby-config-2.0.0.jar:/Users/aleck/.m2/repository/org/mockito/mockito-core/2.27.0/mockito-core-2.27.0.jar:/Users/aleck/.m2/repository/net/bytebuddy/byte-buddy/1.9.10/byte-buddy-1.9.10.jar:/Users/aleck/.m2/repository/net/bytebuddy/byte-buddy-agent/1.9.10/byte-buddy-agent-1.9.10.jar:/Users/aleck/.m2/repository/org/objenesis/objenesis/2.6/objenesis-2.6.jar:/Users/aleck/.m2/repository/org/jmockit/jmockit/1.48/jmockit-1.48.jar:/Users/aleck/.m2/repository/junit/junit/4.12/junit-4.12.jar:/Users/aleck/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar:/Users/aleck/.m2/repository/org/xerial/snappy/snappy-java/1.1.7/snappy-java-1.1.7.jar:"/>
+    <property name="java.vm.vendor" value="Oracle Corporation"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="java.vendor.url" value="https://openjdk.java.net/"/>
+    <property name="os.name" value="Mac OS X"/>
+    <property name="java.vm.specification.version" value="15"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="user.country" value="CN"/>
+    <property name="sun.boot.library.path" value="/usr/local/Cellar/openjdk/15.0.1/libexec/openjdk.jdk/Contents/Home/lib"/>
+    <property name="sun.java.command" value="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/zookeeper/3.6.2/zookeeper-server/target/surefire/surefirebooter12931752146897756761.jar /Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/zookeeper/3.6.2/zookeeper-server/target/surefire 2020-12-21T19-21-54_603-jvmRun8 surefire17213470089249581697tmp surefire_2412897370510522758804tmp"/>
+    <property name="jdk.debug" value="release"/>
+    <property name="surefire.test.class.path" value="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/zookeeper/3.6.2/zookeeper-server/target/test-classes:/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/zookeeper/3.6.2/zookeeper-server/target/classes:/Users/aleck/.m2/repository/com/github/spotbugs/spotbugs-annotations/4.0.2/spotbugs-annotations-4.0.2.jar:/Users/aleck/.m2/repository/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar:/Users/aleck/.m2/repository/org/hamcrest/hamcrest-all/1.3/hamcrest-all-1.3.jar:/Users/aleck/.m2/repository/commons-collections/commons-collections/3.2.2/commons-collections-3.2.2.jar:/Users/aleck/.m2/repository/commons-lang/commons-lang/2.6/commons-lang-2.6.jar:/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/zookeeper/3.6.2/zookeeper-jute/target/zookeeper-jute-3.6.2.jar:/Users/aleck/.m2/repository/commons-cli/commons-cli/1.2/commons-cli-1.2.jar:/Users/aleck/.m2/repository/org/apache/yetus/audience-annotations/0.5.0/audience-annotations-0.5.0.jar:/Users/aleck/.m2/repository/io/netty/netty-handler/4.1.50.Final/netty-handler-4.1.50.Final.jar:/Users/aleck/.m2/repository/io/netty/netty-common/4.1.50.Final/netty-common-4.1.50.Final.jar:/Users/aleck/.m2/repository/io/netty/netty-resolver/4.1.50.Final/netty-resolver-4.1.50.Final.jar:/Users/aleck/.m2/repository/io/netty/netty-buffer/4.1.50.Final/netty-buffer-4.1.50.Final.jar:/Users/aleck/.m2/repository/io/netty/netty-transport/4.1.50.Final/netty-transport-4.1.50.Final.jar:/Users/aleck/.m2/repository/io/netty/netty-codec/4.1.50.Final/netty-codec-4.1.50.Final.jar:/Users/aleck/.m2/repository/io/netty/netty-transport-native-epoll/4.1.50.Final/netty-transport-native-epoll-4.1.50.Final.jar:/Users/aleck/.m2/repository/io/netty/netty-transport-native-unix-common/4.1.50.Final/netty-transport-native-unix-common-4.1.50.Final.jar:/Users/aleck/.m2/repository/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar:/Users/aleck/.m2/repository/org/slf4j/slf4j-log4j12/1.7.25/slf4j-log4j12-1.7.25.jar:/Users/aleck/.m2/repository/org/eclipse/jetty/jetty-server/9.4.24.v20191120/jetty-server-9.4.24.v20191120.jar:/Users/aleck/.m2/repository/javax/servlet/javax.servlet-api/3.1.0/javax.servlet-api-3.1.0.jar:/Users/aleck/.m2/repository/org/eclipse/jetty/jetty-http/9.4.24.v20191120/jetty-http-9.4.24.v20191120.jar:/Users/aleck/.m2/repository/org/eclipse/jetty/jetty-util/9.4.24.v20191120/jetty-util-9.4.24.v20191120.jar:/Users/aleck/.m2/repository/org/eclipse/jetty/jetty-io/9.4.24.v20191120/jetty-io-9.4.24.v20191120.jar:/Users/aleck/.m2/repository/org/eclipse/jetty/jetty-servlet/9.4.24.v20191120/jetty-servlet-9.4.24.v20191120.jar:/Users/aleck/.m2/repository/org/eclipse/jetty/jetty-security/9.4.24.v20191120/jetty-security-9.4.24.v20191120.jar:/Users/aleck/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.10.3/jackson-databind-2.10.3.jar:/Users/aleck/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.10.3/jackson-annotations-2.10.3.jar:/Users/aleck/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.10.3/jackson-core-2.10.3.jar:/Users/aleck/.m2/repository/com/googlecode/json-simple/json-simple/1.1.1/json-simple-1.1.1.jar:/Users/aleck/.m2/repository/org/bouncycastle/bcprov-jdk15on/1.60/bcprov-jdk15on-1.60.jar:/Users/aleck/.m2/repository/org/bouncycastle/bcpkix-jdk15on/1.60/bcpkix-jdk15on-1.60.jar:/Users/aleck/.m2/repository/jline/jline/2.14.6/jline-2.14.6.jar:/Users/aleck/.m2/repository/io/dropwizard/metrics/metrics-core/3.2.5/metrics-core-3.2.5.jar:/Users/aleck/.m2/repository/log4j/log4j/1.2.17/log4j-1.2.17.jar:/Users/aleck/.m2/repository/org/apache/kerby/kerb-core/2.0.0/kerb-core-2.0.0.jar:/Users/aleck/.m2/repository/org/apache/kerby/kerby-pkix/2.0.0/kerby-pkix-2.0.0.jar:/Users/aleck/.m2/repository/org/apache/kerby/kerby-asn1/2.0.0/kerby-asn1-2.0.0.jar:/Users/aleck/.m2/repository/org/apache/kerby/kerby-util/2.0.0/kerby-util-2.0.0.jar:/Users/aleck/.m2/repository/org/apache/kerby/kerb-simplekdc/2.0.0/kerb-simplekdc-2.0.0.jar:/Users/aleck/.m2/repository/org/apache/kerby/kerb-client/2.0.0/kerb-client-2.0.0.jar:/Users/aleck/.m2/repository/org/apache/kerby/kerb-common/2.0.0/kerb-common-2.0.0.jar:/Users/aleck/.m2/repository/org/apache/kerby/kerb-crypto/2.0.0/kerb-crypto-2.0.0.jar:/Users/aleck/.m2/repository/commons-io/commons-io/2.6/commons-io-2.6.jar:/Users/aleck/.m2/repository/org/apache/kerby/kerb-util/2.0.0/kerb-util-2.0.0.jar:/Users/aleck/.m2/repository/org/apache/kerby/token-provider/2.0.0/token-provider-2.0.0.jar:/Users/aleck/.m2/repository/com/nimbusds/nimbus-jose-jwt/4.41.2/nimbus-jose-jwt-4.41.2.jar:/Users/aleck/.m2/repository/com/github/stephenc/jcip/jcip-annotations/1.0-1/jcip-annotations-1.0-1.jar:/Users/aleck/.m2/repository/net/minidev/json-smart/2.3/json-smart-2.3.jar:/Users/aleck/.m2/repository/net/minidev/accessors-smart/1.2/accessors-smart-1.2.jar:/Users/aleck/.m2/repository/org/ow2/asm/asm/5.0.4/asm-5.0.4.jar:/Users/aleck/.m2/repository/org/apache/kerby/kerb-admin/2.0.0/kerb-admin-2.0.0.jar:/Users/aleck/.m2/repository/org/apache/kerby/kerb-server/2.0.0/kerb-server-2.0.0.jar:/Users/aleck/.m2/repository/org/apache/kerby/kerb-identity/2.0.0/kerb-identity-2.0.0.jar:/Users/aleck/.m2/repository/org/apache/kerby/kerby-xdr/2.0.0/kerby-xdr-2.0.0.jar:/Users/aleck/.m2/repository/org/apache/kerby/kerby-config/2.0.0/kerby-config-2.0.0.jar:/Users/aleck/.m2/repository/org/mockito/mockito-core/2.27.0/mockito-core-2.27.0.jar:/Users/aleck/.m2/repository/net/bytebuddy/byte-buddy/1.9.10/byte-buddy-1.9.10.jar:/Users/aleck/.m2/repository/net/bytebuddy/byte-buddy-agent/1.9.10/byte-buddy-agent-1.9.10.jar:/Users/aleck/.m2/repository/org/objenesis/objenesis/2.6/objenesis-2.6.jar:/Users/aleck/.m2/repository/org/jmockit/jmockit/1.48/jmockit-1.48.jar:/Users/aleck/.m2/repository/junit/junit/4.12/junit-4.12.jar:/Users/aleck/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar:/Users/aleck/.m2/repository/org/xerial/snappy/snappy-java/1.1.7/snappy-java-1.1.7.jar:"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="user.home" value="/Users/aleck"/>
+    <property name="user.language" value="en"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.version.date" value="2020-10-20"/>
+    <property name="java.home" value="/usr/local/Cellar/openjdk/15.0.1/libexec/openjdk.jdk/Contents/Home"/>
+    <property name="zookeeper.DigestAuthenticationProvider.superDigest" value="super:D/InIHSb7yEEbrWz8b9l71RjZJU="/>
+    <property name="file.separator" value="/"/>
+    <property name="basedir" value="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/zookeeper/3.6.2/zookeeper-server"/>
+    <property name="java.vm.compressedOopsMode" value="Zero based"/>
+    <property name="line.separator" value="&#10;"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="test.junit.threads" value="8"/>
+    <property name="surefire.real.class.path" value="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/zookeeper/3.6.2/zookeeper-server/target/surefire/surefirebooter12931752146897756761.jar"/>
+    <property name="zookeeper.junit.threadid" value="8"/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="java.runtime.version" value="15.0.1+9"/>
+    <property name="user.name" value="aleck"/>
+    <property name="path.separator" value=":"/>
+    <property name="os.version" value="11.1"/>
+    <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
+    <property name="file.encoding" value="UTF-8"/>
+    <property name="java.vm.name" value="OpenJDK 64-Bit Server VM"/>
+    <property name="localRepository" value="/Users/aleck/.m2/repository"/>
+    <property name="java.vendor.url.bug" value="https://bugreport.java.com/bugreport/"/>
+    <property name="java.io.tmpdir" value="/var/folders/_1/3xdp_mt923b81d6gg86gq91w0000gn/T/"/>
+    <property name="java.version" value="15.0.1"/>
+    <property name="user.dir" value="/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/zookeeper/3.6.2/zookeeper-server"/>
+    <property name="os.arch" value="x86_64"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="java.library.path" value="/Users/aleck/Library/Java/Extensions:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java:."/>
+    <property name="java.vm.info" value="mixed mode, sharing"/>
+    <property name="java.vendor" value="N/A"/>
+    <property name="java.vm.version" value="15.0.1+9"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeBig"/>
+    <property name="java.class.version" value="59.0"/>
+    <property name="maven.test.failure.ignore" value="true"/>
+  </properties>
+  <testcase name="testCreateOK[0]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="4.454"/>
+  <testcase name="testCreate2Fail[0]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.506"/>
+  <testcase name="testSetDataFail[0]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.073"/>
+  <testcase name="testSetACLFail[0]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.073"/>
+  <testcase name="testCreateFail[0]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.221"/>
+  <testcase name="testSetDataOK[0]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.219"/>
+  <testcase name="testDeleteFail[0]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.236"/>
+  <testcase name="testBadACL[0]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.661"/>
+  <testcase name="testCreate2OK[0]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.297"/>
+  <testcase name="testDeleteOK[0]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.163"/>
+  <testcase name="testSetACLOK[0]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.507"/>
+  <testcase name="testNull[0]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.679"/>
+  <testcase name="testCreateOK[1]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.863"/>
+  <testcase name="testCreate2Fail[1]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.418"/>
+  <testcase name="testSetDataFail[1]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.026"/>
+  <testcase name="testSetACLFail[1]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.121"/>
+  <testcase name="testCreateFail[1]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.307"/>
+  <testcase name="testSetDataOK[1]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.498"/>
+  <testcase name="testDeleteFail[1]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.12"/>
+  <testcase name="testBadACL[1]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.415"/>
+  <testcase name="testCreate2OK[1]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.982"/>
+  <testcase name="testDeleteOK[1]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.523"/>
+  <testcase name="testSetACLOK[1]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="2.092"/>
+  <testcase name="testNull[1]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.154"/>
+  <testcase name="testCreateOK[2]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.185"/>
+  <testcase name="testCreate2Fail[2]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.45"/>
+  <testcase name="testSetDataFail[2]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.524"/>
+  <testcase name="testSetACLFail[2]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.579"/>
+  <testcase name="testCreateFail[2]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.272"/>
+  <testcase name="testSetDataOK[2]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.221"/>
+  <testcase name="testDeleteFail[2]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.116"/>
+  <testcase name="testBadACL[2]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.277"/>
+  <testcase name="testCreate2OK[2]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.263"/>
+  <testcase name="testDeleteOK[2]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="2.403"/>
+  <testcase name="testSetACLOK[2]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="2.18"/>
+  <testcase name="testNull[2]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.412"/>
+  <testcase name="testCreateOK[3]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.367"/>
+  <testcase name="testCreate2Fail[3]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.395"/>
+  <testcase name="testSetDataFail[3]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.332"/>
+  <testcase name="testSetACLFail[3]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.324"/>
+  <testcase name="testCreateFail[3]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.368"/>
+  <testcase name="testSetDataOK[3]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.261"/>
+  <testcase name="testDeleteFail[3]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.161"/>
+  <testcase name="testBadACL[3]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.04"/>
+  <testcase name="testCreate2OK[3]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.367"/>
+  <testcase name="testDeleteOK[3]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="2.228"/>
+  <testcase name="testSetACLOK[3]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.915"/>
+  <testcase name="testNull[3]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.64"/>
+  <testcase name="testCreateOK[4]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="3.309"/>
+  <testcase name="testCreate2Fail[4]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="3.223"/>
+  <testcase name="testSetDataFail[4]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="3.987"/>
+  <testcase name="testSetACLFail[4]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="3.85"/>
+  <testcase name="testCreateFail[4]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="3.632"/>
+  <testcase name="testSetDataOK[4]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="3.479"/>
+  <testcase name="testDeleteFail[4]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.913"/>
+  <testcase name="testBadACL[4]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.68"/>
+  <testcase name="testCreate2OK[4]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="2.707"/>
+  <testcase name="testDeleteOK[4]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.549"/>
+  <testcase name="testSetACLOK[4]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.618"/>
+  <testcase name="testNull[4]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.772"/>
+  <testcase name="testCreateOK[5]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.565"/>
+  <testcase name="testCreate2Fail[5]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.732"/>
+  <testcase name="testSetDataFail[5]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.481"/>
+  <testcase name="testSetACLFail[5]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.196"/>
+  <testcase name="testCreateFail[5]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="2.842"/>
+  <testcase name="testSetDataOK[5]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="3.152"/>
+  <testcase name="testDeleteFail[5]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.399"/>
+  <testcase name="testBadACL[5]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.31"/>
+  <testcase name="testCreate2OK[5]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.888"/>
+  <testcase name="testDeleteOK[5]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.739"/>
+  <testcase name="testSetACLOK[5]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="2.002"/>
+  <testcase name="testNull[5]" classname="org.apache.zookeeper.server.quorum.EagerACLFilterTest" time="1.637"/>
+</testsuite>

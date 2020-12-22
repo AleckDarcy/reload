@@ -1,0 +1,18 @@
+2020-12-21 19:28:51,424 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.
+2020-12-21 19:28:51,430 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.
+2020-12-21 19:28:51,450 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testLearnerSessionTracker
+2020-12-21 19:28:51,458 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testLearnerSessionTracker
+2020-12-21 19:28:51,558 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 10014
+2020-12-21 19:28:51,559 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:28:51,559 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testLearnerSessionTracker
+2020-12-21 19:28:51,560 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testLearnerSessionTracker
+2020-12-21 19:28:51,560 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testLearnerSessionTracker
+2020-12-21 19:28:51,562 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testLeaderSessionTracker
+2020-12-21 19:28:51,562 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testLeaderSessionTracker
+2020-12-21 19:28:51,577 [myid:] - INFO  [main:LeaderSessionTracker@89] - Tracking global session 0x300000000000001
+2020-12-21 19:28:51,578 [myid:] - INFO  [main:LeaderSessionTracker@89] - Tracking global session 0x20002c217650000
+2020-12-21 19:28:51,579 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 10523
+2020-12-21 19:28:51,580 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:28:51,580 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testLeaderSessionTracker
+2020-12-21 19:28:51,583 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testLeaderSessionTracker
+2020-12-21 19:28:51,583 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testLeaderSessionTracker

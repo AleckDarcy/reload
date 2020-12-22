@@ -1,0 +1,112 @@
+2020-12-21 19:47:52,741 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.
+2020-12-21 19:47:52,745 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.
+2020-12-21 19:47:52,745 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.
+2020-12-21 19:47:52,746 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.
+2020-12-21 19:47:52,746 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.
+2020-12-21 19:47:52,747 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.
+2020-12-21 19:47:52,748 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.
+2020-12-21 19:47:52,748 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.
+2020-12-21 19:47:52,749 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.
+2020-12-21 19:47:52,750 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.
+2020-12-21 19:47:52,750 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.
+2020-12-21 19:47:52,751 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.
+2020-12-21 19:47:52,751 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.
+2020-12-21 19:47:52,751 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.
+2020-12-21 19:47:52,759 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testGenFile[0]
+2020-12-21 19:47:52,759 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testGenFile
+2020-12-21 19:47:52,794 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 10395
+2020-12-21 19:47:52,794 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:47:52,794 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testGenFile
+2020-12-21 19:47:52,794 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testGenFile[0]
+2020-12-21 19:47:52,794 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testGenFile[0]
+2020-12-21 19:47:52,796 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testParser[0]
+2020-12-21 19:47:52,796 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testParser
+2020-12-21 19:47:52,796 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 10909
+2020-12-21 19:47:52,796 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:47:52,796 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testParser
+2020-12-21 19:47:52,796 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testParser[0]
+2020-12-21 19:47:52,797 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testParser[0]
+2020-12-21 19:47:52,797 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testGenFile[1]
+2020-12-21 19:47:52,797 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testGenFile
+2020-12-21 19:47:52,801 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 10909
+2020-12-21 19:47:52,801 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:47:52,801 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testGenFile
+2020-12-21 19:47:52,802 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testGenFile[1]
+2020-12-21 19:47:52,802 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testGenFile[1]
+2020-12-21 19:47:52,802 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testParser[1]
+2020-12-21 19:47:52,802 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testParser
+2020-12-21 19:47:52,803 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 10909
+2020-12-21 19:47:52,803 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:47:52,803 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testParser
+2020-12-21 19:47:52,803 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testParser[1]
+2020-12-21 19:47:52,803 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testParser[1]
+2020-12-21 19:47:52,804 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testGenFile[2]
+2020-12-21 19:47:52,804 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testGenFile
+2020-12-21 19:47:52,807 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 10909
+2020-12-21 19:47:52,807 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:47:52,807 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testGenFile
+2020-12-21 19:47:52,807 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testGenFile[2]
+2020-12-21 19:47:52,807 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testGenFile[2]
+2020-12-21 19:47:52,808 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testParser[2]
+2020-12-21 19:47:52,808 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testParser
+2020-12-21 19:47:52,808 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 10909
+2020-12-21 19:47:52,808 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:47:52,808 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testParser
+2020-12-21 19:47:52,808 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testParser[2]
+2020-12-21 19:47:52,808 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testParser[2]
+2020-12-21 19:47:52,809 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testGenFile[3]
+2020-12-21 19:47:52,809 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testGenFile
+2020-12-21 19:47:52,812 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 10909
+2020-12-21 19:47:52,812 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:47:52,812 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testGenFile
+2020-12-21 19:47:52,813 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testGenFile[3]
+2020-12-21 19:47:52,813 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testGenFile[3]
+2020-12-21 19:47:52,813 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testParser[3]
+2020-12-21 19:47:52,813 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testParser
+2020-12-21 19:47:52,813 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 10909
+2020-12-21 19:47:52,814 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:47:52,814 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testParser
+2020-12-21 19:47:52,814 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testParser[3]
+2020-12-21 19:47:52,814 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testParser[3]
+2020-12-21 19:47:52,814 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testGenFile[4]
+2020-12-21 19:47:52,814 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testGenFile
+2020-12-21 19:47:52,818 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 10909
+2020-12-21 19:47:52,819 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:47:52,819 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testGenFile
+2020-12-21 19:47:52,819 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testGenFile[4]
+2020-12-21 19:47:52,819 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testGenFile[4]
+2020-12-21 19:47:52,819 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testParser[4]
+2020-12-21 19:47:52,820 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testParser
+2020-12-21 19:47:52,820 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 11419
+2020-12-21 19:47:52,820 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:47:52,820 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testParser
+2020-12-21 19:47:52,820 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testParser[4]
+2020-12-21 19:47:52,820 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testParser[4]
+2020-12-21 19:47:52,821 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testGenFile[5]
+2020-12-21 19:47:52,821 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testGenFile
+2020-12-21 19:47:52,825 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 11419
+2020-12-21 19:47:52,825 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:47:52,825 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testGenFile
+2020-12-21 19:47:52,826 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testGenFile[5]
+2020-12-21 19:47:52,826 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testGenFile[5]
+2020-12-21 19:47:52,826 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testParser[5]
+2020-12-21 19:47:52,826 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testParser
+2020-12-21 19:47:52,827 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 11419
+2020-12-21 19:47:52,827 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:47:52,827 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testParser
+2020-12-21 19:47:52,827 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testParser[5]
+2020-12-21 19:47:52,827 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testParser[5]
+2020-12-21 19:47:52,828 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testGenFile[6]
+2020-12-21 19:47:52,828 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testGenFile
+2020-12-21 19:47:52,832 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 11419
+2020-12-21 19:47:52,832 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:47:52,832 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testGenFile
+2020-12-21 19:47:52,832 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testGenFile[6]
+2020-12-21 19:47:52,832 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testGenFile[6]
+2020-12-21 19:47:52,833 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testParser[6]
+2020-12-21 19:47:52,833 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testParser
+2020-12-21 19:47:52,833 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 11419
+2020-12-21 19:47:52,834 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:47:52,834 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testParser
+2020-12-21 19:47:52,834 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testParser[6]
+2020-12-21 19:47:52,834 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testParser[6]

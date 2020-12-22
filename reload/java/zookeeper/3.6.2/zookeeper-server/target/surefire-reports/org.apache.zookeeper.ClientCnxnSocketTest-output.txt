@@ -1,0 +1,3 @@
+2020-12-21 19:33:31,097 [myid:] - INFO  [main:X509Util@77] - Setting -D jdk.tls.rejectClientInitiatedRenegotiation=true to disable client-initiated TLS renegotiation
+2020-12-21 19:33:31,145 [myid:] - ERROR [main:ClientCnxnSocket@245] - Configured value SomeInvalidInt for property jute.maxbuffer can not be parsed to int
+2020-12-21 19:33:31,195 [myid:] - ERROR [main:ClientCnxnSocket@245] - Configured value SomeInvalidInt for property jute.maxbuffer can not be parsed to int

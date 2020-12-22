@@ -1,0 +1,16 @@
+2020-12-21 19:37:09,376 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.
+2020-12-21 19:37:09,378 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.
+2020-12-21 19:37:09,403 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testToMap
+2020-12-21 19:37:09,446 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testToMap
+2020-12-21 19:37:09,449 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 9262
+2020-12-21 19:37:09,449 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:37:09,449 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testToMap
+2020-12-21 19:37:09,450 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testToMap
+2020-12-21 19:37:09,450 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testToMap
+2020-12-21 19:37:09,451 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testGetters
+2020-12-21 19:37:09,451 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testGetters
+2020-12-21 19:37:09,452 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 9262
+2020-12-21 19:37:09,452 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:37:09,452 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testGetters
+2020-12-21 19:37:09,452 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testGetters
+2020-12-21 19:37:09,452 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testGetters

@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: org.apache.zookeeper.server.quorum.QuorumSSLTest
+-------------------------------------------------------------------------------
+Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 389.324 s - in org.apache.zookeeper.server.quorum.QuorumSSLTest

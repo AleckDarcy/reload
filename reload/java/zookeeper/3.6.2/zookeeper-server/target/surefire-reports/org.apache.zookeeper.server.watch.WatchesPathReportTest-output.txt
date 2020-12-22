@@ -1,0 +1,23 @@
+2020-12-21 19:37:06,942 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.
+2020-12-21 19:37:06,945 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.
+2020-12-21 19:37:06,965 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testGetSessions
+2020-12-21 19:37:06,993 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testGetSessions
+2020-12-21 19:37:06,996 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 8759
+2020-12-21 19:37:06,996 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:37:06,996 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testGetSessions
+2020-12-21 19:37:06,996 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testGetSessions
+2020-12-21 19:37:06,996 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testGetSessions
+2020-12-21 19:37:06,998 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testToMap
+2020-12-21 19:37:06,998 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testToMap
+2020-12-21 19:37:06,998 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 8759
+2020-12-21 19:37:06,999 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:37:06,999 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testToMap
+2020-12-21 19:37:06,999 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testToMap
+2020-12-21 19:37:06,999 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testToMap
+2020-12-21 19:37:07,001 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testHasSessions
+2020-12-21 19:37:07,001 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testHasSessions
+2020-12-21 19:37:07,001 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 8761
+2020-12-21 19:37:07,001 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:37:07,001 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testHasSessions
+2020-12-21 19:37:07,002 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testHasSessions
+2020-12-21 19:37:07,002 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testHasSessions

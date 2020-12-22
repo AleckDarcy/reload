@@ -1,0 +1,112 @@
+2020-12-21 19:44:24,747 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.
+2020-12-21 19:44:24,751 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.
+2020-12-21 19:44:24,768 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING noCrashOnCommittedRequestsOfUnseenRequestTest
+2020-12-21 19:44:24,795 [myid:] - INFO  [main:CommitProcessor@511] - Configuring CommitProcessor with readBatchSize -1
+2020-12-21 19:44:24,795 [myid:] - INFO  [main:CommitProcessor@517] - Configuring CommitProcessor with commitBatchSize 1
+2020-12-21 19:44:24,796 [myid:] - INFO  [Time-limited test:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD noCrashOnCommittedRequestsOfUnseenRequestTest
+2020-12-21 19:44:24,818 [myid:] - INFO  [Time-limited test:CommitProcessor@406] - CommitProcessor exited loop!
+2020-12-21 19:44:25,822 [myid:] - INFO  [Time-limited test:CommitProcessor@406] - CommitProcessor exited loop!
+2020-12-21 19:44:26,856 [myid:] - INFO  [Time-limited test:CommitProcessor@406] - CommitProcessor exited loop!
+2020-12-21 19:44:27,868 [myid:] - INFO  [Time-limited test:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 12381
+2020-12-21 19:44:27,869 [myid:] - INFO  [Time-limited test:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 11
+2020-12-21 19:44:27,869 [myid:] - INFO  [Time-limited test:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD noCrashOnCommittedRequestsOfUnseenRequestTest
+2020-12-21 19:44:27,869 [myid:] - INFO  [main:CommitProcessor@617] - Shutting down
+2020-12-21 19:44:27,871 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED noCrashOnCommittedRequestsOfUnseenRequestTest
+2020-12-21 19:44:27,871 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED noCrashOnCommittedRequestsOfUnseenRequestTest
+2020-12-21 19:44:27,873 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING noStarvationOfReadRequestsTest
+2020-12-21 19:44:27,875 [myid:] - INFO  [main:CommitProcessor@511] - Configuring CommitProcessor with readBatchSize -1
+2020-12-21 19:44:27,875 [myid:] - INFO  [main:CommitProcessor@517] - Configuring CommitProcessor with commitBatchSize 1
+2020-12-21 19:44:27,876 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD noStarvationOfReadRequestsTest
+2020-12-21 19:44:27,881 [myid:] - INFO  [main:CommitProcessor@406] - CommitProcessor exited loop!
+2020-12-21 19:44:27,883 [myid:] - INFO  [main:CommitProcessor@406] - CommitProcessor exited loop!
+2020-12-21 19:44:27,883 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 13138
+2020-12-21 19:44:27,884 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 11
+2020-12-21 19:44:27,884 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD noStarvationOfReadRequestsTest
+2020-12-21 19:44:27,884 [myid:] - INFO  [main:CommitProcessor@617] - Shutting down
+2020-12-21 19:44:27,884 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED noStarvationOfReadRequestsTest
+2020-12-21 19:44:27,884 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED noStarvationOfReadRequestsTest
+2020-12-21 19:44:27,885 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING noCrashOnOutofOrderCommittedRequestTest
+2020-12-21 19:44:27,885 [myid:] - INFO  [main:CommitProcessor@511] - Configuring CommitProcessor with readBatchSize -1
+2020-12-21 19:44:27,885 [myid:] - INFO  [main:CommitProcessor@517] - Configuring CommitProcessor with commitBatchSize 1
+2020-12-21 19:44:27,885 [myid:] - INFO  [Time-limited test:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD noCrashOnOutofOrderCommittedRequestTest
+2020-12-21 19:44:27,886 [myid:] - INFO  [Time-limited test:CommitProcessor@406] - CommitProcessor exited loop!
+2020-12-21 19:44:28,891 [myid:] - INFO  [Time-limited test:CommitProcessor@406] - CommitProcessor exited loop!
+2020-12-21 19:44:29,896 [myid:] - INFO  [Time-limited test:CommitProcessor@406] - CommitProcessor exited loop!
+2020-12-21 19:44:30,901 [myid:] - INFO  [Time-limited test:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 13657
+2020-12-21 19:44:30,902 [myid:] - INFO  [Time-limited test:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 11
+2020-12-21 19:44:30,902 [myid:] - INFO  [Time-limited test:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD noCrashOnOutofOrderCommittedRequestTest
+2020-12-21 19:44:30,902 [myid:] - INFO  [main:CommitProcessor@617] - Shutting down
+2020-12-21 19:44:30,902 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED noCrashOnOutofOrderCommittedRequestTest
+2020-12-21 19:44:30,902 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED noCrashOnOutofOrderCommittedRequestTest
+2020-12-21 19:44:30,903 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING committedAndUncommittedOfTheSameSessionRaceTest
+2020-12-21 19:44:30,903 [myid:] - INFO  [main:CommitProcessor@511] - Configuring CommitProcessor with readBatchSize -1
+2020-12-21 19:44:30,903 [myid:] - INFO  [main:CommitProcessor@517] - Configuring CommitProcessor with commitBatchSize 1
+2020-12-21 19:44:30,903 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD committedAndUncommittedOfTheSameSessionRaceTest
+2020-12-21 19:44:30,904 [myid:] - INFO  [main:CommitProcessor@406] - CommitProcessor exited loop!
+2020-12-21 19:44:30,905 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 13901
+2020-12-21 19:44:30,905 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 10
+2020-12-21 19:44:30,905 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD committedAndUncommittedOfTheSameSessionRaceTest
+2020-12-21 19:44:30,905 [myid:] - INFO  [main:CommitProcessor@617] - Shutting down
+2020-12-21 19:44:30,906 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED committedAndUncommittedOfTheSameSessionRaceTest
+2020-12-21 19:44:30,906 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED committedAndUncommittedOfTheSameSessionRaceTest
+2020-12-21 19:44:30,906 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING noStarvationOfNonLocalCommittedRequestsTest
+2020-12-21 19:44:30,906 [myid:] - INFO  [main:CommitProcessor@511] - Configuring CommitProcessor with readBatchSize -1
+2020-12-21 19:44:30,907 [myid:] - INFO  [main:CommitProcessor@517] - Configuring CommitProcessor with commitBatchSize 1
+2020-12-21 19:44:30,907 [myid:] - INFO  [Time-limited test:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD noStarvationOfNonLocalCommittedRequestsTest
+2020-12-21 19:44:30,910 [myid:] - INFO  [Time-limited test:CommitProcessor@406] - CommitProcessor exited loop!
+2020-12-21 19:44:30,914 [myid:] - INFO  [Time-limited test:CommitProcessor@406] - CommitProcessor exited loop!
+2020-12-21 19:44:30,916 [myid:] - INFO  [Time-limited test:CommitProcessor@406] - CommitProcessor exited loop!
+2020-12-21 19:44:30,919 [myid:] - INFO  [Time-limited test:CommitProcessor@406] - CommitProcessor exited loop!
+2020-12-21 19:44:30,921 [myid:] - INFO  [Time-limited test:CommitProcessor@406] - CommitProcessor exited loop!
+2020-12-21 19:44:30,923 [myid:] - INFO  [Time-limited test:CommitProcessor@406] - CommitProcessor exited loop!
+2020-12-21 19:44:30,925 [myid:] - INFO  [Time-limited test:CommitProcessor@406] - CommitProcessor exited loop!
+2020-12-21 19:44:30,927 [myid:] - INFO  [Time-limited test:CommitProcessor@406] - CommitProcessor exited loop!
+2020-12-21 19:44:30,931 [myid:] - INFO  [Time-limited test:CommitProcessor@406] - CommitProcessor exited loop!
+2020-12-21 19:44:30,933 [myid:] - INFO  [Time-limited test:CommitProcessor@406] - CommitProcessor exited loop!
+2020-12-21 19:44:30,933 [myid:] - INFO  [Time-limited test:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 8845
+2020-12-21 19:44:30,933 [myid:] - INFO  [Time-limited test:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 170
+2020-12-21 19:44:30,934 [myid:] - INFO  [Time-limited test:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD noStarvationOfNonLocalCommittedRequestsTest
+2020-12-21 19:44:30,934 [myid:] - INFO  [main:CommitProcessor@617] - Shutting down
+2020-12-21 19:44:30,934 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED noStarvationOfNonLocalCommittedRequestsTest
+2020-12-21 19:44:30,934 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED noStarvationOfNonLocalCommittedRequestsTest
+2020-12-21 19:44:30,935 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING processAsMuchUncommittedRequestsAsPossibleTest
+2020-12-21 19:44:30,935 [myid:] - INFO  [main:CommitProcessor@511] - Configuring CommitProcessor with readBatchSize -1
+2020-12-21 19:44:30,935 [myid:] - INFO  [main:CommitProcessor@517] - Configuring CommitProcessor with commitBatchSize 1
+2020-12-21 19:44:30,935 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD processAsMuchUncommittedRequestsAsPossibleTest
+2020-12-21 19:44:30,936 [myid:] - INFO  [main:CommitProcessor@406] - CommitProcessor exited loop!
+2020-12-21 19:44:31,941 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 10393
+2020-12-21 19:44:31,941 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 158
+2020-12-21 19:44:31,941 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD processAsMuchUncommittedRequestsAsPossibleTest
+2020-12-21 19:44:31,941 [myid:] - INFO  [main:CommitProcessor@617] - Shutting down
+2020-12-21 19:44:31,942 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED processAsMuchUncommittedRequestsAsPossibleTest
+2020-12-21 19:44:31,942 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED processAsMuchUncommittedRequestsAsPossibleTest
+2020-12-21 19:44:31,942 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING processAllFollowingUncommittedAfterFirstCommitTest
+2020-12-21 19:44:31,943 [myid:] - INFO  [main:CommitProcessor@511] - Configuring CommitProcessor with readBatchSize -1
+2020-12-21 19:44:31,943 [myid:] - INFO  [main:CommitProcessor@517] - Configuring CommitProcessor with commitBatchSize 1
+2020-12-21 19:44:31,943 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD processAllFollowingUncommittedAfterFirstCommitTest
+2020-12-21 19:44:31,943 [myid:] - INFO  [main:CommitProcessor@406] - CommitProcessor exited loop!
+2020-12-21 19:44:31,944 [myid:] - INFO  [main:CommitProcessor@406] - CommitProcessor exited loop!
+2020-12-21 19:44:32,446 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 10907
+2020-12-21 19:44:32,446 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 154
+2020-12-21 19:44:32,446 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD processAllFollowingUncommittedAfterFirstCommitTest
+2020-12-21 19:44:32,447 [myid:] - INFO  [main:CommitProcessor@617] - Shutting down
+2020-12-21 19:44:32,447 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED processAllFollowingUncommittedAfterFirstCommitTest
+2020-12-21 19:44:32,447 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED processAllFollowingUncommittedAfterFirstCommitTest
+2020-12-21 19:44:32,448 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING processAllWritesMaxBatchSize
+2020-12-21 19:44:32,448 [myid:] - INFO  [main:CommitProcessor@511] - Configuring CommitProcessor with readBatchSize -1
+2020-12-21 19:44:32,448 [myid:] - INFO  [main:CommitProcessor@517] - Configuring CommitProcessor with commitBatchSize 1
+2020-12-21 19:44:32,448 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD processAllWritesMaxBatchSize
+2020-12-21 19:44:32,449 [myid:] - INFO  [main:CommitProcessor@517] - Configuring CommitProcessor with commitBatchSize 2
+2020-12-21 19:44:32,449 [myid:] - INFO  [main:CommitProcessor@406] - CommitProcessor exited loop!
+2020-12-21 19:44:32,449 [myid:] - INFO  [main:CommitProcessor@517] - Configuring CommitProcessor with commitBatchSize 3
+2020-12-21 19:44:32,450 [myid:] - INFO  [main:CommitProcessor@406] - CommitProcessor exited loop!
+2020-12-21 19:44:32,954 [myid:] - INFO  [main:CommitProcessor@517] - Configuring CommitProcessor with commitBatchSize 3
+2020-12-21 19:44:32,956 [myid:] - INFO  [main:CommitProcessor@406] - CommitProcessor exited loop!
+2020-12-21 19:44:33,457 [myid:] - INFO  [main:CommitProcessor@517] - Configuring CommitProcessor with commitBatchSize 3
+2020-12-21 19:44:33,458 [myid:] - INFO  [main:CommitProcessor@406] - CommitProcessor exited loop!
+2020-12-21 19:44:33,960 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 11417
+2020-12-21 19:44:33,960 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 157
+2020-12-21 19:44:33,961 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD processAllWritesMaxBatchSize
+2020-12-21 19:44:33,961 [myid:] - INFO  [main:CommitProcessor@617] - Shutting down
+2020-12-21 19:44:33,961 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED processAllWritesMaxBatchSize
+2020-12-21 19:44:33,961 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED processAllWritesMaxBatchSize

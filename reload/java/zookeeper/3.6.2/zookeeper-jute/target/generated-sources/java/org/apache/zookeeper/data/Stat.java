@@ -22,6 +22,7 @@ package org.apache.zookeeper.data;
 import org.apache.jute.*;
 import org.apache.jute.Record; // JDK14 needs explicit import due to clash with java.lang.Record
 import org.apache.yetus.audience.InterfaceAudience;
+import org.apache.zookeeper.trace.Trace;
 @InterfaceAudience.Public
 public class Stat implements Record {
   private long czxid;
@@ -35,6 +36,7 @@ public class Stat implements Record {
   private int dataLength;
   private int numChildren;
   private long pzxid;
+  private org.apache.zookeeper.trace.Trace trace;
   public Stat() {
   }
   public Stat(
@@ -127,6 +129,8 @@ public class Stat implements Record {
   public void setPzxid(long m_) {
     pzxid=m_;
   }
+  public org.apache.zookeeper.trace.Trace getTrace() { return trace; }
+  public void setTrace(org.apache.zookeeper.trace.Trace t_) { trace = t_; }
   public void serialize(OutputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(this,tag);
     a_.writeLong(czxid,"czxid");

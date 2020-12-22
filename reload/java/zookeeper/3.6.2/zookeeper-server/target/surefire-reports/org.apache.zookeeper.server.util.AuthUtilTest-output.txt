@@ -1,0 +1,3 @@
+2020-12-21 19:35:01,925 [myid:] - INFO  [main:X509Util@77] - Setting -D jdk.tls.rejectClientInitiatedRenegotiation=true to disable client-initiated TLS renegotiation
+2020-12-21 19:35:01,930 [myid:] - WARN  [main:X509AuthenticationProvider@80] - keystore not specified for client connection
+2020-12-21 19:35:01,931 [myid:] - WARN  [main:X509AuthenticationProvider@94] - Truststore not specified for client connection

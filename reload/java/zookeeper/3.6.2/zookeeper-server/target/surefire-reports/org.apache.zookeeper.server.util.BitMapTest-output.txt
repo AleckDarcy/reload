@@ -1,0 +1,16 @@
+2020-12-21 19:34:51,917 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.
+2020-12-21 19:34:51,919 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.
+2020-12-21 19:34:51,933 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testAddAndRemove
+2020-12-21 19:34:51,933 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testAddAndRemove
+2020-12-21 19:34:51,985 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 9526
+2020-12-21 19:34:51,986 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:34:51,986 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testAddAndRemove
+2020-12-21 19:34:51,986 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testAddAndRemove
+2020-12-21 19:34:51,986 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testAddAndRemove
+2020-12-21 19:34:51,988 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testBitReuse
+2020-12-21 19:34:51,988 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testBitReuse
+2020-12-21 19:34:51,989 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 9526
+2020-12-21 19:34:51,989 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:34:51,989 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testBitReuse
+2020-12-21 19:34:51,989 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testBitReuse
+2020-12-21 19:34:51,989 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testBitReuse

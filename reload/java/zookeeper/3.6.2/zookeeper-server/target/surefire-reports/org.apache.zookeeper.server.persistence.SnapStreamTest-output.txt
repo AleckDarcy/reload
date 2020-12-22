@@ -1,0 +1,5 @@
+2020-12-21 19:36:38,874 [myid:] - INFO  [main:SnapStream@61] - zookeeper.snapshot.compression.method = CHECKED
+2020-12-21 19:36:39,046 [myid:] - ERROR [main:SnapStream@239] - Read incorrect number of bytes from snapshot.180000e3a2.gz
+2020-12-21 19:36:39,047 [myid:] - ERROR [main:SnapStream@239] - Read incorrect number of bytes from snapshot.180000e3a2.gz
+2020-12-21 19:36:39,049 [myid:] - ERROR [main:SnapStream@265] - Read incorrect number of bytes from snapshot.180000e3a2.snappy
+2020-12-21 19:36:39,051 [myid:] - ERROR [main:SnapStream@265] - Read incorrect number of bytes from snapshot.180000e3a2.snappy

@@ -22,6 +22,7 @@ package org.apache.zookeeper.proto;
 import org.apache.jute.*;
 import org.apache.jute.Record; // JDK14 needs explicit import due to clash with java.lang.Record
 import org.apache.yetus.audience.InterfaceAudience;
+import org.apache.zookeeper.trace.Trace;
 @InterfaceAudience.Public
 public class SetWatches2 implements Record {
   private long relativeZxid;
@@ -30,6 +31,7 @@ public class SetWatches2 implements Record {
   private java.util.List<String> childWatches;
   private java.util.List<String> persistentWatches;
   private java.util.List<String> persistentRecursiveWatches;
+  private org.apache.zookeeper.trace.Trace trace;
   public SetWatches2() {
   }
   public SetWatches2(
@@ -82,6 +84,8 @@ public class SetWatches2 implements Record {
   public void setPersistentRecursiveWatches(java.util.List<String> m_) {
     persistentRecursiveWatches=m_;
   }
+  public org.apache.zookeeper.trace.Trace getTrace() { return trace; }
+  public void setTrace(org.apache.zookeeper.trace.Trace t_) { trace = t_; }
   public void serialize(OutputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(this,tag);
     a_.writeLong(relativeZxid,"relativeZxid");

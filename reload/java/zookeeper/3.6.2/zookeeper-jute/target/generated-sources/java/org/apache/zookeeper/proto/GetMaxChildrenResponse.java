@@ -22,9 +22,11 @@ package org.apache.zookeeper.proto;
 import org.apache.jute.*;
 import org.apache.jute.Record; // JDK14 needs explicit import due to clash with java.lang.Record
 import org.apache.yetus.audience.InterfaceAudience;
+import org.apache.zookeeper.trace.Trace;
 @InterfaceAudience.Public
 public class GetMaxChildrenResponse implements Record {
   private int max;
+  private org.apache.zookeeper.trace.Trace trace;
   public GetMaxChildrenResponse() {
   }
   public GetMaxChildrenResponse(
@@ -37,6 +39,8 @@ public class GetMaxChildrenResponse implements Record {
   public void setMax(int m_) {
     max=m_;
   }
+  public org.apache.zookeeper.trace.Trace getTrace() { return trace; }
+  public void setTrace(org.apache.zookeeper.trace.Trace t_) { trace = t_; }
   public void serialize(OutputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(this,tag);
     a_.writeInt(max,"max");

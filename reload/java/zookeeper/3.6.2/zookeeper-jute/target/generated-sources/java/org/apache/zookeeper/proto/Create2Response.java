@@ -22,10 +22,12 @@ package org.apache.zookeeper.proto;
 import org.apache.jute.*;
 import org.apache.jute.Record; // JDK14 needs explicit import due to clash with java.lang.Record
 import org.apache.yetus.audience.InterfaceAudience;
+import org.apache.zookeeper.trace.Trace;
 @InterfaceAudience.Public
 public class Create2Response implements Record {
   private String path;
   private org.apache.zookeeper.data.Stat stat;
+  private org.apache.zookeeper.trace.Trace trace;
   public Create2Response() {
   }
   public Create2Response(
@@ -46,6 +48,8 @@ public class Create2Response implements Record {
   public void setStat(org.apache.zookeeper.data.Stat m_) {
     stat=m_;
   }
+  public org.apache.zookeeper.trace.Trace getTrace() { return trace; }
+  public void setTrace(org.apache.zookeeper.trace.Trace t_) { trace = t_; }
   public void serialize(OutputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(this,tag);
     a_.writeString(path,"path");

@@ -1,0 +1,10 @@
+2020-12-21 19:35:05,324 [myid:] - INFO  [Thread-0:JvmPauseMonitor$JVMMonitor@185] - Starting JVM Pause Monitor with infoThresholdMs:0 warnThresholdMs:-1 and sleepTimeMs:100
+2020-12-21 19:35:05,650 [myid:] - WARN  [Thread-0:JvmPauseMonitor$JVMMonitor@201] - Detected pause in JVM or host machine (eg GC): pause of approximately 0 ms, total pause: info level: 0, warn level: 1 
+GC pool 'G1 Young Generation' had collection(s): count=1 time=6ms
+2020-12-21 19:35:05,692 [myid:] - INFO  [Thread-1:JvmPauseMonitor$JVMMonitor@185] - Starting JVM Pause Monitor with infoThresholdMs:-1 warnThresholdMs:0 and sleepTimeMs:100
+2020-12-21 19:35:05,797 [myid:] - WARN  [Thread-1:JvmPauseMonitor$JVMMonitor@201] - Detected pause in JVM or host machine (eg GC): pause of approximately 4 ms, total pause: info level: 0, warn level: 1 
+No GCs detected
+2020-12-21 19:35:05,902 [myid:] - WARN  [Thread-1:JvmPauseMonitor$JVMMonitor@201] - Detected pause in JVM or host machine (eg GC): pause of approximately 4 ms, total pause: info level: 0, warn level: 2 
+No GCs detected
+2020-12-21 19:35:06,003 [myid:] - INFO  [Thread-1:JvmPauseMonitor$JVMMonitor@204] - Detected pause in JVM or host machine (eg GC): pause of approximately 0 ms, total pause: info level: 1, warn level: 2 
+No GCs detected

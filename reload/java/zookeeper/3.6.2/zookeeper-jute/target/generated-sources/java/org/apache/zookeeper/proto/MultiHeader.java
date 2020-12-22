@@ -22,11 +22,13 @@ package org.apache.zookeeper.proto;
 import org.apache.jute.*;
 import org.apache.jute.Record; // JDK14 needs explicit import due to clash with java.lang.Record
 import org.apache.yetus.audience.InterfaceAudience;
+import org.apache.zookeeper.trace.Trace;
 @InterfaceAudience.Public
 public class MultiHeader implements Record {
   private int type;
   private boolean done;
   private int err;
+  private org.apache.zookeeper.trace.Trace trace;
   public MultiHeader() {
   }
   public MultiHeader(
@@ -55,6 +57,8 @@ public class MultiHeader implements Record {
   public void setErr(int m_) {
     err=m_;
   }
+  public org.apache.zookeeper.trace.Trace getTrace() { return trace; }
+  public void setTrace(org.apache.zookeeper.trace.Trace t_) { trace = t_; }
   public void serialize(OutputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(this,tag);
     a_.writeInt(type,"type");

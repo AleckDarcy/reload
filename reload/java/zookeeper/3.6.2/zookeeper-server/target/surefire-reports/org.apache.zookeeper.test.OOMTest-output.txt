@@ -1,0 +1,2 @@
+2020-12-21 19:29:01,804 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.
+2020-12-21 19:29:01,807 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.

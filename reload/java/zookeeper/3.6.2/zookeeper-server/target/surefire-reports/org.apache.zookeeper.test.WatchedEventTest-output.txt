@@ -1,0 +1,30 @@
+2020-12-21 19:30:52,671 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.
+2020-12-21 19:30:52,674 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.
+2020-12-21 19:30:52,702 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testConvertingToEventWrapper
+2020-12-21 19:30:52,703 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testConvertingToEventWrapper
+2020-12-21 19:30:52,760 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 8841
+2020-12-21 19:30:52,760 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:30:52,760 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testConvertingToEventWrapper
+2020-12-21 19:30:52,760 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testConvertingToEventWrapper
+2020-12-21 19:30:52,760 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testConvertingToEventWrapper
+2020-12-21 19:30:52,762 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testCreatingWatchedEvent
+2020-12-21 19:30:52,762 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testCreatingWatchedEvent
+2020-12-21 19:30:52,763 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 8841
+2020-12-21 19:30:52,763 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:30:52,763 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testCreatingWatchedEvent
+2020-12-21 19:30:52,763 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testCreatingWatchedEvent
+2020-12-21 19:30:52,763 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testCreatingWatchedEvent
+2020-12-21 19:30:52,765 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testCreatingWatchedEventFromInvalidWrapper
+2020-12-21 19:30:52,765 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testCreatingWatchedEventFromInvalidWrapper
+2020-12-21 19:30:52,765 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 9744
+2020-12-21 19:30:52,765 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:30:52,765 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testCreatingWatchedEventFromInvalidWrapper
+2020-12-21 19:30:52,766 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testCreatingWatchedEventFromInvalidWrapper
+2020-12-21 19:30:52,766 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testCreatingWatchedEventFromInvalidWrapper
+2020-12-21 19:30:52,766 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testCreatingWatchedEventFromWrapper
+2020-12-21 19:30:52,767 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testCreatingWatchedEventFromWrapper
+2020-12-21 19:30:52,767 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 9744
+2020-12-21 19:30:52,767 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
+2020-12-21 19:30:52,767 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testCreatingWatchedEventFromWrapper
+2020-12-21 19:30:52,767 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testCreatingWatchedEventFromWrapper
+2020-12-21 19:30:52,767 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testCreatingWatchedEventFromWrapper

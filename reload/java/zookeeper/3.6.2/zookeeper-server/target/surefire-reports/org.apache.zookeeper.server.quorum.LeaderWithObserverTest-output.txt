@@ -1,0 +1,150 @@
+2020-12-21 19:43:28,366 [myid:] - INFO  [main:QuorumPeer@752] - zookeeper.quorumCnxnTimeoutMs=-1
+2020-12-21 19:43:28,410 [myid:] - INFO  [main:Log@169] - Logging initialized @827ms to org.eclipse.jetty.util.log.Slf4jLog
+2020-12-21 19:43:28,473 [myid:] - WARN  [main:ContextHandler@1520] - o.e.j.s.ServletContextHandler@411f53a0{/,null,UNAVAILABLE} contextPath ends with /*
+2020-12-21 19:43:28,473 [myid:] - WARN  [main:ContextHandler@1531] - Empty contextPath
+2020-12-21 19:43:28,550 [myid:] - INFO  [main:X509Util@77] - Setting -D jdk.tls.rejectClientInitiatedRenegotiation=true to disable client-initiated TLS renegotiation
+2020-12-21 19:43:28,613 [myid:] - INFO  [main:PortAssignment@154] - Test process 8/8 using ports from 30072 - 32764.
+2020-12-21 19:43:28,633 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30073 from range 30072 - 32764.
+2020-12-21 19:43:28,633 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30074 from range 30072 - 32764.
+2020-12-21 19:43:28,633 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30075 from range 30072 - 32764.
+2020-12-21 19:43:28,634 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30076 from range 30072 - 32764.
+2020-12-21 19:43:28,634 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30077 from range 30072 - 32764.
+2020-12-21 19:43:28,634 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30078 from range 30072 - 32764.
+2020-12-21 19:43:28,635 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30079 from range 30072 - 32764.
+2020-12-21 19:43:28,635 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30080 from range 30072 - 32764.
+2020-12-21 19:43:28,635 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30081 from range 30072 - 32764.
+2020-12-21 19:43:28,638 [myid:] - WARN  [main:QuorumPeer@1787] - configFilename is null! This should only happen in tests.
+2020-12-21 19:43:28,666 [myid:] - INFO  [main:FileTxnSnapLog@124] - zookeeper.snapshot.trust.empty : false
+2020-12-21 19:43:28,710 [myid:] - INFO  [main:ZookeeperBanner@42] - 
+2020-12-21 19:43:28,710 [myid:] - INFO  [main:ZookeeperBanner@42] -   ______                  _                                          
+2020-12-21 19:43:28,710 [myid:] - INFO  [main:ZookeeperBanner@42] -  |___  /                 | |                                         
+2020-12-21 19:43:28,711 [myid:] - INFO  [main:ZookeeperBanner@42] -     / /    ___     ___   | | __   ___    ___   _ __     ___   _ __   
+2020-12-21 19:43:28,711 [myid:] - INFO  [main:ZookeeperBanner@42] -    / /    / _ \   / _ \  | |/ /  / _ \  / _ \ | '_ \   / _ \ | '__|
+2020-12-21 19:43:28,711 [myid:] - INFO  [main:ZookeeperBanner@42] -   / /__  | (_) | | (_) | |   <  |  __/ |  __/ | |_) | |  __/ | |    
+2020-12-21 19:43:28,711 [myid:] - INFO  [main:ZookeeperBanner@42] -  /_____|  \___/   \___/  |_|\_\  \___|  \___| | .__/   \___| |_|
+2020-12-21 19:43:28,711 [myid:] - INFO  [main:ZookeeperBanner@42] -                                               | |                     
+2020-12-21 19:43:28,712 [myid:] - INFO  [main:ZookeeperBanner@42] -                                               |_|                     
+2020-12-21 19:43:28,712 [myid:] - INFO  [main:ZookeeperBanner@42] - 
+2020-12-21 19:43:28,721 [myid:] - INFO  [main:Environment@98] - Server environment:zookeeper.version=3.6.2--472b965b439c803de8da37e20a0a6efc3f058f0d-dirty, built on 12/22/2020 03:22 GMT
+2020-12-21 19:43:28,721 [myid:] - INFO  [main:Environment@98] - Server environment:host.name=localhost
+2020-12-21 19:43:28,721 [myid:] - INFO  [main:Environment@98] - Server environment:java.version=15.0.1
+2020-12-21 19:43:28,721 [myid:] - INFO  [main:Environment@98] - Server environment:java.vendor=N/A
+2020-12-21 19:43:28,722 [myid:] - INFO  [main:Environment@98] - Server environment:java.home=/usr/local/Cellar/openjdk/15.0.1/libexec/openjdk.jdk/Contents/Home
+2020-12-21 19:43:28,722 [myid:] - INFO  [main:Environment@98] - Server environment:java.class.path=/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/zookeeper/3.6.2/zookeeper-server/target/test-classes:/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/zookeeper/3.6.2/zookeeper-server/target/classes:/Users/aleck/.m2/repository/com/github/spotbugs/spotbugs-annotations/4.0.2/spotbugs-annotations-4.0.2.jar:/Users/aleck/.m2/repository/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar:/Users/aleck/.m2/repository/org/hamcrest/hamcrest-all/1.3/hamcrest-all-1.3.jar:/Users/aleck/.m2/repository/commons-collections/commons-collections/3.2.2/commons-collections-3.2.2.jar:/Users/aleck/.m2/repository/commons-lang/commons-lang/2.6/commons-lang-2.6.jar:/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/zookeeper/3.6.2/zookeeper-jute/target/zookeeper-jute-3.6.2.jar:/Users/aleck/.m2/repository/commons-cli/commons-cli/1.2/commons-cli-1.2.jar:/Users/aleck/.m2/repository/org/apache/yetus/audience-annotations/0.5.0/audience-annotations-0.5.0.jar:/Users/aleck/.m2/repository/io/netty/netty-handler/4.1.50.Final/netty-handler-4.1.50.Final.jar:/Users/aleck/.m2/repository/io/netty/netty-common/4.1.50.Final/netty-common-4.1.50.Final.jar:/Users/aleck/.m2/repository/io/netty/netty-resolver/4.1.50.Final/netty-resolver-4.1.50.Final.jar:/Users/aleck/.m2/repository/io/netty/netty-buffer/4.1.50.Final/netty-buffer-4.1.50.Final.jar:/Users/aleck/.m2/repository/io/netty/netty-transport/4.1.50.Final/netty-transport-4.1.50.Final.jar:/Users/aleck/.m2/repository/io/netty/netty-codec/4.1.50.Final/netty-codec-4.1.50.Final.jar:/Users/aleck/.m2/repository/io/netty/netty-transport-native-epoll/4.1.50.Final/netty-transport-native-epoll-4.1.50.Final.jar:/Users/aleck/.m2/repository/io/netty/netty-transport-native-unix-common/4.1.50.Final/netty-transport-native-unix-common-4.1.50.Final.jar:/Users/aleck/.m2/repository/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar:/Users/aleck/.m2/repository/org/slf4j/slf4j-log4j12/1.7.25/slf4j-log4j12-1.7.25.jar:/Users/aleck/.m2/repository/org/eclipse/jetty/jetty-server/9.4.24.v20191120/jetty-server-9.4.24.v20191120.jar:/Users/aleck/.m2/repository/javax/servlet/javax.servlet-api/3.1.0/javax.servlet-api-3.1.0.jar:/Users/aleck/.m2/repository/org/eclipse/jetty/jetty-http/9.4.24.v20191120/jetty-http-9.4.24.v20191120.jar:/Users/aleck/.m2/repository/org/eclipse/jetty/jetty-util/9.4.24.v20191120/jetty-util-9.4.24.v20191120.jar:/Users/aleck/.m2/repository/org/eclipse/jetty/jetty-io/9.4.24.v20191120/jetty-io-9.4.24.v20191120.jar:/Users/aleck/.m2/repository/org/eclipse/jetty/jetty-servlet/9.4.24.v20191120/jetty-servlet-9.4.24.v20191120.jar:/Users/aleck/.m2/repository/org/eclipse/jetty/jetty-security/9.4.24.v20191120/jetty-security-9.4.24.v20191120.jar:/Users/aleck/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.10.3/jackson-databind-2.10.3.jar:/Users/aleck/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.10.3/jackson-annotations-2.10.3.jar:/Users/aleck/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.10.3/jackson-core-2.10.3.jar:/Users/aleck/.m2/repository/com/googlecode/json-simple/json-simple/1.1.1/json-simple-1.1.1.jar:/Users/aleck/.m2/repository/org/bouncycastle/bcprov-jdk15on/1.60/bcprov-jdk15on-1.60.jar:/Users/aleck/.m2/repository/org/bouncycastle/bcpkix-jdk15on/1.60/bcpkix-jdk15on-1.60.jar:/Users/aleck/.m2/repository/jline/jline/2.14.6/jline-2.14.6.jar:/Users/aleck/.m2/repository/io/dropwizard/metrics/metrics-core/3.2.5/metrics-core-3.2.5.jar:/Users/aleck/.m2/repository/log4j/log4j/1.2.17/log4j-1.2.17.jar:/Users/aleck/.m2/repository/org/apache/kerby/kerb-core/2.0.0/kerb-core-2.0.0.jar:/Users/aleck/.m2/repository/org/apache/kerby/kerby-pkix/2.0.0/kerby-pkix-2.0.0.jar:/Users/aleck/.m2/repository/org/apache/kerby/kerby-asn1/2.0.0/kerby-asn1-2.0.0.jar:/Users/aleck/.m2/repository/org/apache/kerby/kerby-util/2.0.0/kerby-util-2.0.0.jar:/Users/aleck/.m2/repository/org/apache/kerby/kerb-simplekdc/2.0.0/kerb-simplekdc-2.0.0.jar:/Users/aleck/.m2/repository/org/apache/kerby/kerb-client/2.0.0/kerb-client-2.0.0.jar:/Users/aleck/.m2/repository/org/apache/kerby/kerb-common/2.0.0/kerb-common-2.0.0.jar:/Users/aleck/.m2/repository/org/apache/kerby/kerb-crypto/2.0.0/kerb-crypto-2.0.0.jar:/Users/aleck/.m2/repository/commons-io/commons-io/2.6/commons-io-2.6.jar:/Users/aleck/.m2/repository/org/apache/kerby/kerb-util/2.0.0/kerb-util-2.0.0.jar:/Users/aleck/.m2/repository/org/apache/kerby/token-provider/2.0.0/token-provider-2.0.0.jar:/Users/aleck/.m2/repository/com/nimbusds/nimbus-jose-jwt/4.41.2/nimbus-jose-jwt-4.41.2.jar:/Users/aleck/.m2/repository/com/github/stephenc/jcip/jcip-annotations/1.0-1/jcip-annotations-1.0-1.jar:/Users/aleck/.m2/repository/net/minidev/json-smart/2.3/json-smart-2.3.jar:/Users/aleck/.m2/repository/net/minidev/accessors-smart/1.2/accessors-smart-1.2.jar:/Users/aleck/.m2/repository/org/ow2/asm/asm/5.0.4/asm-5.0.4.jar:/Users/aleck/.m2/repository/org/apache/kerby/kerb-admin/2.0.0/kerb-admin-2.0.0.jar:/Users/aleck/.m2/repository/org/apache/kerby/kerb-server/2.0.0/kerb-server-2.0.0.jar:/Users/aleck/.m2/repository/org/apache/kerby/kerb-identity/2.0.0/kerb-identity-2.0.0.jar:/Users/aleck/.m2/repository/org/apache/kerby/kerby-xdr/2.0.0/kerby-xdr-2.0.0.jar:/Users/aleck/.m2/repository/org/apache/kerby/kerby-config/2.0.0/kerby-config-2.0.0.jar:/Users/aleck/.m2/repository/org/mockito/mockito-core/2.27.0/mockito-core-2.27.0.jar:/Users/aleck/.m2/repository/net/bytebuddy/byte-buddy/1.9.10/byte-buddy-1.9.10.jar:/Users/aleck/.m2/repository/net/bytebuddy/byte-buddy-agent/1.9.10/byte-buddy-agent-1.9.10.jar:/Users/aleck/.m2/repository/org/objenesis/objenesis/2.6/objenesis-2.6.jar:/Users/aleck/.m2/repository/org/jmockit/jmockit/1.48/jmockit-1.48.jar:/Users/aleck/.m2/repository/junit/junit/4.12/junit-4.12.jar:/Users/aleck/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar:/Users/aleck/.m2/repository/org/xerial/snappy/snappy-java/1.1.7/snappy-java-1.1.7.jar:
+2020-12-21 19:43:28,722 [myid:] - INFO  [main:Environment@98] - Server environment:java.library.path=/Users/aleck/Library/Java/Extensions:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java:.
+2020-12-21 19:43:28,723 [myid:] - INFO  [main:Environment@98] - Server environment:java.io.tmpdir=/var/folders/_1/3xdp_mt923b81d6gg86gq91w0000gn/T/
+2020-12-21 19:43:28,723 [myid:] - INFO  [main:Environment@98] - Server environment:java.compiler=<NA>
+2020-12-21 19:43:28,723 [myid:] - INFO  [main:Environment@98] - Server environment:os.name=Mac OS X
+2020-12-21 19:43:28,723 [myid:] - INFO  [main:Environment@98] - Server environment:os.arch=x86_64
+2020-12-21 19:43:28,724 [myid:] - INFO  [main:Environment@98] - Server environment:os.version=11.1
+2020-12-21 19:43:28,724 [myid:] - INFO  [main:Environment@98] - Server environment:user.name=aleck
+2020-12-21 19:43:28,724 [myid:] - INFO  [main:Environment@98] - Server environment:user.home=/Users/aleck
+2020-12-21 19:43:28,724 [myid:] - INFO  [main:Environment@98] - Server environment:user.dir=/Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/zookeeper/3.6.2/zookeeper-server
+2020-12-21 19:43:28,724 [myid:] - INFO  [main:Environment@98] - Server environment:os.memory.free=236MB
+2020-12-21 19:43:28,724 [myid:] - INFO  [main:Environment@98] - Server environment:os.memory.max=512MB
+2020-12-21 19:43:28,725 [myid:] - INFO  [main:Environment@98] - Server environment:os.memory.total=258MB
+2020-12-21 19:43:28,725 [myid:] - INFO  [main:ZooKeeperServer@129] - zookeeper.enableEagerACLCheck = false
+2020-12-21 19:43:28,725 [myid:] - INFO  [main:ZooKeeperServer@137] - zookeeper.digest.enabled = true
+2020-12-21 19:43:28,725 [myid:] - INFO  [main:ZooKeeperServer@141] - zookeeper.closeSessionTxn.enabled = true
+2020-12-21 19:43:28,725 [myid:] - INFO  [main:ZooKeeperServer@1444] - zookeeper.flushDelay=0
+2020-12-21 19:43:28,726 [myid:] - INFO  [main:ZooKeeperServer@1453] - zookeeper.maxWriteQueuePollTime=0
+2020-12-21 19:43:28,726 [myid:] - INFO  [main:ZooKeeperServer@1462] - zookeeper.maxBatchSize=1000
+2020-12-21 19:43:28,726 [myid:] - INFO  [main:ZooKeeperServer@243] - zookeeper.intBufferStartingSizeBytes = 1024
+2020-12-21 19:43:28,747 [myid:] - INFO  [main:WatchManagerFactory@42] - Using org.apache.zookeeper.server.watch.WatchManager as watch manager
+2020-12-21 19:43:28,747 [myid:] - INFO  [main:WatchManagerFactory@42] - Using org.apache.zookeeper.server.watch.WatchManager as watch manager
+2020-12-21 19:43:28,747 [myid:] - INFO  [main:ZKDatabase@132] - zookeeper.snapshotSizeFactor = 0.33
+2020-12-21 19:43:28,747 [myid:] - INFO  [main:ZKDatabase@152] - zookeeper.commitLogCount=500
+2020-12-21 19:43:28,772 [myid:] - INFO  [main:BlueThrottle@141] - Weighed connection throttling is disabled
+2020-12-21 19:43:28,773 [myid:] - INFO  [main:ZooKeeperServer@1256] - minSessionTimeout set to 4000
+2020-12-21 19:43:28,774 [myid:] - INFO  [main:ZooKeeperServer@1265] - maxSessionTimeout set to 40000
+2020-12-21 19:43:28,775 [myid:] - INFO  [main:ResponseCache@45] - Response cache size is initialized with value 400.
+2020-12-21 19:43:28,775 [myid:] - INFO  [main:ResponseCache@45] - Response cache size is initialized with value 400.
+2020-12-21 19:43:28,798 [myid:] - INFO  [main:RequestPathMetricsCollector@111] - zookeeper.pathStats.slotCapacity = 60
+2020-12-21 19:43:28,798 [myid:] - INFO  [main:RequestPathMetricsCollector@112] - zookeeper.pathStats.slotDuration = 15
+2020-12-21 19:43:28,799 [myid:] - INFO  [main:RequestPathMetricsCollector@113] - zookeeper.pathStats.maxDepth = 6
+2020-12-21 19:43:28,799 [myid:] - INFO  [main:RequestPathMetricsCollector@114] - zookeeper.pathStats.initialDelay = 5
+2020-12-21 19:43:28,799 [myid:] - INFO  [main:RequestPathMetricsCollector@115] - zookeeper.pathStats.delay = 5
+2020-12-21 19:43:28,800 [myid:] - INFO  [main:RequestPathMetricsCollector@116] - zookeeper.pathStats.enabled = false
+2020-12-21 19:43:28,803 [myid:] - INFO  [main:ZooKeeperServer@1481] - The max bytes for all large requests are set to 104857600
+2020-12-21 19:43:28,803 [myid:] - INFO  [main:ZooKeeperServer@1495] - The large request threshold is set to -1
+2020-12-21 19:43:28,804 [myid:] - INFO  [main:ZooKeeperServer@339] - Created server with tickTime 2000 minSessionTimeout 4000 maxSessionTimeout 40000 clientPortListenBacklog -1 datadir /Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/zookeeper/3.6.2/zookeeper-server/target/surefire/test10946791508880375422.junit.dir/version-2 snapdir /Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/zookeeper/3.6.2/zookeeper-server/target/surefire/test10946791508880375422.junit.dir/version-2
+2020-12-21 19:43:28,827 [myid:] - INFO  [main:LearnerMaster@47] - zookeeper.leader.maxConcurrentSnapSyncs = 10
+2020-12-21 19:43:28,828 [myid:] - INFO  [main:LearnerMaster@50] - zookeeper.leader.maxConcurrentDiffSyncs = 100
+2020-12-21 19:43:28,828 [myid:] - INFO  [main:Leader@84] - TCP NoDelay set to: true
+2020-12-21 19:43:28,828 [myid:] - INFO  [main:Leader@105] - zookeeper.leader.ackLoggingFrequency = 1000
+2020-12-21 19:43:28,828 [myid:] - INFO  [main:Leader@1354] - zookeeper.leader.maxTimeToWaitForEpoch = -1ms
+2020-12-21 19:43:28,833 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30082 from range 30072 - 32764.
+2020-12-21 19:43:28,834 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30083 from range 30072 - 32764.
+2020-12-21 19:43:28,834 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30084 from range 30072 - 32764.
+2020-12-21 19:43:29,110 [myid:] - INFO  [main:Leader@793] - Shutting down
+2020-12-21 19:43:29,110 [myid:] - INFO  [main:Leader@799] - Shutdown called. For the reason end of test
+2020-12-21 19:43:29,155 [myid:] - WARN  [main:ContextHandler@1520] - o.e.j.s.ServletContextHandler@1fb700ee{/,null,UNAVAILABLE} contextPath ends with /*
+2020-12-21 19:43:29,156 [myid:] - WARN  [main:ContextHandler@1531] - Empty contextPath
+2020-12-21 19:43:29,157 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30085 from range 30072 - 32764.
+2020-12-21 19:43:29,158 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30086 from range 30072 - 32764.
+2020-12-21 19:43:29,159 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30087 from range 30072 - 32764.
+2020-12-21 19:43:29,160 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30088 from range 30072 - 32764.
+2020-12-21 19:43:29,161 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30089 from range 30072 - 32764.
+2020-12-21 19:43:29,161 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30090 from range 30072 - 32764.
+2020-12-21 19:43:29,162 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30091 from range 30072 - 32764.
+2020-12-21 19:43:29,162 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30092 from range 30072 - 32764.
+2020-12-21 19:43:29,163 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30093 from range 30072 - 32764.
+2020-12-21 19:43:29,163 [myid:] - WARN  [main:QuorumPeer@1787] - configFilename is null! This should only happen in tests.
+2020-12-21 19:43:29,189 [myid:] - INFO  [main:FileTxnSnapLog@124] - zookeeper.snapshot.trust.empty : false
+2020-12-21 19:43:29,190 [myid:] - INFO  [main:WatchManagerFactory@42] - Using org.apache.zookeeper.server.watch.WatchManager as watch manager
+2020-12-21 19:43:29,190 [myid:] - INFO  [main:WatchManagerFactory@42] - Using org.apache.zookeeper.server.watch.WatchManager as watch manager
+2020-12-21 19:43:29,191 [myid:] - INFO  [main:ZKDatabase@132] - zookeeper.snapshotSizeFactor = 0.33
+2020-12-21 19:43:29,191 [myid:] - INFO  [main:ZKDatabase@152] - zookeeper.commitLogCount=500
+2020-12-21 19:43:29,191 [myid:] - INFO  [main:ZooKeeperServer@1256] - minSessionTimeout set to 4000
+2020-12-21 19:43:29,191 [myid:] - INFO  [main:ZooKeeperServer@1265] - maxSessionTimeout set to 40000
+2020-12-21 19:43:29,192 [myid:] - INFO  [main:ResponseCache@45] - Response cache size is initialized with value 400.
+2020-12-21 19:43:29,192 [myid:] - INFO  [main:ResponseCache@45] - Response cache size is initialized with value 400.
+2020-12-21 19:43:29,192 [myid:] - INFO  [main:RequestPathMetricsCollector@111] - zookeeper.pathStats.slotCapacity = 60
+2020-12-21 19:43:29,192 [myid:] - INFO  [main:RequestPathMetricsCollector@112] - zookeeper.pathStats.slotDuration = 15
+2020-12-21 19:43:29,192 [myid:] - INFO  [main:RequestPathMetricsCollector@113] - zookeeper.pathStats.maxDepth = 6
+2020-12-21 19:43:29,193 [myid:] - INFO  [main:RequestPathMetricsCollector@114] - zookeeper.pathStats.initialDelay = 5
+2020-12-21 19:43:29,193 [myid:] - INFO  [main:RequestPathMetricsCollector@115] - zookeeper.pathStats.delay = 5
+2020-12-21 19:43:29,193 [myid:] - INFO  [main:RequestPathMetricsCollector@116] - zookeeper.pathStats.enabled = false
+2020-12-21 19:43:29,193 [myid:] - INFO  [main:ZooKeeperServer@1481] - The max bytes for all large requests are set to 104857600
+2020-12-21 19:43:29,194 [myid:] - INFO  [main:ZooKeeperServer@1495] - The large request threshold is set to -1
+2020-12-21 19:43:29,194 [myid:] - INFO  [main:ZooKeeperServer@339] - Created server with tickTime 2000 minSessionTimeout 4000 maxSessionTimeout 40000 clientPortListenBacklog -1 datadir /Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/zookeeper/3.6.2/zookeeper-server/target/surefire/test13903872737056060128.junit.dir/version-2 snapdir /Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/zookeeper/3.6.2/zookeeper-server/target/surefire/test13903872737056060128.junit.dir/version-2
+2020-12-21 19:43:29,195 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30094 from range 30072 - 32764.
+2020-12-21 19:43:29,196 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30095 from range 30072 - 32764.
+2020-12-21 19:43:29,197 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30096 from range 30072 - 32764.
+2020-12-21 19:43:29,221 [myid:] - INFO  [main:Leader@793] - Shutting down
+2020-12-21 19:43:29,221 [myid:] - INFO  [main:Leader@799] - Shutdown called. For the reason end of test
+2020-12-21 19:43:29,243 [myid:] - WARN  [main:ContextHandler@1520] - o.e.j.s.ServletContextHandler@6c779568{/,null,UNAVAILABLE} contextPath ends with /*
+2020-12-21 19:43:29,244 [myid:] - WARN  [main:ContextHandler@1531] - Empty contextPath
+2020-12-21 19:43:29,244 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30097 from range 30072 - 32764.
+2020-12-21 19:43:29,245 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30098 from range 30072 - 32764.
+2020-12-21 19:43:29,245 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30099 from range 30072 - 32764.
+2020-12-21 19:43:29,246 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30100 from range 30072 - 32764.
+2020-12-21 19:43:29,246 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30101 from range 30072 - 32764.
+2020-12-21 19:43:29,247 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30102 from range 30072 - 32764.
+2020-12-21 19:43:29,247 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30103 from range 30072 - 32764.
+2020-12-21 19:43:29,248 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30104 from range 30072 - 32764.
+2020-12-21 19:43:29,248 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30105 from range 30072 - 32764.
+2020-12-21 19:43:29,248 [myid:] - WARN  [main:QuorumPeer@1787] - configFilename is null! This should only happen in tests.
+2020-12-21 19:43:29,325 [myid:] - INFO  [main:FileTxnSnapLog@124] - zookeeper.snapshot.trust.empty : false
+2020-12-21 19:43:29,327 [myid:] - INFO  [main:WatchManagerFactory@42] - Using org.apache.zookeeper.server.watch.WatchManager as watch manager
+2020-12-21 19:43:29,327 [myid:] - INFO  [main:WatchManagerFactory@42] - Using org.apache.zookeeper.server.watch.WatchManager as watch manager
+2020-12-21 19:43:29,328 [myid:] - INFO  [main:ZKDatabase@132] - zookeeper.snapshotSizeFactor = 0.33
+2020-12-21 19:43:29,328 [myid:] - INFO  [main:ZKDatabase@152] - zookeeper.commitLogCount=500
+2020-12-21 19:43:29,328 [myid:] - INFO  [main:ZooKeeperServer@1256] - minSessionTimeout set to 4000
+2020-12-21 19:43:29,328 [myid:] - INFO  [main:ZooKeeperServer@1265] - maxSessionTimeout set to 40000
+2020-12-21 19:43:29,329 [myid:] - INFO  [main:ResponseCache@45] - Response cache size is initialized with value 400.
+2020-12-21 19:43:29,329 [myid:] - INFO  [main:ResponseCache@45] - Response cache size is initialized with value 400.
+2020-12-21 19:43:29,329 [myid:] - INFO  [main:RequestPathMetricsCollector@111] - zookeeper.pathStats.slotCapacity = 60
+2020-12-21 19:43:29,330 [myid:] - INFO  [main:RequestPathMetricsCollector@112] - zookeeper.pathStats.slotDuration = 15
+2020-12-21 19:43:29,330 [myid:] - INFO  [main:RequestPathMetricsCollector@113] - zookeeper.pathStats.maxDepth = 6
+2020-12-21 19:43:29,330 [myid:] - INFO  [main:RequestPathMetricsCollector@114] - zookeeper.pathStats.initialDelay = 5
+2020-12-21 19:43:29,330 [myid:] - INFO  [main:RequestPathMetricsCollector@115] - zookeeper.pathStats.delay = 5
+2020-12-21 19:43:29,330 [myid:] - INFO  [main:RequestPathMetricsCollector@116] - zookeeper.pathStats.enabled = false
+2020-12-21 19:43:29,331 [myid:] - INFO  [main:ZooKeeperServer@1481] - The max bytes for all large requests are set to 104857600
+2020-12-21 19:43:29,331 [myid:] - INFO  [main:ZooKeeperServer@1495] - The large request threshold is set to -1
+2020-12-21 19:43:29,331 [myid:] - INFO  [main:ZooKeeperServer@339] - Created server with tickTime 2000 minSessionTimeout 4000 maxSessionTimeout 40000 clientPortListenBacklog -1 datadir /Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/zookeeper/3.6.2/zookeeper-server/target/surefire/test16503823780916810981.junit.dir/version-2 snapdir /Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/zookeeper/3.6.2/zookeeper-server/target/surefire/test16503823780916810981.junit.dir/version-2
+2020-12-21 19:43:29,332 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30106 from range 30072 - 32764.
+2020-12-21 19:43:29,333 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30107 from range 30072 - 32764.
+2020-12-21 19:43:29,333 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30108 from range 30072 - 32764.
+2020-12-21 19:43:29,369 [myid:] - INFO  [main:Leader@793] - Shutting down
+2020-12-21 19:43:29,370 [myid:] - INFO  [main:Leader@799] - Shutdown called. For the reason end of test

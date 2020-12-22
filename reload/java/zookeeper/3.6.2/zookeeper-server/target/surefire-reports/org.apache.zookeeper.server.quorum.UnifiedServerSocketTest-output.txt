@@ -1,0 +1,1178 @@
+2020-12-21 19:43:31,968 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testConnectWithoutSSLToStrictServer[0]
+2020-12-21 19:43:31,994 [myid:] - INFO  [main:PortAssignment@154] - Test process 8/8 using ports from 30072 - 32764.
+2020-12-21 19:43:32,015 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30073 from range 30072 - 32764.
+2020-12-21 19:43:32,021 [myid:] - INFO  [main:X509Util@77] - Setting -D jdk.tls.rejectClientInitiatedRenegotiation=true to disable client-initiated TLS renegotiation
+Exception in thread "Thread-0" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:32,782 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testConnectWithoutSSLToStrictServer[0]
+2020-12-21 19:43:32,782 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testConnectWithoutSSLToStrictServer[0]
+2020-12-21 19:43:32,783 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testConnectWithSSLToStrictServer[0]
+2020-12-21 19:43:32,784 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30074 from range 30072 - 32764.
+2020-12-21 19:43:33,357 [myid:] - INFO  [pool-2-thread-1:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:49369 - TLSv1.2 - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+Exception in thread "Thread-1" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:33,361 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testConnectWithSSLToStrictServer[0]
+2020-12-21 19:43:33,362 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testConnectWithSSLToStrictServer[0]
+2020-12-21 19:43:33,362 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testTLSDetectionNonBlockingNonStrictServerDisconnectedClient[0]
+2020-12-21 19:43:33,363 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30075 from range 30072 - 32764.
+2020-12-21 19:43:33,528 [myid:] - INFO  [pool-3-thread-1:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:49402
+2020-12-21 19:43:33,528 [myid:] - INFO  [pool-3-thread-2:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:49403
+2020-12-21 19:43:33,645 [myid:] - INFO  [pool-3-thread-2:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:49408 - TLSv1.2 - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+Exception in thread "Thread-2" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:33,647 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testTLSDetectionNonBlockingNonStrictServerDisconnectedClient[0]
+2020-12-21 19:43:33,648 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testTLSDetectionNonBlockingNonStrictServerDisconnectedClient[0]
+2020-12-21 19:43:33,648 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testConnectWithSSLToNonStrictServer[0]
+2020-12-21 19:43:33,649 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30076 from range 30072 - 32764.
+2020-12-21 19:43:33,929 [myid:] - INFO  [pool-4-thread-1:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:49416 - TLSv1.2 - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+Exception in thread "Thread-3" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:33,931 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testConnectWithSSLToNonStrictServer[0]
+2020-12-21 19:43:33,931 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testConnectWithSSLToNonStrictServer[0]
+2020-12-21 19:43:33,931 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testTLSDetectionNonBlockingStrictServerDisconnectedClient[0]
+2020-12-21 19:43:33,932 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30077 from range 30072 - 32764.
+2020-12-21 19:43:34,192 [myid:] - INFO  [pool-5-thread-1:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:49429 - TLSv1.2 - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+Exception in thread "Thread-4" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:34,196 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testTLSDetectionNonBlockingStrictServerDisconnectedClient[0]
+2020-12-21 19:43:34,196 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testTLSDetectionNonBlockingStrictServerDisconnectedClient[0]
+2020-12-21 19:43:34,197 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testTLSDetectionNonBlockingStrictServerIdleClient[0]
+2020-12-21 19:43:34,197 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30078 from range 30072 - 32764.
+2020-12-21 19:43:34,485 [myid:] - INFO  [pool-6-thread-2:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:49492 - TLSv1.2 - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+Exception in thread "Thread-5" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:34,487 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testTLSDetectionNonBlockingStrictServerIdleClient[0]
+2020-12-21 19:43:34,487 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testTLSDetectionNonBlockingStrictServerIdleClient[0]
+2020-12-21 19:43:34,488 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testConnectWithoutSSLToNonStrictServerPartialWrite[0]
+2020-12-21 19:43:34,488 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30079 from range 30072 - 32764.
+2020-12-21 19:43:34,638 [myid:] - INFO  [pool-7-thread-1:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:49513
+Exception in thread "Thread-6" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:34,991 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testConnectWithoutSSLToNonStrictServerPartialWrite[0]
+2020-12-21 19:43:34,992 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testConnectWithoutSSLToNonStrictServerPartialWrite[0]
+2020-12-21 19:43:34,992 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testTLSDetectionNonBlockingNonStrictServerIdleClient[0]
+2020-12-21 19:43:34,993 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30080 from range 30072 - 32764.
+2020-12-21 19:43:35,147 [myid:] - INFO  [pool-8-thread-2:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:49532
+2020-12-21 19:43:35,258 [myid:] - INFO  [pool-8-thread-2:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:49537 - TLSv1.2 - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+2020-12-21 19:43:35,259 [myid:] - INFO  [pool-8-thread-1:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:49531
+Exception in thread "Thread-7" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:35,260 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testTLSDetectionNonBlockingNonStrictServerIdleClient[0]
+2020-12-21 19:43:35,260 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testTLSDetectionNonBlockingNonStrictServerIdleClient[0]
+2020-12-21 19:43:35,261 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testConnectWithoutSSLToNonStrictServer[0]
+2020-12-21 19:43:35,261 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30081 from range 30072 - 32764.
+2020-12-21 19:43:35,397 [myid:] - INFO  [pool-9-thread-1:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:49538
+Exception in thread "Thread-8" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:35,399 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testConnectWithoutSSLToNonStrictServer[0]
+2020-12-21 19:43:35,399 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testConnectWithoutSSLToNonStrictServer[0]
+2020-12-21 19:43:35,700 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testConnectWithoutSSLToStrictServer[1]
+2020-12-21 19:43:35,701 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30082 from range 30072 - 32764.
+Exception in thread "Thread-9" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:36,208 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testConnectWithoutSSLToStrictServer[1]
+2020-12-21 19:43:36,208 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testConnectWithoutSSLToStrictServer[1]
+2020-12-21 19:43:36,208 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testConnectWithSSLToStrictServer[1]
+2020-12-21 19:43:36,209 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30083 from range 30072 - 32764.
+2020-12-21 19:43:36,444 [myid:] - INFO  [pool-11-thread-1:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:49690 - TLSv1.2 - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+Exception in thread "Thread-10" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:36,445 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testConnectWithSSLToStrictServer[1]
+2020-12-21 19:43:36,446 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testConnectWithSSLToStrictServer[1]
+2020-12-21 19:43:36,446 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testTLSDetectionNonBlockingNonStrictServerDisconnectedClient[1]
+2020-12-21 19:43:36,446 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30084 from range 30072 - 32764.
+2020-12-21 19:43:36,616 [myid:] - INFO  [pool-12-thread-1:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:49691
+2020-12-21 19:43:36,616 [myid:] - INFO  [pool-12-thread-2:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:49692
+2020-12-21 19:43:36,728 [myid:] - INFO  [pool-12-thread-2:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:49698 - TLSv1.2 - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+Exception in thread "Thread-11" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:36,729 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testTLSDetectionNonBlockingNonStrictServerDisconnectedClient[1]
+2020-12-21 19:43:36,729 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testTLSDetectionNonBlockingNonStrictServerDisconnectedClient[1]
+2020-12-21 19:43:36,729 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testConnectWithSSLToNonStrictServer[1]
+2020-12-21 19:43:36,730 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30085 from range 30072 - 32764.
+2020-12-21 19:43:37,009 [myid:] - INFO  [pool-13-thread-1:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:49706 - TLSv1.2 - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+Exception in thread "Thread-12" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:37,011 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testConnectWithSSLToNonStrictServer[1]
+2020-12-21 19:43:37,011 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testConnectWithSSLToNonStrictServer[1]
+2020-12-21 19:43:37,011 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testTLSDetectionNonBlockingStrictServerDisconnectedClient[1]
+2020-12-21 19:43:37,011 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30086 from range 30072 - 32764.
+2020-12-21 19:43:37,294 [myid:] - INFO  [pool-14-thread-1:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:49713 - TLSv1.2 - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+Exception in thread "Thread-13" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:37,296 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testTLSDetectionNonBlockingStrictServerDisconnectedClient[1]
+2020-12-21 19:43:37,296 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testTLSDetectionNonBlockingStrictServerDisconnectedClient[1]
+2020-12-21 19:43:37,296 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testTLSDetectionNonBlockingStrictServerIdleClient[1]
+2020-12-21 19:43:37,297 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30087 from range 30072 - 32764.
+2020-12-21 19:43:37,551 [myid:] - INFO  [pool-15-thread-2:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:49719 - TLSv1.2 - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+Exception in thread "Thread-14" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:37,553 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testTLSDetectionNonBlockingStrictServerIdleClient[1]
+2020-12-21 19:43:37,553 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testTLSDetectionNonBlockingStrictServerIdleClient[1]
+2020-12-21 19:43:37,554 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testConnectWithoutSSLToNonStrictServerPartialWrite[1]
+2020-12-21 19:43:37,555 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30088 from range 30072 - 32764.
+2020-12-21 19:43:37,742 [myid:] - INFO  [pool-16-thread-1:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:49783
+Exception in thread "Thread-15" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:38,061 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testConnectWithoutSSLToNonStrictServerPartialWrite[1]
+2020-12-21 19:43:38,061 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testConnectWithoutSSLToNonStrictServerPartialWrite[1]
+2020-12-21 19:43:38,062 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testTLSDetectionNonBlockingNonStrictServerIdleClient[1]
+2020-12-21 19:43:38,062 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30089 from range 30072 - 32764.
+2020-12-21 19:43:38,236 [myid:] - INFO  [pool-17-thread-2:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:49837
+2020-12-21 19:43:38,348 [myid:] - INFO  [pool-17-thread-2:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:49842 - TLSv1.2 - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+2020-12-21 19:43:38,349 [myid:] - INFO  [pool-17-thread-1:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:49836
+Exception in thread "Thread-16" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:38,349 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testTLSDetectionNonBlockingNonStrictServerIdleClient[1]
+2020-12-21 19:43:38,349 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testTLSDetectionNonBlockingNonStrictServerIdleClient[1]
+2020-12-21 19:43:38,350 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testConnectWithoutSSLToNonStrictServer[1]
+2020-12-21 19:43:38,350 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30090 from range 30072 - 32764.
+2020-12-21 19:43:38,546 [myid:] - INFO  [pool-18-thread-1:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:49846
+Exception in thread "Thread-17" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:38,548 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testConnectWithoutSSLToNonStrictServer[1]
+2020-12-21 19:43:38,548 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testConnectWithoutSSLToNonStrictServer[1]
+2020-12-21 19:43:38,637 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testConnectWithoutSSLToStrictServer[2]
+2020-12-21 19:43:38,638 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30091 from range 30072 - 32764.
+Exception in thread "Thread-18" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:39,156 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testConnectWithoutSSLToStrictServer[2]
+2020-12-21 19:43:39,156 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testConnectWithoutSSLToStrictServer[2]
+2020-12-21 19:43:39,157 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testConnectWithSSLToStrictServer[2]
+2020-12-21 19:43:39,157 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30092 from range 30072 - 32764.
+2020-12-21 19:43:39,443 [myid:] - INFO  [pool-20-thread-1:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:49870 - TLSv1.2 - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+Exception in thread "Thread-19" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:39,444 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testConnectWithSSLToStrictServer[2]
+2020-12-21 19:43:39,445 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testConnectWithSSLToStrictServer[2]
+2020-12-21 19:43:39,445 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testTLSDetectionNonBlockingNonStrictServerDisconnectedClient[2]
+2020-12-21 19:43:39,445 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30093 from range 30072 - 32764.
+2020-12-21 19:43:39,613 [myid:] - INFO  [pool-21-thread-2:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:49881
+2020-12-21 19:43:39,613 [myid:] - INFO  [pool-21-thread-1:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:49880
+2020-12-21 19:43:39,723 [myid:] - INFO  [pool-21-thread-1:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:49885 - TLSv1.2 - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+Exception in thread "Thread-20" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:39,724 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testTLSDetectionNonBlockingNonStrictServerDisconnectedClient[2]
+2020-12-21 19:43:39,724 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testTLSDetectionNonBlockingNonStrictServerDisconnectedClient[2]
+2020-12-21 19:43:39,724 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testConnectWithSSLToNonStrictServer[2]
+2020-12-21 19:43:39,725 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30094 from range 30072 - 32764.
+2020-12-21 19:43:40,037 [myid:] - INFO  [pool-22-thread-1:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:49902 - TLSv1.2 - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+Exception in thread "Thread-21" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:40,038 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testConnectWithSSLToNonStrictServer[2]
+2020-12-21 19:43:40,039 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testConnectWithSSLToNonStrictServer[2]
+2020-12-21 19:43:40,039 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testTLSDetectionNonBlockingStrictServerDisconnectedClient[2]
+2020-12-21 19:43:40,039 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30095 from range 30072 - 32764.
+2020-12-21 19:43:40,292 [myid:] - INFO  [pool-23-thread-1:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:49928 - TLSv1.2 - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+Exception in thread "Thread-22" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:40,293 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testTLSDetectionNonBlockingStrictServerDisconnectedClient[2]
+2020-12-21 19:43:40,294 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testTLSDetectionNonBlockingStrictServerDisconnectedClient[2]
+2020-12-21 19:43:40,294 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testTLSDetectionNonBlockingStrictServerIdleClient[2]
+2020-12-21 19:43:40,294 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30096 from range 30072 - 32764.
+2020-12-21 19:43:40,557 [myid:] - INFO  [pool-24-thread-2:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:49940 - TLSv1.2 - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+Exception in thread "Thread-23" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:40,559 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testTLSDetectionNonBlockingStrictServerIdleClient[2]
+2020-12-21 19:43:40,559 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testTLSDetectionNonBlockingStrictServerIdleClient[2]
+2020-12-21 19:43:40,559 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testConnectWithoutSSLToNonStrictServerPartialWrite[2]
+2020-12-21 19:43:40,560 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30097 from range 30072 - 32764.
+2020-12-21 19:43:40,710 [myid:] - INFO  [pool-25-thread-1:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:49943
+Exception in thread "Thread-24" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:41,064 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testConnectWithoutSSLToNonStrictServerPartialWrite[2]
+2020-12-21 19:43:41,064 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testConnectWithoutSSLToNonStrictServerPartialWrite[2]
+2020-12-21 19:43:41,064 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testTLSDetectionNonBlockingNonStrictServerIdleClient[2]
+2020-12-21 19:43:41,064 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30098 from range 30072 - 32764.
+2020-12-21 19:43:41,208 [myid:] - INFO  [pool-26-thread-2:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:49962
+2020-12-21 19:43:41,316 [myid:] - INFO  [pool-26-thread-2:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:49988 - TLSv1.2 - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+2020-12-21 19:43:41,317 [myid:] - INFO  [pool-26-thread-1:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:49961
+Exception in thread "Thread-25" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:41,318 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testTLSDetectionNonBlockingNonStrictServerIdleClient[2]
+2020-12-21 19:43:41,318 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testTLSDetectionNonBlockingNonStrictServerIdleClient[2]
+2020-12-21 19:43:41,318 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testConnectWithoutSSLToNonStrictServer[2]
+2020-12-21 19:43:41,319 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30099 from range 30072 - 32764.
+2020-12-21 19:43:41,447 [myid:] - INFO  [pool-27-thread-1:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:50020
+Exception in thread "Thread-26" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:41,448 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testConnectWithoutSSLToNonStrictServer[2]
+2020-12-21 19:43:41,448 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testConnectWithoutSSLToNonStrictServer[2]
+2020-12-21 19:43:41,539 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testConnectWithoutSSLToStrictServer[3]
+2020-12-21 19:43:41,539 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30100 from range 30072 - 32764.
+Exception in thread "Thread-27" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:41,967 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testConnectWithoutSSLToStrictServer[3]
+2020-12-21 19:43:41,967 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testConnectWithoutSSLToStrictServer[3]
+2020-12-21 19:43:41,968 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testConnectWithSSLToStrictServer[3]
+2020-12-21 19:43:41,969 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30101 from range 30072 - 32764.
+2020-12-21 19:43:42,245 [myid:] - INFO  [pool-29-thread-1:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:50056 - TLSv1.2 - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+Exception in thread "Thread-28" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:42,247 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testConnectWithSSLToStrictServer[3]
+2020-12-21 19:43:42,247 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testConnectWithSSLToStrictServer[3]
+2020-12-21 19:43:42,247 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testTLSDetectionNonBlockingNonStrictServerDisconnectedClient[3]
+2020-12-21 19:43:42,248 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30102 from range 30072 - 32764.
+2020-12-21 19:43:42,375 [myid:] - INFO  [pool-30-thread-1:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:50070
+2020-12-21 19:43:42,375 [myid:] - INFO  [pool-30-thread-2:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:50071
+2020-12-21 19:43:42,482 [myid:] - INFO  [pool-30-thread-2:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:50072 - TLSv1.2 - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+Exception in thread "Thread-29" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:42,483 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testTLSDetectionNonBlockingNonStrictServerDisconnectedClient[3]
+2020-12-21 19:43:42,483 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testTLSDetectionNonBlockingNonStrictServerDisconnectedClient[3]
+2020-12-21 19:43:42,483 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testConnectWithSSLToNonStrictServer[3]
+2020-12-21 19:43:42,483 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30103 from range 30072 - 32764.
+2020-12-21 19:43:42,751 [myid:] - INFO  [pool-31-thread-1:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:50126 - TLSv1.2 - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+Exception in thread "Thread-30" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:42,752 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testConnectWithSSLToNonStrictServer[3]
+2020-12-21 19:43:42,752 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testConnectWithSSLToNonStrictServer[3]
+2020-12-21 19:43:42,752 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testTLSDetectionNonBlockingStrictServerDisconnectedClient[3]
+2020-12-21 19:43:42,753 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30104 from range 30072 - 32764.
+2020-12-21 19:43:43,052 [myid:] - INFO  [pool-32-thread-1:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:50153 - TLSv1.2 - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+Exception in thread "Thread-31" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:43,055 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testTLSDetectionNonBlockingStrictServerDisconnectedClient[3]
+2020-12-21 19:43:43,055 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testTLSDetectionNonBlockingStrictServerDisconnectedClient[3]
+2020-12-21 19:43:43,056 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testTLSDetectionNonBlockingStrictServerIdleClient[3]
+2020-12-21 19:43:43,056 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30105 from range 30072 - 32764.
+2020-12-21 19:43:43,388 [myid:] - INFO  [pool-33-thread-2:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:50163 - TLSv1.2 - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+Exception in thread "Thread-32" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:43,390 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testTLSDetectionNonBlockingStrictServerIdleClient[3]
+2020-12-21 19:43:43,390 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testTLSDetectionNonBlockingStrictServerIdleClient[3]
+2020-12-21 19:43:43,390 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testConnectWithoutSSLToNonStrictServerPartialWrite[3]
+2020-12-21 19:43:43,390 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30106 from range 30072 - 32764.
+2020-12-21 19:43:43,530 [myid:] - INFO  [pool-34-thread-1:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:50166
+Exception in thread "Thread-33" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:43,896 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testConnectWithoutSSLToNonStrictServerPartialWrite[3]
+2020-12-21 19:43:43,896 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testConnectWithoutSSLToNonStrictServerPartialWrite[3]
+2020-12-21 19:43:43,897 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testTLSDetectionNonBlockingNonStrictServerIdleClient[3]
+2020-12-21 19:43:43,897 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30107 from range 30072 - 32764.
+2020-12-21 19:43:44,052 [myid:] - INFO  [pool-35-thread-2:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:50232
+2020-12-21 19:43:44,166 [myid:] - INFO  [pool-35-thread-2:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:50237 - TLSv1.2 - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+2020-12-21 19:43:44,167 [myid:] - INFO  [pool-35-thread-1:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:50231
+Exception in thread "Thread-34" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:44,167 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testTLSDetectionNonBlockingNonStrictServerIdleClient[3]
+2020-12-21 19:43:44,167 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testTLSDetectionNonBlockingNonStrictServerIdleClient[3]
+2020-12-21 19:43:44,168 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testConnectWithoutSSLToNonStrictServer[3]
+2020-12-21 19:43:44,168 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30108 from range 30072 - 32764.
+2020-12-21 19:43:44,327 [myid:] - INFO  [pool-36-thread-1:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:50258
+Exception in thread "Thread-35" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:44,328 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testConnectWithoutSSLToNonStrictServer[3]
+2020-12-21 19:43:44,328 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testConnectWithoutSSLToNonStrictServer[3]
+2020-12-21 19:43:44,533 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testConnectWithoutSSLToStrictServer[4]
+2020-12-21 19:43:44,534 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30109 from range 30072 - 32764.
+Exception in thread "Thread-36" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:45,078 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testConnectWithoutSSLToStrictServer[4]
+2020-12-21 19:43:45,078 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testConnectWithoutSSLToStrictServer[4]
+2020-12-21 19:43:45,078 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testConnectWithSSLToStrictServer[4]
+2020-12-21 19:43:45,079 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30110 from range 30072 - 32764.
+2020-12-21 19:43:45,361 [myid:] - INFO  [pool-38-thread-1:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:50392 - TLSv1.2 - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+Exception in thread "Thread-37" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:45,362 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testConnectWithSSLToStrictServer[4]
+2020-12-21 19:43:45,362 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testConnectWithSSLToStrictServer[4]
+2020-12-21 19:43:45,363 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testTLSDetectionNonBlockingNonStrictServerDisconnectedClient[4]
+2020-12-21 19:43:45,363 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30111 from range 30072 - 32764.
+2020-12-21 19:43:45,530 [myid:] - INFO  [pool-39-thread-1:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:50396
+2020-12-21 19:43:45,530 [myid:] - INFO  [pool-39-thread-2:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:50397
+2020-12-21 19:43:45,637 [myid:] - INFO  [pool-39-thread-2:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:50425 - TLSv1.2 - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+Exception in thread "Thread-38" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:45,639 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testTLSDetectionNonBlockingNonStrictServerDisconnectedClient[4]
+2020-12-21 19:43:45,639 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testTLSDetectionNonBlockingNonStrictServerDisconnectedClient[4]
+2020-12-21 19:43:45,639 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testConnectWithSSLToNonStrictServer[4]
+2020-12-21 19:43:45,640 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30112 from range 30072 - 32764.
+2020-12-21 19:43:45,887 [myid:] - INFO  [pool-40-thread-1:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:50438 - TLSv1.2 - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+Exception in thread "Thread-39" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:45,889 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testConnectWithSSLToNonStrictServer[4]
+2020-12-21 19:43:45,889 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testConnectWithSSLToNonStrictServer[4]
+2020-12-21 19:43:45,889 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testTLSDetectionNonBlockingStrictServerDisconnectedClient[4]
+2020-12-21 19:43:45,889 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30113 from range 30072 - 32764.
+2020-12-21 19:43:46,134 [myid:] - INFO  [pool-41-thread-1:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:50442 - TLSv1.2 - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+Exception in thread "Thread-40" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:46,135 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testTLSDetectionNonBlockingStrictServerDisconnectedClient[4]
+2020-12-21 19:43:46,135 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testTLSDetectionNonBlockingStrictServerDisconnectedClient[4]
+2020-12-21 19:43:46,135 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testTLSDetectionNonBlockingStrictServerIdleClient[4]
+2020-12-21 19:43:46,136 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30114 from range 30072 - 32764.
+2020-12-21 19:43:46,403 [myid:] - INFO  [pool-42-thread-2:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:50449 - TLSv1.2 - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+Exception in thread "Thread-41" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:46,405 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testTLSDetectionNonBlockingStrictServerIdleClient[4]
+2020-12-21 19:43:46,405 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testTLSDetectionNonBlockingStrictServerIdleClient[4]
+2020-12-21 19:43:46,405 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testConnectWithoutSSLToNonStrictServerPartialWrite[4]
+2020-12-21 19:43:46,405 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30115 from range 30072 - 32764.
+2020-12-21 19:43:46,574 [myid:] - INFO  [pool-43-thread-1:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:50459
+Exception in thread "Thread-42" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:46,908 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testConnectWithoutSSLToNonStrictServerPartialWrite[4]
+2020-12-21 19:43:46,908 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testConnectWithoutSSLToNonStrictServerPartialWrite[4]
+2020-12-21 19:43:46,908 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testTLSDetectionNonBlockingNonStrictServerIdleClient[4]
+2020-12-21 19:43:46,909 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30116 from range 30072 - 32764.
+2020-12-21 19:43:47,050 [myid:] - INFO  [pool-44-thread-2:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:50516
+2020-12-21 19:43:47,156 [myid:] - INFO  [pool-44-thread-2:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:50537 - TLSv1.2 - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+2020-12-21 19:43:47,157 [myid:] - INFO  [pool-44-thread-1:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:50515
+Exception in thread "Thread-43" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:47,158 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testTLSDetectionNonBlockingNonStrictServerIdleClient[4]
+2020-12-21 19:43:47,158 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testTLSDetectionNonBlockingNonStrictServerIdleClient[4]
+2020-12-21 19:43:47,158 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testConnectWithoutSSLToNonStrictServer[4]
+2020-12-21 19:43:47,158 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30117 from range 30072 - 32764.
+2020-12-21 19:43:47,283 [myid:] - INFO  [pool-45-thread-1:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:50542
+Exception in thread "Thread-44" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:47,284 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testConnectWithoutSSLToNonStrictServer[4]
+2020-12-21 19:43:47,284 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testConnectWithoutSSLToNonStrictServer[4]
+2020-12-21 19:43:47,388 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testConnectWithoutSSLToStrictServer[5]
+2020-12-21 19:43:47,389 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30118 from range 30072 - 32764.
+Exception in thread "Thread-45" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:47,871 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testConnectWithoutSSLToStrictServer[5]
+2020-12-21 19:43:47,871 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testConnectWithoutSSLToStrictServer[5]
+2020-12-21 19:43:47,871 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testConnectWithSSLToStrictServer[5]
+2020-12-21 19:43:47,871 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30119 from range 30072 - 32764.
+2020-12-21 19:43:48,122 [myid:] - INFO  [pool-47-thread-1:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:50569 - TLSv1.2 - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+Exception in thread "Thread-46" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:48,123 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testConnectWithSSLToStrictServer[5]
+2020-12-21 19:43:48,124 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testConnectWithSSLToStrictServer[5]
+2020-12-21 19:43:48,124 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testTLSDetectionNonBlockingNonStrictServerDisconnectedClient[5]
+2020-12-21 19:43:48,124 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30120 from range 30072 - 32764.
+2020-12-21 19:43:48,326 [myid:] - INFO  [pool-48-thread-1:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:50573
+2020-12-21 19:43:48,326 [myid:] - INFO  [pool-48-thread-2:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:50574
+2020-12-21 19:43:48,437 [myid:] - INFO  [pool-48-thread-2:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:50625 - TLSv1.2 - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+Exception in thread "Thread-47" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:48,438 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testTLSDetectionNonBlockingNonStrictServerDisconnectedClient[5]
+2020-12-21 19:43:48,438 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testTLSDetectionNonBlockingNonStrictServerDisconnectedClient[5]
+2020-12-21 19:43:48,438 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testConnectWithSSLToNonStrictServer[5]
+2020-12-21 19:43:48,439 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30121 from range 30072 - 32764.
+2020-12-21 19:43:48,700 [myid:] - INFO  [pool-49-thread-1:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:50651 - TLSv1.2 - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+Exception in thread "Thread-48" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:48,701 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testConnectWithSSLToNonStrictServer[5]
+2020-12-21 19:43:48,701 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testConnectWithSSLToNonStrictServer[5]
+2020-12-21 19:43:48,702 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testTLSDetectionNonBlockingStrictServerDisconnectedClient[5]
+2020-12-21 19:43:48,702 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30122 from range 30072 - 32764.
+2020-12-21 19:43:48,952 [myid:] - INFO  [pool-50-thread-1:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:50656 - TLSv1.2 - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+Exception in thread "Thread-49" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:48,953 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testTLSDetectionNonBlockingStrictServerDisconnectedClient[5]
+2020-12-21 19:43:48,953 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testTLSDetectionNonBlockingStrictServerDisconnectedClient[5]
+2020-12-21 19:43:48,953 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testTLSDetectionNonBlockingStrictServerIdleClient[5]
+2020-12-21 19:43:48,953 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30123 from range 30072 - 32764.
+2020-12-21 19:43:49,222 [myid:] - INFO  [pool-51-thread-2:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:50671 - TLSv1.2 - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+Exception in thread "Thread-50" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:49,223 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testTLSDetectionNonBlockingStrictServerIdleClient[5]
+2020-12-21 19:43:49,223 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testTLSDetectionNonBlockingStrictServerIdleClient[5]
+2020-12-21 19:43:49,224 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testConnectWithoutSSLToNonStrictServerPartialWrite[5]
+2020-12-21 19:43:49,224 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30124 from range 30072 - 32764.
+2020-12-21 19:43:49,352 [myid:] - INFO  [pool-52-thread-1:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:50673
+Exception in thread "Thread-51" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:49,726 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testConnectWithoutSSLToNonStrictServerPartialWrite[5]
+2020-12-21 19:43:49,726 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testConnectWithoutSSLToNonStrictServerPartialWrite[5]
+2020-12-21 19:43:49,726 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testTLSDetectionNonBlockingNonStrictServerIdleClient[5]
+2020-12-21 19:43:49,727 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30125 from range 30072 - 32764.
+2020-12-21 19:43:49,880 [myid:] - INFO  [pool-53-thread-2:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:50697
+2020-12-21 19:43:49,989 [myid:] - INFO  [pool-53-thread-2:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:50741 - TLSv1.2 - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+2020-12-21 19:43:49,990 [myid:] - INFO  [pool-53-thread-1:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:50696
+Exception in thread "Thread-52" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:49,991 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testTLSDetectionNonBlockingNonStrictServerIdleClient[5]
+2020-12-21 19:43:49,991 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testTLSDetectionNonBlockingNonStrictServerIdleClient[5]
+2020-12-21 19:43:49,991 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testConnectWithoutSSLToNonStrictServer[5]
+2020-12-21 19:43:49,991 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30126 from range 30072 - 32764.
+2020-12-21 19:43:50,130 [myid:] - INFO  [pool-54-thread-1:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:50763
+Exception in thread "Thread-53" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:50,131 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testConnectWithoutSSLToNonStrictServer[5]
+2020-12-21 19:43:50,131 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testConnectWithoutSSLToNonStrictServer[5]
+2020-12-21 19:43:50,137 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testConnectWithoutSSLToStrictServer[6]
+2020-12-21 19:43:50,137 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30127 from range 30072 - 32764.
+Exception in thread "Thread-54" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:50,624 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testConnectWithoutSSLToStrictServer[6]
+2020-12-21 19:43:50,624 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testConnectWithoutSSLToStrictServer[6]
+2020-12-21 19:43:50,624 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testConnectWithSSLToStrictServer[6]
+2020-12-21 19:43:50,625 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30128 from range 30072 - 32764.
+2020-12-21 19:43:50,914 [myid:] - INFO  [pool-56-thread-1:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:50789 - TLSv1.2 - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+Exception in thread "Thread-55" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:50,915 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testConnectWithSSLToStrictServer[6]
+2020-12-21 19:43:50,915 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testConnectWithSSLToStrictServer[6]
+2020-12-21 19:43:50,915 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testTLSDetectionNonBlockingNonStrictServerDisconnectedClient[6]
+2020-12-21 19:43:50,915 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30129 from range 30072 - 32764.
+2020-12-21 19:43:51,060 [myid:] - INFO  [pool-57-thread-1:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:50790
+2020-12-21 19:43:51,060 [myid:] - INFO  [pool-57-thread-2:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:50791
+2020-12-21 19:43:51,177 [myid:] - INFO  [pool-57-thread-2:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:50796 - TLSv1.2 - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+Exception in thread "Thread-56" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:51,178 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testTLSDetectionNonBlockingNonStrictServerDisconnectedClient[6]
+2020-12-21 19:43:51,178 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testTLSDetectionNonBlockingNonStrictServerDisconnectedClient[6]
+2020-12-21 19:43:51,179 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testConnectWithSSLToNonStrictServer[6]
+2020-12-21 19:43:51,179 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30130 from range 30072 - 32764.
+2020-12-21 19:43:51,412 [myid:] - INFO  [pool-58-thread-1:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:50808 - TLSv1.2 - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+Exception in thread "Thread-57" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:51,413 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testConnectWithSSLToNonStrictServer[6]
+2020-12-21 19:43:51,413 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testConnectWithSSLToNonStrictServer[6]
+2020-12-21 19:43:51,413 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testTLSDetectionNonBlockingStrictServerDisconnectedClient[6]
+2020-12-21 19:43:51,413 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30131 from range 30072 - 32764.
+2020-12-21 19:43:51,686 [myid:] - INFO  [pool-59-thread-1:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:50817 - TLSv1.2 - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+Exception in thread "Thread-58" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:51,687 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testTLSDetectionNonBlockingStrictServerDisconnectedClient[6]
+2020-12-21 19:43:51,687 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testTLSDetectionNonBlockingStrictServerDisconnectedClient[6]
+2020-12-21 19:43:51,688 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testTLSDetectionNonBlockingStrictServerIdleClient[6]
+2020-12-21 19:43:51,688 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30132 from range 30072 - 32764.
+2020-12-21 19:43:51,928 [myid:] - INFO  [pool-60-thread-2:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:50889 - TLSv1.2 - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+Exception in thread "Thread-59" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:51,929 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testTLSDetectionNonBlockingStrictServerIdleClient[6]
+2020-12-21 19:43:51,929 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testTLSDetectionNonBlockingStrictServerIdleClient[6]
+2020-12-21 19:43:51,930 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testConnectWithoutSSLToNonStrictServerPartialWrite[6]
+2020-12-21 19:43:51,930 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30133 from range 30072 - 32764.
+2020-12-21 19:43:52,077 [myid:] - INFO  [pool-61-thread-1:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:50898
+Exception in thread "Thread-60" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:52,436 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testConnectWithoutSSLToNonStrictServerPartialWrite[6]
+2020-12-21 19:43:52,436 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testConnectWithoutSSLToNonStrictServerPartialWrite[6]
+2020-12-21 19:43:52,437 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testTLSDetectionNonBlockingNonStrictServerIdleClient[6]
+2020-12-21 19:43:52,437 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30134 from range 30072 - 32764.
+2020-12-21 19:43:52,612 [myid:] - INFO  [pool-62-thread-2:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:50925
+2020-12-21 19:43:52,719 [myid:] - INFO  [pool-62-thread-2:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:50930 - TLSv1.2 - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+2020-12-21 19:43:52,720 [myid:] - INFO  [pool-62-thread-1:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:50924
+Exception in thread "Thread-61" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:52,720 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testTLSDetectionNonBlockingNonStrictServerIdleClient[6]
+2020-12-21 19:43:52,720 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testTLSDetectionNonBlockingNonStrictServerIdleClient[6]
+2020-12-21 19:43:52,721 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testConnectWithoutSSLToNonStrictServer[6]
+2020-12-21 19:43:52,721 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30135 from range 30072 - 32764.
+2020-12-21 19:43:52,865 [myid:] - INFO  [pool-63-thread-1:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:50938
+Exception in thread "Thread-62" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:52,866 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testConnectWithoutSSLToNonStrictServer[6]
+2020-12-21 19:43:52,866 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testConnectWithoutSSLToNonStrictServer[6]
+2020-12-21 19:43:52,874 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testConnectWithoutSSLToStrictServer[7]
+2020-12-21 19:43:52,874 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30136 from range 30072 - 32764.
+Exception in thread "Thread-63" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:53,376 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testConnectWithoutSSLToStrictServer[7]
+2020-12-21 19:43:53,376 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testConnectWithoutSSLToStrictServer[7]
+2020-12-21 19:43:53,376 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testConnectWithSSLToStrictServer[7]
+2020-12-21 19:43:53,377 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30137 from range 30072 - 32764.
+2020-12-21 19:43:53,614 [myid:] - INFO  [pool-65-thread-1:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:50965 - TLSv1.2 - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+Exception in thread "Thread-64" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:53,615 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testConnectWithSSLToStrictServer[7]
+2020-12-21 19:43:53,615 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testConnectWithSSLToStrictServer[7]
+2020-12-21 19:43:53,616 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testTLSDetectionNonBlockingNonStrictServerDisconnectedClient[7]
+2020-12-21 19:43:53,616 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30138 from range 30072 - 32764.
+2020-12-21 19:43:53,786 [myid:] - INFO  [pool-66-thread-1:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:50973
+2020-12-21 19:43:53,786 [myid:] - INFO  [pool-66-thread-2:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:50974
+2020-12-21 19:43:53,903 [myid:] - INFO  [pool-66-thread-2:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:50978 - TLSv1.2 - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+Exception in thread "Thread-65" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:53,904 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testTLSDetectionNonBlockingNonStrictServerDisconnectedClient[7]
+2020-12-21 19:43:53,905 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testTLSDetectionNonBlockingNonStrictServerDisconnectedClient[7]
+2020-12-21 19:43:53,905 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testConnectWithSSLToNonStrictServer[7]
+2020-12-21 19:43:53,905 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30139 from range 30072 - 32764.
+2020-12-21 19:43:54,191 [myid:] - INFO  [pool-67-thread-1:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:51012 - TLSv1.2 - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+Exception in thread "Thread-66" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:54,192 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testConnectWithSSLToNonStrictServer[7]
+2020-12-21 19:43:54,192 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testConnectWithSSLToNonStrictServer[7]
+2020-12-21 19:43:54,192 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testTLSDetectionNonBlockingStrictServerDisconnectedClient[7]
+2020-12-21 19:43:54,192 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30140 from range 30072 - 32764.
+2020-12-21 19:43:54,430 [myid:] - INFO  [pool-68-thread-1:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:51027 - TLSv1.2 - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+Exception in thread "Thread-67" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:54,432 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testTLSDetectionNonBlockingStrictServerDisconnectedClient[7]
+2020-12-21 19:43:54,432 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testTLSDetectionNonBlockingStrictServerDisconnectedClient[7]
+2020-12-21 19:43:54,432 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testTLSDetectionNonBlockingStrictServerIdleClient[7]
+2020-12-21 19:43:54,432 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30141 from range 30072 - 32764.
+2020-12-21 19:43:54,681 [myid:] - INFO  [pool-69-thread-2:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:51045 - TLSv1.2 - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+Exception in thread "Thread-68" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:54,683 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testTLSDetectionNonBlockingStrictServerIdleClient[7]
+2020-12-21 19:43:54,683 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testTLSDetectionNonBlockingStrictServerIdleClient[7]
+2020-12-21 19:43:54,683 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testConnectWithoutSSLToNonStrictServerPartialWrite[7]
+2020-12-21 19:43:54,683 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30142 from range 30072 - 32764.
+2020-12-21 19:43:54,868 [myid:] - INFO  [pool-70-thread-1:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:51061
+Exception in thread "Thread-69" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:55,188 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testConnectWithoutSSLToNonStrictServerPartialWrite[7]
+2020-12-21 19:43:55,188 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testConnectWithoutSSLToNonStrictServerPartialWrite[7]
+2020-12-21 19:43:55,189 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testTLSDetectionNonBlockingNonStrictServerIdleClient[7]
+2020-12-21 19:43:55,189 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30143 from range 30072 - 32764.
+2020-12-21 19:43:55,342 [myid:] - INFO  [pool-71-thread-2:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:51118
+2020-12-21 19:43:55,447 [myid:] - INFO  [pool-71-thread-2:UnifiedServerSocket$UnifiedSocket@266] - Accepted TLS connection from /127.0.0.1:51139 - TLSv1.2 - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+2020-12-21 19:43:55,448 [myid:] - INFO  [pool-71-thread-1:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:51117
+Exception in thread "Thread-70" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:55,448 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testTLSDetectionNonBlockingNonStrictServerIdleClient[7]
+2020-12-21 19:43:55,448 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testTLSDetectionNonBlockingNonStrictServerIdleClient[7]
+2020-12-21 19:43:55,449 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testConnectWithoutSSLToNonStrictServer[7]
+2020-12-21 19:43:55,449 [myid:] - INFO  [main:PortAssignment@87] - Assigned port 30144 from range 30072 - 32764.
+2020-12-21 19:43:55,609 [myid:] - INFO  [pool-72-thread-1:UnifiedServerSocket$UnifiedSocket@274] - Accepted plaintext connection from /127.0.0.1:51142
+Exception in thread "Thread-71" java.lang.RuntimeException: java.net.SocketException: Socket closed
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:188)
+Caused by: java.net.SocketException: Socket closed
+	at java.base/sun.nio.ch.NioSocketImpl.endAccept(NioSocketImpl.java:689)
+	at java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:762)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:684)
+	at java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:650)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:626)
+	at java.base/java.net.ServerSocket.implAccept(ServerSocket.java:583)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocket.accept(UnifiedServerSocket.java:139)
+	at org.apache.zookeeper.server.quorum.UnifiedServerSocketTest$UnifiedServerThread.run(UnifiedServerSocketTest.java:151)
+2020-12-21 19:43:55,610 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testConnectWithoutSSLToNonStrictServer[7]
+2020-12-21 19:43:55,610 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testConnectWithoutSSLToNonStrictServer[7]

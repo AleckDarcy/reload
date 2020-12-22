@@ -1,0 +1,8 @@
+-------------------------------------------------------------------------------
+Test set: org.apache.zookeeper.test.DisconnectedWatcherTest
+-------------------------------------------------------------------------------
+Tests run: 4, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 854.751 s <<< FAILURE! - in org.apache.zookeeper.test.DisconnectedWatcherTest
+testManyChildWatchersAutoReset(org.apache.zookeeper.test.DisconnectedWatcherTest)  Time elapsed: 840.981 s  <<< ERROR!
+org.junit.runners.model.TestTimedOutException: test timed out after 840000 milliseconds
+	at app//org.apache.zookeeper.test.DisconnectedWatcherTest.testManyChildWatchersAutoReset(DisconnectedWatcherTest.java:241)
+
