@@ -27,6 +27,7 @@ org/apache/zookeeper/proto/DeleteRequest.class
 org/apache/zookeeper/proto/ReplyHeader.class
 org/apache/zookeeper/proto/GetDataResponse.class
 org/apache/zookeeper/proto/WatcherEvent.class
+org/apache/zookeeper/trace/Helper.class
 org/apache/zookeeper/server/quorum/QuorumAuthPacket.class
 org/apache/jute/compiler/JMap.class
 org/apache/jute/compiler/JCompType.class

@@ -5,3 +5,5 @@ vendor/
 *.html
 
 core/tracer/plots
+
+*.junit

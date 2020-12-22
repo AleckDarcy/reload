@@ -92,6 +92,7 @@ import org.apache.zookeeper.proto.WatcherEvent;
 import org.apache.zookeeper.server.ByteBufferInputStream;
 import org.apache.zookeeper.server.ZooKeeperThread;
 import org.apache.zookeeper.server.ZooTrace;
+import org.apache.zookeeper.trace.Helper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -1553,6 +1554,7 @@ public class ClientCnxn {
         WatchRegistration watchRegistration,
         WatchDeregistration watchDeregistration) throws InterruptedException {
         ReplyHeader r = new ReplyHeader();
+        System.out.println("[RELOAD] request:" + Helper.getClassName(request));
         Packet packet = queuePacket(
             h,
             r,
@@ -1577,6 +1579,8 @@ public class ClientCnxn {
         }
         if (r.getErr() == Code.REQUESTTIMEOUT.intValue()) {
             sendThread.cleanAndNotifyState();
+        } else {
+            System.out.println("[RELOAD] response:" + Helper.getClassName(request));
         }
         return r;
     }
