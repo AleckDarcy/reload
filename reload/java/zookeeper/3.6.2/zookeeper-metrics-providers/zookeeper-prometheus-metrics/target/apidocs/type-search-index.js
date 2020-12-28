@@ -1,1 +1,0 @@
-typeSearchIndex = [{"l":"All Classes","u":"allclasses-index.html"},{"p":"org.apache.zookeeper.metrics.prometheus","l":"PrometheusMetricsProvider"}];updateSearchResults();

@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: org.apache.zookeeper.recipes.queue.DistributedQueueTest
--------------------------------------------------------------------------------
-Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 170.683 s - in org.apache.zookeeper.recipes.queue.DistributedQueueTest

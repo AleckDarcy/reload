@@ -1,8 +1,0 @@
-org/apache/zookeeper/metrics/prometheus/PrometheusMetricsProvider$PrometheusCounter.class
-org/apache/zookeeper/metrics/prometheus/PrometheusMetricsProvider.class
-org/apache/zookeeper/metrics/prometheus/PrometheusMetricsProvider$1.class
-org/apache/zookeeper/metrics/prometheus/PrometheusMetricsProvider$Context.class
-org/apache/zookeeper/metrics/prometheus/PrometheusMetricsProvider$PrometheusSummary.class
-org/apache/zookeeper/metrics/prometheus/PrometheusMetricsProvider$PrometheusGaugeWrapper.class
-org/apache/zookeeper/metrics/prometheus/PrometheusMetricsProvider$PrometheusLabelledSummary.class
-org/apache/zookeeper/metrics/prometheus/PrometheusMetricsProvider$MetricsServletImpl.class
