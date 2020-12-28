@@ -19,6 +19,235 @@
 #include <stdlib.h>
 #include "zookeeper.jute.h"
 
+int serialize_TMB_Event(struct oarchive *out, const char *tag, struct TMB_Event *v){
+    int rc;
+    rc = out->start_record(out, tag);
+    rc = rc ? rc : out->serialize_Int(out, "type", &v->type);
+    rc = rc ? rc : out->serialize_Long(out, "timestamp", &v->timestamp);
+    rc = rc ? rc : out->serialize_String(out, "message_name", &v->message_name);
+    rc = rc ? rc : out->serialize_String(out, "uuid", &v->uuid);
+    rc = rc ? rc : out->serialize_String(out, "service", &v->service);
+    rc = rc ? rc : out->end_record(out, tag);
+    return rc;
+}
+int deserialize_TMB_Event(struct iarchive *in, const char *tag, struct TMB_Event*v){
+    int rc;
+    rc = in->start_record(in, tag);
+    rc = rc ? rc : in->deserialize_Int(in, "type", &v->type);
+    rc = rc ? rc : in->deserialize_Long(in, "timestamp", &v->timestamp);
+    rc = rc ? rc : in->deserialize_String(in, "message_name", &v->message_name);
+    rc = rc ? rc : in->deserialize_String(in, "uuid", &v->uuid);
+    rc = rc ? rc : in->deserialize_String(in, "service", &v->service);
+    rc = rc ? rc : in->end_record(in, tag);
+    return rc;
+}
+void deallocate_TMB_Event(struct TMB_Event*v){
+    deallocate_String(&v->message_name);
+    deallocate_String(&v->uuid);
+    deallocate_String(&v->service);
+}
+int serialize_TMB_TFIMeta(struct oarchive *out, const char *tag, struct TMB_TFIMeta *v){
+    int rc;
+    rc = out->start_record(out, tag);
+    rc = rc ? rc : out->serialize_String(out, "name", &v->name);
+    rc = rc ? rc : out->serialize_Long(out, "times", &v->times);
+    rc = rc ? rc : out->serialize_Long(out, "already", &v->already);
+    rc = rc ? rc : out->end_record(out, tag);
+    return rc;
+}
+int deserialize_TMB_TFIMeta(struct iarchive *in, const char *tag, struct TMB_TFIMeta*v){
+    int rc;
+    rc = in->start_record(in, tag);
+    rc = rc ? rc : in->deserialize_String(in, "name", &v->name);
+    rc = rc ? rc : in->deserialize_Long(in, "times", &v->times);
+    rc = rc ? rc : in->deserialize_Long(in, "already", &v->already);
+    rc = rc ? rc : in->end_record(in, tag);
+    return rc;
+}
+void deallocate_TMB_TFIMeta(struct TMB_TFIMeta*v){
+    deallocate_String(&v->name);
+}
+int allocate_TMB_TFIMeta_vector(struct TMB_TFIMeta_vector *v, int32_t len) {
+    if (!len) {
+        v->count = 0;
+        v->data = 0;
+    } else {
+        v->count = len;
+        v->data = calloc(sizeof(*v->data), len);
+    }
+    return 0;
+}
+int deallocate_TMB_TFIMeta_vector(struct TMB_TFIMeta_vector *v) {
+    if (v->data) {
+        int32_t i;
+        for(i=0;i<v->count; i++) {
+            deallocate_TMB_TFIMeta(&v->data[i]);
+        }
+        free(v->data);
+        v->data = 0;
+    }
+    return 0;
+}
+int serialize_TMB_TFIMeta_vector(struct oarchive *out, const char *tag, struct TMB_TFIMeta_vector *v)
+{
+    int32_t count = v->count;
+    int rc = 0;
+    int32_t i;
+    rc = out->start_vector(out, tag, &count);
+    for(i=0;i<v->count;i++) {
+    rc = rc ? rc : serialize_TMB_TFIMeta(out, "data", &v->data[i]);
+    }
+    rc = rc ? rc : out->end_vector(out, tag);
+    return rc;
+}
+int deserialize_TMB_TFIMeta_vector(struct iarchive *in, const char *tag, struct TMB_TFIMeta_vector *v)
+{
+    int rc = 0;
+    int32_t i;
+    rc = in->start_vector(in, tag, &v->count);
+    v->data = calloc(v->count, sizeof(*v->data));
+    for(i=0;i<v->count;i++) {
+    rc = rc ? rc : deserialize_TMB_TFIMeta(in, "value", &v->data[i]);
+    }
+    rc = in->end_vector(in, tag);
+    return rc;
+}
+int serialize_TMB_TFI(struct oarchive *out, const char *tag, struct TMB_TFI *v){
+    int rc;
+    rc = out->start_record(out, tag);
+    rc = rc ? rc : out->serialize_Int(out, "type", &v->type);
+    rc = rc ? rc : out->serialize_String(out, "name", &v->name);
+    rc = rc ? rc : out->serialize_Long(out, "delay", &v->delay);
+    rc = rc ? rc : serialize_TMB_TFIMeta_vector(out, "after", &v->after);
+    rc = rc ? rc : out->end_record(out, tag);
+    return rc;
+}
+int deserialize_TMB_TFI(struct iarchive *in, const char *tag, struct TMB_TFI*v){
+    int rc;
+    rc = in->start_record(in, tag);
+    rc = rc ? rc : in->deserialize_Int(in, "type", &v->type);
+    rc = rc ? rc : in->deserialize_String(in, "name", &v->name);
+    rc = rc ? rc : in->deserialize_Long(in, "delay", &v->delay);
+    rc = rc ? rc : deserialize_TMB_TFIMeta_vector(in, "after", &v->after);
+    rc = rc ? rc : in->end_record(in, tag);
+    return rc;
+}
+void deallocate_TMB_TFI(struct TMB_TFI*v){
+    deallocate_String(&v->name);
+    deallocate_TMB_TFIMeta_vector(&v->after);
+}
+int allocate_TMB_Event_vector(struct TMB_Event_vector *v, int32_t len) {
+    if (!len) {
+        v->count = 0;
+        v->data = 0;
+    } else {
+        v->count = len;
+        v->data = calloc(sizeof(*v->data), len);
+    }
+    return 0;
+}
+int deallocate_TMB_Event_vector(struct TMB_Event_vector *v) {
+    if (v->data) {
+        int32_t i;
+        for(i=0;i<v->count; i++) {
+            deallocate_TMB_Event(&v->data[i]);
+        }
+        free(v->data);
+        v->data = 0;
+    }
+    return 0;
+}
+int serialize_TMB_Event_vector(struct oarchive *out, const char *tag, struct TMB_Event_vector *v)
+{
+    int32_t count = v->count;
+    int rc = 0;
+    int32_t i;
+    rc = out->start_vector(out, tag, &count);
+    for(i=0;i<v->count;i++) {
+    rc = rc ? rc : serialize_TMB_Event(out, "data", &v->data[i]);
+    }
+    rc = rc ? rc : out->end_vector(out, tag);
+    return rc;
+}
+int deserialize_TMB_Event_vector(struct iarchive *in, const char *tag, struct TMB_Event_vector *v)
+{
+    int rc = 0;
+    int32_t i;
+    rc = in->start_vector(in, tag, &v->count);
+    v->data = calloc(v->count, sizeof(*v->data));
+    for(i=0;i<v->count;i++) {
+    rc = rc ? rc : deserialize_TMB_Event(in, "value", &v->data[i]);
+    }
+    rc = in->end_vector(in, tag);
+    return rc;
+}
+int allocate_TMB_TFI_vector(struct TMB_TFI_vector *v, int32_t len) {
+    if (!len) {
+        v->count = 0;
+        v->data = 0;
+    } else {
+        v->count = len;
+        v->data = calloc(sizeof(*v->data), len);
+    }
+    return 0;
+}
+int deallocate_TMB_TFI_vector(struct TMB_TFI_vector *v) {
+    if (v->data) {
+        int32_t i;
+        for(i=0;i<v->count; i++) {
+            deallocate_TMB_TFI(&v->data[i]);
+        }
+        free(v->data);
+        v->data = 0;
+    }
+    return 0;
+}
+int serialize_TMB_TFI_vector(struct oarchive *out, const char *tag, struct TMB_TFI_vector *v)
+{
+    int32_t count = v->count;
+    int rc = 0;
+    int32_t i;
+    rc = out->start_vector(out, tag, &count);
+    for(i=0;i<v->count;i++) {
+    rc = rc ? rc : serialize_TMB_TFI(out, "data", &v->data[i]);
+    }
+    rc = rc ? rc : out->end_vector(out, tag);
+    return rc;
+}
+int deserialize_TMB_TFI_vector(struct iarchive *in, const char *tag, struct TMB_TFI_vector *v)
+{
+    int rc = 0;
+    int32_t i;
+    rc = in->start_vector(in, tag, &v->count);
+    v->data = calloc(v->count, sizeof(*v->data));
+    for(i=0;i<v->count;i++) {
+    rc = rc ? rc : deserialize_TMB_TFI(in, "value", &v->data[i]);
+    }
+    rc = in->end_vector(in, tag);
+    return rc;
+}
+int serialize_TMB_Trace(struct oarchive *out, const char *tag, struct TMB_Trace *v){
+    int rc;
+    rc = out->start_record(out, tag);
+    rc = rc ? rc : out->serialize_Long(out, "id", &v->id);
+    rc = rc ? rc : serialize_TMB_Event_vector(out, "events", &v->events);
+    rc = rc ? rc : serialize_TMB_TFI_vector(out, "tfis", &v->tfis);
+    rc = rc ? rc : out->end_record(out, tag);
+    return rc;
+}
+int deserialize_TMB_Trace(struct iarchive *in, const char *tag, struct TMB_Trace*v){
+    int rc;
+    rc = in->start_record(in, tag);
+    rc = rc ? rc : in->deserialize_Long(in, "id", &v->id);
+    rc = rc ? rc : deserialize_TMB_Event_vector(in, "events", &v->events);
+    rc = rc ? rc : deserialize_TMB_TFI_vector(in, "tfis", &v->tfis);
+    rc = rc ? rc : in->end_record(in, tag);
+    return rc;
+}
+void deallocate_TMB_Trace(struct TMB_Trace*v){
+    deallocate_TMB_Event_vector(&v->events);
+    deallocate_TMB_TFI_vector(&v->tfis);
+}
 int serialize_Id(struct oarchive *out, const char *tag, struct Id *v){
     int rc;
     rc = out->start_record(out, tag);
@@ -126,6 +355,26 @@ int deserialize_StatPersisted(struct iarchive *in, const char *tag, struct StatP
 }
 void deallocate_StatPersisted(struct StatPersisted*v){
 }
+int serialize_NullPointerResponse(struct oarchive *out, const char *tag, struct NullPointerResponse *v){
+    int rc;
+    rc = out->start_record(out, tag);
+    rc = rc ? rc : out->serialize_String(out, "requestName", &v->requestName);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
+    rc = rc ? rc : out->end_record(out, tag);
+    return rc;
+}
+int deserialize_NullPointerResponse(struct iarchive *in, const char *tag, struct NullPointerResponse*v){
+    int rc;
+    rc = in->start_record(in, tag);
+    rc = rc ? rc : in->deserialize_String(in, "requestName", &v->requestName);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
+    rc = rc ? rc : in->end_record(in, tag);
+    return rc;
+}
+void deallocate_NullPointerResponse(struct NullPointerResponse*v){
+    deallocate_String(&v->requestName);
+    deallocate_TMB_Trace(&v->trace);
+}
 int serialize_ConnectRequest(struct oarchive *out, const char *tag, struct ConnectRequest *v){
     int rc;
     rc = out->start_record(out, tag);
@@ -134,6 +383,7 @@ int serialize_ConnectRequest(struct oarchive *out, const char *tag, struct Conne
     rc = rc ? rc : out->serialize_Int(out, "timeOut", &v->timeOut);
     rc = rc ? rc : out->serialize_Long(out, "sessionId", &v->sessionId);
     rc = rc ? rc : out->serialize_Buffer(out, "passwd", &v->passwd);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -145,11 +395,13 @@ int deserialize_ConnectRequest(struct iarchive *in, const char *tag, struct Conn
     rc = rc ? rc : in->deserialize_Int(in, "timeOut", &v->timeOut);
     rc = rc ? rc : in->deserialize_Long(in, "sessionId", &v->sessionId);
     rc = rc ? rc : in->deserialize_Buffer(in, "passwd", &v->passwd);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
 void deallocate_ConnectRequest(struct ConnectRequest*v){
     deallocate_Buffer(&v->passwd);
+    deallocate_TMB_Trace(&v->trace);
 }
 int serialize_ConnectResponse(struct oarchive *out, const char *tag, struct ConnectResponse *v){
     int rc;
@@ -158,6 +410,7 @@ int serialize_ConnectResponse(struct oarchive *out, const char *tag, struct Conn
     rc = rc ? rc : out->serialize_Int(out, "timeOut", &v->timeOut);
     rc = rc ? rc : out->serialize_Long(out, "sessionId", &v->sessionId);
     rc = rc ? rc : out->serialize_Buffer(out, "passwd", &v->passwd);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -168,11 +421,13 @@ int deserialize_ConnectResponse(struct iarchive *in, const char *tag, struct Con
     rc = rc ? rc : in->deserialize_Int(in, "timeOut", &v->timeOut);
     rc = rc ? rc : in->deserialize_Long(in, "sessionId", &v->sessionId);
     rc = rc ? rc : in->deserialize_Buffer(in, "passwd", &v->passwd);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
 void deallocate_ConnectResponse(struct ConnectResponse*v){
     deallocate_Buffer(&v->passwd);
+    deallocate_TMB_Trace(&v->trace);
 }
 int allocate_String_vector(struct String_vector *v, int32_t len) {
     if (!len) {
@@ -226,6 +481,7 @@ int serialize_SetWatches(struct oarchive *out, const char *tag, struct SetWatche
     rc = rc ? rc : serialize_String_vector(out, "dataWatches", &v->dataWatches);
     rc = rc ? rc : serialize_String_vector(out, "existWatches", &v->existWatches);
     rc = rc ? rc : serialize_String_vector(out, "childWatches", &v->childWatches);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -236,6 +492,7 @@ int deserialize_SetWatches(struct iarchive *in, const char *tag, struct SetWatch
     rc = rc ? rc : deserialize_String_vector(in, "dataWatches", &v->dataWatches);
     rc = rc ? rc : deserialize_String_vector(in, "existWatches", &v->existWatches);
     rc = rc ? rc : deserialize_String_vector(in, "childWatches", &v->childWatches);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
@@ -243,6 +500,7 @@ void deallocate_SetWatches(struct SetWatches*v){
     deallocate_String_vector(&v->dataWatches);
     deallocate_String_vector(&v->existWatches);
     deallocate_String_vector(&v->childWatches);
+    deallocate_TMB_Trace(&v->trace);
 }
 int serialize_SetWatches2(struct oarchive *out, const char *tag, struct SetWatches2 *v){
     int rc;
@@ -253,6 +511,7 @@ int serialize_SetWatches2(struct oarchive *out, const char *tag, struct SetWatch
     rc = rc ? rc : serialize_String_vector(out, "childWatches", &v->childWatches);
     rc = rc ? rc : serialize_String_vector(out, "persistentWatches", &v->persistentWatches);
     rc = rc ? rc : serialize_String_vector(out, "persistentRecursiveWatches", &v->persistentRecursiveWatches);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -265,6 +524,7 @@ int deserialize_SetWatches2(struct iarchive *in, const char *tag, struct SetWatc
     rc = rc ? rc : deserialize_String_vector(in, "childWatches", &v->childWatches);
     rc = rc ? rc : deserialize_String_vector(in, "persistentWatches", &v->persistentWatches);
     rc = rc ? rc : deserialize_String_vector(in, "persistentRecursiveWatches", &v->persistentRecursiveWatches);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
@@ -274,12 +534,14 @@ void deallocate_SetWatches2(struct SetWatches2*v){
     deallocate_String_vector(&v->childWatches);
     deallocate_String_vector(&v->persistentWatches);
     deallocate_String_vector(&v->persistentRecursiveWatches);
+    deallocate_TMB_Trace(&v->trace);
 }
 int serialize_RequestHeader(struct oarchive *out, const char *tag, struct RequestHeader *v){
     int rc;
     rc = out->start_record(out, tag);
     rc = rc ? rc : out->serialize_Int(out, "xid", &v->xid);
     rc = rc ? rc : out->serialize_Int(out, "type", &v->type);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -288,10 +550,12 @@ int deserialize_RequestHeader(struct iarchive *in, const char *tag, struct Reque
     rc = in->start_record(in, tag);
     rc = rc ? rc : in->deserialize_Int(in, "xid", &v->xid);
     rc = rc ? rc : in->deserialize_Int(in, "type", &v->type);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
 void deallocate_RequestHeader(struct RequestHeader*v){
+    deallocate_TMB_Trace(&v->trace);
 }
 int serialize_MultiHeader(struct oarchive *out, const char *tag, struct MultiHeader *v){
     int rc;
@@ -299,6 +563,7 @@ int serialize_MultiHeader(struct oarchive *out, const char *tag, struct MultiHea
     rc = rc ? rc : out->serialize_Int(out, "type", &v->type);
     rc = rc ? rc : out->serialize_Bool(out, "done", &v->done);
     rc = rc ? rc : out->serialize_Int(out, "err", &v->err);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -308,10 +573,12 @@ int deserialize_MultiHeader(struct iarchive *in, const char *tag, struct MultiHe
     rc = rc ? rc : in->deserialize_Int(in, "type", &v->type);
     rc = rc ? rc : in->deserialize_Bool(in, "done", &v->done);
     rc = rc ? rc : in->deserialize_Int(in, "err", &v->err);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
 void deallocate_MultiHeader(struct MultiHeader*v){
+    deallocate_TMB_Trace(&v->trace);
 }
 int serialize_AuthPacket(struct oarchive *out, const char *tag, struct AuthPacket *v){
     int rc;
@@ -319,6 +586,7 @@ int serialize_AuthPacket(struct oarchive *out, const char *tag, struct AuthPacke
     rc = rc ? rc : out->serialize_Int(out, "type", &v->type);
     rc = rc ? rc : out->serialize_String(out, "scheme", &v->scheme);
     rc = rc ? rc : out->serialize_Buffer(out, "auth", &v->auth);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -328,12 +596,14 @@ int deserialize_AuthPacket(struct iarchive *in, const char *tag, struct AuthPack
     rc = rc ? rc : in->deserialize_Int(in, "type", &v->type);
     rc = rc ? rc : in->deserialize_String(in, "scheme", &v->scheme);
     rc = rc ? rc : in->deserialize_Buffer(in, "auth", &v->auth);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
 void deallocate_AuthPacket(struct AuthPacket*v){
     deallocate_String(&v->scheme);
     deallocate_Buffer(&v->auth);
+    deallocate_TMB_Trace(&v->trace);
 }
 int serialize_ReplyHeader(struct oarchive *out, const char *tag, struct ReplyHeader *v){
     int rc;
@@ -341,6 +611,7 @@ int serialize_ReplyHeader(struct oarchive *out, const char *tag, struct ReplyHea
     rc = rc ? rc : out->serialize_Int(out, "xid", &v->xid);
     rc = rc ? rc : out->serialize_Long(out, "zxid", &v->zxid);
     rc = rc ? rc : out->serialize_Int(out, "err", &v->err);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -350,16 +621,19 @@ int deserialize_ReplyHeader(struct iarchive *in, const char *tag, struct ReplyHe
     rc = rc ? rc : in->deserialize_Int(in, "xid", &v->xid);
     rc = rc ? rc : in->deserialize_Long(in, "zxid", &v->zxid);
     rc = rc ? rc : in->deserialize_Int(in, "err", &v->err);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
 void deallocate_ReplyHeader(struct ReplyHeader*v){
+    deallocate_TMB_Trace(&v->trace);
 }
 int serialize_GetDataRequest(struct oarchive *out, const char *tag, struct GetDataRequest *v){
     int rc;
     rc = out->start_record(out, tag);
     rc = rc ? rc : out->serialize_String(out, "path", &v->path);
     rc = rc ? rc : out->serialize_Bool(out, "watch", &v->watch);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -368,11 +642,13 @@ int deserialize_GetDataRequest(struct iarchive *in, const char *tag, struct GetD
     rc = in->start_record(in, tag);
     rc = rc ? rc : in->deserialize_String(in, "path", &v->path);
     rc = rc ? rc : in->deserialize_Bool(in, "watch", &v->watch);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
 void deallocate_GetDataRequest(struct GetDataRequest*v){
     deallocate_String(&v->path);
+    deallocate_TMB_Trace(&v->trace);
 }
 int serialize_SetDataRequest(struct oarchive *out, const char *tag, struct SetDataRequest *v){
     int rc;
@@ -380,6 +656,7 @@ int serialize_SetDataRequest(struct oarchive *out, const char *tag, struct SetDa
     rc = rc ? rc : out->serialize_String(out, "path", &v->path);
     rc = rc ? rc : out->serialize_Buffer(out, "data", &v->data);
     rc = rc ? rc : out->serialize_Int(out, "version", &v->version);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -389,12 +666,14 @@ int deserialize_SetDataRequest(struct iarchive *in, const char *tag, struct SetD
     rc = rc ? rc : in->deserialize_String(in, "path", &v->path);
     rc = rc ? rc : in->deserialize_Buffer(in, "data", &v->data);
     rc = rc ? rc : in->deserialize_Int(in, "version", &v->version);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
 void deallocate_SetDataRequest(struct SetDataRequest*v){
     deallocate_String(&v->path);
     deallocate_Buffer(&v->data);
+    deallocate_TMB_Trace(&v->trace);
 }
 int serialize_ReconfigRequest(struct oarchive *out, const char *tag, struct ReconfigRequest *v){
     int rc;
@@ -403,6 +682,7 @@ int serialize_ReconfigRequest(struct oarchive *out, const char *tag, struct Reco
     rc = rc ? rc : out->serialize_String(out, "leavingServers", &v->leavingServers);
     rc = rc ? rc : out->serialize_String(out, "newMembers", &v->newMembers);
     rc = rc ? rc : out->serialize_Long(out, "curConfigId", &v->curConfigId);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -413,6 +693,7 @@ int deserialize_ReconfigRequest(struct iarchive *in, const char *tag, struct Rec
     rc = rc ? rc : in->deserialize_String(in, "leavingServers", &v->leavingServers);
     rc = rc ? rc : in->deserialize_String(in, "newMembers", &v->newMembers);
     rc = rc ? rc : in->deserialize_Long(in, "curConfigId", &v->curConfigId);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
@@ -420,11 +701,13 @@ void deallocate_ReconfigRequest(struct ReconfigRequest*v){
     deallocate_String(&v->joiningServers);
     deallocate_String(&v->leavingServers);
     deallocate_String(&v->newMembers);
+    deallocate_TMB_Trace(&v->trace);
 }
 int serialize_SetDataResponse(struct oarchive *out, const char *tag, struct SetDataResponse *v){
     int rc;
     rc = out->start_record(out, tag);
     rc = rc ? rc : serialize_Stat(out, "stat", &v->stat);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -432,16 +715,19 @@ int deserialize_SetDataResponse(struct iarchive *in, const char *tag, struct Set
     int rc;
     rc = in->start_record(in, tag);
     rc = rc ? rc : deserialize_Stat(in, "stat", &v->stat);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
 void deallocate_SetDataResponse(struct SetDataResponse*v){
     deallocate_Stat(&v->stat);
+    deallocate_TMB_Trace(&v->trace);
 }
 int serialize_GetSASLRequest(struct oarchive *out, const char *tag, struct GetSASLRequest *v){
     int rc;
     rc = out->start_record(out, tag);
     rc = rc ? rc : out->serialize_Buffer(out, "token", &v->token);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -449,16 +735,19 @@ int deserialize_GetSASLRequest(struct iarchive *in, const char *tag, struct GetS
     int rc;
     rc = in->start_record(in, tag);
     rc = rc ? rc : in->deserialize_Buffer(in, "token", &v->token);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
 void deallocate_GetSASLRequest(struct GetSASLRequest*v){
     deallocate_Buffer(&v->token);
+    deallocate_TMB_Trace(&v->trace);
 }
 int serialize_SetSASLRequest(struct oarchive *out, const char *tag, struct SetSASLRequest *v){
     int rc;
     rc = out->start_record(out, tag);
     rc = rc ? rc : out->serialize_Buffer(out, "token", &v->token);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -466,16 +755,19 @@ int deserialize_SetSASLRequest(struct iarchive *in, const char *tag, struct SetS
     int rc;
     rc = in->start_record(in, tag);
     rc = rc ? rc : in->deserialize_Buffer(in, "token", &v->token);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
 void deallocate_SetSASLRequest(struct SetSASLRequest*v){
     deallocate_Buffer(&v->token);
+    deallocate_TMB_Trace(&v->trace);
 }
 int serialize_SetSASLResponse(struct oarchive *out, const char *tag, struct SetSASLResponse *v){
     int rc;
     rc = out->start_record(out, tag);
     rc = rc ? rc : out->serialize_Buffer(out, "token", &v->token);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -483,11 +775,13 @@ int deserialize_SetSASLResponse(struct iarchive *in, const char *tag, struct Set
     int rc;
     rc = in->start_record(in, tag);
     rc = rc ? rc : in->deserialize_Buffer(in, "token", &v->token);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
 void deallocate_SetSASLResponse(struct SetSASLResponse*v){
     deallocate_Buffer(&v->token);
+    deallocate_TMB_Trace(&v->trace);
 }
 int allocate_ACL_vector(struct ACL_vector *v, int32_t len) {
     if (!len) {
@@ -541,6 +835,7 @@ int serialize_CreateRequest(struct oarchive *out, const char *tag, struct Create
     rc = rc ? rc : out->serialize_Buffer(out, "data", &v->data);
     rc = rc ? rc : serialize_ACL_vector(out, "acl", &v->acl);
     rc = rc ? rc : out->serialize_Int(out, "flags", &v->flags);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -551,6 +846,7 @@ int deserialize_CreateRequest(struct iarchive *in, const char *tag, struct Creat
     rc = rc ? rc : in->deserialize_Buffer(in, "data", &v->data);
     rc = rc ? rc : deserialize_ACL_vector(in, "acl", &v->acl);
     rc = rc ? rc : in->deserialize_Int(in, "flags", &v->flags);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
@@ -558,6 +854,7 @@ void deallocate_CreateRequest(struct CreateRequest*v){
     deallocate_String(&v->path);
     deallocate_Buffer(&v->data);
     deallocate_ACL_vector(&v->acl);
+    deallocate_TMB_Trace(&v->trace);
 }
 int serialize_CreateTTLRequest(struct oarchive *out, const char *tag, struct CreateTTLRequest *v){
     int rc;
@@ -567,6 +864,7 @@ int serialize_CreateTTLRequest(struct oarchive *out, const char *tag, struct Cre
     rc = rc ? rc : serialize_ACL_vector(out, "acl", &v->acl);
     rc = rc ? rc : out->serialize_Int(out, "flags", &v->flags);
     rc = rc ? rc : out->serialize_Long(out, "ttl", &v->ttl);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -578,6 +876,7 @@ int deserialize_CreateTTLRequest(struct iarchive *in, const char *tag, struct Cr
     rc = rc ? rc : deserialize_ACL_vector(in, "acl", &v->acl);
     rc = rc ? rc : in->deserialize_Int(in, "flags", &v->flags);
     rc = rc ? rc : in->deserialize_Long(in, "ttl", &v->ttl);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
@@ -585,12 +884,14 @@ void deallocate_CreateTTLRequest(struct CreateTTLRequest*v){
     deallocate_String(&v->path);
     deallocate_Buffer(&v->data);
     deallocate_ACL_vector(&v->acl);
+    deallocate_TMB_Trace(&v->trace);
 }
 int serialize_DeleteRequest(struct oarchive *out, const char *tag, struct DeleteRequest *v){
     int rc;
     rc = out->start_record(out, tag);
     rc = rc ? rc : out->serialize_String(out, "path", &v->path);
     rc = rc ? rc : out->serialize_Int(out, "version", &v->version);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -599,17 +900,20 @@ int deserialize_DeleteRequest(struct iarchive *in, const char *tag, struct Delet
     rc = in->start_record(in, tag);
     rc = rc ? rc : in->deserialize_String(in, "path", &v->path);
     rc = rc ? rc : in->deserialize_Int(in, "version", &v->version);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
 void deallocate_DeleteRequest(struct DeleteRequest*v){
     deallocate_String(&v->path);
+    deallocate_TMB_Trace(&v->trace);
 }
 int serialize_GetChildrenRequest(struct oarchive *out, const char *tag, struct GetChildrenRequest *v){
     int rc;
     rc = out->start_record(out, tag);
     rc = rc ? rc : out->serialize_String(out, "path", &v->path);
     rc = rc ? rc : out->serialize_Bool(out, "watch", &v->watch);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -618,16 +922,19 @@ int deserialize_GetChildrenRequest(struct iarchive *in, const char *tag, struct 
     rc = in->start_record(in, tag);
     rc = rc ? rc : in->deserialize_String(in, "path", &v->path);
     rc = rc ? rc : in->deserialize_Bool(in, "watch", &v->watch);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
 void deallocate_GetChildrenRequest(struct GetChildrenRequest*v){
     deallocate_String(&v->path);
+    deallocate_TMB_Trace(&v->trace);
 }
 int serialize_GetAllChildrenNumberRequest(struct oarchive *out, const char *tag, struct GetAllChildrenNumberRequest *v){
     int rc;
     rc = out->start_record(out, tag);
     rc = rc ? rc : out->serialize_String(out, "path", &v->path);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -635,17 +942,20 @@ int deserialize_GetAllChildrenNumberRequest(struct iarchive *in, const char *tag
     int rc;
     rc = in->start_record(in, tag);
     rc = rc ? rc : in->deserialize_String(in, "path", &v->path);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
 void deallocate_GetAllChildrenNumberRequest(struct GetAllChildrenNumberRequest*v){
     deallocate_String(&v->path);
+    deallocate_TMB_Trace(&v->trace);
 }
 int serialize_GetChildren2Request(struct oarchive *out, const char *tag, struct GetChildren2Request *v){
     int rc;
     rc = out->start_record(out, tag);
     rc = rc ? rc : out->serialize_String(out, "path", &v->path);
     rc = rc ? rc : out->serialize_Bool(out, "watch", &v->watch);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -654,17 +964,20 @@ int deserialize_GetChildren2Request(struct iarchive *in, const char *tag, struct
     rc = in->start_record(in, tag);
     rc = rc ? rc : in->deserialize_String(in, "path", &v->path);
     rc = rc ? rc : in->deserialize_Bool(in, "watch", &v->watch);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
 void deallocate_GetChildren2Request(struct GetChildren2Request*v){
     deallocate_String(&v->path);
+    deallocate_TMB_Trace(&v->trace);
 }
 int serialize_CheckVersionRequest(struct oarchive *out, const char *tag, struct CheckVersionRequest *v){
     int rc;
     rc = out->start_record(out, tag);
     rc = rc ? rc : out->serialize_String(out, "path", &v->path);
     rc = rc ? rc : out->serialize_Int(out, "version", &v->version);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -673,16 +986,19 @@ int deserialize_CheckVersionRequest(struct iarchive *in, const char *tag, struct
     rc = in->start_record(in, tag);
     rc = rc ? rc : in->deserialize_String(in, "path", &v->path);
     rc = rc ? rc : in->deserialize_Int(in, "version", &v->version);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
 void deallocate_CheckVersionRequest(struct CheckVersionRequest*v){
     deallocate_String(&v->path);
+    deallocate_TMB_Trace(&v->trace);
 }
 int serialize_GetMaxChildrenRequest(struct oarchive *out, const char *tag, struct GetMaxChildrenRequest *v){
     int rc;
     rc = out->start_record(out, tag);
     rc = rc ? rc : out->serialize_String(out, "path", &v->path);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -690,16 +1006,19 @@ int deserialize_GetMaxChildrenRequest(struct iarchive *in, const char *tag, stru
     int rc;
     rc = in->start_record(in, tag);
     rc = rc ? rc : in->deserialize_String(in, "path", &v->path);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
 void deallocate_GetMaxChildrenRequest(struct GetMaxChildrenRequest*v){
     deallocate_String(&v->path);
+    deallocate_TMB_Trace(&v->trace);
 }
 int serialize_GetMaxChildrenResponse(struct oarchive *out, const char *tag, struct GetMaxChildrenResponse *v){
     int rc;
     rc = out->start_record(out, tag);
     rc = rc ? rc : out->serialize_Int(out, "max", &v->max);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -707,16 +1026,19 @@ int deserialize_GetMaxChildrenResponse(struct iarchive *in, const char *tag, str
     int rc;
     rc = in->start_record(in, tag);
     rc = rc ? rc : in->deserialize_Int(in, "max", &v->max);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
 void deallocate_GetMaxChildrenResponse(struct GetMaxChildrenResponse*v){
+    deallocate_TMB_Trace(&v->trace);
 }
 int serialize_SetMaxChildrenRequest(struct oarchive *out, const char *tag, struct SetMaxChildrenRequest *v){
     int rc;
     rc = out->start_record(out, tag);
     rc = rc ? rc : out->serialize_String(out, "path", &v->path);
     rc = rc ? rc : out->serialize_Int(out, "max", &v->max);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -725,16 +1047,19 @@ int deserialize_SetMaxChildrenRequest(struct iarchive *in, const char *tag, stru
     rc = in->start_record(in, tag);
     rc = rc ? rc : in->deserialize_String(in, "path", &v->path);
     rc = rc ? rc : in->deserialize_Int(in, "max", &v->max);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
 void deallocate_SetMaxChildrenRequest(struct SetMaxChildrenRequest*v){
     deallocate_String(&v->path);
+    deallocate_TMB_Trace(&v->trace);
 }
 int serialize_SyncRequest(struct oarchive *out, const char *tag, struct SyncRequest *v){
     int rc;
     rc = out->start_record(out, tag);
     rc = rc ? rc : out->serialize_String(out, "path", &v->path);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -742,16 +1067,19 @@ int deserialize_SyncRequest(struct iarchive *in, const char *tag, struct SyncReq
     int rc;
     rc = in->start_record(in, tag);
     rc = rc ? rc : in->deserialize_String(in, "path", &v->path);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
 void deallocate_SyncRequest(struct SyncRequest*v){
     deallocate_String(&v->path);
+    deallocate_TMB_Trace(&v->trace);
 }
 int serialize_SyncResponse(struct oarchive *out, const char *tag, struct SyncResponse *v){
     int rc;
     rc = out->start_record(out, tag);
     rc = rc ? rc : out->serialize_String(out, "path", &v->path);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -759,16 +1087,19 @@ int deserialize_SyncResponse(struct iarchive *in, const char *tag, struct SyncRe
     int rc;
     rc = in->start_record(in, tag);
     rc = rc ? rc : in->deserialize_String(in, "path", &v->path);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
 void deallocate_SyncResponse(struct SyncResponse*v){
     deallocate_String(&v->path);
+    deallocate_TMB_Trace(&v->trace);
 }
 int serialize_GetACLRequest(struct oarchive *out, const char *tag, struct GetACLRequest *v){
     int rc;
     rc = out->start_record(out, tag);
     rc = rc ? rc : out->serialize_String(out, "path", &v->path);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -776,11 +1107,13 @@ int deserialize_GetACLRequest(struct iarchive *in, const char *tag, struct GetAC
     int rc;
     rc = in->start_record(in, tag);
     rc = rc ? rc : in->deserialize_String(in, "path", &v->path);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
 void deallocate_GetACLRequest(struct GetACLRequest*v){
     deallocate_String(&v->path);
+    deallocate_TMB_Trace(&v->trace);
 }
 int serialize_SetACLRequest(struct oarchive *out, const char *tag, struct SetACLRequest *v){
     int rc;
@@ -788,6 +1121,7 @@ int serialize_SetACLRequest(struct oarchive *out, const char *tag, struct SetACL
     rc = rc ? rc : out->serialize_String(out, "path", &v->path);
     rc = rc ? rc : serialize_ACL_vector(out, "acl", &v->acl);
     rc = rc ? rc : out->serialize_Int(out, "version", &v->version);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -797,17 +1131,20 @@ int deserialize_SetACLRequest(struct iarchive *in, const char *tag, struct SetAC
     rc = rc ? rc : in->deserialize_String(in, "path", &v->path);
     rc = rc ? rc : deserialize_ACL_vector(in, "acl", &v->acl);
     rc = rc ? rc : in->deserialize_Int(in, "version", &v->version);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
 void deallocate_SetACLRequest(struct SetACLRequest*v){
     deallocate_String(&v->path);
     deallocate_ACL_vector(&v->acl);
+    deallocate_TMB_Trace(&v->trace);
 }
 int serialize_SetACLResponse(struct oarchive *out, const char *tag, struct SetACLResponse *v){
     int rc;
     rc = out->start_record(out, tag);
     rc = rc ? rc : serialize_Stat(out, "stat", &v->stat);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -815,17 +1152,20 @@ int deserialize_SetACLResponse(struct iarchive *in, const char *tag, struct SetA
     int rc;
     rc = in->start_record(in, tag);
     rc = rc ? rc : deserialize_Stat(in, "stat", &v->stat);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
 void deallocate_SetACLResponse(struct SetACLResponse*v){
     deallocate_Stat(&v->stat);
+    deallocate_TMB_Trace(&v->trace);
 }
 int serialize_AddWatchRequest(struct oarchive *out, const char *tag, struct AddWatchRequest *v){
     int rc;
     rc = out->start_record(out, tag);
     rc = rc ? rc : out->serialize_String(out, "path", &v->path);
     rc = rc ? rc : out->serialize_Int(out, "mode", &v->mode);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -834,11 +1174,13 @@ int deserialize_AddWatchRequest(struct iarchive *in, const char *tag, struct Add
     rc = in->start_record(in, tag);
     rc = rc ? rc : in->deserialize_String(in, "path", &v->path);
     rc = rc ? rc : in->deserialize_Int(in, "mode", &v->mode);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
 void deallocate_AddWatchRequest(struct AddWatchRequest*v){
     deallocate_String(&v->path);
+    deallocate_TMB_Trace(&v->trace);
 }
 int serialize_WatcherEvent(struct oarchive *out, const char *tag, struct WatcherEvent *v){
     int rc;
@@ -846,6 +1188,7 @@ int serialize_WatcherEvent(struct oarchive *out, const char *tag, struct Watcher
     rc = rc ? rc : out->serialize_Int(out, "type", &v->type);
     rc = rc ? rc : out->serialize_Int(out, "state", &v->state);
     rc = rc ? rc : out->serialize_String(out, "path", &v->path);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -855,16 +1198,19 @@ int deserialize_WatcherEvent(struct iarchive *in, const char *tag, struct Watche
     rc = rc ? rc : in->deserialize_Int(in, "type", &v->type);
     rc = rc ? rc : in->deserialize_Int(in, "state", &v->state);
     rc = rc ? rc : in->deserialize_String(in, "path", &v->path);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
 void deallocate_WatcherEvent(struct WatcherEvent*v){
     deallocate_String(&v->path);
+    deallocate_TMB_Trace(&v->trace);
 }
 int serialize_ErrorResponse(struct oarchive *out, const char *tag, struct ErrorResponse *v){
     int rc;
     rc = out->start_record(out, tag);
     rc = rc ? rc : out->serialize_Int(out, "err", &v->err);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -872,15 +1218,18 @@ int deserialize_ErrorResponse(struct iarchive *in, const char *tag, struct Error
     int rc;
     rc = in->start_record(in, tag);
     rc = rc ? rc : in->deserialize_Int(in, "err", &v->err);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
 void deallocate_ErrorResponse(struct ErrorResponse*v){
+    deallocate_TMB_Trace(&v->trace);
 }
 int serialize_CreateResponse(struct oarchive *out, const char *tag, struct CreateResponse *v){
     int rc;
     rc = out->start_record(out, tag);
     rc = rc ? rc : out->serialize_String(out, "path", &v->path);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -888,17 +1237,20 @@ int deserialize_CreateResponse(struct iarchive *in, const char *tag, struct Crea
     int rc;
     rc = in->start_record(in, tag);
     rc = rc ? rc : in->deserialize_String(in, "path", &v->path);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
 void deallocate_CreateResponse(struct CreateResponse*v){
     deallocate_String(&v->path);
+    deallocate_TMB_Trace(&v->trace);
 }
 int serialize_Create2Response(struct oarchive *out, const char *tag, struct Create2Response *v){
     int rc;
     rc = out->start_record(out, tag);
     rc = rc ? rc : out->serialize_String(out, "path", &v->path);
     rc = rc ? rc : serialize_Stat(out, "stat", &v->stat);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -907,18 +1259,21 @@ int deserialize_Create2Response(struct iarchive *in, const char *tag, struct Cre
     rc = in->start_record(in, tag);
     rc = rc ? rc : in->deserialize_String(in, "path", &v->path);
     rc = rc ? rc : deserialize_Stat(in, "stat", &v->stat);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
 void deallocate_Create2Response(struct Create2Response*v){
     deallocate_String(&v->path);
     deallocate_Stat(&v->stat);
+    deallocate_TMB_Trace(&v->trace);
 }
 int serialize_ExistsRequest(struct oarchive *out, const char *tag, struct ExistsRequest *v){
     int rc;
     rc = out->start_record(out, tag);
     rc = rc ? rc : out->serialize_String(out, "path", &v->path);
     rc = rc ? rc : out->serialize_Bool(out, "watch", &v->watch);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -927,16 +1282,19 @@ int deserialize_ExistsRequest(struct iarchive *in, const char *tag, struct Exist
     rc = in->start_record(in, tag);
     rc = rc ? rc : in->deserialize_String(in, "path", &v->path);
     rc = rc ? rc : in->deserialize_Bool(in, "watch", &v->watch);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
 void deallocate_ExistsRequest(struct ExistsRequest*v){
     deallocate_String(&v->path);
+    deallocate_TMB_Trace(&v->trace);
 }
 int serialize_ExistsResponse(struct oarchive *out, const char *tag, struct ExistsResponse *v){
     int rc;
     rc = out->start_record(out, tag);
     rc = rc ? rc : serialize_Stat(out, "stat", &v->stat);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -944,17 +1302,20 @@ int deserialize_ExistsResponse(struct iarchive *in, const char *tag, struct Exis
     int rc;
     rc = in->start_record(in, tag);
     rc = rc ? rc : deserialize_Stat(in, "stat", &v->stat);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
 void deallocate_ExistsResponse(struct ExistsResponse*v){
     deallocate_Stat(&v->stat);
+    deallocate_TMB_Trace(&v->trace);
 }
 int serialize_GetDataResponse(struct oarchive *out, const char *tag, struct GetDataResponse *v){
     int rc;
     rc = out->start_record(out, tag);
     rc = rc ? rc : out->serialize_Buffer(out, "data", &v->data);
     rc = rc ? rc : serialize_Stat(out, "stat", &v->stat);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -963,17 +1324,20 @@ int deserialize_GetDataResponse(struct iarchive *in, const char *tag, struct Get
     rc = in->start_record(in, tag);
     rc = rc ? rc : in->deserialize_Buffer(in, "data", &v->data);
     rc = rc ? rc : deserialize_Stat(in, "stat", &v->stat);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
 void deallocate_GetDataResponse(struct GetDataResponse*v){
     deallocate_Buffer(&v->data);
     deallocate_Stat(&v->stat);
+    deallocate_TMB_Trace(&v->trace);
 }
 int serialize_GetChildrenResponse(struct oarchive *out, const char *tag, struct GetChildrenResponse *v){
     int rc;
     rc = out->start_record(out, tag);
     rc = rc ? rc : serialize_String_vector(out, "children", &v->children);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -981,16 +1345,19 @@ int deserialize_GetChildrenResponse(struct iarchive *in, const char *tag, struct
     int rc;
     rc = in->start_record(in, tag);
     rc = rc ? rc : deserialize_String_vector(in, "children", &v->children);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
 void deallocate_GetChildrenResponse(struct GetChildrenResponse*v){
     deallocate_String_vector(&v->children);
+    deallocate_TMB_Trace(&v->trace);
 }
 int serialize_GetAllChildrenNumberResponse(struct oarchive *out, const char *tag, struct GetAllChildrenNumberResponse *v){
     int rc;
     rc = out->start_record(out, tag);
     rc = rc ? rc : out->serialize_Int(out, "totalNumber", &v->totalNumber);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -998,16 +1365,19 @@ int deserialize_GetAllChildrenNumberResponse(struct iarchive *in, const char *ta
     int rc;
     rc = in->start_record(in, tag);
     rc = rc ? rc : in->deserialize_Int(in, "totalNumber", &v->totalNumber);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
 void deallocate_GetAllChildrenNumberResponse(struct GetAllChildrenNumberResponse*v){
+    deallocate_TMB_Trace(&v->trace);
 }
 int serialize_GetChildren2Response(struct oarchive *out, const char *tag, struct GetChildren2Response *v){
     int rc;
     rc = out->start_record(out, tag);
     rc = rc ? rc : serialize_String_vector(out, "children", &v->children);
     rc = rc ? rc : serialize_Stat(out, "stat", &v->stat);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -1016,18 +1386,21 @@ int deserialize_GetChildren2Response(struct iarchive *in, const char *tag, struc
     rc = in->start_record(in, tag);
     rc = rc ? rc : deserialize_String_vector(in, "children", &v->children);
     rc = rc ? rc : deserialize_Stat(in, "stat", &v->stat);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
 void deallocate_GetChildren2Response(struct GetChildren2Response*v){
     deallocate_String_vector(&v->children);
     deallocate_Stat(&v->stat);
+    deallocate_TMB_Trace(&v->trace);
 }
 int serialize_GetACLResponse(struct oarchive *out, const char *tag, struct GetACLResponse *v){
     int rc;
     rc = out->start_record(out, tag);
     rc = rc ? rc : serialize_ACL_vector(out, "acl", &v->acl);
     rc = rc ? rc : serialize_Stat(out, "stat", &v->stat);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -1036,18 +1409,21 @@ int deserialize_GetACLResponse(struct iarchive *in, const char *tag, struct GetA
     rc = in->start_record(in, tag);
     rc = rc ? rc : deserialize_ACL_vector(in, "acl", &v->acl);
     rc = rc ? rc : deserialize_Stat(in, "stat", &v->stat);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
 void deallocate_GetACLResponse(struct GetACLResponse*v){
     deallocate_ACL_vector(&v->acl);
     deallocate_Stat(&v->stat);
+    deallocate_TMB_Trace(&v->trace);
 }
 int serialize_CheckWatchesRequest(struct oarchive *out, const char *tag, struct CheckWatchesRequest *v){
     int rc;
     rc = out->start_record(out, tag);
     rc = rc ? rc : out->serialize_String(out, "path", &v->path);
     rc = rc ? rc : out->serialize_Int(out, "type", &v->type);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -1056,17 +1432,20 @@ int deserialize_CheckWatchesRequest(struct iarchive *in, const char *tag, struct
     rc = in->start_record(in, tag);
     rc = rc ? rc : in->deserialize_String(in, "path", &v->path);
     rc = rc ? rc : in->deserialize_Int(in, "type", &v->type);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
 void deallocate_CheckWatchesRequest(struct CheckWatchesRequest*v){
     deallocate_String(&v->path);
+    deallocate_TMB_Trace(&v->trace);
 }
 int serialize_RemoveWatchesRequest(struct oarchive *out, const char *tag, struct RemoveWatchesRequest *v){
     int rc;
     rc = out->start_record(out, tag);
     rc = rc ? rc : out->serialize_String(out, "path", &v->path);
     rc = rc ? rc : out->serialize_Int(out, "type", &v->type);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -1075,16 +1454,19 @@ int deserialize_RemoveWatchesRequest(struct iarchive *in, const char *tag, struc
     rc = in->start_record(in, tag);
     rc = rc ? rc : in->deserialize_String(in, "path", &v->path);
     rc = rc ? rc : in->deserialize_Int(in, "type", &v->type);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
 void deallocate_RemoveWatchesRequest(struct RemoveWatchesRequest*v){
     deallocate_String(&v->path);
+    deallocate_TMB_Trace(&v->trace);
 }
 int serialize_GetEphemeralsRequest(struct oarchive *out, const char *tag, struct GetEphemeralsRequest *v){
     int rc;
     rc = out->start_record(out, tag);
     rc = rc ? rc : out->serialize_String(out, "prefixPath", &v->prefixPath);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -1092,16 +1474,19 @@ int deserialize_GetEphemeralsRequest(struct iarchive *in, const char *tag, struc
     int rc;
     rc = in->start_record(in, tag);
     rc = rc ? rc : in->deserialize_String(in, "prefixPath", &v->prefixPath);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
 void deallocate_GetEphemeralsRequest(struct GetEphemeralsRequest*v){
     deallocate_String(&v->prefixPath);
+    deallocate_TMB_Trace(&v->trace);
 }
 int serialize_GetEphemeralsResponse(struct oarchive *out, const char *tag, struct GetEphemeralsResponse *v){
     int rc;
     rc = out->start_record(out, tag);
     rc = rc ? rc : serialize_String_vector(out, "ephemerals", &v->ephemerals);
+    rc = rc ? rc : serialize_TMB_Trace(out, "trace", &v->trace);
     rc = rc ? rc : out->end_record(out, tag);
     return rc;
 }
@@ -1109,11 +1494,13 @@ int deserialize_GetEphemeralsResponse(struct iarchive *in, const char *tag, stru
     int rc;
     rc = in->start_record(in, tag);
     rc = rc ? rc : deserialize_String_vector(in, "ephemerals", &v->ephemerals);
+    rc = rc ? rc : deserialize_TMB_Trace(in, "trace", &v->trace);
     rc = rc ? rc : in->end_record(in, tag);
     return rc;
 }
 void deallocate_GetEphemeralsResponse(struct GetEphemeralsResponse*v){
     deallocate_String_vector(&v->ephemerals);
+    deallocate_TMB_Trace(&v->trace);
 }
 int serialize_LearnerInfo(struct oarchive *out, const char *tag, struct LearnerInfo *v){
     int rc;

@@ -2,12 +2,12 @@ package org.apache.zookeeper.trace;
 
 import java.util.UUID;
 
-public class _3MB_ContextMeta {
+public class TMB_ContextMeta {
     private long trace_id;
     private UUID uuid;
     private String message_name;
 
-    public _3MB_ContextMeta(long trace_id, UUID uuid, String message_name) {
+    public TMB_ContextMeta(long trace_id, UUID uuid, String message_name) {
         this.trace_id = trace_id;
         this.uuid = uuid;
         this.message_name = message_name;

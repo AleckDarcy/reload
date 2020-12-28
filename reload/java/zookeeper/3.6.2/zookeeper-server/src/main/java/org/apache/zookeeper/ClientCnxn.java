@@ -92,11 +92,8 @@ import org.apache.zookeeper.proto.WatcherEvent;
 import org.apache.zookeeper.server.ByteBufferInputStream;
 import org.apache.zookeeper.server.ZooKeeperThread;
 import org.apache.zookeeper.server.ZooTrace;
-import org.apache.zookeeper.trace._3MB_Event;
-import org.apache.zookeeper.trace._3MB_Helper;
-import org.apache.zookeeper.trace._3MB_TFI;
-import org.apache.zookeeper.trace._3MB_TFIMeta;
-import org.apache.zookeeper.trace._3MB_Trace;
+import org.apache.zookeeper.trace.*;
+import org.apache.zookeeper.trace.TMB_Helper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -1557,9 +1554,10 @@ public class ClientCnxn {
         Record response,
         WatchRegistration watchRegistration,
         WatchDeregistration watchDeregistration) throws InterruptedException {
+        TMB_Helper.println("in submitRequest");
         ReplyHeader r = new ReplyHeader();
 
-        _3MB_Trace trace = null;
+        TMB_Trace trace = null;
         if (request != null) {
             trace = request.getTrace();
 
@@ -1568,15 +1566,13 @@ public class ClientCnxn {
              */
             if (trace == null) {
                 long id = Time.currentElapsedTime();
-                _3MB_Helper.println("stub trace with id:" + id);
+                TMB_Helper.println("stub trace with id:" + id);
 
-                trace = new _3MB_Trace(id, null, null);
+                trace = new TMB_Trace(id, null, null);
             }
 
             if (trace != null) {
-                _3MB_Helper.println("request:" + _3MB_Helper.getClassName(request));
-
-
+                TMB_Helper.println("request: " + TMB_Helper.getClassName(request));
             }
         }
 
@@ -1605,8 +1601,10 @@ public class ClientCnxn {
         if (r.getErr() == Code.REQUESTTIMEOUT.intValue()) {
             sendThread.cleanAndNotifyState();
         } else if (trace != null) {
-            _3MB_Helper.println("response:" + _3MB_Helper.getClassName(request));
+            TMB_Helper.println("response: " + TMB_Helper.getClassName(response));
         }
+        TMB_Helper.println("out submitRequest");
+
         return r;
     }
 

@@ -5,14 +5,14 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class _3MB_Store {
-    private Map<Long, _3MB_ThreadTraces> thread_traces;
-    private Map<UUID, _3MB_ThreadTraces> request_traces;
+public class TMB_Store {
+    private Map<Long, TMB_ThreadTraces> thread_traces;
+    private Map<UUID, TMB_ThreadTraces> request_traces;
     private ReentrantReadWriteLock lock;
 
-    public _3MB_Store() {
-        this.thread_traces = new HashMap<Long, _3MB_ThreadTraces>();
-        this.request_traces = new HashMap<UUID, _3MB_ThreadTraces>();
+    public TMB_Store() {
+        this.thread_traces = new HashMap<Long, TMB_ThreadTraces>();
+        this.request_traces = new HashMap<UUID, TMB_ThreadTraces>();
         this.lock = new ReentrantReadWriteLock();
     }
 

@@ -32,7 +32,6 @@ import org.apache.zookeeper.proto.GetChildrenRequest;
 import org.apache.zookeeper.proto.GetDataRequest;
 import org.apache.zookeeper.proto.MultiHeader;
 import org.apache.zookeeper.proto.SetDataRequest;
-import org.apache.zookeeper.trace._3MB_Trace;
 
 /**
  * Encodes a composite operation.  In the wire format, each operation
@@ -46,11 +45,6 @@ public class MultiOperationRecord implements Record, Iterable<Op> {
 
     private List<Op> ops = new ArrayList<Op>();
     private Op.OpKind opKind = null;
-
-    /**
-     * 3MileBeach
-     */
-    private org.apache.zookeeper.trace._3MB_Trace trace;
 
     public MultiOperationRecord() {
     }
@@ -97,13 +91,15 @@ public class MultiOperationRecord implements Record, Iterable<Op> {
      * 3MileBeach
      * @return trace
      */
-    public org.apache.zookeeper.trace._3MB_Trace getTrace() { return trace; }
+    public org.apache.zookeeper.trace.TMB_Trace getTrace() {
+        return null;
+    }
 
     /**
      * 3MileBeach
      * @param trace
      */
-    public void setTrace(org.apache.zookeeper.trace._3MB_Trace t_) { trace = t_; }
+    public void setTrace(org.apache.zookeeper.trace.TMB_Trace trace) {}
 
     @Override
     public void serialize(OutputArchive archive, String tag) throws IOException {

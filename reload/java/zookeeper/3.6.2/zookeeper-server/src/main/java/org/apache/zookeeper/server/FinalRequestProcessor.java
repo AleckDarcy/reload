@@ -80,7 +80,7 @@ import org.apache.zookeeper.proto.SyncResponse;
 import org.apache.zookeeper.server.DataTree.ProcessTxnResult;
 import org.apache.zookeeper.server.quorum.QuorumZooKeeperServer;
 import org.apache.zookeeper.server.util.RequestPathMetricsCollector;
-import org.apache.zookeeper.trace._3MB_Helper;
+import org.apache.zookeeper.trace.TMB_Helper;
 import org.apache.zookeeper.txn.ErrorTxn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,6 +108,12 @@ public class FinalRequestProcessor implements RequestProcessor {
     }
 
     public void processRequest(Request request) {
+        String requestName = TMB_Helper.getClassName(request.record);
+        TMB_Helper.println("process request");
+        new Exception().printStackTrace();
+        if (request.record != null) {
+            TMB_Helper.println(request.record.getClass().getCanonicalName());
+        }
         LOG.debug("Processing request:: {}", request);
 
         // request.addRQRec(">final");
@@ -364,6 +370,7 @@ public class FinalRequestProcessor implements RequestProcessor {
             case OpCode.getData: {
                 lastOp = "GETD";
                 GetDataRequest getDataRequest = new GetDataRequest();
+                requestName = "GetDataRequest";
                 ByteBufferInputStream.byteBuffer2Record(request.request, getDataRequest);
                 path = getDataRequest.getPath();
                 rsp = handleGetDataRequest(getDataRequest, cnxn, request.authInfo);
@@ -587,11 +594,11 @@ public class FinalRequestProcessor implements RequestProcessor {
         updateStats(request, lastOp, lastZxid);
 
         try {
+            TMB_Helper.println("process request: " + requestName + ", get response: " + TMB_Helper.getClassName(rsp));
+
             if (path == null || rsp == null) {
-                _3MB_Helper.println("process request: " + request.getClass().getCanonicalName() + ", get response: null pointer");
                 cnxn.sendResponse(hdr, rsp, "response");
             } else {
-                _3MB_Helper.println("process request: " + request.getClass().getCanonicalName() + ", get response: "+ rsp.getClass().getCanonicalName());
                 int opCode = request.type;
                 Stat stat = null;
                 // Serialized read and get children responses could be cached by the connection

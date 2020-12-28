@@ -4,10 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class _3MB_ThreadTraces {
+public class TMB_ThreadTraces {
     private Map<UUID, TMB_Trace> traces;
 
-    public _3MB_ThreadTraces() {
+    public TMB_ThreadTraces() {
         this.traces = new HashMap<UUID, TMB_Trace>();
     }
 

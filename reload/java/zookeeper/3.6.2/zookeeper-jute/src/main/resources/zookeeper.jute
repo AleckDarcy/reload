@@ -17,36 +17,28 @@
  */
 
 module org.apache.zookeeper.trace {
-    class _3MB_Event {
+    class TMB_Event {
         int type;
         long timestamp;
         ustring message_name;
         ustring uuid;
         ustring service;
-
-        org.apache.zookeeper.trace._3MB_Trace trace;
     }
-    class _3MB_TFIMeta {
+    class TMB_TFIMeta {
         ustring name;
         long times;
         long already;
-
-        org.apache.zookeeper.trace._3MB_Trace trace;
     }
-    class _3MB_TFI {
+    class TMB_TFI {
         int type;
         ustring name;
         long delay;
-        vector<org.apache.zookeeper.trace._3MB_TFIMeta> after;
-
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        vector<org.apache.zookeeper.trace.TMB_TFIMeta> after;
     }
-    class _3MB_Trace {
+    class TMB_Trace {
         long id;
-        vector<org.apache.zookeeper.trace._3MB_Event> events;
-        vector<org.apache.zookeeper.trace._3MB_TFI> tfis;
-
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        vector<org.apache.zookeeper.trace.TMB_Event> events;
+        vector<org.apache.zookeeper.trace.TMB_TFI> tfis;
     }
 }
 
@@ -54,14 +46,10 @@ module org.apache.zookeeper.data {
     class Id {
         ustring scheme;
         ustring id;
-
-        org.apache.zookeeper.trace._3MB_Trace trace;
     }
     class ACL {
         int perms;
         Id id;
-
-        org.apache.zookeeper.trace._3MB_Trace trace;
     }
     // information shared with the client
     class Stat {
@@ -76,8 +64,6 @@ module org.apache.zookeeper.data {
         int dataLength;  //length of the data in the node
         int numChildren; //number of children of this node
         long pzxid;      // last modified children
-
-        org.apache.zookeeper.trace._3MB_Trace trace;
     }
     // information explicitly stored by the server persistently
     class StatPersisted {
@@ -90,15 +76,13 @@ module org.apache.zookeeper.data {
         int aversion;    // acl version
         long ephemeralOwner; // owner id if ephemeral, 0 otw
         long pzxid;      // last modified children
-
-        org.apache.zookeeper.trace._3MB_Trace trace;
     }
 }
 
 module org.apache.zookeeper.proto {
     class NullPointerResponse {
          ustring requestName;
-         org.apache.zookeeper.trace._3MB_Trace trace;
+         org.apache.zookeeper.trace.TMB_Trace trace;
     }
     class ConnectRequest {
         int protocolVersion;
@@ -107,7 +91,7 @@ module org.apache.zookeeper.proto {
         long sessionId;
         buffer passwd;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
     }
     class ConnectResponse {
         int protocolVersion;
@@ -115,7 +99,7 @@ module org.apache.zookeeper.proto {
         long sessionId;
         buffer passwd;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
     }
     class SetWatches {
         long relativeZxid;
@@ -123,7 +107,7 @@ module org.apache.zookeeper.proto {
         vector<ustring>existWatches;
         vector<ustring>childWatches;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
     }
     class SetWatches2 {
          long relativeZxid;
@@ -133,41 +117,41 @@ module org.apache.zookeeper.proto {
          vector<ustring>persistentWatches;
          vector<ustring>persistentRecursiveWatches;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
      }
     class RequestHeader {
         int xid;
         int type;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
     }
     class MultiHeader {
         int type;
         boolean done;
         int err;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
     }
     class AuthPacket {
         int type;
         ustring scheme;
         buffer auth;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
     }
     class ReplyHeader {
         int xid;
         long zxid;
         int err;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
     }
 
     class GetDataRequest {
         ustring path;
         boolean watch;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
     }
 
     class SetDataRequest {
@@ -175,7 +159,7 @@ module org.apache.zookeeper.proto {
         buffer data;
         int version;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
     }
     class ReconfigRequest {
         ustring joiningServers;
@@ -183,27 +167,27 @@ module org.apache.zookeeper.proto {
         ustring newMembers;
         long curConfigId;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
     }
     class SetDataResponse {
         org.apache.zookeeper.data.Stat stat;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
     }
     class GetSASLRequest {
         buffer token;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
     }
     class SetSASLRequest {
         buffer token;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
     }
     class SetSASLResponse {
         buffer token;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
     }
     class CreateRequest {
         ustring path;
@@ -211,7 +195,7 @@ module org.apache.zookeeper.proto {
         vector<org.apache.zookeeper.data.ACL> acl;
         int flags;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
     }
     class CreateTTLRequest {
         ustring path;
@@ -220,171 +204,171 @@ module org.apache.zookeeper.proto {
         int flags;
         long ttl;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
     }
     class DeleteRequest {
         ustring path;
         int version;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
     }
     class GetChildrenRequest {
         ustring path;
         boolean watch;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
     }
     class GetAllChildrenNumberRequest {
         ustring path;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
     }
     class GetChildren2Request {
         ustring path;
         boolean watch;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
     }
     class CheckVersionRequest {
         ustring path;
         int version;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
     }
     class GetMaxChildrenRequest {
         ustring path;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
     }
     class GetMaxChildrenResponse {
         int max;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
     }
     class SetMaxChildrenRequest {
         ustring path;
         int max;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
     }
     class SyncRequest {
         ustring path;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
     }
     class SyncResponse {
         ustring path;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
     }
     class GetACLRequest {
         ustring path;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
     }
     class SetACLRequest {
         ustring path;
         vector<org.apache.zookeeper.data.ACL> acl;
         int version;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
     }
     class SetACLResponse {
         org.apache.zookeeper.data.Stat stat;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
     }
     class AddWatchRequest {
          ustring path;
          int mode;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
      }
     class WatcherEvent {
         int type;  // event type
         int state; // state of the Keeper client runtime
         ustring path;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
     }
     class ErrorResponse {
         int err;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
     }
     class CreateResponse {
         ustring path;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
     }
     class Create2Response {
         ustring path;
         org.apache.zookeeper.data.Stat stat;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
     }
     class ExistsRequest {
         ustring path;
         boolean watch;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
     }
     class ExistsResponse {
         org.apache.zookeeper.data.Stat stat;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
     }
     class GetDataResponse {
         buffer data;
         org.apache.zookeeper.data.Stat stat;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
     }
     class GetChildrenResponse {
         vector<ustring> children;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
     }
     class GetAllChildrenNumberResponse {
          int totalNumber;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
     }
     class GetChildren2Response {
         vector<ustring> children;
         org.apache.zookeeper.data.Stat stat;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
     }
     class GetACLResponse {
         vector<org.apache.zookeeper.data.ACL> acl;
         org.apache.zookeeper.data.Stat stat;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
     }
     class CheckWatchesRequest {
         ustring path;
         int type;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
     }
     class RemoveWatchesRequest {
         ustring path;
         int type;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
     }
 
     class GetEphemeralsRequest {
         ustring prefixPath;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
     }
 
     class GetEphemeralsResponse {
         vector<ustring> ephemerals;
 
-        org.apache.zookeeper.trace._3MB_Trace trace;
+        org.apache.zookeeper.trace.TMB_Trace trace;
     }
 }
 
@@ -393,23 +377,17 @@ module org.apache.zookeeper.server.quorum {
         long serverid;
         int protocolVersion;
         long configVersion;
-
-        org.apache.zookeeper.trace._3MB_Trace trace;
     }
     class QuorumPacket {
         int type; // Request, Ack, Commit, Ping
         long zxid;
         buffer data; // Only significant when type is request
         vector<org.apache.zookeeper.data.Id> authinfo;
-
-        org.apache.zookeeper.trace._3MB_Trace trace;
     }
     class QuorumAuthPacket {
         long magic;
         int status;
         buffer token;
-
-        org.apache.zookeeper.trace._3MB_Trace trace;
     }
 }
 
@@ -418,8 +396,6 @@ module org.apache.zookeeper.server.persistence {
         int magic;
         int version;
         long dbid;
-
-        org.apache.zookeeper.trace._3MB_Trace trace;
     }
 }
 
@@ -427,8 +403,6 @@ module org.apache.zookeeper.txn {
     class TxnDigest {
         int version;
         long treeDigest;
-
-        org.apache.zookeeper.trace._3MB_Trace trace;
     }
     class TxnHeader {
         long clientId;
@@ -436,16 +410,12 @@ module org.apache.zookeeper.txn {
         long zxid;
         long time;
         int type;
-
-        org.apache.zookeeper.trace._3MB_Trace trace;
     }
     class CreateTxnV0 {
         ustring path;
         buffer data;
         vector<org.apache.zookeeper.data.ACL> acl;
         boolean ephemeral;
-
-        org.apache.zookeeper.trace._3MB_Trace trace;
     }
     class CreateTxn {
         ustring path;
@@ -453,8 +423,6 @@ module org.apache.zookeeper.txn {
         vector<org.apache.zookeeper.data.ACL> acl;
         boolean ephemeral;
         int parentCVersion;
-
-        org.apache.zookeeper.trace._3MB_Trace trace;
     }
     class CreateTTLTxn {
         ustring path;
@@ -462,72 +430,48 @@ module org.apache.zookeeper.txn {
         vector<org.apache.zookeeper.data.ACL> acl;
         int parentCVersion;
         long ttl;
-
-        org.apache.zookeeper.trace._3MB_Trace trace;
     }
     class CreateContainerTxn {
         ustring path;
         buffer data;
         vector<org.apache.zookeeper.data.ACL> acl;
         int parentCVersion;
-
-        org.apache.zookeeper.trace._3MB_Trace trace;
     }
     class DeleteTxn {
         ustring path;
-
-        org.apache.zookeeper.trace._3MB_Trace trace;
     }
     class SetDataTxn {
         ustring path;
         buffer data;
         int version;
-
-        org.apache.zookeeper.trace._3MB_Trace trace;
     }
     class CheckVersionTxn {
         ustring path;
         int version;
-
-        org.apache.zookeeper.trace._3MB_Trace trace;
     }
     class SetACLTxn {
         ustring path;
         vector<org.apache.zookeeper.data.ACL> acl;
         int version;
-
-        org.apache.zookeeper.trace._3MB_Trace trace;
     }
     class SetMaxChildrenTxn {
         ustring path;
         int max;
-
-        org.apache.zookeeper.trace._3MB_Trace trace;
     }
     class CreateSessionTxn {
         int timeOut;
-
-        org.apache.zookeeper.trace._3MB_Trace trace;
     }
     class CloseSessionTxn {
         vector<ustring> paths2Delete;
-
-        org.apache.zookeeper.trace._3MB_Trace trace;
     }
     class ErrorTxn {
         int err;
-
-        org.apache.zookeeper.trace._3MB_Trace trace;
     }
     class Txn {
         int type;
         buffer data;
-
-        org.apache.zookeeper.trace._3MB_Trace trace;
     }
     class MultiTxn {
         vector<org.apache.zookeeper.txn.Txn> txns;
-
-        org.apache.zookeeper.trace._3MB_Trace trace;
     }
 }

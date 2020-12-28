@@ -20,7 +20,7 @@ package org.apache.jute;
 
 import java.io.IOException;
 import org.apache.yetus.audience.InterfaceAudience;
-import org.apache.zookeeper.trace._3MB_Trace;
+import org.apache.zookeeper.trace.TMB_Trace;
 
 /**
  * Interface that is implemented by generated classes.
@@ -29,6 +29,6 @@ import org.apache.zookeeper.trace._3MB_Trace;
 public interface Record {
     void serialize(OutputArchive archive, String tag) throws IOException;
     void deserialize(InputArchive archive, String tag) throws IOException;
-    _3MB_Trace getTrace();
-    void setTrace(_3MB_Trace t_);
+    TMB_Trace getTrace();
+    void setTrace(TMB_Trace t_);
 }

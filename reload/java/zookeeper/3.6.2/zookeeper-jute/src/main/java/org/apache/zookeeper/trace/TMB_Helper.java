@@ -3,7 +3,7 @@ package org.apache.zookeeper.trace;
 import java.lang.String;
 import java.lang.Thread;
 
-public class _3MB_Helper {
+public class TMB_Helper {
     public static void println(String x) {
         StackTraceElement trace = Thread.currentThread().getStackTrace()[2];
 

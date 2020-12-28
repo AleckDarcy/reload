@@ -65,6 +65,7 @@ import org.apache.zookeeper.server.quorum.QuorumPeerConfig;
 import org.apache.zookeeper.server.quorum.QuorumPeerConfig.ConfigException;
 import org.apache.zookeeper.server.quorum.flexible.QuorumMaj;
 import org.apache.zookeeper.server.quorum.flexible.QuorumVerifier;
+import org.apache.zookeeper.trace.TMB_Helper;
 import org.apache.zookeeper.txn.CheckVersionTxn;
 import org.apache.zookeeper.txn.CloseSessionTxn;
 import org.apache.zookeeper.txn.CreateContainerTxn;
@@ -761,6 +762,7 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
      * @param request
      */
     protected void pRequest(Request request) throws RequestProcessorException {
+        TMB_Helper.println("p request");
         // LOG.info("Prep>>> cxid = " + request.cxid + " type = " +
         // request.type + " id = 0x" + Long.toHexString(request.sessionId));
         request.setHdr(null);
@@ -772,32 +774,39 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
             case OpCode.create:
             case OpCode.create2:
                 CreateRequest create2Request = new CreateRequest();
+                request.record = create2Request;
                 pRequest2Txn(request.type, zks.getNextZxid(), request, create2Request, true);
                 break;
             case OpCode.createTTL:
                 CreateTTLRequest createTtlRequest = new CreateTTLRequest();
+                request.record = createTtlRequest;
                 pRequest2Txn(request.type, zks.getNextZxid(), request, createTtlRequest, true);
                 break;
             case OpCode.deleteContainer:
             case OpCode.delete:
                 DeleteRequest deleteRequest = new DeleteRequest();
+                request.record = deleteRequest;
                 pRequest2Txn(request.type, zks.getNextZxid(), request, deleteRequest, true);
                 break;
             case OpCode.setData:
                 SetDataRequest setDataRequest = new SetDataRequest();
+                request.record = setDataRequest;
                 pRequest2Txn(request.type, zks.getNextZxid(), request, setDataRequest, true);
                 break;
             case OpCode.reconfig:
                 ReconfigRequest reconfigRequest = new ReconfigRequest();
                 ByteBufferInputStream.byteBuffer2Record(request.request, reconfigRequest);
+                request.record = reconfigRequest;
                 pRequest2Txn(request.type, zks.getNextZxid(), request, reconfigRequest, true);
                 break;
             case OpCode.setACL:
                 SetACLRequest setAclRequest = new SetACLRequest();
+                request.record = setAclRequest;
                 pRequest2Txn(request.type, zks.getNextZxid(), request, setAclRequest, true);
                 break;
             case OpCode.check:
                 CheckVersionRequest checkRequest = new CheckVersionRequest();
+                request.record = checkRequest;
                 pRequest2Txn(request.type, zks.getNextZxid(), request, checkRequest, true);
                 break;
             case OpCode.multi:
@@ -834,6 +843,7 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
                         /* Prep the request and convert to a Txn */
                         try {
                             pRequest2Txn(op.getType(), zxid, request, subrequest, false);
+                            request.record = subrequest;
                             type = op.getType();
                             txn = request.getTxn();
                         } catch (KeeperException e) {
@@ -878,7 +888,9 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
             case OpCode.createSession:
             case OpCode.closeSession:
                 if (!request.isLocalSession()) {
+                    // TODO 3MileBeach
                     pRequest2Txn(request.type, zks.getNextZxid(), request, null, true);
+                    request.record = null;
                 }
                 break;
 

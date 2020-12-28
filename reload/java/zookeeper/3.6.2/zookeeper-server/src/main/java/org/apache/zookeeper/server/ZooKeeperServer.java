@@ -79,6 +79,7 @@ import org.apache.zookeeper.server.quorum.ReadOnlyZooKeeperServer;
 import org.apache.zookeeper.server.util.JvmPauseMonitor;
 import org.apache.zookeeper.server.util.OSMXBean;
 import org.apache.zookeeper.server.util.RequestPathMetricsCollector;
+import org.apache.zookeeper.trace.TMB_Helper;
 import org.apache.zookeeper.txn.CreateSessionTxn;
 import org.apache.zookeeper.txn.TxnDigest;
 import org.apache.zookeeper.txn.TxnHeader;
@@ -1614,6 +1615,8 @@ public class ZooKeeperServer implements SessionExpirer, ServerStats.Provider {
                 cnxn.sendCloseSession();
                 cnxn.disableRecv();
             } else {
+                TMB_Helper.println("process packet");
+                new Exception().printStackTrace();
                 Request si = new Request(cnxn, cnxn.getSessionId(), h.getXid(), h.getType(), incomingBuffer, cnxn.getAuthInfo());
                 int length = incomingBuffer.limit();
                 if (isLargeRequest(length)) {
