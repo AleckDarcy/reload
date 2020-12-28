@@ -50,33 +50,7 @@ import org.apache.zookeeper.common.Time;
 import org.apache.zookeeper.data.ACL;
 import org.apache.zookeeper.data.Id;
 import org.apache.zookeeper.data.Stat;
-import org.apache.zookeeper.proto.AddWatchRequest;
-import org.apache.zookeeper.proto.CheckWatchesRequest;
-import org.apache.zookeeper.proto.Create2Response;
-import org.apache.zookeeper.proto.CreateResponse;
-import org.apache.zookeeper.proto.ErrorResponse;
-import org.apache.zookeeper.proto.ExistsRequest;
-import org.apache.zookeeper.proto.ExistsResponse;
-import org.apache.zookeeper.proto.GetACLRequest;
-import org.apache.zookeeper.proto.GetACLResponse;
-import org.apache.zookeeper.proto.GetAllChildrenNumberRequest;
-import org.apache.zookeeper.proto.GetAllChildrenNumberResponse;
-import org.apache.zookeeper.proto.GetChildren2Request;
-import org.apache.zookeeper.proto.GetChildren2Response;
-import org.apache.zookeeper.proto.GetChildrenRequest;
-import org.apache.zookeeper.proto.GetChildrenResponse;
-import org.apache.zookeeper.proto.GetDataRequest;
-import org.apache.zookeeper.proto.GetDataResponse;
-import org.apache.zookeeper.proto.GetEphemeralsRequest;
-import org.apache.zookeeper.proto.GetEphemeralsResponse;
-import org.apache.zookeeper.proto.RemoveWatchesRequest;
-import org.apache.zookeeper.proto.ReplyHeader;
-import org.apache.zookeeper.proto.SetACLResponse;
-import org.apache.zookeeper.proto.SetDataResponse;
-import org.apache.zookeeper.proto.SetWatches;
-import org.apache.zookeeper.proto.SetWatches2;
-import org.apache.zookeeper.proto.SyncRequest;
-import org.apache.zookeeper.proto.SyncResponse;
+import org.apache.zookeeper.proto.*;
 import org.apache.zookeeper.server.DataTree.ProcessTxnResult;
 import org.apache.zookeeper.server.quorum.QuorumZooKeeperServer;
 import org.apache.zookeeper.server.util.RequestPathMetricsCollector;
@@ -343,6 +317,11 @@ public class FinalRequestProcessor implements RequestProcessor {
                 lastOp = "SYNC";
                 SyncRequest syncRequest = new SyncRequest();
                 ByteBufferInputStream.byteBuffer2Record(request.request, syncRequest);
+
+                // 3MileBeach
+                requestName = "SyncRequest";
+                request.record = syncRequest;
+
                 rsp = new SyncResponse(syncRequest.getPath());
                 requestPathMetricsCollector.registerRequest(request.type, syncRequest.getPath());
                 break;
@@ -358,6 +337,11 @@ public class FinalRequestProcessor implements RequestProcessor {
                 // TODO we need to figure out the security requirement for this!
                 ExistsRequest existsRequest = new ExistsRequest();
                 ByteBufferInputStream.byteBuffer2Record(request.request, existsRequest);
+
+                // 3MileBeach
+                requestName = "ExistsRequest";
+                request.record = existsRequest;
+
                 path = existsRequest.getPath();
                 if (path.indexOf('\0') != -1) {
                     throw new KeeperException.BadArgumentsException();
@@ -370,8 +354,12 @@ public class FinalRequestProcessor implements RequestProcessor {
             case OpCode.getData: {
                 lastOp = "GETD";
                 GetDataRequest getDataRequest = new GetDataRequest();
-                requestName = "GetDataRequest";
                 ByteBufferInputStream.byteBuffer2Record(request.request, getDataRequest);
+
+                // 3MileBeach
+                requestName = "GetDataRequest";
+                request.record = getDataRequest;
+
                 path = getDataRequest.getPath();
                 rsp = handleGetDataRequest(getDataRequest, cnxn, request.authInfo);
                 requestPathMetricsCollector.registerRequest(request.type, path);
@@ -383,6 +371,11 @@ public class FinalRequestProcessor implements RequestProcessor {
                 // TODO we really should not need this
                 request.request.rewind();
                 ByteBufferInputStream.byteBuffer2Record(request.request, setWatches);
+
+                // 3MileBeach
+                requestName = "SetWatches";
+                request.record = setWatches;
+
                 long relativeZxid = setWatches.getRelativeZxid();
                 zks.getZKDatabase()
                    .setWatches(
@@ -401,6 +394,11 @@ public class FinalRequestProcessor implements RequestProcessor {
                 // TODO we really should not need this
                 request.request.rewind();
                 ByteBufferInputStream.byteBuffer2Record(request.request, setWatches);
+
+                // 3MileBeach
+                requestName = "SetWatches2";
+                request.record = setWatches;
+
                 long relativeZxid = setWatches.getRelativeZxid();
                 zks.getZKDatabase().setWatches(relativeZxid,
                         setWatches.getDataWatches(),
@@ -416,6 +414,11 @@ public class FinalRequestProcessor implements RequestProcessor {
                 AddWatchRequest addWatcherRequest = new AddWatchRequest();
                 ByteBufferInputStream.byteBuffer2Record(request.request,
                         addWatcherRequest);
+
+                // 3MileBeach
+                requestName = "AddWatchRequest";
+                request.record = addWatcherRequest;
+
                 zks.getZKDatabase().addWatch(addWatcherRequest.getPath(), cnxn, addWatcherRequest.getMode());
                 rsp = new ErrorResponse(0);
                 break;
@@ -424,6 +427,11 @@ public class FinalRequestProcessor implements RequestProcessor {
                 lastOp = "GETA";
                 GetACLRequest getACLRequest = new GetACLRequest();
                 ByteBufferInputStream.byteBuffer2Record(request.request, getACLRequest);
+
+                // 3MileBeach
+                requestName = "GetACLRequest";
+                request.record = getACLRequest;
+
                 path = getACLRequest.getPath();
                 DataNode n = zks.getZKDatabase().getNode(path);
                 if (n == null) {
@@ -467,6 +475,11 @@ public class FinalRequestProcessor implements RequestProcessor {
                 lastOp = "GETC";
                 GetChildrenRequest getChildrenRequest = new GetChildrenRequest();
                 ByteBufferInputStream.byteBuffer2Record(request.request, getChildrenRequest);
+
+                // 3MileBeach
+                requestName = "GetChildrenRequest";
+                request.record = getChildrenRequest;
+
                 path = getChildrenRequest.getPath();
                 rsp = handleGetChildrenRequest(getChildrenRequest, cnxn, request.authInfo);
                 requestPathMetricsCollector.registerRequest(request.type, path);
@@ -476,6 +489,11 @@ public class FinalRequestProcessor implements RequestProcessor {
                 lastOp = "GETACN";
                 GetAllChildrenNumberRequest getAllChildrenNumberRequest = new GetAllChildrenNumberRequest();
                 ByteBufferInputStream.byteBuffer2Record(request.request, getAllChildrenNumberRequest);
+
+                // 3MileBeach
+                requestName = "GetAllChildrenNumberRequest";
+                request.record = getAllChildrenNumberRequest;
+
                 path = getAllChildrenNumberRequest.getPath();
                 DataNode n = zks.getZKDatabase().getNode(path);
                 if (n == null) {
@@ -496,6 +514,11 @@ public class FinalRequestProcessor implements RequestProcessor {
                 lastOp = "GETC";
                 GetChildren2Request getChildren2Request = new GetChildren2Request();
                 ByteBufferInputStream.byteBuffer2Record(request.request, getChildren2Request);
+
+                // 3MileBeach
+                requestName = "GetChildren2Request";
+                request.record = getChildren2Request;
+
                 Stat stat = new Stat();
                 path = getChildren2Request.getPath();
                 DataNode n = zks.getZKDatabase().getNode(path);
@@ -518,6 +541,11 @@ public class FinalRequestProcessor implements RequestProcessor {
                 lastOp = "CHKW";
                 CheckWatchesRequest checkWatches = new CheckWatchesRequest();
                 ByteBufferInputStream.byteBuffer2Record(request.request, checkWatches);
+
+                // 3MileBeach
+                requestName = "CheckWatchesRequest";
+                request.record = checkWatches;
+
                 WatcherType type = WatcherType.fromInt(checkWatches.getType());
                 path = checkWatches.getPath();
                 boolean containsWatcher = zks.getZKDatabase().containsWatcher(path, type, cnxn);
@@ -532,6 +560,11 @@ public class FinalRequestProcessor implements RequestProcessor {
                 lastOp = "REMW";
                 RemoveWatchesRequest removeWatches = new RemoveWatchesRequest();
                 ByteBufferInputStream.byteBuffer2Record(request.request, removeWatches);
+
+                // 3MileBeach
+                requestName = "RemoveWatchesRequest";
+                request.record = removeWatches;
+
                 WatcherType type = WatcherType.fromInt(removeWatches.getType());
                 path = removeWatches.getPath();
                 boolean removed = zks.getZKDatabase().removeWatch(path, type, cnxn);
@@ -546,6 +579,11 @@ public class FinalRequestProcessor implements RequestProcessor {
                 lastOp = "GETE";
                 GetEphemeralsRequest getEphemerals = new GetEphemeralsRequest();
                 ByteBufferInputStream.byteBuffer2Record(request.request, getEphemerals);
+
+                // 3MileBeach
+                requestName = "GetEphemeralsRequest";
+                request.record = getEphemerals;
+
                 String prefixPath = getEphemerals.getPrefixPath();
                 Set<String> allEphems = zks.getZKDatabase().getDataTree().getEphemerals(request.sessionId);
                 List<String> ephemerals = new ArrayList<>();
@@ -597,6 +635,8 @@ public class FinalRequestProcessor implements RequestProcessor {
             TMB_Helper.println("process request: " + requestName + ", get response: " + TMB_Helper.getClassName(rsp));
 
             if (path == null || rsp == null) {
+//                TODO 3MileBeach
+//                rsp = new NullPointerResponse(requestName);
                 cnxn.sendResponse(hdr, rsp, "response");
             } else {
                 int opCode = request.type;

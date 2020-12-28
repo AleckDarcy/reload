@@ -1511,7 +1511,7 @@ public class ClientCnxn {
         try {
             RequestHeader h = new RequestHeader();
             h.setType(ZooDefs.OpCode.closeSession);
-
+            // TODO 3MileBeach
             submitRequest(h, null, null, null);
         } catch (InterruptedException e) {
             // ignore, close the send/event threads
