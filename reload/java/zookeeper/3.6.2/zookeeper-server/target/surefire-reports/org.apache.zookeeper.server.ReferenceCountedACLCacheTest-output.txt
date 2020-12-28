@@ -1,1 +1,0 @@
-2020-12-21 19:36:35,663 [myid:] - INFO  [main:ReferenceCountedACLCache@174] - Ignoring acl 1 as it does not exist in the cache

@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: org.apache.zookeeper.server.persistence.FileTxnSnapLogMetricsTest
--------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 16.229 s - in org.apache.zookeeper.server.persistence.FileTxnSnapLogMetricsTest

@@ -22,15 +22,15 @@ package org.apache.zookeeper.proto;
 import org.apache.jute.*;
 import org.apache.jute.Record; // JDK14 needs explicit import due to clash with java.lang.Record
 import org.apache.yetus.audience.InterfaceAudience;
-import org.apache.zookeeper.trace._3MB_Trace;
 @InterfaceAudience.Public
 public class CreateRequest implements Record {
   private String path;
   private byte[] data;
   private java.util.List<org.apache.zookeeper.data.ACL> acl;
   private int flags;
-  private org.apache.zookeeper.trace._3MB_Trace trace;
+  private org.apache.zookeeper.trace.TMB_Trace trace;
   public CreateRequest() {
+    this.trace = new org.apache.zookeeper.trace.TMB_Trace();
   }
   public CreateRequest(
         String path,
@@ -41,6 +41,7 @@ public class CreateRequest implements Record {
     this.data=data;
     this.acl=acl;
     this.flags=flags;
+    this.trace = new org.apache.zookeeper.trace.TMB_Trace();
   }
   public String getPath() {
     return path;
@@ -66,8 +67,12 @@ public class CreateRequest implements Record {
   public void setFlags(int m_) {
     flags=m_;
   }
-  public org.apache.zookeeper.trace._3MB_Trace getTrace() { return trace; }
-  public void setTrace(org.apache.zookeeper.trace._3MB_Trace t_) { trace = t_; }
+  public org.apache.zookeeper.trace.TMB_Trace getTrace() {
+    return trace;
+  }
+  public void setTrace(org.apache.zookeeper.trace.TMB_Trace m_) {
+    trace=m_;
+  }
   public void serialize(OutputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(this,tag);
     a_.writeString(path,"path");
@@ -83,6 +88,7 @@ public class CreateRequest implements Record {
       a_.endVector(acl,"acl");
     }
     a_.writeInt(flags,"flags");
+    a_.writeRecord(trace,"trace");
     a_.endRecord(this,tag);
   }
   public void deserialize(InputArchive a_, String tag) throws java.io.IOException {
@@ -102,6 +108,8 @@ public class CreateRequest implements Record {
     a_.endVector("acl");
     }
     flags=a_.readInt("flags");
+    trace= new org.apache.zookeeper.trace.TMB_Trace();
+    a_.readRecord(trace,"trace");
     a_.endRecord(tag);
 }
   public String toString() {
@@ -124,6 +132,7 @@ public class CreateRequest implements Record {
       a_.endVector(acl,"acl");
     }
     a_.writeInt(flags,"flags");
+    a_.writeRecord(trace,"trace");
       a_.endRecord(this,"");
       return new String(s.toByteArray(), "UTF-8");
     } catch (Throwable ex) {
@@ -159,6 +168,8 @@ public class CreateRequest implements Record {
     if (!ret) return ret;
     ret = (flags==peer.flags);
     if (!ret) return ret;
+    ret = trace.equals(peer.trace);
+    if (!ret) return ret;
      return ret;
   }
   public int hashCode() {
@@ -172,9 +183,11 @@ public class CreateRequest implements Record {
     result = 37*result + ret;
     ret = (int)flags;
     result = 37*result + ret;
+    ret = trace.hashCode();
+    result = 37*result + ret;
     return result;
   }
   public static String signature() {
-    return "LCreateRequest(sB[LACL(iLId(ss))]i)";
+    return "LCreateRequest(sB[LACL(iLId(ss))]iLTMB_Trace(l[LTMB_Event(ilsss)][LTMB_TFI(isl[LTMB_TFIMeta(sll)])]))";
   }
 }

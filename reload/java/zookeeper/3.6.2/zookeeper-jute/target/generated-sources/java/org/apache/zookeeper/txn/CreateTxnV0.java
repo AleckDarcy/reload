@@ -22,14 +22,12 @@ package org.apache.zookeeper.txn;
 import org.apache.jute.*;
 import org.apache.jute.Record; // JDK14 needs explicit import due to clash with java.lang.Record
 import org.apache.yetus.audience.InterfaceAudience;
-import org.apache.zookeeper.trace._3MB_Trace;
 @InterfaceAudience.Public
 public class CreateTxnV0 implements Record {
   private String path;
   private byte[] data;
   private java.util.List<org.apache.zookeeper.data.ACL> acl;
   private boolean ephemeral;
-  private org.apache.zookeeper.trace._3MB_Trace trace;
   public CreateTxnV0() {
   }
   public CreateTxnV0(
@@ -66,8 +64,10 @@ public class CreateTxnV0 implements Record {
   public void setEphemeral(boolean m_) {
     ephemeral=m_;
   }
-  public org.apache.zookeeper.trace._3MB_Trace getTrace() { return trace; }
-  public void setTrace(org.apache.zookeeper.trace._3MB_Trace t_) { trace = t_; }
+  public org.apache.zookeeper.trace.TMB_Trace getTrace() {
+    return null;
+  }
+  public void setTrace(org.apache.zookeeper.trace.TMB_Trace m_) {}
   public void serialize(OutputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(this,tag);
     a_.writeString(path,"path");

@@ -22,13 +22,11 @@ package org.apache.zookeeper.server.persistence;
 import org.apache.jute.*;
 import org.apache.jute.Record; // JDK14 needs explicit import due to clash with java.lang.Record
 import org.apache.yetus.audience.InterfaceAudience;
-import org.apache.zookeeper.trace._3MB_Trace;
 @InterfaceAudience.Public
 public class FileHeader implements Record {
   private int magic;
   private int version;
   private long dbid;
-  private org.apache.zookeeper.trace._3MB_Trace trace;
   public FileHeader() {
   }
   public FileHeader(
@@ -57,8 +55,10 @@ public class FileHeader implements Record {
   public void setDbid(long m_) {
     dbid=m_;
   }
-  public org.apache.zookeeper.trace._3MB_Trace getTrace() { return trace; }
-  public void setTrace(org.apache.zookeeper.trace._3MB_Trace t_) { trace = t_; }
+  public org.apache.zookeeper.trace.TMB_Trace getTrace() {
+    return null;
+  }
+  public void setTrace(org.apache.zookeeper.trace.TMB_Trace m_) {}
   public void serialize(OutputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(this,tag);
     a_.writeInt(magic,"magic");

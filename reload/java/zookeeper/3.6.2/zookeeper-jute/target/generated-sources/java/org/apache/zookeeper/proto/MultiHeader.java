@@ -22,14 +22,14 @@ package org.apache.zookeeper.proto;
 import org.apache.jute.*;
 import org.apache.jute.Record; // JDK14 needs explicit import due to clash with java.lang.Record
 import org.apache.yetus.audience.InterfaceAudience;
-import org.apache.zookeeper.trace._3MB_Trace;
 @InterfaceAudience.Public
 public class MultiHeader implements Record {
   private int type;
   private boolean done;
   private int err;
-  private org.apache.zookeeper.trace._3MB_Trace trace;
+  private org.apache.zookeeper.trace.TMB_Trace trace;
   public MultiHeader() {
+    this.trace = new org.apache.zookeeper.trace.TMB_Trace();
   }
   public MultiHeader(
         int type,
@@ -38,6 +38,7 @@ public class MultiHeader implements Record {
     this.type=type;
     this.done=done;
     this.err=err;
+    this.trace = new org.apache.zookeeper.trace.TMB_Trace();
   }
   public int getType() {
     return type;
@@ -57,13 +58,18 @@ public class MultiHeader implements Record {
   public void setErr(int m_) {
     err=m_;
   }
-  public org.apache.zookeeper.trace._3MB_Trace getTrace() { return trace; }
-  public void setTrace(org.apache.zookeeper.trace._3MB_Trace t_) { trace = t_; }
+  public org.apache.zookeeper.trace.TMB_Trace getTrace() {
+    return trace;
+  }
+  public void setTrace(org.apache.zookeeper.trace.TMB_Trace m_) {
+    trace=m_;
+  }
   public void serialize(OutputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(this,tag);
     a_.writeInt(type,"type");
     a_.writeBool(done,"done");
     a_.writeInt(err,"err");
+    a_.writeRecord(trace,"trace");
     a_.endRecord(this,tag);
   }
   public void deserialize(InputArchive a_, String tag) throws java.io.IOException {
@@ -71,6 +77,8 @@ public class MultiHeader implements Record {
     type=a_.readInt("type");
     done=a_.readBool("done");
     err=a_.readInt("err");
+    trace= new org.apache.zookeeper.trace.TMB_Trace();
+    a_.readRecord(trace,"trace");
     a_.endRecord(tag);
 }
   public String toString() {
@@ -83,6 +91,7 @@ public class MultiHeader implements Record {
     a_.writeInt(type,"type");
     a_.writeBool(done,"done");
     a_.writeInt(err,"err");
+    a_.writeRecord(trace,"trace");
       a_.endRecord(this,"");
       return new String(s.toByteArray(), "UTF-8");
     } catch (Throwable ex) {
@@ -110,6 +119,8 @@ public class MultiHeader implements Record {
     if (ret != 0) return ret;
     ret = (err == peer.err)? 0 :((err<peer.err)?-1:1);
     if (ret != 0) return ret;
+    ret = trace.compareTo(peer.trace);
+    if (ret != 0) return ret;
      return ret;
   }
   public boolean equals(Object peer_) {
@@ -127,6 +138,8 @@ public class MultiHeader implements Record {
     if (!ret) return ret;
     ret = (err==peer.err);
     if (!ret) return ret;
+    ret = trace.equals(peer.trace);
+    if (!ret) return ret;
      return ret;
   }
   public int hashCode() {
@@ -138,9 +151,11 @@ public class MultiHeader implements Record {
     result = 37*result + ret;
     ret = (int)err;
     result = 37*result + ret;
+    ret = trace.hashCode();
+    result = 37*result + ret;
     return result;
   }
   public static String signature() {
-    return "LMultiHeader(izi)";
+    return "LMultiHeader(iziLTMB_Trace(l[LTMB_Event(ilsss)][LTMB_TFI(isl[LTMB_TFIMeta(sll)])]))";
   }
 }

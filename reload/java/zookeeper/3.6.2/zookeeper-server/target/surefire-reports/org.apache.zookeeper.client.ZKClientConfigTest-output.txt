@@ -1,2 +1,0 @@
-2020-12-21 19:48:06,454 [myid:] - INFO  [Time-limited test:X509Util@77] - Setting -D jdk.tls.rejectClientInitiatedRenegotiation=true to disable client-initiated TLS renegotiation
-2020-12-21 19:48:06,482 [myid:] - INFO  [Time-limited test:ZKConfig@192] - Reading configuration from: /Users/aleck/go/src/github.com/AleckDarcy/reload/reload/java/zookeeper/3.6.2/zookeeper-server/src/test/resources/data/clientConfig17566167666841909847.conf

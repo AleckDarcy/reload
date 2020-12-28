@@ -22,19 +22,20 @@ package org.apache.zookeeper.proto;
 import org.apache.jute.*;
 import org.apache.jute.Record; // JDK14 needs explicit import due to clash with java.lang.Record
 import org.apache.yetus.audience.InterfaceAudience;
-import org.apache.zookeeper.trace._3MB_Trace;
 @InterfaceAudience.Public
 public class GetACLResponse implements Record {
   private java.util.List<org.apache.zookeeper.data.ACL> acl;
   private org.apache.zookeeper.data.Stat stat;
-  private org.apache.zookeeper.trace._3MB_Trace trace;
+  private org.apache.zookeeper.trace.TMB_Trace trace;
   public GetACLResponse() {
+    this.trace = new org.apache.zookeeper.trace.TMB_Trace();
   }
   public GetACLResponse(
         java.util.List<org.apache.zookeeper.data.ACL> acl,
         org.apache.zookeeper.data.Stat stat) {
     this.acl=acl;
     this.stat=stat;
+    this.trace = new org.apache.zookeeper.trace.TMB_Trace();
   }
   public java.util.List<org.apache.zookeeper.data.ACL> getAcl() {
     return acl;
@@ -48,8 +49,12 @@ public class GetACLResponse implements Record {
   public void setStat(org.apache.zookeeper.data.Stat m_) {
     stat=m_;
   }
-  public org.apache.zookeeper.trace._3MB_Trace getTrace() { return trace; }
-  public void setTrace(org.apache.zookeeper.trace._3MB_Trace t_) { trace = t_; }
+  public org.apache.zookeeper.trace.TMB_Trace getTrace() {
+    return trace;
+  }
+  public void setTrace(org.apache.zookeeper.trace.TMB_Trace m_) {
+    trace=m_;
+  }
   public void serialize(OutputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(this,tag);
     {
@@ -63,6 +68,7 @@ public class GetACLResponse implements Record {
       a_.endVector(acl,"acl");
     }
     a_.writeRecord(stat,"stat");
+    a_.writeRecord(trace,"trace");
     a_.endRecord(this,tag);
   }
   public void deserialize(InputArchive a_, String tag) throws java.io.IOException {
@@ -81,6 +87,8 @@ public class GetACLResponse implements Record {
     }
     stat= new org.apache.zookeeper.data.Stat();
     a_.readRecord(stat,"stat");
+    trace= new org.apache.zookeeper.trace.TMB_Trace();
+    a_.readRecord(trace,"trace");
     a_.endRecord(tag);
 }
   public String toString() {
@@ -101,6 +109,7 @@ public class GetACLResponse implements Record {
       a_.endVector(acl,"acl");
     }
     a_.writeRecord(stat,"stat");
+    a_.writeRecord(trace,"trace");
       a_.endRecord(this,"");
       return new String(s.toByteArray(), "UTF-8");
     } catch (Throwable ex) {
@@ -132,6 +141,8 @@ public class GetACLResponse implements Record {
     if (!ret) return ret;
     ret = stat.equals(peer.stat);
     if (!ret) return ret;
+    ret = trace.equals(peer.trace);
+    if (!ret) return ret;
      return ret;
   }
   public int hashCode() {
@@ -141,9 +152,11 @@ public class GetACLResponse implements Record {
     result = 37*result + ret;
     ret = stat.hashCode();
     result = 37*result + ret;
+    ret = trace.hashCode();
+    result = 37*result + ret;
     return result;
   }
   public static String signature() {
-    return "LGetACLResponse([LACL(iLId(ss))]LStat(lllliiiliil))";
+    return "LGetACLResponse([LACL(iLId(ss))]LStat(lllliiiliil)LTMB_Trace(l[LTMB_Event(ilsss)][LTMB_TFI(isl[LTMB_TFIMeta(sll)])]))";
   }
 }

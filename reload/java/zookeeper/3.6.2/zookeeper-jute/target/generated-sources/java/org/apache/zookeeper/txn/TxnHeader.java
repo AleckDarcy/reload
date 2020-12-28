@@ -22,7 +22,6 @@ package org.apache.zookeeper.txn;
 import org.apache.jute.*;
 import org.apache.jute.Record; // JDK14 needs explicit import due to clash with java.lang.Record
 import org.apache.yetus.audience.InterfaceAudience;
-import org.apache.zookeeper.trace._3MB_Trace;
 @InterfaceAudience.Public
 public class TxnHeader implements Record {
   private long clientId;
@@ -30,7 +29,6 @@ public class TxnHeader implements Record {
   private long zxid;
   private long time;
   private int type;
-  private org.apache.zookeeper.trace._3MB_Trace trace;
   public TxnHeader() {
   }
   public TxnHeader(
@@ -75,8 +73,10 @@ public class TxnHeader implements Record {
   public void setType(int m_) {
     type=m_;
   }
-  public org.apache.zookeeper.trace._3MB_Trace getTrace() { return trace; }
-  public void setTrace(org.apache.zookeeper.trace._3MB_Trace t_) { trace = t_; }
+  public org.apache.zookeeper.trace.TMB_Trace getTrace() {
+    return null;
+  }
+  public void setTrace(org.apache.zookeeper.trace.TMB_Trace m_) {}
   public void serialize(OutputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(this,tag);
     a_.writeLong(clientId,"clientId");

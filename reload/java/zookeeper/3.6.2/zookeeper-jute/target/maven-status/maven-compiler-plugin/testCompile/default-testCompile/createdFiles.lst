@@ -1,6 +1,0 @@
-org/apache/jute/TestCheckWriterReader.class
-org/apache/jute/TestOutputArchive.class
-org/apache/jute/BinaryInputArchiveTest.class
-org/apache/jute/TestInputArchive.class
-org/apache/jute/TestReader.class
-org/apache/jute/TestWriter.class

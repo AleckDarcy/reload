@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: org.apache.zookeeper.test.ChrootClientTest
--------------------------------------------------------------------------------
-Tests run: 16, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 149.994 s - in org.apache.zookeeper.test.ChrootClientTest

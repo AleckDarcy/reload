@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: org.apache.zookeeper.test.ACLTest
--------------------------------------------------------------------------------
-Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 25.298 s - in org.apache.zookeeper.test.ACLTest

@@ -22,14 +22,14 @@ package org.apache.zookeeper.proto;
 import org.apache.jute.*;
 import org.apache.jute.Record; // JDK14 needs explicit import due to clash with java.lang.Record
 import org.apache.yetus.audience.InterfaceAudience;
-import org.apache.zookeeper.trace._3MB_Trace;
 @InterfaceAudience.Public
 public class SetACLRequest implements Record {
   private String path;
   private java.util.List<org.apache.zookeeper.data.ACL> acl;
   private int version;
-  private org.apache.zookeeper.trace._3MB_Trace trace;
+  private org.apache.zookeeper.trace.TMB_Trace trace;
   public SetACLRequest() {
+    this.trace = new org.apache.zookeeper.trace.TMB_Trace();
   }
   public SetACLRequest(
         String path,
@@ -38,6 +38,7 @@ public class SetACLRequest implements Record {
     this.path=path;
     this.acl=acl;
     this.version=version;
+    this.trace = new org.apache.zookeeper.trace.TMB_Trace();
   }
   public String getPath() {
     return path;
@@ -57,8 +58,12 @@ public class SetACLRequest implements Record {
   public void setVersion(int m_) {
     version=m_;
   }
-  public org.apache.zookeeper.trace._3MB_Trace getTrace() { return trace; }
-  public void setTrace(org.apache.zookeeper.trace._3MB_Trace t_) { trace = t_; }
+  public org.apache.zookeeper.trace.TMB_Trace getTrace() {
+    return trace;
+  }
+  public void setTrace(org.apache.zookeeper.trace.TMB_Trace m_) {
+    trace=m_;
+  }
   public void serialize(OutputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(this,tag);
     a_.writeString(path,"path");
@@ -73,6 +78,7 @@ public class SetACLRequest implements Record {
       a_.endVector(acl,"acl");
     }
     a_.writeInt(version,"version");
+    a_.writeRecord(trace,"trace");
     a_.endRecord(this,tag);
   }
   public void deserialize(InputArchive a_, String tag) throws java.io.IOException {
@@ -91,6 +97,8 @@ public class SetACLRequest implements Record {
     a_.endVector("acl");
     }
     version=a_.readInt("version");
+    trace= new org.apache.zookeeper.trace.TMB_Trace();
+    a_.readRecord(trace,"trace");
     a_.endRecord(tag);
 }
   public String toString() {
@@ -112,6 +120,7 @@ public class SetACLRequest implements Record {
       a_.endVector(acl,"acl");
     }
     a_.writeInt(version,"version");
+    a_.writeRecord(trace,"trace");
       a_.endRecord(this,"");
       return new String(s.toByteArray(), "UTF-8");
     } catch (Throwable ex) {
@@ -145,6 +154,8 @@ public class SetACLRequest implements Record {
     if (!ret) return ret;
     ret = (version==peer.version);
     if (!ret) return ret;
+    ret = trace.equals(peer.trace);
+    if (!ret) return ret;
      return ret;
   }
   public int hashCode() {
@@ -156,9 +167,11 @@ public class SetACLRequest implements Record {
     result = 37*result + ret;
     ret = (int)version;
     result = 37*result + ret;
+    ret = trace.hashCode();
+    result = 37*result + ret;
     return result;
   }
   public static String signature() {
-    return "LSetACLRequest(s[LACL(iLId(ss))]i)";
+    return "LSetACLRequest(s[LACL(iLId(ss))]iLTMB_Trace(l[LTMB_Event(ilsss)][LTMB_TFI(isl[LTMB_TFIMeta(sll)])]))";
   }
 }

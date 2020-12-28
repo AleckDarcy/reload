@@ -22,12 +22,10 @@ package org.apache.zookeeper.txn;
 import org.apache.jute.*;
 import org.apache.jute.Record; // JDK14 needs explicit import due to clash with java.lang.Record
 import org.apache.yetus.audience.InterfaceAudience;
-import org.apache.zookeeper.trace._3MB_Trace;
 @InterfaceAudience.Public
 public class CheckVersionTxn implements Record {
   private String path;
   private int version;
-  private org.apache.zookeeper.trace._3MB_Trace trace;
   public CheckVersionTxn() {
   }
   public CheckVersionTxn(
@@ -48,8 +46,10 @@ public class CheckVersionTxn implements Record {
   public void setVersion(int m_) {
     version=m_;
   }
-  public org.apache.zookeeper.trace._3MB_Trace getTrace() { return trace; }
-  public void setTrace(org.apache.zookeeper.trace._3MB_Trace t_) { trace = t_; }
+  public org.apache.zookeeper.trace.TMB_Trace getTrace() {
+    return null;
+  }
+  public void setTrace(org.apache.zookeeper.trace.TMB_Trace m_) {}
   public void serialize(OutputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(this,tag);
     a_.writeString(path,"path");

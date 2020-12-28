@@ -22,15 +22,15 @@ package org.apache.zookeeper.proto;
 import org.apache.jute.*;
 import org.apache.jute.Record; // JDK14 needs explicit import due to clash with java.lang.Record
 import org.apache.yetus.audience.InterfaceAudience;
-import org.apache.zookeeper.trace._3MB_Trace;
 @InterfaceAudience.Public
 public class ConnectResponse implements Record {
   private int protocolVersion;
   private int timeOut;
   private long sessionId;
   private byte[] passwd;
-  private org.apache.zookeeper.trace._3MB_Trace trace;
+  private org.apache.zookeeper.trace.TMB_Trace trace;
   public ConnectResponse() {
+    this.trace = new org.apache.zookeeper.trace.TMB_Trace();
   }
   public ConnectResponse(
         int protocolVersion,
@@ -41,6 +41,7 @@ public class ConnectResponse implements Record {
     this.timeOut=timeOut;
     this.sessionId=sessionId;
     this.passwd=passwd;
+    this.trace = new org.apache.zookeeper.trace.TMB_Trace();
   }
   public int getProtocolVersion() {
     return protocolVersion;
@@ -66,14 +67,19 @@ public class ConnectResponse implements Record {
   public void setPasswd(byte[] m_) {
     passwd=m_;
   }
-  public org.apache.zookeeper.trace._3MB_Trace getTrace() { return trace; }
-  public void setTrace(org.apache.zookeeper.trace._3MB_Trace t_) { trace = t_; }
+  public org.apache.zookeeper.trace.TMB_Trace getTrace() {
+    return trace;
+  }
+  public void setTrace(org.apache.zookeeper.trace.TMB_Trace m_) {
+    trace=m_;
+  }
   public void serialize(OutputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(this,tag);
     a_.writeInt(protocolVersion,"protocolVersion");
     a_.writeInt(timeOut,"timeOut");
     a_.writeLong(sessionId,"sessionId");
     a_.writeBuffer(passwd,"passwd");
+    a_.writeRecord(trace,"trace");
     a_.endRecord(this,tag);
   }
   public void deserialize(InputArchive a_, String tag) throws java.io.IOException {
@@ -82,6 +88,8 @@ public class ConnectResponse implements Record {
     timeOut=a_.readInt("timeOut");
     sessionId=a_.readLong("sessionId");
     passwd=a_.readBuffer("passwd");
+    trace= new org.apache.zookeeper.trace.TMB_Trace();
+    a_.readRecord(trace,"trace");
     a_.endRecord(tag);
 }
   public String toString() {
@@ -95,6 +103,7 @@ public class ConnectResponse implements Record {
     a_.writeInt(timeOut,"timeOut");
     a_.writeLong(sessionId,"sessionId");
     a_.writeBuffer(passwd,"passwd");
+    a_.writeRecord(trace,"trace");
       a_.endRecord(this,"");
       return new String(s.toByteArray(), "UTF-8");
     } catch (Throwable ex) {
@@ -128,6 +137,8 @@ public class ConnectResponse implements Record {
       ret = org.apache.jute.Utils.compareBytes(my,0,my.length,ur,0,ur.length);
     }
     if (ret != 0) return ret;
+    ret = trace.compareTo(peer.trace);
+    if (ret != 0) return ret;
      return ret;
   }
   public boolean equals(Object peer_) {
@@ -147,6 +158,8 @@ public class ConnectResponse implements Record {
     if (!ret) return ret;
     ret = org.apache.jute.Utils.bufEquals(passwd,peer.passwd);
     if (!ret) return ret;
+    ret = trace.equals(peer.trace);
+    if (!ret) return ret;
      return ret;
   }
   public int hashCode() {
@@ -160,9 +173,11 @@ public class ConnectResponse implements Record {
     result = 37*result + ret;
     ret = java.util.Arrays.toString(passwd).hashCode();
     result = 37*result + ret;
+    ret = trace.hashCode();
+    result = 37*result + ret;
     return result;
   }
   public static String signature() {
-    return "LConnectResponse(iilB)";
+    return "LConnectResponse(iilBLTMB_Trace(l[LTMB_Event(ilsss)][LTMB_TFI(isl[LTMB_TFIMeta(sll)])]))";
   }
 }

@@ -1,9 +1,0 @@
-2020-12-21 19:33:43,726 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.
-2020-12-21 19:33:43,730 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.
-2020-12-21 19:33:43,745 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testEmptyRoundTrip
-2020-12-21 19:33:43,745 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testEmptyRoundTrip
-2020-12-21 19:33:43,776 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 9023
-2020-12-21 19:33:43,776 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
-2020-12-21 19:33:43,776 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testEmptyRoundTrip
-2020-12-21 19:33:43,777 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testEmptyRoundTrip
-2020-12-21 19:33:43,777 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testEmptyRoundTrip

@@ -23,22 +23,22 @@ import org.apache.jute.*;
 import org.apache.jute.Record; // JDK14 needs explicit import due to clash with java.lang.Record
 import org.apache.yetus.audience.InterfaceAudience;
 @InterfaceAudience.Public
-public class SyncResponse implements Record {
-  private String path;
+public class NullPointerResponse implements Record {
+  private String requestName;
   private org.apache.zookeeper.trace.TMB_Trace trace;
-  public SyncResponse() {
+  public NullPointerResponse() {
     this.trace = new org.apache.zookeeper.trace.TMB_Trace();
   }
-  public SyncResponse(
-        String path) {
-    this.path=path;
+  public NullPointerResponse(
+        String requestName) {
+    this.requestName=requestName;
     this.trace = new org.apache.zookeeper.trace.TMB_Trace();
   }
-  public String getPath() {
-    return path;
+  public String getRequestName() {
+    return requestName;
   }
-  public void setPath(String m_) {
-    path=m_;
+  public void setRequestName(String m_) {
+    requestName=m_;
   }
   public org.apache.zookeeper.trace.TMB_Trace getTrace() {
     return trace;
@@ -48,13 +48,13 @@ public class SyncResponse implements Record {
   }
   public void serialize(OutputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(this,tag);
-    a_.writeString(path,"path");
+    a_.writeString(requestName,"requestName");
     a_.writeRecord(trace,"trace");
     a_.endRecord(this,tag);
   }
   public void deserialize(InputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(tag);
-    path=a_.readString("path");
+    requestName=a_.readString("requestName");
     trace= new org.apache.zookeeper.trace.TMB_Trace();
     a_.readRecord(trace,"trace");
     a_.endRecord(tag);
@@ -66,7 +66,7 @@ public class SyncResponse implements Record {
       ToStringOutputArchive a_ = 
         new ToStringOutputArchive(s);
       a_.startRecord(this,"");
-    a_.writeString(path,"path");
+    a_.writeString(requestName,"requestName");
     a_.writeRecord(trace,"trace");
       a_.endRecord(this,"");
       return new String(s.toByteArray(), "UTF-8");
@@ -84,27 +84,27 @@ public class SyncResponse implements Record {
     deserialize(archive, "");
   }
   public int compareTo (Object peer_) throws ClassCastException {
-    if (!(peer_ instanceof SyncResponse)) {
+    if (!(peer_ instanceof NullPointerResponse)) {
       throw new ClassCastException("Comparing different types of records.");
     }
-    SyncResponse peer = (SyncResponse) peer_;
+    NullPointerResponse peer = (NullPointerResponse) peer_;
     int ret = 0;
-    ret = path.compareTo(peer.path);
+    ret = requestName.compareTo(peer.requestName);
     if (ret != 0) return ret;
     ret = trace.compareTo(peer.trace);
     if (ret != 0) return ret;
      return ret;
   }
   public boolean equals(Object peer_) {
-    if (!(peer_ instanceof SyncResponse)) {
+    if (!(peer_ instanceof NullPointerResponse)) {
       return false;
     }
     if (peer_ == this) {
       return true;
     }
-    SyncResponse peer = (SyncResponse) peer_;
+    NullPointerResponse peer = (NullPointerResponse) peer_;
     boolean ret = false;
-    ret = path.equals(peer.path);
+    ret = requestName.equals(peer.requestName);
     if (!ret) return ret;
     ret = trace.equals(peer.trace);
     if (!ret) return ret;
@@ -113,13 +113,13 @@ public class SyncResponse implements Record {
   public int hashCode() {
     int result = 17;
     int ret;
-    ret = path.hashCode();
+    ret = requestName.hashCode();
     result = 37*result + ret;
     ret = trace.hashCode();
     result = 37*result + ret;
     return result;
   }
   public static String signature() {
-    return "LSyncResponse(sLTMB_Trace(l[LTMB_Event(ilsss)][LTMB_TFI(isl[LTMB_TFIMeta(sll)])]))";
+    return "LNullPointerResponse(sLTMB_Trace(l[LTMB_Event(ilsss)][LTMB_TFI(isl[LTMB_TFIMeta(sll)])]))";
   }
 }

@@ -22,7 +22,6 @@ package org.apache.zookeeper.proto;
 import org.apache.jute.*;
 import org.apache.jute.Record; // JDK14 needs explicit import due to clash with java.lang.Record
 import org.apache.yetus.audience.InterfaceAudience;
-import org.apache.zookeeper.trace._3MB_Trace;
 @InterfaceAudience.Public
 public class SetWatches2 implements Record {
   private long relativeZxid;
@@ -31,8 +30,9 @@ public class SetWatches2 implements Record {
   private java.util.List<String> childWatches;
   private java.util.List<String> persistentWatches;
   private java.util.List<String> persistentRecursiveWatches;
-  private org.apache.zookeeper.trace._3MB_Trace trace;
+  private org.apache.zookeeper.trace.TMB_Trace trace;
   public SetWatches2() {
+    this.trace = new org.apache.zookeeper.trace.TMB_Trace();
   }
   public SetWatches2(
         long relativeZxid,
@@ -47,6 +47,7 @@ public class SetWatches2 implements Record {
     this.childWatches=childWatches;
     this.persistentWatches=persistentWatches;
     this.persistentRecursiveWatches=persistentRecursiveWatches;
+    this.trace = new org.apache.zookeeper.trace.TMB_Trace();
   }
   public long getRelativeZxid() {
     return relativeZxid;
@@ -84,8 +85,12 @@ public class SetWatches2 implements Record {
   public void setPersistentRecursiveWatches(java.util.List<String> m_) {
     persistentRecursiveWatches=m_;
   }
-  public org.apache.zookeeper.trace._3MB_Trace getTrace() { return trace; }
-  public void setTrace(org.apache.zookeeper.trace._3MB_Trace t_) { trace = t_; }
+  public org.apache.zookeeper.trace.TMB_Trace getTrace() {
+    return trace;
+  }
+  public void setTrace(org.apache.zookeeper.trace.TMB_Trace m_) {
+    trace=m_;
+  }
   public void serialize(OutputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(this,tag);
     a_.writeLong(relativeZxid,"relativeZxid");
@@ -139,6 +144,7 @@ public class SetWatches2 implements Record {
       }
       a_.endVector(persistentRecursiveWatches,"persistentRecursiveWatches");
     }
+    a_.writeRecord(trace,"trace");
     a_.endRecord(this,tag);
   }
   public void deserialize(InputArchive a_, String tag) throws java.io.IOException {
@@ -199,6 +205,8 @@ public class SetWatches2 implements Record {
       }
     a_.endVector("persistentRecursiveWatches");
     }
+    trace= new org.apache.zookeeper.trace.TMB_Trace();
+    a_.readRecord(trace,"trace");
     a_.endRecord(tag);
 }
   public String toString() {
@@ -259,6 +267,7 @@ public class SetWatches2 implements Record {
       }
       a_.endVector(persistentRecursiveWatches,"persistentRecursiveWatches");
     }
+    a_.writeRecord(trace,"trace");
       a_.endRecord(this,"");
       return new String(s.toByteArray(), "UTF-8");
     } catch (Throwable ex) {
@@ -298,6 +307,8 @@ public class SetWatches2 implements Record {
     if (!ret) return ret;
     ret = persistentRecursiveWatches.equals(peer.persistentRecursiveWatches);
     if (!ret) return ret;
+    ret = trace.equals(peer.trace);
+    if (!ret) return ret;
      return ret;
   }
   public int hashCode() {
@@ -315,9 +326,11 @@ public class SetWatches2 implements Record {
     result = 37*result + ret;
     ret = persistentRecursiveWatches.hashCode();
     result = 37*result + ret;
+    ret = trace.hashCode();
+    result = 37*result + ret;
     return result;
   }
   public static String signature() {
-    return "LSetWatches2(l[s][s][s][s][s])";
+    return "LSetWatches2(l[s][s][s][s][s]LTMB_Trace(l[LTMB_Event(ilsss)][LTMB_TFI(isl[LTMB_TFIMeta(sll)])]))";
   }
 }

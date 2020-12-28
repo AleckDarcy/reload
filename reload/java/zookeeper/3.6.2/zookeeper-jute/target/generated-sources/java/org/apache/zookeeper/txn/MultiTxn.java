@@ -22,11 +22,9 @@ package org.apache.zookeeper.txn;
 import org.apache.jute.*;
 import org.apache.jute.Record; // JDK14 needs explicit import due to clash with java.lang.Record
 import org.apache.yetus.audience.InterfaceAudience;
-import org.apache.zookeeper.trace._3MB_Trace;
 @InterfaceAudience.Public
 public class MultiTxn implements Record {
   private java.util.List<org.apache.zookeeper.txn.Txn> txns;
-  private org.apache.zookeeper.trace._3MB_Trace trace;
   public MultiTxn() {
   }
   public MultiTxn(
@@ -39,8 +37,10 @@ public class MultiTxn implements Record {
   public void setTxns(java.util.List<org.apache.zookeeper.txn.Txn> m_) {
     txns=m_;
   }
-  public org.apache.zookeeper.trace._3MB_Trace getTrace() { return trace; }
-  public void setTrace(org.apache.zookeeper.trace._3MB_Trace t_) { trace = t_; }
+  public org.apache.zookeeper.trace.TMB_Trace getTrace() {
+    return null;
+  }
+  public void setTrace(org.apache.zookeeper.trace.TMB_Trace m_) {}
   public void serialize(OutputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(this,tag);
     {

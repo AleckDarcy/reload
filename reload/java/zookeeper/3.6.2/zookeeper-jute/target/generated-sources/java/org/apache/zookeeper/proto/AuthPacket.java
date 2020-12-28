@@ -22,14 +22,14 @@ package org.apache.zookeeper.proto;
 import org.apache.jute.*;
 import org.apache.jute.Record; // JDK14 needs explicit import due to clash with java.lang.Record
 import org.apache.yetus.audience.InterfaceAudience;
-import org.apache.zookeeper.trace._3MB_Trace;
 @InterfaceAudience.Public
 public class AuthPacket implements Record {
   private int type;
   private String scheme;
   private byte[] auth;
-  private org.apache.zookeeper.trace._3MB_Trace trace;
+  private org.apache.zookeeper.trace.TMB_Trace trace;
   public AuthPacket() {
+    this.trace = new org.apache.zookeeper.trace.TMB_Trace();
   }
   public AuthPacket(
         int type,
@@ -38,6 +38,7 @@ public class AuthPacket implements Record {
     this.type=type;
     this.scheme=scheme;
     this.auth=auth;
+    this.trace = new org.apache.zookeeper.trace.TMB_Trace();
   }
   public int getType() {
     return type;
@@ -57,13 +58,18 @@ public class AuthPacket implements Record {
   public void setAuth(byte[] m_) {
     auth=m_;
   }
-  public org.apache.zookeeper.trace._3MB_Trace getTrace() { return trace; }
-  public void setTrace(org.apache.zookeeper.trace._3MB_Trace t_) { trace = t_; }
+  public org.apache.zookeeper.trace.TMB_Trace getTrace() {
+    return trace;
+  }
+  public void setTrace(org.apache.zookeeper.trace.TMB_Trace m_) {
+    trace=m_;
+  }
   public void serialize(OutputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(this,tag);
     a_.writeInt(type,"type");
     a_.writeString(scheme,"scheme");
     a_.writeBuffer(auth,"auth");
+    a_.writeRecord(trace,"trace");
     a_.endRecord(this,tag);
   }
   public void deserialize(InputArchive a_, String tag) throws java.io.IOException {
@@ -71,6 +77,8 @@ public class AuthPacket implements Record {
     type=a_.readInt("type");
     scheme=a_.readString("scheme");
     auth=a_.readBuffer("auth");
+    trace= new org.apache.zookeeper.trace.TMB_Trace();
+    a_.readRecord(trace,"trace");
     a_.endRecord(tag);
 }
   public String toString() {
@@ -83,6 +91,7 @@ public class AuthPacket implements Record {
     a_.writeInt(type,"type");
     a_.writeString(scheme,"scheme");
     a_.writeBuffer(auth,"auth");
+    a_.writeRecord(trace,"trace");
       a_.endRecord(this,"");
       return new String(s.toByteArray(), "UTF-8");
     } catch (Throwable ex) {
@@ -114,6 +123,8 @@ public class AuthPacket implements Record {
       ret = org.apache.jute.Utils.compareBytes(my,0,my.length,ur,0,ur.length);
     }
     if (ret != 0) return ret;
+    ret = trace.compareTo(peer.trace);
+    if (ret != 0) return ret;
      return ret;
   }
   public boolean equals(Object peer_) {
@@ -131,6 +142,8 @@ public class AuthPacket implements Record {
     if (!ret) return ret;
     ret = org.apache.jute.Utils.bufEquals(auth,peer.auth);
     if (!ret) return ret;
+    ret = trace.equals(peer.trace);
+    if (!ret) return ret;
      return ret;
   }
   public int hashCode() {
@@ -142,9 +155,11 @@ public class AuthPacket implements Record {
     result = 37*result + ret;
     ret = java.util.Arrays.toString(auth).hashCode();
     result = 37*result + ret;
+    ret = trace.hashCode();
+    result = 37*result + ret;
     return result;
   }
   public static String signature() {
-    return "LAuthPacket(isB)";
+    return "LAuthPacket(isBLTMB_Trace(l[LTMB_Event(ilsss)][LTMB_TFI(isl[LTMB_TFIMeta(sll)])]))";
   }
 }

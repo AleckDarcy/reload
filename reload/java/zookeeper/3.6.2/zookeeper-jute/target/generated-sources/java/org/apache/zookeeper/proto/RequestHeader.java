@@ -22,19 +22,20 @@ package org.apache.zookeeper.proto;
 import org.apache.jute.*;
 import org.apache.jute.Record; // JDK14 needs explicit import due to clash with java.lang.Record
 import org.apache.yetus.audience.InterfaceAudience;
-import org.apache.zookeeper.trace._3MB_Trace;
 @InterfaceAudience.Public
 public class RequestHeader implements Record {
   private int xid;
   private int type;
-  private org.apache.zookeeper.trace._3MB_Trace trace;
+  private org.apache.zookeeper.trace.TMB_Trace trace;
   public RequestHeader() {
+    this.trace = new org.apache.zookeeper.trace.TMB_Trace();
   }
   public RequestHeader(
         int xid,
         int type) {
     this.xid=xid;
     this.type=type;
+    this.trace = new org.apache.zookeeper.trace.TMB_Trace();
   }
   public int getXid() {
     return xid;
@@ -48,18 +49,25 @@ public class RequestHeader implements Record {
   public void setType(int m_) {
     type=m_;
   }
-  public org.apache.zookeeper.trace._3MB_Trace getTrace() { return trace; }
-  public void setTrace(org.apache.zookeeper.trace._3MB_Trace t_) { trace = t_; }
+  public org.apache.zookeeper.trace.TMB_Trace getTrace() {
+    return trace;
+  }
+  public void setTrace(org.apache.zookeeper.trace.TMB_Trace m_) {
+    trace=m_;
+  }
   public void serialize(OutputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(this,tag);
     a_.writeInt(xid,"xid");
     a_.writeInt(type,"type");
+    a_.writeRecord(trace,"trace");
     a_.endRecord(this,tag);
   }
   public void deserialize(InputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(tag);
     xid=a_.readInt("xid");
     type=a_.readInt("type");
+    trace= new org.apache.zookeeper.trace.TMB_Trace();
+    a_.readRecord(trace,"trace");
     a_.endRecord(tag);
 }
   public String toString() {
@@ -71,6 +79,7 @@ public class RequestHeader implements Record {
       a_.startRecord(this,"");
     a_.writeInt(xid,"xid");
     a_.writeInt(type,"type");
+    a_.writeRecord(trace,"trace");
       a_.endRecord(this,"");
       return new String(s.toByteArray(), "UTF-8");
     } catch (Throwable ex) {
@@ -96,6 +105,8 @@ public class RequestHeader implements Record {
     if (ret != 0) return ret;
     ret = (type == peer.type)? 0 :((type<peer.type)?-1:1);
     if (ret != 0) return ret;
+    ret = trace.compareTo(peer.trace);
+    if (ret != 0) return ret;
      return ret;
   }
   public boolean equals(Object peer_) {
@@ -111,6 +122,8 @@ public class RequestHeader implements Record {
     if (!ret) return ret;
     ret = (type==peer.type);
     if (!ret) return ret;
+    ret = trace.equals(peer.trace);
+    if (!ret) return ret;
      return ret;
   }
   public int hashCode() {
@@ -120,9 +133,11 @@ public class RequestHeader implements Record {
     result = 37*result + ret;
     ret = (int)type;
     result = 37*result + ret;
+    ret = trace.hashCode();
+    result = 37*result + ret;
     return result;
   }
   public static String signature() {
-    return "LRequestHeader(ii)";
+    return "LRequestHeader(iiLTMB_Trace(l[LTMB_Event(ilsss)][LTMB_TFI(isl[LTMB_TFIMeta(sll)])]))";
   }
 }

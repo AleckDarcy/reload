@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: org.apache.zookeeper.server.util.RequestPathMetricsCollectorTest
--------------------------------------------------------------------------------
-Tests run: 7, Failures: 0, Errors: 0, Skipped: 1, Time elapsed: 50.197 s - in org.apache.zookeeper.server.util.RequestPathMetricsCollectorTest

@@ -22,12 +22,10 @@ package org.apache.zookeeper.data;
 import org.apache.jute.*;
 import org.apache.jute.Record; // JDK14 needs explicit import due to clash with java.lang.Record
 import org.apache.yetus.audience.InterfaceAudience;
-import org.apache.zookeeper.trace._3MB_Trace;
 @InterfaceAudience.Public
 public class Id implements Record {
   private String scheme;
   private String id;
-  private org.apache.zookeeper.trace._3MB_Trace trace;
   public Id() {
   }
   public Id(
@@ -48,8 +46,10 @@ public class Id implements Record {
   public void setId(String m_) {
     id=m_;
   }
-  public org.apache.zookeeper.trace._3MB_Trace getTrace() { return trace; }
-  public void setTrace(org.apache.zookeeper.trace._3MB_Trace t_) { trace = t_; }
+  public org.apache.zookeeper.trace.TMB_Trace getTrace() {
+    return null;
+  }
+  public void setTrace(org.apache.zookeeper.trace.TMB_Trace m_) {}
   public void serialize(OutputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(this,tag);
     a_.writeString(scheme,"scheme");

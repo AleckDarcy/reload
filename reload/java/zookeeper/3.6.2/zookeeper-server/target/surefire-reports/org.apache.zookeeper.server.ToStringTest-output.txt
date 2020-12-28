@@ -1,9 +1,0 @@
-2020-12-21 19:40:16,855 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.
-2020-12-21 19:40:16,859 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.
-2020-12-21 19:40:16,868 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testJuteToString
-2020-12-21 19:40:16,868 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testJuteToString
-2020-12-21 19:40:16,906 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 8708
-2020-12-21 19:40:16,907 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
-2020-12-21 19:40:16,907 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testJuteToString
-2020-12-21 19:40:16,907 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testJuteToString
-2020-12-21 19:40:16,907 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testJuteToString

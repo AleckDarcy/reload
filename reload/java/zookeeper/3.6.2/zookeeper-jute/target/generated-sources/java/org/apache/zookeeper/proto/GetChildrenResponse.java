@@ -22,16 +22,17 @@ package org.apache.zookeeper.proto;
 import org.apache.jute.*;
 import org.apache.jute.Record; // JDK14 needs explicit import due to clash with java.lang.Record
 import org.apache.yetus.audience.InterfaceAudience;
-import org.apache.zookeeper.trace._3MB_Trace;
 @InterfaceAudience.Public
 public class GetChildrenResponse implements Record {
   private java.util.List<String> children;
-  private org.apache.zookeeper.trace._3MB_Trace trace;
+  private org.apache.zookeeper.trace.TMB_Trace trace;
   public GetChildrenResponse() {
+    this.trace = new org.apache.zookeeper.trace.TMB_Trace();
   }
   public GetChildrenResponse(
         java.util.List<String> children) {
     this.children=children;
+    this.trace = new org.apache.zookeeper.trace.TMB_Trace();
   }
   public java.util.List<String> getChildren() {
     return children;
@@ -39,8 +40,12 @@ public class GetChildrenResponse implements Record {
   public void setChildren(java.util.List<String> m_) {
     children=m_;
   }
-  public org.apache.zookeeper.trace._3MB_Trace getTrace() { return trace; }
-  public void setTrace(org.apache.zookeeper.trace._3MB_Trace t_) { trace = t_; }
+  public org.apache.zookeeper.trace.TMB_Trace getTrace() {
+    return trace;
+  }
+  public void setTrace(org.apache.zookeeper.trace.TMB_Trace m_) {
+    trace=m_;
+  }
   public void serialize(OutputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(this,tag);
     {
@@ -53,6 +58,7 @@ public class GetChildrenResponse implements Record {
       }
       a_.endVector(children,"children");
     }
+    a_.writeRecord(trace,"trace");
     a_.endRecord(this,tag);
   }
   public void deserialize(InputArchive a_, String tag) throws java.io.IOException {
@@ -68,6 +74,8 @@ public class GetChildrenResponse implements Record {
       }
     a_.endVector("children");
     }
+    trace= new org.apache.zookeeper.trace.TMB_Trace();
+    a_.readRecord(trace,"trace");
     a_.endRecord(tag);
 }
   public String toString() {
@@ -87,6 +95,7 @@ public class GetChildrenResponse implements Record {
       }
       a_.endVector(children,"children");
     }
+    a_.writeRecord(trace,"trace");
       a_.endRecord(this,"");
       return new String(s.toByteArray(), "UTF-8");
     } catch (Throwable ex) {
@@ -116,6 +125,8 @@ public class GetChildrenResponse implements Record {
     boolean ret = false;
     ret = children.equals(peer.children);
     if (!ret) return ret;
+    ret = trace.equals(peer.trace);
+    if (!ret) return ret;
      return ret;
   }
   public int hashCode() {
@@ -123,9 +134,11 @@ public class GetChildrenResponse implements Record {
     int ret;
     ret = children.hashCode();
     result = 37*result + ret;
+    ret = trace.hashCode();
+    result = 37*result + ret;
     return result;
   }
   public static String signature() {
-    return "LGetChildrenResponse([s])";
+    return "LGetChildrenResponse([s]LTMB_Trace(l[LTMB_Event(ilsss)][LTMB_TFI(isl[LTMB_TFIMeta(sll)])]))";
   }
 }

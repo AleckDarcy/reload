@@ -22,19 +22,20 @@ package org.apache.zookeeper.proto;
 import org.apache.jute.*;
 import org.apache.jute.Record; // JDK14 needs explicit import due to clash with java.lang.Record
 import org.apache.yetus.audience.InterfaceAudience;
-import org.apache.zookeeper.trace._3MB_Trace;
 @InterfaceAudience.Public
 public class SetMaxChildrenRequest implements Record {
   private String path;
   private int max;
-  private org.apache.zookeeper.trace._3MB_Trace trace;
+  private org.apache.zookeeper.trace.TMB_Trace trace;
   public SetMaxChildrenRequest() {
+    this.trace = new org.apache.zookeeper.trace.TMB_Trace();
   }
   public SetMaxChildrenRequest(
         String path,
         int max) {
     this.path=path;
     this.max=max;
+    this.trace = new org.apache.zookeeper.trace.TMB_Trace();
   }
   public String getPath() {
     return path;
@@ -48,18 +49,25 @@ public class SetMaxChildrenRequest implements Record {
   public void setMax(int m_) {
     max=m_;
   }
-  public org.apache.zookeeper.trace._3MB_Trace getTrace() { return trace; }
-  public void setTrace(org.apache.zookeeper.trace._3MB_Trace t_) { trace = t_; }
+  public org.apache.zookeeper.trace.TMB_Trace getTrace() {
+    return trace;
+  }
+  public void setTrace(org.apache.zookeeper.trace.TMB_Trace m_) {
+    trace=m_;
+  }
   public void serialize(OutputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(this,tag);
     a_.writeString(path,"path");
     a_.writeInt(max,"max");
+    a_.writeRecord(trace,"trace");
     a_.endRecord(this,tag);
   }
   public void deserialize(InputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(tag);
     path=a_.readString("path");
     max=a_.readInt("max");
+    trace= new org.apache.zookeeper.trace.TMB_Trace();
+    a_.readRecord(trace,"trace");
     a_.endRecord(tag);
 }
   public String toString() {
@@ -71,6 +79,7 @@ public class SetMaxChildrenRequest implements Record {
       a_.startRecord(this,"");
     a_.writeString(path,"path");
     a_.writeInt(max,"max");
+    a_.writeRecord(trace,"trace");
       a_.endRecord(this,"");
       return new String(s.toByteArray(), "UTF-8");
     } catch (Throwable ex) {
@@ -96,6 +105,8 @@ public class SetMaxChildrenRequest implements Record {
     if (ret != 0) return ret;
     ret = (max == peer.max)? 0 :((max<peer.max)?-1:1);
     if (ret != 0) return ret;
+    ret = trace.compareTo(peer.trace);
+    if (ret != 0) return ret;
      return ret;
   }
   public boolean equals(Object peer_) {
@@ -111,6 +122,8 @@ public class SetMaxChildrenRequest implements Record {
     if (!ret) return ret;
     ret = (max==peer.max);
     if (!ret) return ret;
+    ret = trace.equals(peer.trace);
+    if (!ret) return ret;
      return ret;
   }
   public int hashCode() {
@@ -120,9 +133,11 @@ public class SetMaxChildrenRequest implements Record {
     result = 37*result + ret;
     ret = (int)max;
     result = 37*result + ret;
+    ret = trace.hashCode();
+    result = 37*result + ret;
     return result;
   }
   public static String signature() {
-    return "LSetMaxChildrenRequest(si)";
+    return "LSetMaxChildrenRequest(siLTMB_Trace(l[LTMB_Event(ilsss)][LTMB_TFI(isl[LTMB_TFIMeta(sll)])]))";
   }
 }

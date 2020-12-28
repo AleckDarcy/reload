@@ -1,9 +1,0 @@
-2020-12-21 19:31:10,220 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.
-2020-12-21 19:31:10,223 [myid:] - INFO  [main:JUnit4ZKTestRunner@51] - No test.method specified. using default methods.
-2020-12-21 19:31:10,259 [myid:] - INFO  [main:ZKTestCase$1@86] - STARTING testStrings
-2020-12-21 19:31:10,259 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@84] - RUNNING TEST METHOD testStrings
-2020-12-21 19:31:10,353 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@89] - Memory used 9311
-2020-12-21 19:31:10,353 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@94] - Number of threads 9
-2020-12-21 19:31:10,353 [myid:] - INFO  [main:JUnit4ZKTestRunner$LoggedInvokeMethod@109] - FINISHED TEST METHOD testStrings
-2020-12-21 19:31:10,353 [myid:] - INFO  [main:ZKTestCase$1@96] - SUCCEEDED testStrings
-2020-12-21 19:31:10,354 [myid:] - INFO  [main:ZKTestCase$1@91] - FINISHED testStrings

@@ -1,9 +1,0 @@
--------------------------------------------------------------------------------
-Test set: org.apache.zookeeper.test.ReconfigTest
--------------------------------------------------------------------------------
-Tests run: 14, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 1,305.605 s <<< FAILURE! - in org.apache.zookeeper.test.ReconfigTest
-testRemoveAddTwo(org.apache.zookeeper.test.ReconfigTest)  Time elapsed: 1,043.278 s  <<< FAILURE!
-java.lang.AssertionError: client could not connect to reestablished quorum: giving up after 30+ seconds.
-	at org.apache.zookeeper.test.ReconfigTest.testServerHasConfig(ReconfigTest.java:162)
-	at org.apache.zookeeper.test.ReconfigTest.testRemoveAddTwo(ReconfigTest.java:430)
-
