@@ -25,17 +25,17 @@ import org.apache.yetus.audience.InterfaceAudience;
 @InterfaceAudience.Public
 public class _3MB_Trace implements Record {
   private long id;
-  private java.util.List<org.apache.zookeeper.trace._3MB_Event> Events;
+  private java.util.List<org.apache.zookeeper.trace._3MB_Event> events;
   private java.util.List<org.apache.zookeeper.trace._3MB_TFI> tfis;
   private org.apache.zookeeper.trace._3MB_Trace trace;
   public _3MB_Trace() {
   }
   public _3MB_Trace(
         long id,
-        java.util.List<org.apache.zookeeper.trace._3MB_Event> Events,
+        java.util.List<org.apache.zookeeper.trace._3MB_Event> events,
         java.util.List<org.apache.zookeeper.trace._3MB_TFI> tfis) {
     this.id=id;
-    this.Events=Events;
+    this.events=events;
     this.tfis=tfis;
   }
   public long getId() {
@@ -45,10 +45,10 @@ public class _3MB_Trace implements Record {
     id=m_;
   }
   public java.util.List<org.apache.zookeeper.trace._3MB_Event> getEvents() {
-    return Events;
+    return events;
   }
   public void setEvents(java.util.List<org.apache.zookeeper.trace._3MB_Event> m_) {
-    Events=m_;
+    events =m_;
   }
   public java.util.List<org.apache.zookeeper.trace._3MB_TFI> getTfis() {
     return tfis;
@@ -62,14 +62,14 @@ public class _3MB_Trace implements Record {
     a_.startRecord(this,tag);
     a_.writeLong(id,"id");
     {
-      a_.startVector(Events,"Events");
-      if (Events!= null) {          int len1 = Events.size();
+      a_.startVector(events,"Events");
+      if (events != null) {          int len1 = events.size();
           for(int vidx1 = 0; vidx1<len1; vidx1++) {
-            org.apache.zookeeper.trace._3MB_Event e1 = (org.apache.zookeeper.trace._3MB_Event) Events.get(vidx1);
+            org.apache.zookeeper.trace._3MB_Event e1 = (org.apache.zookeeper.trace._3MB_Event) events.get(vidx1);
     a_.writeRecord(e1,"e1");
           }
       }
-      a_.endVector(Events,"Events");
+      a_.endVector(events,"Events");
     }
     {
       a_.startVector(tfis,"tfis");
@@ -88,12 +88,12 @@ public class _3MB_Trace implements Record {
     id=a_.readLong("id");
     {
       Index vidx1 = a_.startVector("Events");
-      if (vidx1!= null) {          Events=new java.util.ArrayList<org.apache.zookeeper.trace._3MB_Event>();
+      if (vidx1!= null) {          events =new java.util.ArrayList<org.apache.zookeeper.trace._3MB_Event>();
           for (; !vidx1.done(); vidx1.incr()) {
     org.apache.zookeeper.trace._3MB_Event e1;
     e1= new org.apache.zookeeper.trace._3MB_Event();
     a_.readRecord(e1,"e1");
-            Events.add(e1);
+            events.add(e1);
           }
       }
     a_.endVector("Events");
@@ -121,14 +121,14 @@ public class _3MB_Trace implements Record {
       a_.startRecord(this,"");
     a_.writeLong(id,"id");
     {
-      a_.startVector(Events,"Events");
-      if (Events!= null) {          int len1 = Events.size();
+      a_.startVector(events,"Events");
+      if (events != null) {          int len1 = events.size();
           for(int vidx1 = 0; vidx1<len1; vidx1++) {
-            org.apache.zookeeper.trace._3MB_Event e1 = (org.apache.zookeeper.trace._3MB_Event) Events.get(vidx1);
+            org.apache.zookeeper.trace._3MB_Event e1 = (org.apache.zookeeper.trace._3MB_Event) events.get(vidx1);
     a_.writeRecord(e1,"e1");
           }
       }
-      a_.endVector(Events,"Events");
+      a_.endVector(events,"Events");
     }
     {
       a_.startVector(tfis,"tfis");
@@ -169,7 +169,7 @@ public class _3MB_Trace implements Record {
     boolean ret = false;
     ret = (id==peer.id);
     if (!ret) return ret;
-    ret = Events.equals(peer.Events);
+    ret = events.equals(peer.events);
     if (!ret) return ret;
     ret = tfis.equals(peer.tfis);
     if (!ret) return ret;
@@ -180,7 +180,7 @@ public class _3MB_Trace implements Record {
     int ret;
     ret = (int) (id^(id>>>32));
     result = 37*result + ret;
-    ret = Events.hashCode();
+    ret = events.hashCode();
     result = 37*result + ret;
     ret = tfis.hashCode();
     result = 37*result + ret;

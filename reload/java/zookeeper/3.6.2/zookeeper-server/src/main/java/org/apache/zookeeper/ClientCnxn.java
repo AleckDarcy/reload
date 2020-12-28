@@ -1559,10 +1559,26 @@ public class ClientCnxn {
         WatchDeregistration watchDeregistration) throws InterruptedException {
         ReplyHeader r = new ReplyHeader();
 
-        _3MB_Helper.println("[RELOAD] thread id:" + java.lang.Thread.currentThread().getId());
+        _3MB_Trace trace = null;
+        if (request != null) {
+            trace = request.getTrace();
 
-        _3MB_Helper.println("[RELOAD] request:" + _3MB_Helper.getClassName(request));
+            /**
+             * stub, should be called only once per node
+             */
+            if (trace == null) {
+                long id = Time.currentElapsedTime();
+                _3MB_Helper.println("stub trace with id:" + id);
 
+                trace = new _3MB_Trace(id, null, null);
+            }
+
+            if (trace != null) {
+                _3MB_Helper.println("request:" + _3MB_Helper.getClassName(request));
+
+
+            }
+        }
 
         Packet packet = queuePacket(
             h,
@@ -1588,8 +1604,8 @@ public class ClientCnxn {
         }
         if (r.getErr() == Code.REQUESTTIMEOUT.intValue()) {
             sendThread.cleanAndNotifyState();
-        } else {
-            _3MB_Helper.println("[RELOAD] response:" + _3MB_Helper.getClassName(request));
+        } else if (trace != null) {
+            _3MB_Helper.println("response:" + _3MB_Helper.getClassName(request));
         }
         return r;
     }

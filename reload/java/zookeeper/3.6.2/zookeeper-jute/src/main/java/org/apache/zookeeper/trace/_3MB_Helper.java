@@ -7,7 +7,7 @@ public class _3MB_Helper {
     public static void println(String x) {
         StackTraceElement trace = Thread.currentThread().getStackTrace()[2];
 
-        System.out.println(trace.getFileName() + ":" + trace.getLineNumber() + " " + x);
+        System.out.printf("[3MileBeach] %s:%d [%d] %s\n", trace.getFileName(), trace.getLineNumber(), Thread.currentThread().getId(), x);
     }
 
     public static String getClassName(Object o) {

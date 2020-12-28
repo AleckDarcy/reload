@@ -80,6 +80,7 @@ import org.apache.zookeeper.proto.SyncResponse;
 import org.apache.zookeeper.server.DataTree.ProcessTxnResult;
 import org.apache.zookeeper.server.quorum.QuorumZooKeeperServer;
 import org.apache.zookeeper.server.util.RequestPathMetricsCollector;
+import org.apache.zookeeper.trace._3MB_Helper;
 import org.apache.zookeeper.txn.ErrorTxn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -587,8 +588,10 @@ public class FinalRequestProcessor implements RequestProcessor {
 
         try {
             if (path == null || rsp == null) {
+                _3MB_Helper.println("process request: " + request.getClass().getCanonicalName() + ", get response: null pointer");
                 cnxn.sendResponse(hdr, rsp, "response");
             } else {
+                _3MB_Helper.println("process request: " + request.getClass().getCanonicalName() + ", get response: "+ rsp.getClass().getCanonicalName());
                 int opCode = request.type;
                 Stat stat = null;
                 // Serialized read and get children responses could be cached by the connection
