@@ -22,14 +22,14 @@ package org.apache.zookeeper.proto;
 import org.apache.jute.*;
 import org.apache.jute.Record; // JDK14 needs explicit import due to clash with java.lang.Record
 import org.apache.yetus.audience.InterfaceAudience;
-import org.apache.zookeeper.trace.Trace;
+import org.apache.zookeeper.trace._3MB_Trace;
 @InterfaceAudience.Public
 public class ReconfigRequest implements Record {
   private String joiningServers;
   private String leavingServers;
   private String newMembers;
   private long curConfigId;
-  private org.apache.zookeeper.trace.Trace trace;
+  private org.apache.zookeeper.trace._3MB_Trace trace;
   public ReconfigRequest() {
   }
   public ReconfigRequest(
@@ -66,8 +66,8 @@ public class ReconfigRequest implements Record {
   public void setCurConfigId(long m_) {
     curConfigId=m_;
   }
-  public org.apache.zookeeper.trace.Trace getTrace() { return trace; }
-  public void setTrace(org.apache.zookeeper.trace.Trace t_) { trace = t_; }
+  public org.apache.zookeeper.trace._3MB_Trace getTrace() { return trace; }
+  public void setTrace(org.apache.zookeeper.trace._3MB_Trace t_) { trace = t_; }
   public void serialize(OutputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(this,tag);
     a_.writeString(joiningServers,"joiningServers");

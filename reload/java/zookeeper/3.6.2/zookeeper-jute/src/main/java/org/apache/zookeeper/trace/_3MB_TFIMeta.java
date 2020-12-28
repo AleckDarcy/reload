@@ -23,14 +23,14 @@ import org.apache.jute.*;
 import org.apache.jute.Record; // JDK14 needs explicit import due to clash with java.lang.Record
 import org.apache.yetus.audience.InterfaceAudience;
 @InterfaceAudience.Public
-public class TFIMeta implements Record {
+public class _3MB_TFIMeta implements Record {
   private String name;
   private long times;
   private long already;
-  private org.apache.zookeeper.trace.Trace trace;
-  public TFIMeta() {
+  private org.apache.zookeeper.trace._3MB_Trace trace;
+  public _3MB_TFIMeta() {
   }
-  public TFIMeta(
+  public _3MB_TFIMeta(
         String name,
         long times,
         long already) {
@@ -56,8 +56,8 @@ public class TFIMeta implements Record {
   public void setAlready(long m_) {
     already=m_;
   }
-  public org.apache.zookeeper.trace.Trace getTrace() { return trace; }
-  public void setTrace(org.apache.zookeeper.trace.Trace t_) { trace = t_; }
+  public org.apache.zookeeper.trace._3MB_Trace getTrace() { return trace; }
+  public void setTrace(org.apache.zookeeper.trace._3MB_Trace t_) { trace = t_; }
   public void serialize(OutputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(this,tag);
     a_.writeString(name,"name");
@@ -98,10 +98,10 @@ public class TFIMeta implements Record {
     deserialize(archive, "");
   }
   public int compareTo (Object peer_) throws ClassCastException {
-    if (!(peer_ instanceof TFIMeta)) {
+    if (!(peer_ instanceof _3MB_TFIMeta)) {
       throw new ClassCastException("Comparing different types of records.");
     }
-    TFIMeta peer = (TFIMeta) peer_;
+    _3MB_TFIMeta peer = (_3MB_TFIMeta) peer_;
     int ret = 0;
     ret = name.compareTo(peer.name);
     if (ret != 0) return ret;
@@ -112,13 +112,13 @@ public class TFIMeta implements Record {
      return ret;
   }
   public boolean equals(Object peer_) {
-    if (!(peer_ instanceof TFIMeta)) {
+    if (!(peer_ instanceof _3MB_TFIMeta)) {
       return false;
     }
     if (peer_ == this) {
       return true;
     }
-    TFIMeta peer = (TFIMeta) peer_;
+    _3MB_TFIMeta peer = (_3MB_TFIMeta) peer_;
     boolean ret = false;
     ret = name.equals(peer.name);
     if (!ret) return ret;

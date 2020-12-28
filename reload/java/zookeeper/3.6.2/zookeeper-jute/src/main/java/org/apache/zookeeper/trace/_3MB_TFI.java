@@ -23,19 +23,19 @@ import org.apache.jute.*;
 import org.apache.jute.Record; // JDK14 needs explicit import due to clash with java.lang.Record
 import org.apache.yetus.audience.InterfaceAudience;
 @InterfaceAudience.Public
-public class TFI implements Record {
+public class _3MB_TFI implements Record {
   private int type;
   private String name;
   private long delay;
-  private java.util.List<org.apache.zookeeper.trace.TFIMeta> after;
-  private org.apache.zookeeper.trace.Trace trace;
-  public TFI() {
+  private java.util.List<org.apache.zookeeper.trace._3MB_TFIMeta> after;
+  private org.apache.zookeeper.trace._3MB_Trace trace;
+  public _3MB_TFI() {
   }
-  public TFI(
+  public _3MB_TFI(
         int type,
         String name,
         long delay,
-        java.util.List<org.apache.zookeeper.trace.TFIMeta> after) {
+        java.util.List<org.apache.zookeeper.trace._3MB_TFIMeta> after) {
     this.type=type;
     this.name=name;
     this.delay=delay;
@@ -59,14 +59,14 @@ public class TFI implements Record {
   public void setDelay(long m_) {
     delay=m_;
   }
-  public java.util.List<org.apache.zookeeper.trace.TFIMeta> getAfter() {
+  public java.util.List<org.apache.zookeeper.trace._3MB_TFIMeta> getAfter() {
     return after;
   }
-  public void setAfter(java.util.List<org.apache.zookeeper.trace.TFIMeta> m_) {
+  public void setAfter(java.util.List<org.apache.zookeeper.trace._3MB_TFIMeta> m_) {
     after=m_;
   }
-  public org.apache.zookeeper.trace.Trace getTrace() { return trace; }
-  public void setTrace(org.apache.zookeeper.trace.Trace t_) { trace = t_; }
+  public org.apache.zookeeper.trace._3MB_Trace getTrace() { return trace; }
+  public void setTrace(org.apache.zookeeper.trace._3MB_Trace t_) { trace = t_; }
   public void serialize(OutputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(this,tag);
     a_.writeInt(type,"type");
@@ -76,7 +76,7 @@ public class TFI implements Record {
       a_.startVector(after,"after");
       if (after!= null) {          int len1 = after.size();
           for(int vidx1 = 0; vidx1<len1; vidx1++) {
-            org.apache.zookeeper.trace.TFIMeta e1 = (org.apache.zookeeper.trace.TFIMeta) after.get(vidx1);
+            org.apache.zookeeper.trace._3MB_TFIMeta e1 = (org.apache.zookeeper.trace._3MB_TFIMeta) after.get(vidx1);
     a_.writeRecord(e1,"e1");
           }
       }
@@ -91,10 +91,10 @@ public class TFI implements Record {
     delay=a_.readLong("delay");
     {
       Index vidx1 = a_.startVector("after");
-      if (vidx1!= null) {          after=new java.util.ArrayList<org.apache.zookeeper.trace.TFIMeta>();
+      if (vidx1!= null) {          after=new java.util.ArrayList<org.apache.zookeeper.trace._3MB_TFIMeta>();
           for (; !vidx1.done(); vidx1.incr()) {
-    org.apache.zookeeper.trace.TFIMeta e1;
-    e1= new org.apache.zookeeper.trace.TFIMeta();
+    org.apache.zookeeper.trace._3MB_TFIMeta e1;
+    e1= new org.apache.zookeeper.trace._3MB_TFIMeta();
     a_.readRecord(e1,"e1");
             after.add(e1);
           }
@@ -117,7 +117,7 @@ public class TFI implements Record {
       a_.startVector(after,"after");
       if (after!= null) {          int len1 = after.size();
           for(int vidx1 = 0; vidx1<len1; vidx1++) {
-            org.apache.zookeeper.trace.TFIMeta e1 = (org.apache.zookeeper.trace.TFIMeta) after.get(vidx1);
+            org.apache.zookeeper.trace._3MB_TFIMeta e1 = (org.apache.zookeeper.trace._3MB_TFIMeta) after.get(vidx1);
     a_.writeRecord(e1,"e1");
           }
       }
@@ -142,13 +142,13 @@ public class TFI implements Record {
     throw new UnsupportedOperationException("comparing TFI is unimplemented");
   }
   public boolean equals(Object peer_) {
-    if (!(peer_ instanceof TFI)) {
+    if (!(peer_ instanceof _3MB_TFI)) {
       return false;
     }
     if (peer_ == this) {
       return true;
     }
-    TFI peer = (TFI) peer_;
+    _3MB_TFI peer = (_3MB_TFI) peer_;
     boolean ret = false;
     ret = (type==peer.type);
     if (!ret) return ret;

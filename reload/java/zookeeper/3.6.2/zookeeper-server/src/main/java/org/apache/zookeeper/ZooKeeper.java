@@ -1715,8 +1715,6 @@ public class ZooKeeper implements AutoCloseable {
         List<ACL> acl,
         CreateMode createMode) throws KeeperException, InterruptedException {
 
-        System.out.println("[RELOAD] " + java.lang.Thread.currentThread().getId());
-
         final String clientPath = path;
         PathUtils.validatePath(clientPath, createMode.isSequential());
         EphemeralType.validateTTL(createMode, -1);

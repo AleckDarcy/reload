@@ -23,16 +23,16 @@ import org.apache.jute.*;
 import org.apache.jute.Record; // JDK14 needs explicit import due to clash with java.lang.Record
 import org.apache.yetus.audience.InterfaceAudience;
 @InterfaceAudience.Public
-public class Event implements Record {
+public class _3MB_Event implements Record {
   private int type;
   private long timestamp;
   private String message_name;
   private String uuid;
   private String service;
-  private org.apache.zookeeper.trace.Trace trace;
-  public Event() {
+  private org.apache.zookeeper.trace._3MB_Trace trace;
+  public _3MB_Event() {
   }
-  public Event(
+  public _3MB_Event(
         int type,
         long timestamp,
         String message_name,
@@ -74,8 +74,8 @@ public class Event implements Record {
   public void setService(String m_) {
     service=m_;
   }
-  public org.apache.zookeeper.trace.Trace getTrace() { return trace; }
-  public void setTrace(org.apache.zookeeper.trace.Trace t_) { trace = t_; }
+  public org.apache.zookeeper.trace._3MB_Trace getTrace() { return trace; }
+  public void setTrace(org.apache.zookeeper.trace._3MB_Trace t_) { trace = t_; }
   public void serialize(OutputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(this,tag);
     a_.writeInt(type,"type");
@@ -122,10 +122,10 @@ public class Event implements Record {
     deserialize(archive, "");
   }
   public int compareTo (Object peer_) throws ClassCastException {
-    if (!(peer_ instanceof Event)) {
+    if (!(peer_ instanceof _3MB_Event)) {
       throw new ClassCastException("Comparing different types of records.");
     }
-    Event peer = (Event) peer_;
+    _3MB_Event peer = (_3MB_Event) peer_;
     int ret = 0;
     ret = (type == peer.type)? 0 :((type<peer.type)?-1:1);
     if (ret != 0) return ret;
@@ -140,13 +140,13 @@ public class Event implements Record {
      return ret;
   }
   public boolean equals(Object peer_) {
-    if (!(peer_ instanceof Event)) {
+    if (!(peer_ instanceof _3MB_Event)) {
       return false;
     }
     if (peer_ == this) {
       return true;
     }
-    Event peer = (Event) peer_;
+    _3MB_Event peer = (_3MB_Event) peer_;
     boolean ret = false;
     ret = (type==peer.type);
     if (!ret) return ret;

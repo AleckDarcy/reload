@@ -23,17 +23,17 @@ import org.apache.jute.*;
 import org.apache.jute.Record; // JDK14 needs explicit import due to clash with java.lang.Record
 import org.apache.yetus.audience.InterfaceAudience;
 @InterfaceAudience.Public
-public class Trace implements Record {
+public class _3MB_Trace implements Record {
   private long id;
-  private java.util.List<org.apache.zookeeper.trace.Event> Events;
-  private java.util.List<org.apache.zookeeper.trace.TFI> tfis;
-  private org.apache.zookeeper.trace.Trace trace;
-  public Trace() {
+  private java.util.List<org.apache.zookeeper.trace._3MB_Event> Events;
+  private java.util.List<org.apache.zookeeper.trace._3MB_TFI> tfis;
+  private org.apache.zookeeper.trace._3MB_Trace trace;
+  public _3MB_Trace() {
   }
-  public Trace(
+  public _3MB_Trace(
         long id,
-        java.util.List<org.apache.zookeeper.trace.Event> Events,
-        java.util.List<org.apache.zookeeper.trace.TFI> tfis) {
+        java.util.List<org.apache.zookeeper.trace._3MB_Event> Events,
+        java.util.List<org.apache.zookeeper.trace._3MB_TFI> tfis) {
     this.id=id;
     this.Events=Events;
     this.tfis=tfis;
@@ -44,20 +44,20 @@ public class Trace implements Record {
   public void setId(long m_) {
     id=m_;
   }
-  public java.util.List<org.apache.zookeeper.trace.Event> getEvents() {
+  public java.util.List<org.apache.zookeeper.trace._3MB_Event> getEvents() {
     return Events;
   }
-  public void setEvents(java.util.List<org.apache.zookeeper.trace.Event> m_) {
+  public void setEvents(java.util.List<org.apache.zookeeper.trace._3MB_Event> m_) {
     Events=m_;
   }
-  public java.util.List<org.apache.zookeeper.trace.TFI> getTfis() {
+  public java.util.List<org.apache.zookeeper.trace._3MB_TFI> getTfis() {
     return tfis;
   }
-  public void setTfis(java.util.List<org.apache.zookeeper.trace.TFI> m_) {
+  public void setTfis(java.util.List<org.apache.zookeeper.trace._3MB_TFI> m_) {
     tfis=m_;
   }
-  public org.apache.zookeeper.trace.Trace getTrace() { return trace; }
-  public void setTrace(org.apache.zookeeper.trace.Trace t_) { trace = t_; }
+  public org.apache.zookeeper.trace._3MB_Trace getTrace() { return trace; }
+  public void setTrace(org.apache.zookeeper.trace._3MB_Trace t_) { trace = t_; }
   public void serialize(OutputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(this,tag);
     a_.writeLong(id,"id");
@@ -65,7 +65,7 @@ public class Trace implements Record {
       a_.startVector(Events,"Events");
       if (Events!= null) {          int len1 = Events.size();
           for(int vidx1 = 0; vidx1<len1; vidx1++) {
-            org.apache.zookeeper.trace.Event e1 = (org.apache.zookeeper.trace.Event) Events.get(vidx1);
+            org.apache.zookeeper.trace._3MB_Event e1 = (org.apache.zookeeper.trace._3MB_Event) Events.get(vidx1);
     a_.writeRecord(e1,"e1");
           }
       }
@@ -75,7 +75,7 @@ public class Trace implements Record {
       a_.startVector(tfis,"tfis");
       if (tfis!= null) {          int len1 = tfis.size();
           for(int vidx1 = 0; vidx1<len1; vidx1++) {
-            org.apache.zookeeper.trace.TFI e1 = (org.apache.zookeeper.trace.TFI) tfis.get(vidx1);
+            org.apache.zookeeper.trace._3MB_TFI e1 = (org.apache.zookeeper.trace._3MB_TFI) tfis.get(vidx1);
     a_.writeRecord(e1,"e1");
           }
       }
@@ -88,10 +88,10 @@ public class Trace implements Record {
     id=a_.readLong("id");
     {
       Index vidx1 = a_.startVector("Events");
-      if (vidx1!= null) {          Events=new java.util.ArrayList<org.apache.zookeeper.trace.Event>();
+      if (vidx1!= null) {          Events=new java.util.ArrayList<org.apache.zookeeper.trace._3MB_Event>();
           for (; !vidx1.done(); vidx1.incr()) {
-    org.apache.zookeeper.trace.Event e1;
-    e1= new org.apache.zookeeper.trace.Event();
+    org.apache.zookeeper.trace._3MB_Event e1;
+    e1= new org.apache.zookeeper.trace._3MB_Event();
     a_.readRecord(e1,"e1");
             Events.add(e1);
           }
@@ -100,10 +100,10 @@ public class Trace implements Record {
     }
     {
       Index vidx1 = a_.startVector("tfis");
-      if (vidx1!= null) {          tfis=new java.util.ArrayList<org.apache.zookeeper.trace.TFI>();
+      if (vidx1!= null) {          tfis=new java.util.ArrayList<org.apache.zookeeper.trace._3MB_TFI>();
           for (; !vidx1.done(); vidx1.incr()) {
-    org.apache.zookeeper.trace.TFI e1;
-    e1= new org.apache.zookeeper.trace.TFI();
+    org.apache.zookeeper.trace._3MB_TFI e1;
+    e1= new org.apache.zookeeper.trace._3MB_TFI();
     a_.readRecord(e1,"e1");
             tfis.add(e1);
           }
@@ -124,7 +124,7 @@ public class Trace implements Record {
       a_.startVector(Events,"Events");
       if (Events!= null) {          int len1 = Events.size();
           for(int vidx1 = 0; vidx1<len1; vidx1++) {
-            org.apache.zookeeper.trace.Event e1 = (org.apache.zookeeper.trace.Event) Events.get(vidx1);
+            org.apache.zookeeper.trace._3MB_Event e1 = (org.apache.zookeeper.trace._3MB_Event) Events.get(vidx1);
     a_.writeRecord(e1,"e1");
           }
       }
@@ -134,7 +134,7 @@ public class Trace implements Record {
       a_.startVector(tfis,"tfis");
       if (tfis!= null) {          int len1 = tfis.size();
           for(int vidx1 = 0; vidx1<len1; vidx1++) {
-            org.apache.zookeeper.trace.TFI e1 = (org.apache.zookeeper.trace.TFI) tfis.get(vidx1);
+            org.apache.zookeeper.trace._3MB_TFI e1 = (org.apache.zookeeper.trace._3MB_TFI) tfis.get(vidx1);
     a_.writeRecord(e1,"e1");
           }
       }
@@ -159,13 +159,13 @@ public class Trace implements Record {
     throw new UnsupportedOperationException("comparing Trace is unimplemented");
   }
   public boolean equals(Object peer_) {
-    if (!(peer_ instanceof Trace)) {
+    if (!(peer_ instanceof _3MB_Trace)) {
       return false;
     }
     if (peer_ == this) {
       return true;
     }
-    Trace peer = (Trace) peer_;
+    _3MB_Trace peer = (_3MB_Trace) peer_;
     boolean ret = false;
     ret = (id==peer.id);
     if (!ret) return ret;
