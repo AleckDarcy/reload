@@ -25,6 +25,9 @@ import org.apache.yetus.audience.InterfaceAudience;
 
 @InterfaceAudience.Public
 public class TMB_Event implements Record {
+  public static final int RECORD_RECV = 1;
+  public static final int RECORD_SEND = 1;
+
   private int type;
   private long timestamp;
   private String message_name;

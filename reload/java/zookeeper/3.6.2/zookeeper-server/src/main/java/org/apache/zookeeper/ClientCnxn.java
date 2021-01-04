@@ -28,17 +28,8 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Queue;
-import java.util.Random;
-import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -70,30 +61,11 @@ import org.apache.zookeeper.client.HostProvider;
 import org.apache.zookeeper.client.ZKClientConfig;
 import org.apache.zookeeper.client.ZooKeeperSaslClient;
 import org.apache.zookeeper.common.Time;
-import org.apache.zookeeper.proto.AuthPacket;
-import org.apache.zookeeper.proto.ConnectRequest;
-import org.apache.zookeeper.proto.Create2Response;
-import org.apache.zookeeper.proto.CreateResponse;
-import org.apache.zookeeper.proto.ExistsResponse;
-import org.apache.zookeeper.proto.GetACLResponse;
-import org.apache.zookeeper.proto.GetAllChildrenNumberResponse;
-import org.apache.zookeeper.proto.GetChildren2Response;
-import org.apache.zookeeper.proto.GetChildrenResponse;
-import org.apache.zookeeper.proto.GetDataResponse;
-import org.apache.zookeeper.proto.GetEphemeralsResponse;
-import org.apache.zookeeper.proto.GetSASLRequest;
-import org.apache.zookeeper.proto.ReplyHeader;
-import org.apache.zookeeper.proto.RequestHeader;
-import org.apache.zookeeper.proto.SetACLResponse;
-import org.apache.zookeeper.proto.SetDataResponse;
-import org.apache.zookeeper.proto.SetWatches;
-import org.apache.zookeeper.proto.SetWatches2;
-import org.apache.zookeeper.proto.WatcherEvent;
+import org.apache.zookeeper.proto.*;
 import org.apache.zookeeper.server.ByteBufferInputStream;
 import org.apache.zookeeper.server.ZooKeeperThread;
 import org.apache.zookeeper.server.ZooTrace;
 import org.apache.zookeeper.trace.*;
-import org.apache.zookeeper.trace.TMB_Helper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -1511,8 +1483,9 @@ public class ClientCnxn {
         try {
             RequestHeader h = new RequestHeader();
             h.setType(ZooDefs.OpCode.closeSession);
-            // TODO 3MileBeach
-            submitRequest(h, null, null, null);
+            // 3MileBeach
+            submitRequest(h, new NullPointerRequest("CloseRequest"), new NullPointerResponse(), null);
+            // submitRequest(h, null, null, null);
         } catch (InterruptedException e) {
             // ignore, close the send/event threads
         } finally {
@@ -1554,27 +1527,41 @@ public class ClientCnxn {
         Record response,
         WatchRegistration watchRegistration,
         WatchDeregistration watchDeregistration) throws InterruptedException {
-        TMB_Helper.println("in submitRequest");
         ReplyHeader r = new ReplyHeader();
 
+        // 3MileBeach begins
+        long idx = Time.currentElapsedTime();
+        // TMB_Helper.println("in submitRequest, idx: " + idx);
+
         TMB_Trace trace = null;
+        String uuid = "";
         if (request != null) {
             trace = request.getTrace();
 
-            /**
-             * stub, should be called only once per node
-             */
-            if (trace == null) {
-                long id = Time.currentElapsedTime();
-                TMB_Helper.println("stub trace with id:" + id);
-
-                trace = new TMB_Trace(id, null, null);
+            // stub, should be called only once per client-level request
+            if (trace.getId() == 0) {
+                long id = TMB_Helper.newTraceId();
+                trace.setId(id);
+                trace.setEvents(new ArrayList<>());
+                // TMB_Helper.println("stub trace with id:" + id);
             }
 
-            if (trace != null) {
-                TMB_Helper.println("request: " + TMB_Helper.getClassName(request));
+            if (trace.getId() != 0) {
+                String requestName = TMB_Helper.getClassName(request);
+                uuid = UUID.randomUUID().toString();
+                TMB_Event event = new TMB_Event(TMB_Event.RECORD_SEND, TMB_Helper.currentTimeNanos(), requestName, uuid, "TODO");
+
+                List<TMB_Event> events = trace.getEvents();
+                events.add(event);
+                trace.setEvents(events);
+
+                TMB_Helper.println("request: " + TMB_Helper.getClassName(request) + "(" + TMB_Helper.getString(request) + ")");
             }
+        } else {
+            TMB_Helper.println("submit request, request is null, should be fixed by 3MileBeach");
+            new Exception().printStackTrace();
         }
+        // 3MileBeach ends
 
         Packet packet = queuePacket(
             h,
@@ -1600,10 +1587,18 @@ public class ClientCnxn {
         }
         if (r.getErr() == Code.REQUESTTIMEOUT.intValue()) {
             sendThread.cleanAndNotifyState();
-        } else if (trace != null) {
-            TMB_Helper.println("response: " + TMB_Helper.getClassName(response));
         }
-        TMB_Helper.println("out submitRequest");
+
+        // 3MileBeach
+        if (trace != null) {
+            String responseName = TMB_Helper.getClassName(response);
+            TMB_Event event = new TMB_Event(TMB_Event.RECORD_RECV, TMB_Helper.currentTimeNanos(), responseName, uuid, "TODO");
+            response.getTrace().addEvent(event);
+
+            TMB_Helper.println("response: " + responseName + "(" + TMB_Helper.getString(response) + ")");
+        }
+
+        // TMB_Helper.println("out submitRequest, idx: " + idx);
 
         return r;
     }

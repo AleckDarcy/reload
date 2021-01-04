@@ -55,6 +55,7 @@ import org.apache.zookeeper.server.DataTree.ProcessTxnResult;
 import org.apache.zookeeper.server.quorum.QuorumZooKeeperServer;
 import org.apache.zookeeper.server.util.RequestPathMetricsCollector;
 import org.apache.zookeeper.trace.TMB_Helper;
+import org.apache.zookeeper.trace.TMB_Store;
 import org.apache.zookeeper.txn.ErrorTxn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,12 +83,15 @@ public class FinalRequestProcessor implements RequestProcessor {
     }
 
     public void processRequest(Request request) {
+        // 3MileBeach
         String requestName = TMB_Helper.getClassName(request.record);
-        TMB_Helper.println("process request");
-        new Exception().printStackTrace();
         if (request.record != null) {
-            TMB_Helper.println(request.record.getClass().getCanonicalName());
+//            TMB_Helper.println("call inbound component right now");
+            TMB_Store.requestInbound(request.record);
+        } else {
+//            TMB_Helper.println("call inbound component when request is deserialized");
         }
+
         LOG.debug("Processing request:: {}", request);
 
         // request.addRQRec(">final");
@@ -310,6 +314,14 @@ public class FinalRequestProcessor implements RequestProcessor {
             }
             case OpCode.closeSession: {
                 lastOp = "CLOS";
+
+                // 3MileBeach
+                NullPointerRequest closeRequest = new NullPointerRequest();
+                ByteBufferInputStream.byteBuffer2Record(request.request, closeRequest);
+                requestName = "CloseRequest";
+                request.record = closeRequest;
+                rsp = new NullPointerResponse(requestName);
+
                 err = Code.get(rc.err);
                 break;
             }
@@ -359,6 +371,7 @@ public class FinalRequestProcessor implements RequestProcessor {
                 // 3MileBeach
                 requestName = "GetDataRequest";
                 request.record = getDataRequest;
+                TMB_Store.requestInbound(request.record);
 
                 path = getDataRequest.getPath();
                 rsp = handleGetDataRequest(getDataRequest, cnxn, request.authInfo);
@@ -632,11 +645,21 @@ public class FinalRequestProcessor implements RequestProcessor {
         updateStats(request, lastOp, lastZxid);
 
         try {
-            TMB_Helper.println("process request: " + requestName + ", get response: " + TMB_Helper.getClassName(rsp));
+            TMB_Helper.println("request: " + requestName + "(" + TMB_Helper.getString(request.record) + ")" +
+                    ", response: " + TMB_Helper.getClassName(rsp) + "(" + TMB_Helper.getString(rsp) + ")" +
+                    ", lastOp: " + lastOp);
 
             if (path == null || rsp == null) {
-//                TODO 3MileBeach
-//                rsp = new NullPointerResponse(requestName);
+                if (rsp == null) {
+//                    TODO 3MileBeach
+
+
+                    rsp = new NullPointerResponse(requestName);
+                }
+
+                // 3MileBeach
+                TMB_Store.requestOutbound(rsp);
+
                 cnxn.sendResponse(hdr, rsp, "response");
             } else {
                 int opCode = request.type;
@@ -644,6 +667,10 @@ public class FinalRequestProcessor implements RequestProcessor {
                 // Serialized read and get children responses could be cached by the connection
                 // object. Cache entries are identified by their path and last modified zxid,
                 // so these values are passed along with the response.
+
+                // 3MileBeach
+                TMB_Store.requestOutbound(rsp);
+
                 switch (opCode) {
                     case OpCode.getData : {
                         GetDataResponse getDataResponse = (GetDataResponse) rsp;

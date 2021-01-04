@@ -48,13 +48,7 @@ import org.apache.zookeeper.common.Time;
 import org.apache.zookeeper.data.ACL;
 import org.apache.zookeeper.data.Id;
 import org.apache.zookeeper.data.StatPersisted;
-import org.apache.zookeeper.proto.CheckVersionRequest;
-import org.apache.zookeeper.proto.CreateRequest;
-import org.apache.zookeeper.proto.CreateTTLRequest;
-import org.apache.zookeeper.proto.DeleteRequest;
-import org.apache.zookeeper.proto.ReconfigRequest;
-import org.apache.zookeeper.proto.SetACLRequest;
-import org.apache.zookeeper.proto.SetDataRequest;
+import org.apache.zookeeper.proto.*;
 import org.apache.zookeeper.server.ZooKeeperServer.ChangeRecord;
 import org.apache.zookeeper.server.ZooKeeperServer.PrecalculatedDigest;
 import org.apache.zookeeper.server.auth.ProviderRegistry;
@@ -762,7 +756,9 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
      * @param request
      */
     protected void pRequest(Request request) throws RequestProcessorException {
-        TMB_Helper.println("p request");
+        // 3MileBeach
+        // TMB_Helper.println("p request");
+
         // LOG.info("Prep>>> cxid = " + request.cxid + " type = " +
         // request.type + " id = 0x" + Long.toHexString(request.sessionId));
         request.setHdr(null);
@@ -889,8 +885,10 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
             case OpCode.closeSession:
                 if (!request.isLocalSession()) {
                     // TODO 3MileBeach
-                    pRequest2Txn(request.type, zks.getNextZxid(), request, null, true);
-                    request.record = null;
+                    Record closeRequest = new NullPointerRequest("CloseRequest");
+                    request.record = closeRequest;
+                    pRequest2Txn(request.type, zks.getNextZxid(), request, closeRequest, true);
+//                    pRequest2Txn(request.type, zks.getNextZxid(), request, null, true);
                 }
                 break;
 

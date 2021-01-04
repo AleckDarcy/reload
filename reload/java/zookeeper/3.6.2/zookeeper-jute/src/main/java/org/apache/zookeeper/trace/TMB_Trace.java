@@ -23,6 +23,8 @@ import org.apache.jute.*;
 import org.apache.jute.Record;
 import org.apache.yetus.audience.InterfaceAudience;
 
+import java.util.ArrayList;
+
 @InterfaceAudience.Public
 public class TMB_Trace implements Record {
   private long id;
@@ -38,6 +40,17 @@ public class TMB_Trace implements Record {
     this.events=events;
     this.tfis=tfis;
   }
+
+  // 3MileBeach
+  public void addEvent(TMB_Event e) {
+    // TODO: remove
+    if (events == null) {
+      events = new ArrayList<>();
+    }
+
+    events.add(e);
+  }
+
   public long getId() {
     return id;
   }
