@@ -23,9 +23,9 @@ public class TMB_Helper {
         }
 
         if (o instanceof NullPointerRequest) {
-            return "NullPointerRequest(" + ((NullPointerRequest) o).getRequestName() + ")";
+            return ((NullPointerRequest) o).getRequestName() + "(*)";
         } else if (o instanceof NullPointerResponse) {
-            return "NullPointerResponse(" + ((NullPointerResponse) o).getRequestName() + ")";
+            return ((NullPointerResponse) o).getRequestName() + "(*)";
         }
 
         String name = o.getClass().getCanonicalName();
@@ -33,17 +33,30 @@ public class TMB_Helper {
         return name.substring(name.lastIndexOf('.') + 1);
     }
 
-    public static String getString(Object o) {
-        if (o == null) {
+    public static String getString(Record record) {
+        if (record == null) {
             return "null";
         }
 
-        String str = o.toString();
+        String str = record.toString();
         while (str.endsWith("\n")) {
             str = str.substring(0, str.length() - 1);
         }
 
         return str;
+    }
+
+    public static String getTraceJson(Record record) {
+        if (record == null) {
+            return "{}";
+        }
+
+        TMB_Trace trace = record.getTrace();
+        if (trace == null) {
+            return "{}";
+        }
+
+        return trace.toJSON();
     }
 
     public static long currentTimeNanos() {

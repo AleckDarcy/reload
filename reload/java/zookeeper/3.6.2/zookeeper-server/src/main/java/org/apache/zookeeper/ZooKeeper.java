@@ -58,6 +58,7 @@ import org.apache.zookeeper.proto.*;
 import org.apache.zookeeper.server.DataTree;
 import org.apache.zookeeper.server.EphemeralType;
 import org.apache.zookeeper.server.watch.PathParentIterator;
+import org.apache.zookeeper.trace.TMB_ClientPlugin;
 import org.apache.zookeeper.trace.TMB_Helper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,6 +120,17 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("try")
 @InterfaceAudience.Public
 public class ZooKeeper implements AutoCloseable {
+    // 3MileBeach begins
+    public TMB_ClientPlugin tmb_plugin;
+
+    public void TMB_initialize() {
+        tmb_plugin.TMB_Initialize();
+    }
+
+    public void TMB_finalize() {
+        tmb_plugin.TMB_Finalize();
+    }
+    // 3MileBeach ends
 
     /**
      * @deprecated Use {@link ZKClientConfig#ZOOKEEPER_CLIENT_CNXN_SOCKET}
@@ -990,6 +1002,9 @@ public class ZooKeeper implements AutoCloseable {
         ConnectStringParser connectStringParser = new ConnectStringParser(connectString);
         hostProvider = aHostProvider;
 
+        // 3MileBeach
+        this.tmb_plugin = new TMB_ClientPlugin();
+
         cnxn = createConnection(
             connectStringParser.getChrootPath(),
             hostProvider,
@@ -1389,6 +1404,9 @@ public class ZooKeeper implements AutoCloseable {
 
         ConnectStringParser connectStringParser = new ConnectStringParser(connectString);
         hostProvider = aHostProvider;
+
+        // 3MileBeach
+        this.tmb_plugin = new TMB_ClientPlugin();
 
         cnxn = new ClientCnxn(
             connectStringParser.getChrootPath(),

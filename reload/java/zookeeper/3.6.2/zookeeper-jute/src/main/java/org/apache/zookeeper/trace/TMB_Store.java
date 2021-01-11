@@ -2,104 +2,155 @@ package org.apache.zookeeper.trace;
 
 import org.apache.jute.Record;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class TMB_Store {
     private static Map<Long, TMB_Trace> thread_traces = new HashMap<>();
-    private static Map<UUID, TMB_ThreadTraces> request_traces = new HashMap<>();
     private static ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+
+    public static void callerAppendEventsByThreadIdUnsafe(long threadId, TMB_Trace trace) {
+        TMB_Trace trace_ = thread_traces.get(threadId);
+
+        if (trace_ == null) {
+            thread_traces.put(threadId, trace);
+        } else {
+//            TMB_Helper.println("before appending, length: " + trace_.getEvents().size() + " + " + trace.getEvents().size());
+
+            List<TMB_Event> events_ = trace_.getEvents();
+            List<TMB_Event> events = trace.getEvents();
+
+            events_.addAll(events);
+            trace_.setEvents(events_);
+
+//            TMB_Helper.println("after appending, length: " + trace_.getEvents().size());
+        }
+    }
+
+    public static TMB_Trace getByThreadId(long threadId) {
+        lock.readLock().lock();
+        TMB_Trace trace = thread_traces.get(threadId);
+        lock.readLock().unlock();
+
+        return trace;
+    }
+
+    public static void removeByThreadId(long threadId) {
+        lock.writeLock().lock();
+        thread_traces.remove(threadId);
+        lock.writeLock().unlock();
+    }
 
     /**
      * Server receives request from client or upstream server
-     * RequestProcessor -> requestInbound -> process request -> requestOutbound -> send response
+     * RequestProcessor -> calleeInbound -> process request -> calleeOutbound -> send response
      */
     // to be called after ByteBufferInputStream.byteBuffer2Record(buffer, record)
-    public static void requestInbound(Record request) {
+    public static void calleeInbound(String service, Record request) {
         TMB_Trace trace = request.getTrace();
         if (trace == null || trace.getId() == 0) {
             return;
         }
 
         List<TMB_Event> events = trace.getEvents();
-        if (events.size() == 0) {
-            TMB_Helper.println("request inbound receives request with invalid trace: " + TMB_Helper.getClassName(request) + "(" + TMB_Helper.getString(request) + ")");
+        if (events.size() != 1) {
+            TMB_Helper.println("callee inbound receives request with invalid trace: " + TMB_Helper.getClassName(request) + "(" + TMB_Helper.getString(request) + ")");
 
             return;
         }
 
-        TMB_Helper.println("request inbound receives request: " + TMB_Helper.getClassName(request) + "(" + TMB_Helper.getString(request) + ")");
+        TMB_Helper.println("callee inbound receives request: " + TMB_Helper.getClassName(request) + "(" + TMB_Helper.getString(request) + ")");
 
-        try {
-            long threadId = Thread.currentThread().getId();
-            lock.writeLock().lock();
+        long threadId = Thread.currentThread().getId();
+        TMB_Event preEvent = events.get(0);
+        TMB_Event event = new TMB_Event(TMB_Event.RECORD_RECV, TMB_Helper.currentTimeNanos(), preEvent.getMessage_name(), preEvent.getUuid(), service);
+        events.set(0, event);
+        trace.setEvents(events);
 
-            TMB_Event preEvent = events.get(0);
-            TMB_Event event = new TMB_Event(TMB_Event.RECORD_SEND, TMB_Helper.currentTimeNanos(), preEvent.getMessage_name(), preEvent.getUuid(), "TODO");
-
-            events.add(event);
-            trace.setEvents(events);
-
-            thread_traces.put(threadId, trace);
-        } finally {
-            lock.writeLock().unlock();
-        }
+        lock.writeLock().lock();
+        thread_traces.put(threadId, trace);
+        lock.writeLock().unlock();
     }
 
-    public static void requestOutbound(Record response) {
-        try {
-            long threadId = Thread.currentThread().getId();
-            lock.writeLock().lock();
+    public static void calleeOutbound(String service, Record response) {
+        long threadId = Thread.currentThread().getId();
 
-            TMB_Trace trace = thread_traces.get(threadId);
-            if (trace == null) {
-                TMB_Helper.println("request outbound ejects response without trace: " + TMB_Helper.getClassName(response) + "(" + TMB_Helper.getString(response) + ")");
+        lock.writeLock().lock();
+        TMB_Trace trace = thread_traces.get(threadId);
+        thread_traces.remove(threadId);
+        lock.writeLock().unlock();
 
-                return;
-            }
-            thread_traces.remove(threadId);
+        if (trace == null) {
+            TMB_Helper.println("callee outbound ejects response without trace: " + TMB_Helper.getClassName(response) + "(" + TMB_Helper.getString(response) + ")");
 
-            TMB_Event preEvent = trace.getEvents().get(0);
-            TMB_Event event = new TMB_Event(TMB_Event.RECORD_SEND, TMB_Helper.currentTimeNanos(), TMB_Helper.getClassName(response), preEvent.getUuid(), "TODO");
-
-            trace.addEvent(event);
-            response.setTrace(trace);
-
-            TMB_Helper.println("request outbound ejects response: " + TMB_Helper.getClassName(response) + "(" + TMB_Helper.getString(response) + ")");
-
-        } finally {
-            lock.writeLock().unlock();
+            return;
         }
+
+        TMB_Event preEvent = trace.getEvents().get(0);
+        TMB_Event event = new TMB_Event(TMB_Event.RECORD_SEND, TMB_Helper.currentTimeNanos(), TMB_Helper.getClassName(response), preEvent.getUuid(), service);
+
+        trace.addEvent(event);
+        response.setTrace(trace);
+
+        TMB_Helper.println("callee outbound ejects response: " + TMB_Helper.getClassName(response) + "(" + TMB_Helper.getString(response) + ")");
     }
 
     /**
      * TODO: Client (Server when sending request to downstream server)
-     * submitRequest -> generate request -> responseOutbound -> network -> responseInbound -> process response
+     * submitRequest -> generate request -> callerOutbound -> network -> callerInbound -> process response
      */
-    public static void responseOutbound(Record request) {
-        try {
-            int threadId = 0;
+    public static void callerOutbound(String service, Record request) {
+        TMB_Trace trace = request.getTrace();
+        // stub, should be called only once per client-level request
+        // TODO: let client generate trace_id
+        if (trace.getId() == 0) {
+            long id = TMB_Helper.newTraceId();
+            trace.setId(id);
+            trace.setEvents(new ArrayList<>());
+            // TMB_Helper.println("stub trace with id:" + id);
+        }
+
+        if (trace.getId() != 0) {
+            long threadId = Thread.currentThread().getId();
+            String requestName = TMB_Helper.getClassName(request);
+            String uuid = UUID.randomUUID().toString();
+            TMB_Event event = new TMB_Event(TMB_Event.RECORD_SEND, TMB_Helper.currentTimeNanos(), requestName, uuid, service);
+
+            List<TMB_Event> events = trace.getEvents();
+            events.add(event);
+            trace.setEvents(events);
+
             lock.writeLock().lock();
-
-            TMB_Helper.println("response outbound: " + TMB_Helper.getClassName(request) + "(" + TMB_Helper.getString(request) + ")");
-
-        } finally {
+            TMB_Store.callerAppendEventsByThreadIdUnsafe(threadId, trace);
             lock.writeLock().unlock();
         }
+
+        TMB_Helper.println("caller outbound ejects request: " + TMB_Helper.getClassName(request) + "(" + TMB_Helper.getString(request) + ")");
     }
 
-    public static void responseInbound(Record response) {
-        try {
-            int threadId = 0;
-            lock.writeLock().lock();
-
-            TMB_Helper.println("response inbound: " + TMB_Helper.getClassName(response) + "(" + TMB_Helper.getString(response) + ")");
-
-        } finally {
-            lock.writeLock().unlock();
+    public static void callerInbound(String service, Record response) {
+        TMB_Trace trace = response.getTrace();
+        if (trace.getId() == 0) {
+            return;
         }
+
+        String responseName = TMB_Helper.getClassName(response);
+        List<TMB_Event> events = trace.getEvents();
+        if (events.size() == 0) {
+            TMB_Helper.println("caller inbound receives trace without events: " + responseName + "(" + TMB_Helper.getString(response) + ")");
+
+            return;
+        }
+
+        long threadId = Thread.currentThread().getId();
+        String uuid = events.get(0).getUuid();
+        TMB_Event event = new TMB_Event(TMB_Event.RECORD_RECV, TMB_Helper.currentTimeNanos(), responseName, uuid, service);
+        trace.addEvent(event);
+
+        lock.writeLock().lock();
+        TMB_Store.callerAppendEventsByThreadIdUnsafe(threadId, trace);
+        lock.writeLock().unlock();
+
+        TMB_Helper.println("caller inbound receives response: " + responseName + "(" + TMB_Helper.getString(response) + ")");
     }
 }

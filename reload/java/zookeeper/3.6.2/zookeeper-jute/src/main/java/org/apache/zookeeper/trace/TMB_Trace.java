@@ -42,6 +42,22 @@ public class TMB_Trace implements Record {
   }
 
   // 3MileBeach
+  public String toJSON() {
+    String eventsJSON = "";
+    for (TMB_Event event: events) {
+      String type = event.getType() == 1? "SEND": "RECV";
+      if (eventsJSON.length() != 0) {
+        eventsJSON += String.format(",{\"type\":\"%s\",\"timestamp\":%d,\"message_name\":\"%s\",\"uuid\":\"%s\",\"service\":\"%s\"}",
+                type, event.getTimestamp(), event.getMessage_name(), event.getUuid(), event.getService());
+      } else {
+        eventsJSON += String.format("{\"type\":\"%s\",\"timestamp\":%d,\"message_name\":\"%s\",\"uuid\":\"%s\",\"service\":\"%s\"}",
+                type, event.getTimestamp(), event.getMessage_name(), event.getUuid(), event.getService());
+      }
+    }
+
+    return String.format("{\"events\":[%s]}", eventsJSON);
+  }
+
   public void addEvent(TMB_Event e) {
     // TODO: remove
     if (events == null) {

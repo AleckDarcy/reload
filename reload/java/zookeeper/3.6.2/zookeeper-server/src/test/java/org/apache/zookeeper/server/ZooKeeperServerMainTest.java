@@ -177,6 +177,9 @@ public class ZooKeeperServerMainTest extends ZKTestCase implements Watcher {
 
         ZooKeeper zk = new ZooKeeper("127.0.0.1:" + CLIENT_PORT, ClientBase.CONNECTION_TIMEOUT, this);
 
+        // 3MileBeach
+        zk.TMB_initialize();
+
         zk.create("/foo1", "foobar".getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
         assertEquals(new String(zk.getData("/foo1", null, null)), "foobar");
 
@@ -206,6 +209,9 @@ public class ZooKeeperServerMainTest extends ZKTestCase implements Watcher {
         fileTxnSnapLogWithError.close();
         main.shutdown();
         main.deleteDirs();
+
+        // 3MileBeach
+        zk.TMB_finalize();
     }
 
     /**

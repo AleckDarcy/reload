@@ -1531,32 +1531,10 @@ public class ClientCnxn {
 
         // 3MileBeach begins
         long idx = Time.currentElapsedTime();
+        String client = "client-" + sendThread.getClientCnxnSocket().hashCode();
         // TMB_Helper.println("in submitRequest, idx: " + idx);
-
-        TMB_Trace trace = null;
-        String uuid = "";
         if (request != null) {
-            trace = request.getTrace();
-
-            // stub, should be called only once per client-level request
-            if (trace.getId() == 0) {
-                long id = TMB_Helper.newTraceId();
-                trace.setId(id);
-                trace.setEvents(new ArrayList<>());
-                // TMB_Helper.println("stub trace with id:" + id);
-            }
-
-            if (trace.getId() != 0) {
-                String requestName = TMB_Helper.getClassName(request);
-                uuid = UUID.randomUUID().toString();
-                TMB_Event event = new TMB_Event(TMB_Event.RECORD_SEND, TMB_Helper.currentTimeNanos(), requestName, uuid, "TODO");
-
-                List<TMB_Event> events = trace.getEvents();
-                events.add(event);
-                trace.setEvents(events);
-
-                TMB_Helper.println("request: " + TMB_Helper.getClassName(request) + "(" + TMB_Helper.getString(request) + ")");
-            }
+            TMB_Store.callerOutbound(client, request);
         } else {
             TMB_Helper.println("submit request, request is null, should be fixed by 3MileBeach");
             new Exception().printStackTrace();
@@ -1590,13 +1568,7 @@ public class ClientCnxn {
         }
 
         // 3MileBeach
-        if (trace != null) {
-            String responseName = TMB_Helper.getClassName(response);
-            TMB_Event event = new TMB_Event(TMB_Event.RECORD_RECV, TMB_Helper.currentTimeNanos(), responseName, uuid, "TODO");
-            response.getTrace().addEvent(event);
-
-            TMB_Helper.println("response: " + responseName + "(" + TMB_Helper.getString(response) + ")");
-        }
+        TMB_Store.callerInbound(client, response);
 
         // TMB_Helper.println("out submitRequest, idx: " + idx);
 

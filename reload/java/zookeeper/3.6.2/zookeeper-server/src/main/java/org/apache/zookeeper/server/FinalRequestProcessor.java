@@ -87,7 +87,7 @@ public class FinalRequestProcessor implements RequestProcessor {
         String requestName = TMB_Helper.getClassName(request.record);
         if (request.record != null) {
 //            TMB_Helper.println("call inbound component right now");
-            TMB_Store.requestInbound(request.record);
+            TMB_Store.calleeInbound(String.format("server-%d", this.zks.getServerId()), request.record);
         } else {
 //            TMB_Helper.println("call inbound component when request is deserialized");
         }
@@ -371,7 +371,7 @@ public class FinalRequestProcessor implements RequestProcessor {
                 // 3MileBeach
                 requestName = "GetDataRequest";
                 request.record = getDataRequest;
-                TMB_Store.requestInbound(request.record);
+                TMB_Store.calleeInbound(String.format("server-%d", this.zks.getServerId()), request.record);
 
                 path = getDataRequest.getPath();
                 rsp = handleGetDataRequest(getDataRequest, cnxn, request.authInfo);
@@ -658,7 +658,7 @@ public class FinalRequestProcessor implements RequestProcessor {
                 }
 
                 // 3MileBeach
-                TMB_Store.requestOutbound(rsp);
+                TMB_Store.calleeOutbound(String.format("server-%d", this.zks.getServerId()), rsp);
 
                 cnxn.sendResponse(hdr, rsp, "response");
             } else {
@@ -669,7 +669,7 @@ public class FinalRequestProcessor implements RequestProcessor {
                 // so these values are passed along with the response.
 
                 // 3MileBeach
-                TMB_Store.requestOutbound(rsp);
+                TMB_Store.calleeOutbound(String.format("server-%d", this.zks.getServerId()), rsp);
 
                 switch (opCode) {
                     case OpCode.getData : {
