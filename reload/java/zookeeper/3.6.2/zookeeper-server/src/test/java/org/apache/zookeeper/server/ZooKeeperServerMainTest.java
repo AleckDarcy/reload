@@ -203,15 +203,16 @@ public class ZooKeeperServerMainTest extends ZKTestCase implements Watcher {
             // do nothing
         }
         zk.close();
+
+        // 3MileBeach
+        zk.TMB_finalize();
+        
         assertTrue(
                 "waiting for server down",
                 ClientBase.waitForServerDown("127.0.0.1:" + CLIENT_PORT, ClientBase.CONNECTION_TIMEOUT));
         fileTxnSnapLogWithError.close();
         main.shutdown();
         main.deleteDirs();
-
-        // 3MileBeach
-        zk.TMB_finalize();
     }
 
     /**

@@ -43,19 +43,24 @@ public class TMB_Trace implements Record {
 
   // 3MileBeach
   public String toJSON() {
-    String eventsJSON = "";
+    StringBuffer buffer = new StringBuffer(String.format("{\"id\":%d,\"events\":[", id));
+    int i = 0;
     for (TMB_Event event: events) {
       String type = event.getType() == 1? "SEND": "RECV";
-      if (eventsJSON.length() != 0) {
-        eventsJSON += String.format(",{\"type\":\"%s\",\"timestamp\":%d,\"message_name\":\"%s\",\"uuid\":\"%s\",\"service\":\"%s\"}",
-                type, event.getTimestamp(), event.getMessage_name(), event.getUuid(), event.getService());
+      if (i != 0) {
+        buffer.append(String.format(",{\"type\":\"%s\",\"timestamp\":%d,\"message_name\":\"%s\",\"uuid\":\"%s\",\"service\":\"%s\"}",
+                type, event.getTimestamp(), event.getMessage_name(), event.getUuid(), event.getService()));
       } else {
-        eventsJSON += String.format("{\"type\":\"%s\",\"timestamp\":%d,\"message_name\":\"%s\",\"uuid\":\"%s\",\"service\":\"%s\"}",
-                type, event.getTimestamp(), event.getMessage_name(), event.getUuid(), event.getService());
+        buffer.append(String.format("{\"type\":\"%s\",\"timestamp\":%d,\"message_name\":\"%s\",\"uuid\":\"%s\",\"service\":\"%s\"}",
+                type, event.getTimestamp(), event.getMessage_name(), event.getUuid(), event.getService()));
       }
+
+      i++;
     }
 
-    return String.format("{\"events\":[%s]}", eventsJSON);
+    buffer.append("],\"tfis\":[]}");
+
+    return buffer.toString();
   }
 
   public void addEvent(TMB_Event e) {

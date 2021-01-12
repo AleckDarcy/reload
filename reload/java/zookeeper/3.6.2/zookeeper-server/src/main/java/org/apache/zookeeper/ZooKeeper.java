@@ -60,6 +60,7 @@ import org.apache.zookeeper.server.EphemeralType;
 import org.apache.zookeeper.server.watch.PathParentIterator;
 import org.apache.zookeeper.trace.TMB_ClientPlugin;
 import org.apache.zookeeper.trace.TMB_Helper;
+import org.apache.zookeeper.trace.TMB_Trace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -123,12 +124,12 @@ public class ZooKeeper implements AutoCloseable {
     // 3MileBeach begins
     public TMB_ClientPlugin tmb_plugin;
 
-    public void TMB_initialize() {
-        tmb_plugin.TMB_Initialize();
+    public void TMB_initialize(TMB_Trace trace) {
+        tmb_plugin.TMB_Initialize(trace);
     }
 
-    public void TMB_finalize() {
-        tmb_plugin.TMB_Finalize();
+    public TMB_Trace TMB_finalize() {
+        return tmb_plugin.TMB_Finalize();
     }
     // 3MileBeach ends
 
