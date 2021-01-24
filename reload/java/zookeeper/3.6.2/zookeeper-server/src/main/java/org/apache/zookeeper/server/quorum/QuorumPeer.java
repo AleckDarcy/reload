@@ -80,6 +80,9 @@ import org.apache.zookeeper.server.quorum.flexible.QuorumVerifier;
 import org.apache.zookeeper.server.util.ConfigUtils;
 import org.apache.zookeeper.server.util.JvmPauseMonitor;
 import org.apache.zookeeper.server.util.ZxidUtils;
+import org.apache.zookeeper.trace.TMB_Helper;
+import org.apache.zookeeper.trace.TMB_Store;
+import org.apache.zookeeper.trace.TMB_Trace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1148,6 +1151,8 @@ public class QuorumPeer extends ZooKeeperThread implements QuorumStats.Provider 
         responder.interrupt();
     }
     public synchronized void startLeaderElection() {
+        TMB_Helper.printf("[quorum-%d] start leader election\n", this.hashCode()); // 3MileBeach
+
         try {
             if (getPeerState() == ServerState.LOOKING) {
                 currentVote = new Vote(myid, getLastLoggedZxid(), getCurrentEpoch());
@@ -1433,6 +1438,11 @@ public class QuorumPeer extends ZooKeeperThread implements QuorumStats.Provider 
                     }
                     break;
                 case OBSERVING:
+                    // 3MileBeach begins
+                    TMB_Trace trace1 = TMB_Store.serverGetThread(this.hashCode());
+                    TMB_Helper.printf("[quorum-%d] observing, trace: %s\n", this.hashCode(), trace1.toJSON());
+                    // 3MileBeach ends
+
                     try {
                         LOG.info("OBSERVING");
                         setObserver(makeObserver(logFactory));
@@ -1452,6 +1462,11 @@ public class QuorumPeer extends ZooKeeperThread implements QuorumStats.Provider 
                     }
                     break;
                 case FOLLOWING:
+                    // 3MileBeach begins
+                    TMB_Trace trace2 = TMB_Store.serverGetThread(this.hashCode());
+                    TMB_Helper.printf("[quorum-%d] following, trace: %s\n", this.hashCode(), trace2.toJSON());
+                    // 3MileBeach ends
+
                     try {
                         LOG.info("FOLLOWING");
                         setFollower(makeFollower(logFactory));
@@ -1465,6 +1480,11 @@ public class QuorumPeer extends ZooKeeperThread implements QuorumStats.Provider 
                     }
                     break;
                 case LEADING:
+                    // 3MileBeach begins
+                    TMB_Trace trace3 = TMB_Store.serverGetThread(this.hashCode());
+                    TMB_Helper.printf("[quorum-%d] leading, trace: %s\n", this.hashCode(), trace3.toJSON());
+                    // 3MileBeach ends
+
                     LOG.info("LEADING");
                     try {
                         setLeader(makeLeader(logFactory));

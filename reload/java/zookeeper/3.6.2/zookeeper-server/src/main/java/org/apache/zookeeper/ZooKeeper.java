@@ -122,14 +122,14 @@ import org.slf4j.LoggerFactory;
 @InterfaceAudience.Public
 public class ZooKeeper implements AutoCloseable {
     // 3MileBeach begins
-    public TMB_ClientPlugin tmb_plugin;
+    public TMB_ClientPlugin tmbClientPlugin;
 
-    public void TMB_initialize(TMB_Trace trace) {
-        tmb_plugin.TMB_Initialize(trace);
+    public void TMBClientInitialize(TMB_Trace trace) {
+        tmbClientPlugin.TMBInitialize(trace);
     }
 
-    public TMB_Trace TMB_finalize() {
-        return tmb_plugin.TMB_Finalize();
+    public TMB_Trace TMBClientFinalize() {
+        return tmbClientPlugin.TMBFinalize();
     }
     // 3MileBeach ends
 
@@ -1004,7 +1004,7 @@ public class ZooKeeper implements AutoCloseable {
         hostProvider = aHostProvider;
 
         // 3MileBeach
-        this.tmb_plugin = new TMB_ClientPlugin();
+        this.tmbClientPlugin = new TMB_ClientPlugin();
 
         cnxn = createConnection(
             connectStringParser.getChrootPath(),
@@ -1407,7 +1407,7 @@ public class ZooKeeper implements AutoCloseable {
         hostProvider = aHostProvider;
 
         // 3MileBeach
-        this.tmb_plugin = new TMB_ClientPlugin();
+        this.tmbClientPlugin = new TMB_ClientPlugin();
 
         cnxn = new ClientCnxn(
             connectStringParser.getChrootPath(),
@@ -1721,6 +1721,8 @@ public class ZooKeeper implements AutoCloseable {
         request.setFlags(createMode.toFlag());
         request.setPath(serverPath);
         request.setAcl(acl);
+
+
         ReplyHeader r = cnxn.submitRequest(h, request, response, null);
         if (r.getErr() != 0) {
             throw KeeperException.create(KeeperException.Code.get(r.getErr()), clientPath);

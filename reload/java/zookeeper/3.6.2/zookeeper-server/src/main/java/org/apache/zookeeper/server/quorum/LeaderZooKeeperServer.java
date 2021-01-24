@@ -34,6 +34,7 @@ import org.apache.zookeeper.server.ServerCnxn;
 import org.apache.zookeeper.server.ServerMetrics;
 import org.apache.zookeeper.server.ZKDatabase;
 import org.apache.zookeeper.server.persistence.FileTxnSnapLog;
+import org.apache.zookeeper.trace.TMB_Helper;
 
 /**
  *
@@ -55,6 +56,7 @@ public class LeaderZooKeeperServer extends QuorumZooKeeperServer {
      */
     public LeaderZooKeeperServer(FileTxnSnapLog logFactory, QuorumPeer self, ZKDatabase zkDb) throws IOException {
         super(logFactory, self.tickTime, self.minSessionTimeout, self.maxSessionTimeout, self.clientPortListenBacklog, zkDb, self);
+        TMB_Helper.printf("[quorum-%d] new LeaderZookeeperServer\n", self.hashCode()); // 3MileBeach
     }
 
     public Leader getLeader() {
@@ -63,13 +65,15 @@ public class LeaderZooKeeperServer extends QuorumZooKeeperServer {
 
     @Override
     protected void setupRequestProcessors() {
-        RequestProcessor finalProcessor = new FinalRequestProcessor(this);
+        RequestProcessor finalProcessor = new FinalRequestProcessor(this, self); // 3MileBeach
+//        RequestProcessor finalProcessor = new FinalRequestProcessor(this);
         RequestProcessor toBeAppliedProcessor = new Leader.ToBeAppliedRequestProcessor(finalProcessor, getLeader());
         commitProcessor = new CommitProcessor(toBeAppliedProcessor, Long.toString(getServerId()), false, getZooKeeperServerListener());
         commitProcessor.start();
         ProposalRequestProcessor proposalProcessor = new ProposalRequestProcessor(this, commitProcessor);
         proposalProcessor.initialize();
-        prepRequestProcessor = new PrepRequestProcessor(this, proposalProcessor);
+        prepRequestProcessor = new PrepRequestProcessor(this, proposalProcessor, self); // 3MileBeach
+//        prepRequestProcessor = new PrepRequestProcessor(this, proposalProcessor);
         prepRequestProcessor.start();
         firstProcessor = new LeaderRequestProcessor(this, prepRequestProcessor);
 

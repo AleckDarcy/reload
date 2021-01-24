@@ -52,6 +52,7 @@ import org.apache.zookeeper.data.Id;
 import org.apache.zookeeper.data.Stat;
 import org.apache.zookeeper.proto.*;
 import org.apache.zookeeper.server.DataTree.ProcessTxnResult;
+import org.apache.zookeeper.server.quorum.QuorumPeer;
 import org.apache.zookeeper.server.quorum.QuorumZooKeeperServer;
 import org.apache.zookeeper.server.util.RequestPathMetricsCollector;
 import org.apache.zookeeper.trace.TMB_Helper;
@@ -77,17 +78,30 @@ public class FinalRequestProcessor implements RequestProcessor {
 
     ZooKeeperServer zks;
 
+    // 3MileBeach begins
+    int quorumId;
+    String quorumName;
+
+    // for QuorumZookeeperServer
+    public FinalRequestProcessor(ZooKeeperServer zks, QuorumPeer self) {
+        this.zks = zks;
+        this.quorumId = self.hashCode();
+        this.quorumName = String.format("quorum-%d", self.hashCode());
+        this.requestPathMetricsCollector = zks.getRequestPathMetricsCollector();
+    }
+    // 3MileBeach ends
+
     public FinalRequestProcessor(ZooKeeperServer zks) {
         this.zks = zks;
+        this.quorumName = "quorum-standalone"; // 3MileBeach
         this.requestPathMetricsCollector = zks.getRequestPathMetricsCollector();
     }
 
     public void processRequest(Request request) {
-        // 3MileBeach
-        String requestName = TMB_Helper.getClassName(request.record);
+        String requestName = TMB_Helper.getClassName(request.record); // 3MileBeach
         if (request.record != null) {
 //            TMB_Helper.println("call inbound component right now");
-            TMB_Store.calleeInbound(String.format("server-%d", this.zks.getServerId()), request.record);
+            TMB_Store.calleeInbound(quorumName, request.record);
         } else {
 //            TMB_Helper.println("call inbound component when request is deserialized");
         }
@@ -315,12 +329,13 @@ public class FinalRequestProcessor implements RequestProcessor {
             case OpCode.closeSession: {
                 lastOp = "CLOS";
 
-                // 3MileBeach
+                // 3MileBeach begins
                 NullPointerRequest closeRequest = new NullPointerRequest();
                 ByteBufferInputStream.byteBuffer2Record(request.request, closeRequest);
                 requestName = "CloseRequest";
                 request.record = closeRequest;
                 rsp = new NullPointerResponse(requestName);
+                // 3MileBeach ends
 
                 err = Code.get(rc.err);
                 break;
@@ -371,7 +386,7 @@ public class FinalRequestProcessor implements RequestProcessor {
                 // 3MileBeach
                 requestName = "GetDataRequest";
                 request.record = getDataRequest;
-                TMB_Store.calleeInbound(String.format("server-%d", this.zks.getServerId()), request.record);
+                TMB_Store.calleeInbound(quorumName, request.record);
 
                 path = getDataRequest.getPath();
                 rsp = handleGetDataRequest(getDataRequest, cnxn, request.authInfo);
@@ -652,13 +667,11 @@ public class FinalRequestProcessor implements RequestProcessor {
             if (path == null || rsp == null) {
                 if (rsp == null) {
 //                    TODO 3MileBeach
-
-
                     rsp = new NullPointerResponse(requestName);
                 }
 
                 // 3MileBeach
-                TMB_Store.calleeOutbound(String.format("server-%d", this.zks.getServerId()), rsp);
+                TMB_Store.calleeOutbound(quorumName, rsp);
 
                 cnxn.sendResponse(hdr, rsp, "response");
             } else {
@@ -669,7 +682,7 @@ public class FinalRequestProcessor implements RequestProcessor {
                 // so these values are passed along with the response.
 
                 // 3MileBeach
-                TMB_Store.calleeOutbound(String.format("server-%d", this.zks.getServerId()), rsp);
+                TMB_Store.calleeOutbound(quorumName, rsp);
 
                 switch (opCode) {
                     case OpCode.getData : {

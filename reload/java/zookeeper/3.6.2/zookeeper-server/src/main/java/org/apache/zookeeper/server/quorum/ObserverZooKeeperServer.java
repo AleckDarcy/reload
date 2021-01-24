@@ -27,6 +27,7 @@ import org.apache.zookeeper.server.RequestProcessor;
 import org.apache.zookeeper.server.SyncRequestProcessor;
 import org.apache.zookeeper.server.ZKDatabase;
 import org.apache.zookeeper.server.persistence.FileTxnSnapLog;
+import org.apache.zookeeper.trace.TMB_Helper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,6 +54,7 @@ public class ObserverZooKeeperServer extends LearnerZooKeeperServer {
     ObserverZooKeeperServer(FileTxnSnapLog logFactory, QuorumPeer self, ZKDatabase zkDb) throws IOException {
         super(logFactory, self.tickTime, self.minSessionTimeout, self.maxSessionTimeout, self.clientPortListenBacklog, zkDb, self);
         LOG.info("syncEnabled ={}", syncRequestProcessorEnabled);
+        TMB_Helper.printf("[quorum-%d] new ObserverZookeeperServer\n", self.hashCode()); // 3MileBeach
     }
 
     public Observer getObserver() {
@@ -89,7 +91,8 @@ public class ObserverZooKeeperServer extends LearnerZooKeeperServer {
         // We might consider changing the processor behaviour of
         // Observers to, for example, remove the disk sync requirements.
         // Currently, they behave almost exactly the same as followers.
-        RequestProcessor finalProcessor = new FinalRequestProcessor(this);
+        RequestProcessor finalProcessor = new FinalRequestProcessor(this, self); // 3MileBeach
+//        RequestProcessor finalProcessor = new FinalRequestProcessor(this);
         commitProcessor = new CommitProcessor(finalProcessor, Long.toString(getServerId()), true, getZooKeeperServerListener());
         commitProcessor.start();
         firstProcessor = new ObserverRequestProcessor(this, commitProcessor);

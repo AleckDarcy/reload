@@ -186,7 +186,8 @@ public class FLEMalformedNotificationMessageTest extends ZKTestCase {
          * (the receiver should not be able to parse the config part of the message)
          */
         startMockServer(1);
-        ByteBuffer requestBuffer = FastLeaderElection.buildMsg(ServerState.LOOKING.ordinal(), 1, 0, 0, 0, CONFIG_BYTES);
+        ByteBuffer requestBuffer = FastLeaderElection.buildMsg(ServerState.LOOKING.ordinal(), 1, 0, 0, 0, CONFIG_BYTES, new byte[0]); // 3MileBeach
+//        ByteBuffer requestBuffer = FastLeaderElection.buildMsg(ServerState.LOOKING.ordinal(), 1, 0, 0, 0, CONFIG_BYTES);
         mockCnxManager.toSend(0L, requestBuffer);
 
         /*

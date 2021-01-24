@@ -1534,7 +1534,7 @@ public class ClientCnxn {
         String client = "client-" + sendThread.getClientCnxnSocket().hashCode();
         // TMB_Helper.println("in submitRequest, idx: " + idx);
         if (request != null) {
-            TMB_Store.callerOutbound(client, request);
+            this.zooKeeper.tmbClientPlugin.callerOutbound(client, request);
         } else {
             TMB_Helper.println("submit request, request is null, should be fixed by 3MileBeach");
             new Exception().printStackTrace();

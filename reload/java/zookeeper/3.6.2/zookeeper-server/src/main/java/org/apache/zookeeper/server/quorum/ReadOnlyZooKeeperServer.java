@@ -59,8 +59,10 @@ public class ReadOnlyZooKeeperServer extends ZooKeeperServer {
 
     @Override
     protected void setupRequestProcessors() {
-        RequestProcessor finalProcessor = new FinalRequestProcessor(this);
-        RequestProcessor prepProcessor = new PrepRequestProcessor(this, finalProcessor);
+        RequestProcessor finalProcessor = new FinalRequestProcessor(this, self); // 3MileBeach
+//        RequestProcessor finalProcessor = new FinalRequestProcessor(this);
+        RequestProcessor prepProcessor = new PrepRequestProcessor(this, finalProcessor, self); // 3MileBeach
+//        RequestProcessor prepProcessor = new PrepRequestProcessor(this, finalProcessor);
         ((PrepRequestProcessor) prepProcessor).start();
         firstProcessor = new ReadOnlyRequestProcessor(this, prepProcessor);
         ((ReadOnlyRequestProcessor) firstProcessor).start();

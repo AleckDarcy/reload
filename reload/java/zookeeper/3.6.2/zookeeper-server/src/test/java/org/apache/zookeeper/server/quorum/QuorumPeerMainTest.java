@@ -40,6 +40,7 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -67,6 +68,9 @@ import org.apache.zookeeper.metrics.impl.NullMetricsProvider;
 import org.apache.zookeeper.server.persistence.FileTxnSnapLog;
 import org.apache.zookeeper.server.quorum.Leader.Proposal;
 import org.apache.zookeeper.test.ClientBase;
+import org.apache.zookeeper.trace.TMB_Helper;
+import org.apache.zookeeper.trace.TMB_Store;
+import org.apache.zookeeper.trace.TMB_Trace;
 import org.junit.Test;
 
 /**
@@ -112,17 +116,33 @@ public class QuorumPeerMainTest extends QuorumPeerTestBase {
             tickTime * 20,
             quorumPeer.getMaxSessionTimeout());
 
-        ZooKeeper zk = new ZooKeeper(addr + ":" + CLIENT_PORT_QP1, ClientBase.CONNECTION_TIMEOUT, this);
-        waitForOne(zk, States.CONNECTED);
-        zk.create("/foo_q1", "foobar1".getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-        assertEquals(new String(zk.getData("/foo_q1", null, null)), "foobar1");
-        zk.close();
+        ZooKeeper zk1 = new ZooKeeper(addr + ":" + CLIENT_PORT_QP1, ClientBase.CONNECTION_TIMEOUT, this);
 
-        zk = new ZooKeeper(addr + ":" + CLIENT_PORT_QP2, ClientBase.CONNECTION_TIMEOUT, this);
-        waitForOne(zk, States.CONNECTED);
-        zk.create("/foo_q2", "foobar2".getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-        assertEquals(new String(zk.getData("/foo_q2", null, null)), "foobar2");
-        zk.close();
+        // 3MileBeach
+        zk1.TMBClientInitialize(null); // TODO: 3MileBeach
+
+        waitForOne(zk1, States.CONNECTED);
+        zk1.create("/foo_q1", "foobar1".getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+        assertEquals(new String(zk1.getData("/foo_q1", null, null)), "foobar1");
+        zk1.close();
+
+        // 3MileBeach
+        zk1.TMBClientFinalize();
+
+        ZooKeeper zk2 = new ZooKeeper(addr + ":" + CLIENT_PORT_QP2, ClientBase.CONNECTION_TIMEOUT, this);
+        waitForOne(zk2, States.CONNECTED);
+
+        // 3MileBeach
+        zk2.TMBClientInitialize(null); // TODO: 3MileBeach
+
+        zk2.create("/foo_q2", "foobar2".getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+        assertEquals(new String(zk2.getData("/foo_q2", null, null)), "foobar2");
+        zk2.close();
+
+        // 3MileBeach
+        zk2.TMBClientFinalize();
+
+        TMB_Helper.println("all traces:" + TMB_Store.getAllThreads().toString());
 
         q1.shutdown();
         q2.shutdown();
@@ -150,6 +170,118 @@ public class QuorumPeerMainTest extends QuorumPeerTestBase {
     public void testQuorumV6() throws Exception {
         testQuorumInternal("[::1]");
     }
+
+    @Test
+    public void test3MileBeach() throws Exception {
+        ClientBase.setupTestEnv();
+        final int SERVER_COUNT = 3;
+        final int[] clientPorts = new int[SERVER_COUNT];
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < SERVER_COUNT; i++) {
+            clientPorts[i] = PortAssignment.unique();
+            sb.append("server." + i + "=127.0.0.1:" + PortAssignment.unique() + ":" + PortAssignment.unique() + ";" + clientPorts[i] + "\n");
+        }
+        String quorumCfgSection = sb.toString();
+
+        MainThread[] mt = new MainThread[SERVER_COUNT];
+        ZooKeeper[] zk = new ZooKeeper[SERVER_COUNT];
+        for (int i = 0; i < SERVER_COUNT; i++) {
+            mt[i] = new MainThread(i, clientPorts[i], quorumCfgSection);
+            mt[i].start();
+            zk[i] = new ZooKeeper("127.0.0.1:" + clientPorts[i], ClientBase.CONNECTION_TIMEOUT, this);
+        }
+
+        waitForAll(zk, States.CONNECTED);
+        TMB_Store.clearServerTraces();
+
+        // we need to shutdown and start back up to make sure that the create session isn't the first transaction since
+        // that is rather innocuous.
+        for (int i = 0; i < SERVER_COUNT; i++) {
+            mt[i].shutdown();
+        }
+
+        waitForAll(zk, States.CONNECTING);
+
+        for (int i = 0; i < SERVER_COUNT; i++) {
+            mt[i].start();
+            // Recreate a client session since the previous session was not persisted.
+            zk[i] = new ZooKeeper("127.0.0.1:" + clientPorts[i], ClientBase.CONNECTION_TIMEOUT, this);
+            zk[i].TMBClientInitialize(new TMB_Trace(TMB_Helper.newTraceId(), 0, new ArrayList<>(), new ArrayList<>()));
+        }
+
+        waitForAll(zk, States.CONNECTED);
+
+        // ok lets find the leader and kill everything else, we have a few
+        // seconds, so it should be plenty of time
+        int leader = -1;
+        Map<Long, Proposal> outstanding = null;
+        for (int i = 0; i < SERVER_COUNT; i++) {
+            if (mt[i].main.quorumPeer.leader == null) {
+//                mt[i].shutdown();
+            } else {
+                leader = i;
+                outstanding = mt[leader].main.quorumPeer.leader.outstandingProposals;
+            }
+        }
+
+        TMB_Helper.println("leader is: " + leader);
+        Thread.sleep(1000);
+
+        for (int i = 0; i < SERVER_COUNT; i++) {
+            zk[i].create("/zk" + i, "zk".getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+
+            TMB_Trace trace = zk[i].TMBClientFinalize();
+
+            TMB_Helper.printf("client-%d capture trace: %s\n", zk[i].hashCode(), trace.toJSON());
+        }
+
+//
+//        // just make sure that we actually did get it in process at the
+//        // leader
+//        assertTrue(outstanding.size() == 1);
+//        assertTrue(outstanding.values().iterator().next().request.getHdr().getType() == OpCode.create);
+//        // make sure it has a chance to write it to disk
+//        Thread.sleep(1000);
+//        mt[leader].shutdown();
+//        waitForAll(zk, States.CONNECTING);
+//        for (int i = 0; i < SERVER_COUNT; i++) {
+//            if (i != leader) {
+//                mt[i].start();
+//            }
+//        }
+//        for (int i = 0; i < SERVER_COUNT; i++) {
+//            if (i != leader) {
+//                // Recreate a client session since the previous session was not persisted.
+//                zk[i] = new ZooKeeper("127.0.0.1:" + clientPorts[i], ClientBase.CONNECTION_TIMEOUT, this);
+//                waitForOne(zk[i], States.CONNECTED);
+//                zk[i].create("/zk" + i, "zk".getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+//            }
+//        }
+//
+//        mt[leader].start();
+//        waitForAll(zk, States.CONNECTED);
+//        // make sure everything is consistent
+//        for (int i = 0; i < SERVER_COUNT; i++) {
+//            for (int j = 0; j < SERVER_COUNT; j++) {
+//                if (i == leader) {
+//                    assertTrue((j == leader ? ("Leader (" + leader + ")") : ("Follower " + j))
+//                            + " should not have /zk"
+//                            + i, zk[j].exists("/zk" + i, false) == null);
+//                } else {
+//                    assertTrue((j == leader ? ("Leader (" + leader + ")") : ("Follower " + j))
+//                            + " does not have /zk"
+//                            + i, zk[j].exists("/zk" + i, false) != null);
+//                }
+//            }
+//        }
+//        for (int i = 0; i < SERVER_COUNT; i++) {
+//            zk[i].close();
+//        }
+        for (int i = 0; i < SERVER_COUNT; i++) {
+            mt[i].shutdown();
+        }
+    }
+
 
     /**
      * Test early leader abandonment.

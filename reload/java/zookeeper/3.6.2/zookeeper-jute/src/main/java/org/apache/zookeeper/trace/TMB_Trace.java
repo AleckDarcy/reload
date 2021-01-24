@@ -28,31 +28,36 @@ import java.util.ArrayList;
 @InterfaceAudience.Public
 public class TMB_Trace implements Record {
   private long id;
+  private long req_event;
   private java.util.List<TMB_Event> events;
   private java.util.List<TMB_TFI> tfis;
   public TMB_Trace() {
+    this.events=new java.util.ArrayList<>();
+    this.tfis=new java.util.ArrayList<>();
   }
   public TMB_Trace(
         long id,
+        long req_event,
         java.util.List<TMB_Event> events,
         java.util.List<TMB_TFI> tfis) {
     this.id=id;
+    this.req_event=req_event;
     this.events=events;
     this.tfis=tfis;
   }
 
   // 3MileBeach
   public String toJSON() {
-    StringBuffer buffer = new StringBuffer(String.format("{\"id\":%d,\"events\":[", id));
+    StringBuffer buffer = new StringBuffer(String.format("{\"id\":%d,\"req_event\":%d,\"events\":[", id, req_event));
     int i = 0;
     for (TMB_Event event: events) {
       String type = event.getType() == 1? "SEND": "RECV";
       if (i != 0) {
-        buffer.append(String.format(",{\"type\":\"%s\",\"timestamp\":%d,\"message_name\":\"%s\",\"uuid\":\"%s\",\"service\":\"%s\"}",
-                type, event.getTimestamp(), event.getMessage_name(), event.getUuid(), event.getService()));
+        buffer.append(String.format(",\n{\"service\":\"%s\",\"type\":\"%s\",\"timestamp\":%d,\"message_name\":\"%s\",\"uuid\":\"%s\"}",
+                event.getService(), type, event.getTimestamp(), event.getMessage_name(), event.getUuid()));
       } else {
-        buffer.append(String.format("{\"type\":\"%s\",\"timestamp\":%d,\"message_name\":\"%s\",\"uuid\":\"%s\",\"service\":\"%s\"}",
-                type, event.getTimestamp(), event.getMessage_name(), event.getUuid(), event.getService()));
+        buffer.append(String.format("{\"service\":\"%s\",\"type\":\"%s\",\"timestamp\":%d,\"message_name\":\"%s\",\"uuid\":\"%s\"}",
+                event.getService(), type, event.getTimestamp(), event.getMessage_name(), event.getUuid()));
       }
 
       i++;
@@ -72,6 +77,10 @@ public class TMB_Trace implements Record {
     events.add(e);
   }
 
+  public long getReqEvent() {
+    return req_event;
+  }
+  public void setReqEvent(long m_) { req_event=m_; }
   public long getId() {
     return id;
   }
@@ -97,6 +106,7 @@ public class TMB_Trace implements Record {
   public void serialize(OutputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(this,tag);
     a_.writeLong(id,"id");
+    a_.writeLong(req_event,"req_event");
     {
       a_.startVector(events,"events");
       if (events!= null) {          int len1 = events.size();
@@ -122,6 +132,7 @@ public class TMB_Trace implements Record {
   public void deserialize(InputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(tag);
     id=a_.readLong("id");
+    req_event=a_.readLong("req_event");
     {
       Index vidx1 = a_.startVector("events");
       if (vidx1!= null) {          events=new java.util.ArrayList<TMB_Event>();
@@ -156,6 +167,7 @@ public class TMB_Trace implements Record {
         new ToStringOutputArchive(s);
       a_.startRecord(this,"");
     a_.writeLong(id,"id");
+    a_.writeLong(req_event,"req_event");
     {
       a_.startVector(events,"events");
       if (events!= null) {          int len1 = events.size();
@@ -205,6 +217,8 @@ public class TMB_Trace implements Record {
     boolean ret = false;
     ret = (id==peer.id);
     if (!ret) return ret;
+    ret = (req_event==peer.req_event);
+    if (!ret) return ret;
     ret = events.equals(peer.events);
     if (!ret) return ret;
     ret = tfis.equals(peer.tfis);
@@ -216,6 +230,8 @@ public class TMB_Trace implements Record {
     int ret;
     ret = (int) (id^(id>>>32));
     result = 37*result + ret;
+    ret = (int) (req_event^(req_event>>>32));
+    result = 37*result + ret;
     ret = events.hashCode();
     result = 37*result + ret;
     ret = tfis.hashCode();
@@ -223,6 +239,6 @@ public class TMB_Trace implements Record {
     return result;
   }
   public static String signature() {
-    return "LTMB_Trace(l[LTMB_Event(ilsss)][LTMB_TFI(isl[LTMB_TFIMeta(sll)])])";
+    return "LTMB_Trace(ll[LTMB_Event(ilsss)][LTMB_TFI(isl[LTMB_TFIMeta(sll)])])";
   }
 }

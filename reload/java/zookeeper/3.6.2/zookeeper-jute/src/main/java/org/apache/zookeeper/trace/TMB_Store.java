@@ -6,8 +6,83 @@ import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class TMB_Store {
+    class ClientPluginTrace {
+
+    }
+
+    class QuorumTrace {
+
+    }
+
+    private static Map<Long, ClientPluginTrace> clientPluginTraces = new HashMap<>();
+    private static Map<Long, QuorumTrace> quorumTrace = new HashMap<>();
+
     private static Map<Long, TMB_Trace> thread_traces = new HashMap<>();
+    private static Map<Long, TMB_Trace> server_traces = new HashMap<>();
     private static ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+
+    public static void clearServerTraces() {
+        lock.writeLock().lock();
+        server_traces.clear();
+        lock.writeLock().unlock();
+    }
+
+    public static void serverSetTrace(long serverId, TMB_Trace trace) {
+        if (trace.getId() == 0) {
+            return;
+        }
+
+        lock.writeLock().lock();
+        server_traces.put(serverId, trace);
+        lock.writeLock().unlock();
+    }
+
+    public static void serverMergeTrace(long serverId, TMB_Trace trace) {
+        if (trace == null || trace.getId() == 0) {
+            return;
+        }
+
+        List<TMB_Event> events = trace.getEvents();
+        int reqEvent = (int) trace.getReqEvent();
+        if (events.size() <= reqEvent) {
+            return;
+        }
+
+        events = events.subList(reqEvent, events.size());
+
+        lock.writeLock().lock();
+        TMB_Trace trace_ = server_traces.get(serverId);
+        if (trace_ == null || trace_.getId() != trace.getId()) {
+            lock.writeLock().unlock();
+
+            return;
+        }
+
+        List<TMB_Event> events_ = trace_.getEvents();
+        for (TMB_Event event: events) {
+            boolean found = false;
+            for (TMB_Event event_: events_) {
+                found = event_.equals(event);
+                if (found) {
+                    break;
+                }
+            }
+            if (!found) {
+                events_.add(event);
+            }
+        }
+        trace_.setEvents(events_);
+
+        lock.writeLock().unlock();
+    }
+
+    public static TMB_Trace serverGetThread(long serverId) {
+        lock.readLock().lock();
+        TMB_Trace trace = server_traces.get(serverId);
+        lock.readLock().unlock();
+
+        return trace;
+    }
 
     public static void callerAppendEventsByThreadIdUnsafe(long threadId, TMB_Trace trace) {
         TMB_Trace trace_ = thread_traces.get(threadId);
@@ -33,6 +108,16 @@ public class TMB_Store {
         lock.readLock().unlock();
 
         return trace;
+    }
+
+    // TODO: 3MileBeach temp function
+    public static Map<Long, TMB_Trace> getAllThreads() {
+        Map<Long, TMB_Trace> result = new HashMap<>();
+        lock.readLock().lock();
+        thread_traces.forEach(result::put);
+        lock.readLock().unlock();
+
+        return result;
     }
 
     public static void removeByThreadId(long threadId) {
@@ -107,7 +192,8 @@ public class TMB_Store {
             long id = TMB_Helper.newTraceId();
             trace.setId(id);
             trace.setEvents(new ArrayList<>());
-            // TMB_Helper.println("stub trace with id:" + id);
+            TMB_Helper.println("stub trace with id:" + id);
+            new Exception().printStackTrace();
         }
 
         if (trace.getId() != 0) {

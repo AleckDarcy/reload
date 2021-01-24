@@ -61,6 +61,7 @@ public class FollowerZooKeeperServer extends LearnerZooKeeperServer {
     FollowerZooKeeperServer(FileTxnSnapLog logFactory, QuorumPeer self, ZKDatabase zkDb) throws IOException {
         super(logFactory, self.tickTime, self.minSessionTimeout, self.maxSessionTimeout, self.clientPortListenBacklog, zkDb, self);
         this.pendingSyncs = new ConcurrentLinkedQueue<Request>();
+        TMB_Helper.printf("[quorum-%d] new FollowerZookeeperServer\n", self.hashCode()); // 3MileBeach
     }
 
     public Follower getFollower() {
@@ -69,7 +70,8 @@ public class FollowerZooKeeperServer extends LearnerZooKeeperServer {
 
     @Override
     protected void setupRequestProcessors() {
-        RequestProcessor finalProcessor = new FinalRequestProcessor(this);
+        RequestProcessor finalProcessor = new FinalRequestProcessor(this, self); // 3MileBeach
+//        RequestProcessor finalProcessor = new FinalRequestProcessor(this);
         commitProcessor = new CommitProcessor(finalProcessor, Long.toString(getServerId()), true, getZooKeeperServerListener());
         commitProcessor.start();
         firstProcessor = new FollowerRequestProcessor(this, commitProcessor);

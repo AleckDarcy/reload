@@ -1,9 +1,14 @@
 package org.apache.zookeeper.trace;
 
+import org.apache.jute.BinaryInputArchive;
+import org.apache.jute.BinaryOutputArchive;
 import org.apache.jute.Record;
 import org.apache.zookeeper.proto.NullPointerRequest;
 import org.apache.zookeeper.proto.NullPointerResponse;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.lang.String;
 import java.lang.Thread;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -15,6 +20,12 @@ public class TMB_Helper {
         StackTraceElement trace = Thread.currentThread().getStackTrace()[2];
 
         System.out.printf("[3MileBeach] %s:%d [%d] %s\n", trace.getFileName(), trace.getLineNumber(), Thread.currentThread().getId(), x);
+    }
+
+    public static void printf(String format, Object ... args) {
+        StackTraceElement trace = Thread.currentThread().getStackTrace()[2];
+
+        System.out.printf("[3MileBeach] %s:%d [%d] %s", trace.getFileName(), trace.getLineNumber(), Thread.currentThread().getId(), String.format(format, args));
     }
 
     public static String getClassName(Object o) {
@@ -31,6 +42,20 @@ public class TMB_Helper {
         String name = o.getClass().getCanonicalName();
 
         return name.substring(name.lastIndexOf('.') + 1);
+    }
+
+    public static ByteArrayOutputStream serialize(Record record) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        BinaryOutputArchive bos = BinaryOutputArchive.getArchive(baos);
+        record.serialize(bos, "");
+        baos.close();
+
+        return baos;
+    }
+
+    public static void deserialize(ByteArrayInputStream in, Record record) throws IOException {
+        BinaryInputArchive ia = BinaryInputArchive.getArchive(in);
+        record.deserialize(ia, "");
     }
 
     public static String getString(Record record) {

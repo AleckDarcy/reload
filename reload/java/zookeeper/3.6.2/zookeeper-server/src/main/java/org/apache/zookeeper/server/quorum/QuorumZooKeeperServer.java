@@ -37,6 +37,7 @@ import org.apache.zookeeper.server.ServerMetrics;
 import org.apache.zookeeper.server.ZKDatabase;
 import org.apache.zookeeper.server.ZooKeeperServer;
 import org.apache.zookeeper.server.persistence.FileTxnSnapLog;
+import org.apache.zookeeper.trace.TMB_Helper;
 
 /**
  * Abstract base class for all ZooKeeperServers that participate in

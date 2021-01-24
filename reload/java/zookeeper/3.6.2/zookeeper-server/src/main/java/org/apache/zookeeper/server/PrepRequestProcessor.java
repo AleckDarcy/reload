@@ -54,6 +54,7 @@ import org.apache.zookeeper.server.ZooKeeperServer.PrecalculatedDigest;
 import org.apache.zookeeper.server.auth.ProviderRegistry;
 import org.apache.zookeeper.server.auth.ServerAuthenticationProvider;
 import org.apache.zookeeper.server.quorum.LeaderZooKeeperServer;
+import org.apache.zookeeper.server.quorum.QuorumPeer;
 import org.apache.zookeeper.server.quorum.QuorumPeer.QuorumServer;
 import org.apache.zookeeper.server.quorum.QuorumPeerConfig;
 import org.apache.zookeeper.server.quorum.QuorumPeerConfig.ConfigException;
@@ -105,6 +106,24 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
     public enum DigestOpCode {
         NOOP, ADD, REMOVE, UPDATE;
     }
+
+    // 3MileBeach begins
+    int quorumId;
+
+    public PrepRequestProcessor(ZooKeeperServer zks, RequestProcessor nextProcessor, QuorumPeer self) {
+        super(
+                "ProcessThread(sid:" + zks.getServerId()
+                        + " cport:" + zks.getClientPort()
+                        + "):", zks.getZooKeeperServerListener());
+        this.nextProcessor = nextProcessor;
+        this.zks = zks;
+        this.digestEnabled = ZooKeeperServer.isDigestEnabled();
+        if (this.digestEnabled) {
+            this.digestCalculator = new DigestCalculator();
+        }
+        this.quorumId = self.hashCode();
+    }
+    // 3MileBeach ends
 
     public PrepRequestProcessor(ZooKeeperServer zks, RequestProcessor nextProcessor) {
         super(
