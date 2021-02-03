@@ -24,6 +24,8 @@ import org.apache.zookeeper.ZooDefs.OpCode;
 import org.apache.zookeeper.server.Request;
 import org.apache.zookeeper.server.RequestProcessor;
 import org.apache.zookeeper.server.ServerMetrics;
+import org.apache.zookeeper.server.TMB_Utils;
+import org.apache.zookeeper.trace.TMB_Helper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,13 +34,25 @@ public class SendAckRequestProcessor implements RequestProcessor, Flushable {
     private static final Logger LOG = LoggerFactory.getLogger(SendAckRequestProcessor.class);
 
     Learner learner;
+    // 3MileBeach starts
+    int quorumId;
+    String quorumName;
+
+    SendAckRequestProcessor(Learner peer, QuorumPeer self) {
+        this.learner = peer;
+        this.quorumId = self.hashCode();
+        this.quorumName = String.format("quorum-%d", this.quorumId);
+    }
+    // 3MileBeach ends
 
     SendAckRequestProcessor(Learner peer) {
         this.learner = peer;
+        this.quorumName = "quorum-standalone"; // 3MileBeach
     }
 
     public void processRequest(Request si) {
         if (si.type != OpCode.sync) {
+            TMB_Utils.printRequestForProcessor("SendAckRequestProcessor", quorumName, learner, si); // 3MileBeach
             QuorumPacket qp = new QuorumPacket(Leader.ACK, si.getHdr().getZxid(), null, null);
             try {
                 si.logLatency(ServerMetrics.getMetrics().PROPOSAL_ACK_CREATION_LATENCY);
@@ -55,6 +69,8 @@ public class SendAckRequestProcessor implements RequestProcessor, Flushable {
                     LOG.debug("Ignoring error closing the connection", e1);
                 }
             }
+        } else {
+            TMB_Helper.printf("[%s] FollowerRequestProcessor\n", quorumName);
         }
     }
 

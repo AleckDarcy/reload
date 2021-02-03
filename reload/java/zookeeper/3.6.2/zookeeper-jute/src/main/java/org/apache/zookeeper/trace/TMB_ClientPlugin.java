@@ -31,6 +31,10 @@ public class TMB_ClientPlugin {
         return trace;
     }
 
+    public TMB_Trace getTrace() {
+        return trace;
+    }
+
     /**
      * submitRequest -> generate request -> callerOutbound -> network -> callerInbound -> process response
      */
@@ -43,13 +47,12 @@ public class TMB_ClientPlugin {
             trace.setId(id);
             trace.setEvents(new ArrayList<>());
             TMB_Helper.println("stub trace with id:" + id);
-            new Exception().printStackTrace();
         }
 
         if (trace.getId() != 0) {
             long threadId = Thread.currentThread().getId();
             String requestName = TMB_Helper.getClassName(request);
-            String uuid = UUID.randomUUID().toString();
+            String uuid = TMB_Helper.UUID();
             TMB_Event event = new TMB_Event(TMB_Event.RECORD_SEND, TMB_Helper.currentTimeNanos(), requestName, uuid, service);
 
             List<TMB_Event> events = trace.getEvents();

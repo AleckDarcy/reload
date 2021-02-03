@@ -11,21 +11,39 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.String;
 import java.lang.Thread;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class TMB_Helper {
     private static AtomicInteger traceId = new AtomicInteger(0);
+    private static AtomicInteger uuid = new AtomicInteger(0);
+
+    public static boolean printable = true;
+
+    public static String UUID() {
+        return String.format("%010d", uuid.addAndGet(1));
+//        return UUID.randomUUID().toString();
+    }
 
     public static void println(String x) {
-        StackTraceElement trace = Thread.currentThread().getStackTrace()[2];
-
-        System.out.printf("[3MileBeach] %s:%d [%d] %s\n", trace.getFileName(), trace.getLineNumber(), Thread.currentThread().getId(), x);
+        if (printable) {
+            StackTraceElement trace = Thread.currentThread().getStackTrace()[2];
+            System.out.printf("[3MileBeach] %s:%d [%d] %s\n", trace.getFileName(), trace.getLineNumber(), Thread.currentThread().getId(), x);
+        }
     }
 
     public static void printf(String format, Object ... args) {
-        StackTraceElement trace = Thread.currentThread().getStackTrace()[2];
+        if (printable) {
+            StackTraceElement trace = Thread.currentThread().getStackTrace()[2];
+            System.out.printf("[3MileBeach] %s:%d [%d] %s", trace.getFileName(), trace.getLineNumber(), Thread.currentThread().getId(), String.format(format, args));
+        }
+    }
 
-        System.out.printf("[3MileBeach] %s:%d [%d] %s", trace.getFileName(), trace.getLineNumber(), Thread.currentThread().getId(), String.format(format, args));
+    public static void printf(int depth, String format, Object ... args) {
+        if (printable) {
+            StackTraceElement trace = Thread.currentThread().getStackTrace()[depth];
+            System.out.printf("[3MileBeach] %s:%d [%d] %s", trace.getFileName(), trace.getLineNumber(), Thread.currentThread().getId(), String.format(format, args));
+        }
     }
 
     public static String getClassName(Object o) {

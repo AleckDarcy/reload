@@ -30,17 +30,7 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
@@ -56,18 +46,13 @@ import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs.OpCode;
 import org.apache.zookeeper.common.Time;
 import org.apache.zookeeper.jmx.MBeanRegistry;
-import org.apache.zookeeper.server.FinalRequestProcessor;
-import org.apache.zookeeper.server.Request;
-import org.apache.zookeeper.server.RequestProcessor;
-import org.apache.zookeeper.server.ServerMetrics;
-import org.apache.zookeeper.server.ZKDatabase;
-import org.apache.zookeeper.server.ZooKeeperCriticalThread;
-import org.apache.zookeeper.server.ZooTrace;
+import org.apache.zookeeper.server.*;
 import org.apache.zookeeper.server.quorum.QuorumPeer.LearnerType;
 import org.apache.zookeeper.server.quorum.auth.QuorumAuthServer;
 import org.apache.zookeeper.server.quorum.flexible.QuorumVerifier;
 import org.apache.zookeeper.server.util.SerializeUtils;
 import org.apache.zookeeper.server.util.ZxidUtils;
+import org.apache.zookeeper.trace.TMB_Helper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1053,6 +1038,25 @@ public class Leader extends LearnerMaster {
 
         private final Leader leader;
 
+        // 3MileBeach starts
+        int quorumId;
+        String quorumName;
+
+        ToBeAppliedRequestProcessor(RequestProcessor next, Leader leader, QuorumPeer self) {
+            if (!(next instanceof FinalRequestProcessor)) {
+                throw new RuntimeException(ToBeAppliedRequestProcessor.class.getName()
+                        + " must be connected to "
+                        + FinalRequestProcessor.class.getName()
+                        + " not "
+                        + next.getClass().getName());
+            }
+            this.leader = leader;
+            this.next = next;
+            this.quorumId = self.hashCode();
+            this.quorumName = String.format("quorum-%d", this.quorumId);
+        }
+        // 3MileBeach ends
+
         /**
          * This request processor simply maintains the toBeApplied list. For
          * this to work next must be a FinalRequestProcessor and
@@ -1072,6 +1076,7 @@ public class Leader extends LearnerMaster {
             }
             this.leader = leader;
             this.next = next;
+            this.quorumName = "quorum-standalone"; // 3MileBeach
         }
 
         /*
@@ -1080,6 +1085,7 @@ public class Leader extends LearnerMaster {
          * @see org.apache.zookeeper.server.RequestProcessor#processRequest(org.apache.zookeeper.server.Request)
          */
         public void processRequest(Request request) throws RequestProcessorException {
+            TMB_Utils.printRequestForProcessor("ToBeAppliedRequestProcessor", quorumName, next, request); // 3MileBeach
             next.processRequest(request);
 
             // The only requests that should be on toBeApplied are write
@@ -1093,9 +1099,11 @@ public class Leader extends LearnerMaster {
                     Proposal p = iter.next();
                     if (p.request != null && p.request.zxid == zxid) {
                         iter.remove();
+                        TMB_Utils.printRequestForProcessorUnsafe("ToBeAppliedRequestProcessor", quorumName, next, p.request); // 3MileBeach
                         return;
                     }
                 }
+                TMB_Helper.printf("[%s] ToBeAppliedRequestProcessor\n", quorumName); // 3MileBeach
                 LOG.error("Committed request not found on toBeApplied: {}", request);
             }
         }

@@ -18,15 +18,29 @@
 
 package org.apache.zookeeper.server.quorum;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import org.apache.jute.Record;
+import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooDefs.OpCode;
-import org.apache.zookeeper.server.Request;
-import org.apache.zookeeper.server.RequestProcessor;
-import org.apache.zookeeper.server.ZooKeeperCriticalThread;
-import org.apache.zookeeper.server.ZooTrace;
-import org.apache.zookeeper.txn.ErrorTxn;
+import org.apache.zookeeper.data.ACL;
+import org.apache.zookeeper.data.StatPersisted;
+import org.apache.zookeeper.proto.CreateRequest;
+import org.apache.zookeeper.proto.CreateTTLRequest;
+import org.apache.zookeeper.proto.RequestHeader;
+import org.apache.zookeeper.server.*;
+import org.apache.zookeeper.trace.TMB_Event;
+import org.apache.zookeeper.trace.TMB_Helper;
+import org.apache.zookeeper.trace.TMB_Trace;
+import org.apache.zookeeper.txn.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,10 +60,24 @@ public class FollowerRequestProcessor extends ZooKeeperCriticalThread implements
 
     boolean finished = false;
 
+    // 3MileBeach starts
+    int quorumId;
+    String quorumName;
+
+    public FollowerRequestProcessor(FollowerZooKeeperServer zks, RequestProcessor nextProcessor, QuorumPeer self) {
+        super("FollowerRequestProcessor:" + zks.getServerId(), zks.getZooKeeperServerListener());
+        this.zks = zks;
+        this.nextProcessor = nextProcessor;
+        this.quorumId = self.hashCode();
+        this.quorumName = String.format("quorum-%d", this.quorumId);
+    }
+    // 3MileBeach ends
+
     public FollowerRequestProcessor(FollowerZooKeeperServer zks, RequestProcessor nextProcessor) {
         super("FollowerRequestProcessor:" + zks.getServerId(), zks.getZooKeeperServerListener());
         this.zks = zks;
         this.nextProcessor = nextProcessor;
+        this.quorumName = "quorum-standalone"; // 3MileBeach
     }
 
     @Override
@@ -68,6 +96,7 @@ public class FollowerRequestProcessor extends ZooKeeperCriticalThread implements
                 if (!zks.authWriteRequest(request)) {
                     continue;
                 }
+                TMB_Utils.printRequestForProcessor("FollowerRequestProcessor", quorumName, nextProcessor, request); // 3MileBeach
 
                 // We want to queue the request to be processed before we submit
                 // the request to the leader so that we are ready to receive
@@ -85,6 +114,36 @@ public class FollowerRequestProcessor extends ZooKeeperCriticalThread implements
                     zks.getFollower().request(request);
                     break;
                 case OpCode.create:
+                    CreateRequest request_ = new CreateRequest();
+//                    TMB_Helper.printf("[%s] forward create request to leader: %s\n", quorumName, request_);
+
+                    ByteBufferInputStream.byteBuffer2Record(request.request, request_);
+
+                    TMB_Trace trace = request_.getTrace();
+                    List<TMB_Event> events = trace.getEvents();
+                    int eventSize = events.size();
+                    if (eventSize > 0) {
+                        TMB_Event lastEvent = events.get(eventSize - 1);
+                        events.add(new TMB_Event(
+                                TMB_Event.RECORD_FRWD,
+                                TMB_Helper.currentTimeNanos(),
+                                lastEvent.getMessage_name(),
+                                lastEvent.getUuid(),
+                                quorumName));
+                    }
+                    trace.setEvents(events);
+                    request_.setTrace(trace);
+
+                    ByteBuffer bb = ByteBuffer.allocate(request.request.capacity() + 100);
+
+                    ByteBufferOutputStream.record2ByteBuffer(request_, bb);
+
+//                    TMB_Helper.printf("[%s] forward create request to leader: %s\n", quorumName, request_);
+
+                    request.request = bb;
+
+                    zks.getFollower().request(request);
+                    break;
                 case OpCode.create2:
                 case OpCode.createTTL:
                 case OpCode.createContainer:

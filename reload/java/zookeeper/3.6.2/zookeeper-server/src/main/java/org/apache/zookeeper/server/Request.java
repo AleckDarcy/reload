@@ -77,7 +77,8 @@ public class Request {
 
     public final int type;
 
-    public final ByteBuffer request;
+    public ByteBuffer request; // 3MileBeach
+//    public final ByteBuffer request;
 
     public final ServerCnxn cnxn;
 

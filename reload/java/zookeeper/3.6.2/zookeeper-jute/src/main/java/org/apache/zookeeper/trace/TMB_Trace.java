@@ -24,6 +24,7 @@ import org.apache.jute.Record;
 import org.apache.yetus.audience.InterfaceAudience;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @InterfaceAudience.Public
 public class TMB_Trace implements Record {
@@ -51,13 +52,10 @@ public class TMB_Trace implements Record {
     StringBuffer buffer = new StringBuffer(String.format("{\"id\":%d,\"req_event\":%d,\"events\":[", id, req_event));
     int i = 0;
     for (TMB_Event event: events) {
-      String type = event.getType() == 1? "SEND": "RECV";
       if (i != 0) {
-        buffer.append(String.format(",\n{\"service\":\"%s\",\"type\":\"%s\",\"timestamp\":%d,\"message_name\":\"%s\",\"uuid\":\"%s\"}",
-                event.getService(), type, event.getTimestamp(), event.getMessage_name(), event.getUuid()));
+        buffer.append(String.format(",%s", event.toJSON()));
       } else {
-        buffer.append(String.format("{\"service\":\"%s\",\"type\":\"%s\",\"timestamp\":%d,\"message_name\":\"%s\",\"uuid\":\"%s\"}",
-                event.getService(), type, event.getTimestamp(), event.getMessage_name(), event.getUuid()));
+        buffer.append(String.format("%s", event.toJSON()));
       }
 
       i++;
@@ -66,6 +64,19 @@ public class TMB_Trace implements Record {
     buffer.append("],\"tfis\":[]}");
 
     return buffer.toString();
+  }
+
+  // 3MileBeach
+  public TMB_Trace copy() {
+    int eventSize = events.size();
+    if (eventSize != 0) {
+      List<TMB_Event> events_ = new ArrayList<>(eventSize);
+      events_.addAll(events);
+
+      return new TMB_Trace(id, req_event, events_, tfis);
+    }
+
+    return new TMB_Trace(id, req_event, new ArrayList<>(), tfis);
   }
 
   public void addEvent(TMB_Event e) {

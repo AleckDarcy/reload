@@ -205,8 +205,8 @@ public class FastLeaderElection implements Election {
             this.name = name;
             this.uuid = uuid;
 
-            TMB_Helper.printf("[quorum-%d] new ToSend: %s\n", quorumId, this.toJSON());
-            new Exception().printStackTrace();
+//            TMB_Helper.printf("[quorum-%d] new ToSend: %s\n", quorumId, this.toJSON());
+//            new Exception().printStackTrace();
             // 3MileBeach ends
         }
 
@@ -303,6 +303,7 @@ public class FastLeaderElection implements Election {
             public void run() {
                 Message response;
                 while (!stop) {
+                    TMB_Trace trace = null; // 3MileBeach
                     // Sleeps on receive
                     try {
                         response = manager.pollRecvQueue(3000, TimeUnit.MILLISECONDS);
@@ -340,7 +341,7 @@ public class FastLeaderElection implements Election {
                         int version = 0x0;
                         QuorumVerifier rqv = null;
 
-                        TMB_Trace trace = n.trace; // 3MileBeach
+                        trace = n.trace; // 3MileBeach
                         String uuid = ""; // 3MileBeach
 
                         try {
@@ -376,48 +377,48 @@ public class FastLeaderElection implements Election {
                                 response.buffer.get(b);
 
                                 // 3MileBeach begins
-//                                TMB_Helper.println("response remains: " + response.buffer.remaining());
-//                                if (response.buffer.remaining() > 4) {
-//                                    int traceLength = response.buffer.getInt();
-////                                    TMB_Helper.println("trace length: " + traceLength);
-//
-//                                    if (response.buffer.remaining() >= traceLength) {
-//                                        byte[] bytes = new byte[traceLength];
-//                                        response.buffer.get(bytes);
-//
-//                                        try {
-//                                            TMB_Helper.deserialize(new ByteArrayInputStream(bytes), trace);
-//                                        } catch (IOException e) {
-//
-//                                        }
-//
-//                                        List<TMB_Event> events = trace.getEvents();
-//                                        int eventSize = events.size();
-//                                        if (eventSize != 0) {
-//                                            TMB_Event lastEvent = events.get(eventSize - 1);
-//                                            String name = lastEvent.getMessage_name();
-//                                            uuid = lastEvent.getUuid();
-//                                            TMB_Event event = new TMB_Event(
-//                                                    TMB_Event.RECORD_RECV,
-//                                                    TMB_Helper.currentTimeNanos(),
-//                                                    name,
-//                                                    uuid,
-//                                                    String.format("quorum-%d", quorumId));
-//
-//                                            TMB_Helper.printf("[quorum-%d] new event: %s", quorumId, event);
-//
-//                                            events.add(event);
-//                                            trace.setEvents(events);
-//
-//                                            TMB_Store.serverMergeTrace(quorumId, trace);
-//                                        }
-//
-//                                        TMB_Helper.printf("[quorum-%d] response contains trace: %s\n", quorumId, trace.toJSON());
-//                                    } else {
-//                                        TMB_Helper.printf("[quorum-%d] TODO\n", quorumId);
-//                                    }
-//
-//                                }
+                                if (response.buffer.remaining() > 4) {
+                                    int traceLength = response.buffer.getInt();
+//                                    TMB_Helper.println("trace length: " + traceLength);
+                                    if (response.buffer.remaining() >= traceLength) {
+                                        byte[] bytes = new byte[traceLength];
+                                        response.buffer.get(bytes);
+
+                                        try {
+                                            TMB_Helper.deserialize(new ByteArrayInputStream(bytes), trace);
+                                        } catch (IOException e) {
+
+                                        }
+
+                                        List<TMB_Event> events = trace.getEvents();
+                                        int eventSize = events.size();
+                                        if (eventSize != 0) {
+                                            TMB_Helper.printf("[quorum-%d] event size: %d\n", quorumId, eventSize);
+
+                                            TMB_Event lastEvent = events.get(eventSize - 1);
+                                            String name = lastEvent.getMessage_name();
+                                            uuid = lastEvent.getUuid();
+                                            TMB_Event event = new TMB_Event(
+                                                    TMB_Event.RECORD_RECV,
+                                                    TMB_Helper.currentTimeNanos(),
+                                                    name,
+                                                    uuid,
+                                                    String.format("quorum-%d", quorumId));
+
+                                            TMB_Helper.printf("[quorum-%d] new event: %s\n", quorumId, event.toJSON());
+
+                                            events.add(event);
+                                            trace.setEvents(events);
+
+                                            TMB_Store.getInstance().quorumSetTrace(quorumId, trace);
+                                            n.trace = trace;
+                                        }
+
+                                        TMB_Helper.printf("[quorum-%d] response contains trace: %s\n", quorumId, trace.toJSON());
+                                    } else {
+                                        TMB_Helper.printf("[quorum-%d] TODO\n", quorumId);
+                                    }
+                                }
                                 // 3MileBeach ends
 
                                 synchronized (self) {
@@ -460,8 +461,7 @@ public class FastLeaderElection implements Election {
                             TMB_Helper.printf("[quorum-%d] TODO\n", quorumId); // 3MileBeach
                             continue;
                         }
-
-                        TMB_Helper.printf("[quorum-%d] receives: %s\n", quorumId, n.toJSON()); // 3MileBeach
+//                        TMB_Helper.printf("[quorum-%d] receives: %s\n", quorumId, n.toJSON()); // 3MileBeach
 
                         /*
                          * If it is from a non-voting server (such as an observer or
@@ -483,9 +483,8 @@ public class FastLeaderElection implements Election {
                                 uuid, // 3MileBeach
                                 quorumId); // 3MileBeach
 
-                            notmsg.trace = trace; // 3MileBeach
-
-                            TMB_Helper.printf("[quorum-%d] non-voting server sends: %s\n", quorumId, notmsg.toJSON());
+                            notmsg.trace = trace.copy(); // 3MileBeach
+                            TMB_Helper.printf("[quorum-%d] non-voting server, ToSend: %s\n", quorumId, notmsg.toJSON()); // 3MileBeach
 
                             sendqueue.offer(notmsg);
                         } else {
@@ -567,9 +566,8 @@ public class FastLeaderElection implements Election {
                                         uuid, // 3MileBeach
                                         quorumId); // 3MileBeach
 
-                                    notmsg.trace = trace;
-
-                                    TMB_Helper.printf("[quorum-%d] sends back: %s\n", quorumId, notmsg.toJSON());
+                                    notmsg.trace = trace.copy(); // 3MileBeach
+                                    TMB_Helper.printf("[quorum-%d] sends back, ToSend: %s\n", quorumId, notmsg.toJSON()); // 3MileBeach
 
                                     sendqueue.offer(notmsg);
                                 }
@@ -611,16 +609,18 @@ public class FastLeaderElection implements Election {
                                         uuid, // 3MileBeach
                                         quorumId); // 3MileBeach
 
-                                    notmsg.trace = trace;
-
-                                    TMB_Helper.printf("[quorum-%d] send proposed leader back: %s\n", quorumId, notmsg.toJSON());
-
+                                    notmsg.trace = trace.copy(); // 3MileBeach
+                                    TMB_Helper.printf("[quorum-%d] return with proposed leader, ToSend: %s\n", quorumId, notmsg.toJSON()); // 3MileBeach
                                     sendqueue.offer(notmsg);
                                 }
                             }
                         }
                     } catch (InterruptedException e) {
                         LOG.warn("Interrupted Exception while waiting for new message", e);
+                    } finally {
+                        if (trace != null) {
+                            TMB_Store.getInstance().quorumQuit(quorumId, trace); // 3MileBeach
+                        }
                     }
                 }
                 LOG.info("WorkerReceiver is down");
@@ -672,32 +672,37 @@ public class FastLeaderElection implements Election {
             void process(ToSend m) {
                 // 3MileBeach begins
                 int quorumId = self.hashCode();
+                TMB_Trace trace = m.trace;
                 TMB_Helper.printf("[quorum-%d] process ToSend: %s\n", quorumId, m.toJSON());
                 byte[] bytes = new byte[0];
 
-                try {
-                    TMB_Event event = new TMB_Event(
-                            TMB_Event.RECORD_SEND,
-                            TMB_Helper.currentTimeNanos(),
-                            m.name,
-                            UUID.randomUUID().toString(),
-                            String.format("quorum-%d", quorumId));
+                if (trace.getId() != 0) {
+                    try {
+                        TMB_Event event = new TMB_Event(
+                                TMB_Event.RECORD_SEND,
+                                TMB_Helper.currentTimeNanos(),
+                                m.name,
+                                TMB_Helper.UUID(),
+                                String.format("quorum-%d", quorumId));
 
-                    TMB_Helper.printf("[quorum-%d] new event: %s", quorumId, event);
+                        TMB_Helper.printf("[quorum-%d] new event: %s\n", quorumId, event.toJSON());
 
-                    List<TMB_Event> events = m.trace.getEvents();
-                    List<TMB_Event> events_ = new ArrayList<>(events.size() + 1);
+                        List<TMB_Event> events = m.trace.getEvents();
+                        List<TMB_Event> events_ = new ArrayList<>(events.size() + 1);
 
-                    events_.addAll(events);
-                    events_.add(event);
-                    m.trace.setEvents(events_);
+                        events_.addAll(events);
+                        events_.add(event);
+                        m.trace.setEvents(events_);
 
-                    ByteArrayOutputStream os = TMB_Helper.serialize(m.trace);
+                        TMB_Store.getInstance().quorumSetTrace(quorumId, m.trace); // todo
+                        ByteArrayOutputStream os = TMB_Helper.serialize(m.trace);
 
-                    TMB_Helper.printf("[quorum-%d] add send event: %s\n", quorumId, m.toJSON());
-                    bytes = os.toByteArray();
-                } catch (IOException e) {
+                        TMB_Helper.printf("[quorum-%d] add send event: %s\n", quorumId, m.toJSON());
+                        TMB_Helper.printf("[quorum-%d] add send trace: %d, %s\n", quorumId, m.trace.getEvents().size(), m.trace.toJSON());
+                        bytes = os.toByteArray();
+                    } catch (IOException e) {
 
+                    }
                 }
 
                 ByteBuffer requestBuffer = buildMsg(m.state.ordinal(), m.leader, m.zxid, m.electionEpoch, m.peerEpoch, m.configData, bytes);
@@ -921,7 +926,8 @@ public class FastLeaderElection implements Election {
                 "", // 3MileBeach
                 quorumId); // 3MileBeach
 
-            notmsg.trace = trace; // 3MileBeach
+            notmsg.trace = trace.copy(); // 3MileBeach
+            TMB_Helper.printf("[quorum-%d] sends notification, ToSend: %s\n", quorumId, notmsg.toJSON()); // 3MileBeach
 
             LOG.debug(
                 "Sending Notification: {} (n.leader), 0x{} (n.zxid), 0x{} (n.round), {} (recipient),"
@@ -1170,10 +1176,13 @@ public class FastLeaderElection implements Election {
                 self.getId(),
                 Long.toHexString(proposedZxid));
 
+            // 3MileBeach begins
             TMB_Trace tmpTrace = new TMB_Trace(TMB_Helper.newTraceId(), 0, new ArrayList<>(), new ArrayList<>());
-            sendNotifications("LeaderElection(New)", tmpTrace); // 3MileBeach
+//            TMB_Store.getInstance().quorumSetTrace(quorumId, tmpTrace);
+            sendNotifications("LeaderElection(New)", tmpTrace);
             TMB_Helper.printf("[quorum-%d] start leader election\n", quorumId);
-            TMB_Store.serverSetTrace(quorumId, tmpTrace);
+            // 3MileBeach ends
+
 //            sendNotifications();
 
             SyncedLearnerTracker voteSet;
@@ -1195,7 +1204,7 @@ public class FastLeaderElection implements Election {
                  */
                 if (n == null) {
                     if (manager.haveDelivered()) {
-                        sendNotifications("LeaderElection(More)", new TMB_Trace(tmpTrace.getId(), 0, new ArrayList<>(), new ArrayList<>())); // 3MileBeach
+                        sendNotifications("LeaderElection(More)", tmpTrace); // 3MileBeach
 //                        sendNotifications();
                     } else {
                         manager.connectAll();

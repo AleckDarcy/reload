@@ -1716,6 +1716,7 @@ public class ZooKeeper implements AutoCloseable {
         RequestHeader h = new RequestHeader();
         h.setType(createMode.isContainer() ? ZooDefs.OpCode.createContainer : ZooDefs.OpCode.create);
         CreateRequest request = new CreateRequest();
+        request.setTrace(tmbClientPlugin.getTrace()); // 3MileBeach
         CreateResponse response = new CreateResponse();
         request.setData(data);
         request.setFlags(createMode.toFlag());

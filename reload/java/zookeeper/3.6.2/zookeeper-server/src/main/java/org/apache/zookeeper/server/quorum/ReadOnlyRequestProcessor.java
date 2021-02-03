@@ -23,11 +23,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.apache.zookeeper.KeeperException.Code;
 import org.apache.zookeeper.ZooDefs.OpCode;
 import org.apache.zookeeper.proto.ReplyHeader;
-import org.apache.zookeeper.server.Request;
-import org.apache.zookeeper.server.RequestProcessor;
-import org.apache.zookeeper.server.ZooKeeperCriticalThread;
-import org.apache.zookeeper.server.ZooKeeperServer;
-import org.apache.zookeeper.server.ZooTrace;
+import org.apache.zookeeper.server.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,17 +45,31 @@ public class ReadOnlyRequestProcessor extends ZooKeeperCriticalThread implements
 
     private final ZooKeeperServer zks;
 
+    // 3MileBeach starts
+    int quorumId;
+    String quorumName;
+
+    public ReadOnlyRequestProcessor(ZooKeeperServer zks, RequestProcessor nextProcessor, QuorumPeer self) {
+        super("ReadOnlyRequestProcessor:" + zks.getServerId(), zks.getZooKeeperServerListener());
+        this.zks = zks;
+        this.nextProcessor = nextProcessor;
+        this.quorumId = self.hashCode();
+        this.quorumName = String.format("quorum-%d", this.quorumId);
+    }
+    // 3MileBeach ends
+
     public ReadOnlyRequestProcessor(ZooKeeperServer zks, RequestProcessor nextProcessor) {
         super("ReadOnlyRequestProcessor:" + zks.getServerId(), zks.getZooKeeperServerListener());
         this.zks = zks;
         this.nextProcessor = nextProcessor;
+        this.quorumName = "quorum-standalone"; // 3MileBeach
     }
 
     public void run() {
         try {
             while (!finished) {
                 Request request = queuedRequests.take();
-
+                TMB_Utils.printRequestForProcessor("ReadOnlyRequestProcessor", quorumName, nextProcessor, request); // 3MileBeach
                 // log request
                 long traceMask = ZooTrace.CLIENT_REQUEST_TRACE_MASK;
                 if (request.type == OpCode.ping) {

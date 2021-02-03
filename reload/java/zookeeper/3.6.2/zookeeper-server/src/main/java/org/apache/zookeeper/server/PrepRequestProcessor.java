@@ -22,15 +22,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 import org.apache.jute.BinaryOutputArchive;
 import org.apache.jute.Record;
@@ -109,6 +101,7 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
 
     // 3MileBeach begins
     int quorumId;
+    String quorumName;
 
     public PrepRequestProcessor(ZooKeeperServer zks, RequestProcessor nextProcessor, QuorumPeer self) {
         super(
@@ -122,6 +115,7 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
             this.digestCalculator = new DigestCalculator();
         }
         this.quorumId = self.hashCode();
+        this.quorumName = String.format("quorum-%d", this.quorumId);
     }
     // 3MileBeach ends
 
@@ -136,6 +130,7 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
         if (this.digestEnabled) {
             this.digestCalculator = new DigestCalculator();
         }
+        this.quorumName = "quorum-standalone"; // 3MileBeach
     }
 
     /**
@@ -775,9 +770,7 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
      * @param request
      */
     protected void pRequest(Request request) throws RequestProcessorException {
-        // 3MileBeach
-        // TMB_Helper.println("p request");
-
+        TMB_Utils.printRequestForProcessor("PreRequestProcessor", quorumName, nextProcessor, request); // 3MileBeach
         // LOG.info("Prep>>> cxid = " + request.cxid + " type = " +
         // request.type + " id = 0x" + Long.toHexString(request.sessionId));
         request.setHdr(null);

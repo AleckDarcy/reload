@@ -65,17 +65,27 @@ public class LeaderZooKeeperServer extends QuorumZooKeeperServer {
 
     @Override
     protected void setupRequestProcessors() {
-        RequestProcessor finalProcessor = new FinalRequestProcessor(this, self); // 3MileBeach
-//        RequestProcessor finalProcessor = new FinalRequestProcessor(this);
-        RequestProcessor toBeAppliedProcessor = new Leader.ToBeAppliedRequestProcessor(finalProcessor, getLeader());
-        commitProcessor = new CommitProcessor(toBeAppliedProcessor, Long.toString(getServerId()), false, getZooKeeperServerListener());
+        // 3MileBeach starts
+        RequestProcessor finalProcessor = new FinalRequestProcessor(this, self);
+        RequestProcessor toBeAppliedProcessor = new Leader.ToBeAppliedRequestProcessor(finalProcessor, getLeader(), self);
+        commitProcessor = new CommitProcessor(toBeAppliedProcessor, Long.toString(getServerId()), false, getZooKeeperServerListener(), self);
         commitProcessor.start();
-        ProposalRequestProcessor proposalProcessor = new ProposalRequestProcessor(this, commitProcessor);
+        ProposalRequestProcessor proposalProcessor = new ProposalRequestProcessor(this, commitProcessor, self);
         proposalProcessor.initialize();
-        prepRequestProcessor = new PrepRequestProcessor(this, proposalProcessor, self); // 3MileBeach
-//        prepRequestProcessor = new PrepRequestProcessor(this, proposalProcessor);
+        prepRequestProcessor = new PrepRequestProcessor(this, proposalProcessor, self);
         prepRequestProcessor.start();
-        firstProcessor = new LeaderRequestProcessor(this, prepRequestProcessor);
+        firstProcessor = new LeaderRequestProcessor(this, prepRequestProcessor, self);
+        // 3MileBeach ends
+
+//        RequestProcessor finalProcessor = new FinalRequestProcessor(this);
+//        RequestProcessor toBeAppliedProcessor = new Leader.ToBeAppliedRequestProcessor(finalProcessor, getLeader());
+//        commitProcessor = new CommitProcessor(toBeAppliedProcessor, Long.toString(getServerId()), false, getZooKeeperServerListener());
+//        commitProcessor.start();
+//        ProposalRequestProcessor proposalProcessor = new ProposalRequestProcessor(this, commitProcessor);
+//        proposalProcessor.initialize();
+//        prepRequestProcessor = new PrepRequestProcessor(this, proposalProcessor);
+//        prepRequestProcessor.start();
+//        firstProcessor = new LeaderRequestProcessor(this, prepRequestProcessor);
 
         setupContainerManager();
     }

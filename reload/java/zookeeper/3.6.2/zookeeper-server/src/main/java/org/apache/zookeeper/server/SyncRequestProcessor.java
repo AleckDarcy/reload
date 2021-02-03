@@ -21,6 +21,7 @@ package org.apache.zookeeper.server;
 import java.io.Flushable;
 import java.io.IOException;
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
@@ -29,6 +30,8 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import org.apache.zookeeper.common.Time;
+import org.apache.zookeeper.server.quorum.QuorumPeer;
+import org.apache.zookeeper.trace.TMB_Helper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,11 +88,25 @@ public class SyncRequestProcessor extends ZooKeeperCriticalThread implements Req
     private final Queue<Request> toFlush;
     private long lastFlushTime;
 
+    // 3MileBeach starts
+    int quorumId;
+    String quorumName;
+
+    public SyncRequestProcessor(ZooKeeperServer zks, RequestProcessor nextProcessor, QuorumPeer self) {
+        super("SyncThread:" + zks.getServerId(), zks.getZooKeeperServerListener());
+        this.zks = zks;
+        this.nextProcessor = nextProcessor;
+        this.toFlush = new ArrayDeque<>(zks.getMaxBatchSize());
+        this.quorumId = self.hashCode();
+        this.quorumName = String.format("quorum-%d", this.quorumId);
+    }
+
     public SyncRequestProcessor(ZooKeeperServer zks, RequestProcessor nextProcessor) {
         super("SyncThread:" + zks.getServerId(), zks.getZooKeeperServerListener());
         this.zks = zks;
         this.nextProcessor = nextProcessor;
         this.toFlush = new ArrayDeque<>(zks.getMaxBatchSize());
+        this.quorumName = "quorum-standalone"; // 3MileBeach
     }
 
     /**
@@ -174,6 +191,7 @@ public class SyncRequestProcessor extends ZooKeeperCriticalThread implements Req
                     break;
                 }
 
+                TMB_Utils.printRequestForProcessor("SyncRequestProcessor", quorumName, nextProcessor, si); // 3MileBeach
                 long startProcessTime = Time.currentElapsedTime();
                 ServerMetrics.getMetrics().SYNC_PROCESSOR_QUEUE_TIME.add(startProcessTime - si.syncQueueStartTime);
 

@@ -70,14 +70,23 @@ public class FollowerZooKeeperServer extends LearnerZooKeeperServer {
 
     @Override
     protected void setupRequestProcessors() {
-        RequestProcessor finalProcessor = new FinalRequestProcessor(this, self); // 3MileBeach
-//        RequestProcessor finalProcessor = new FinalRequestProcessor(this);
-        commitProcessor = new CommitProcessor(finalProcessor, Long.toString(getServerId()), true, getZooKeeperServerListener());
+        // 3MileBeach begins
+        RequestProcessor finalProcessor = new FinalRequestProcessor(this, self);
+        commitProcessor = new CommitProcessor(finalProcessor, Long.toString(getServerId()), true, getZooKeeperServerListener(), self);
         commitProcessor.start();
-        firstProcessor = new FollowerRequestProcessor(this, commitProcessor);
+        firstProcessor = new FollowerRequestProcessor(this, commitProcessor, self);
         ((FollowerRequestProcessor) firstProcessor).start();
-        syncProcessor = new SyncRequestProcessor(this, new SendAckRequestProcessor(getFollower()));
+        syncProcessor = new SyncRequestProcessor(this, new SendAckRequestProcessor(getFollower(), self), self);
         syncProcessor.start();
+        // 3MileBeach ends
+
+//        RequestProcessor finalProcessor = new FinalRequestProcessor(this);
+//        commitProcessor = new CommitProcessor(finalProcessor, Long.toString(getServerId()), true, getZooKeeperServerListener());
+//        commitProcessor.start();
+//        firstProcessor = new FollowerRequestProcessor(this, commitProcessor);
+//        ((FollowerRequestProcessor) firstProcessor).start();
+//        syncProcessor = new SyncRequestProcessor(this, new SendAckRequestProcessor(getFollower()));
+//        syncProcessor.start();
     }
 
     LinkedBlockingQueue<Request> pendingTxns = new LinkedBlockingQueue<Request>();

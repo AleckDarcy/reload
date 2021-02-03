@@ -22,10 +22,7 @@ import java.io.IOException;
 import java.util.concurrent.LinkedBlockingQueue;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs.OpCode;
-import org.apache.zookeeper.server.Request;
-import org.apache.zookeeper.server.RequestProcessor;
-import org.apache.zookeeper.server.ZooKeeperCriticalThread;
-import org.apache.zookeeper.server.ZooTrace;
+import org.apache.zookeeper.server.*;
 import org.apache.zookeeper.txn.ErrorTxn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +45,19 @@ public class ObserverRequestProcessor extends ZooKeeperCriticalThread implements
 
     boolean finished = false;
 
+    // 3MileBeach starts
+    int quorumId;
+    String quorumName;
+
+    public ObserverRequestProcessor(ObserverZooKeeperServer zks, RequestProcessor nextProcessor, QuorumPeer self) {
+        super("ObserverRequestProcessor:" + zks.getServerId(), zks.getZooKeeperServerListener());
+        this.zks = zks;
+        this.nextProcessor = nextProcessor;
+        this.quorumId = self.hashCode();
+        this.quorumName = String.format("quorum-%d", this.quorumId);
+    }
+    // 3MileBeach ends
+
     /**
      * Constructor - takes an ObserverZooKeeperServer to associate with
      * and the next processor to pass requests to after we're finished.
@@ -58,6 +68,7 @@ public class ObserverRequestProcessor extends ZooKeeperCriticalThread implements
         super("ObserverRequestProcessor:" + zks.getServerId(), zks.getZooKeeperServerListener());
         this.zks = zks;
         this.nextProcessor = nextProcessor;
+        this.quorumName = "quorum-standalone"; // 3MileBeach
     }
 
     @Override
@@ -77,6 +88,7 @@ public class ObserverRequestProcessor extends ZooKeeperCriticalThread implements
                     continue;
                 }
 
+                TMB_Utils.printRequestForProcessor("ObserverRequestProcessor", quorumName, nextProcessor, request); // 3MileBeach
                 // We want to queue the request to be processed before we submit
                 // the request to the leader so that we are ready to receive
                 // the response

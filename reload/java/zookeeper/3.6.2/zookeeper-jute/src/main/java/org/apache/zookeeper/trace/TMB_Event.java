@@ -27,6 +27,7 @@ import org.apache.yetus.audience.InterfaceAudience;
 public class TMB_Event implements Record {
   public static final int RECORD_SEND = 1;
   public static final int RECORD_RECV = 2;
+  public static final int RECORD_FRWD = 3;
 
   private int type;
   private long timestamp;
@@ -47,6 +48,19 @@ public class TMB_Event implements Record {
     this.uuid=uuid;
     this.service=service;
   }
+
+  // 3MileBeach
+  public String toJSON() {
+    String type = "SEND";
+    if (this.getType() == 2) {
+      type = "RECV";
+    } else if (this.getType() == 3) {
+      type = "FRWD";
+    }
+    return String.format("{\"service\":\"%s\",\"timestamp\":%d,\"type\":\"%s\",\"message_name\":\"%s\",\"uuid\":\"%s\"}",
+              this.getService(), this.getTimestamp(), type, this.getMessage_name(), this.getUuid());
+  }
+
   public int getType() {
     return type;
   }

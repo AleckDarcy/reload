@@ -98,14 +98,15 @@ public class FinalRequestProcessor implements RequestProcessor {
     }
 
     public void processRequest(Request request) {
-        String requestName = TMB_Helper.getClassName(request.record); // 3MileBeach
+        // 3MileBeach starts
+        String requestName = TMB_Helper.getClassName(request.record);
         if (request.record != null) {
-//            TMB_Helper.println("call inbound component right now");
+//            TMB_Helper.printf("[%s] callee inbound component right now\n", quorumName);
             TMB_Store.calleeInbound(quorumName, request.record);
         } else {
-//            TMB_Helper.println("call inbound component when request is deserialized");
+            TMB_Helper.printf("[%s] callee inbound component when request is deserialized, request type: %d\n", quorumName, request.type);
         }
-
+        // 3MileBeach ends
         LOG.debug("Processing request:: {}", request);
 
         // request.addRQRec(">final");
@@ -130,6 +131,7 @@ public class FinalRequestProcessor implements RequestProcessor {
             // we are just playing diffs from the leader.
             if (closeSession(zks.serverCnxnFactory, request.sessionId)
                 || closeSession(zks.secureServerCnxnFactory, request.sessionId)) {
+                TMB_Helper.printf("[%s] returned\n", quorumName); // 3MileBeach
                 return;
             }
         }
@@ -150,6 +152,7 @@ public class FinalRequestProcessor implements RequestProcessor {
         }
 
         if (request.cnxn == null) {
+            TMB_Helper.printf("[%s] returned\n", quorumName); // 3MileBeach
             return;
         }
         ServerCnxn cnxn = request.cnxn;
@@ -201,6 +204,7 @@ public class FinalRequestProcessor implements RequestProcessor {
                 updateStats(request, lastOp, lastZxid);
 
                 cnxn.sendResponse(new ReplyHeader(ClientCnxn.PING_XID, lastZxid, 0), null, "response");
+                TMB_Helper.printf("[%s] returned\n", quorumName); // 3MileBeach
                 return;
             }
             case OpCode.createSession: {
@@ -208,6 +212,7 @@ public class FinalRequestProcessor implements RequestProcessor {
                 updateStats(request, lastOp, lastZxid);
 
                 zks.finishSessionInit(request.cnxn, true);
+                TMB_Helper.printf("[%s] returned\n", quorumName); // 3MileBeach
                 return;
             }
             case OpCode.multi: {
@@ -345,9 +350,11 @@ public class FinalRequestProcessor implements RequestProcessor {
                 SyncRequest syncRequest = new SyncRequest();
                 ByteBufferInputStream.byteBuffer2Record(request.request, syncRequest);
 
-                // 3MileBeach
+                // 3MileBeach starts
                 requestName = "SyncRequest";
                 request.record = syncRequest;
+                TMB_Helper.printf("[%s] sync request\n", quorumName);
+                // 3MileBeach ends
 
                 rsp = new SyncResponse(syncRequest.getPath());
                 requestPathMetricsCollector.registerRequest(request.type, syncRequest.getPath());
@@ -638,6 +645,7 @@ public class FinalRequestProcessor implements RequestProcessor {
             // the client and leader disagree on where the client is most
             // recently attached (and therefore invalid SESSION MOVED generated)
             cnxn.sendCloseSession();
+            TMB_Helper.printf("[%s] returned\n", quorumName); // 3MileBeach
             return;
         } catch (KeeperException e) {
             err = e.code();
@@ -660,9 +668,7 @@ public class FinalRequestProcessor implements RequestProcessor {
         updateStats(request, lastOp, lastZxid);
 
         try {
-            TMB_Helper.println("request: " + requestName + "(" + TMB_Helper.getString(request.record) + ")" +
-                    ", response: " + TMB_Helper.getClassName(rsp) + "(" + TMB_Helper.getString(rsp) + ")" +
-                    ", lastOp: " + lastOp);
+            TMB_Helper.printf("[%s] request: %s(%s), response: %s(%s), lastOp: %s\n", quorumName, requestName, TMB_Helper.getString(request.record), TMB_Helper.getClassName(rsp), TMB_Helper.getString(rsp), lastOp);
 
             if (path == null || rsp == null) {
                 if (rsp == null) {

@@ -6,16 +6,212 @@ import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class TMB_Store {
-    class ClientPluginTrace {
+    private static TMB_Store instance = null;
 
+    public static int REQUESTER = 1;
+    public static int RESPONSER = 2;
+
+    public static TMB_Store getInstance() {
+        if (instance == null) {
+            instance = new TMB_Store();
+
+            instance.clientPluginTraces = new HashMap<>();
+            instance.quorumTraces = new HashMap<>();
+            instance.quorumLock = new ReentrantReadWriteLock();
+        }
+
+        return instance;
+    }
+
+    class ClientPluginTrace {
+        private TMB_Trace trace;
+
+        ClientPluginTrace(TMB_Trace trace) {
+            this.trace = trace;
+        }
     }
 
     class QuorumTrace {
+        private String quorumIdStr;
+        public int recorder;
 
+        private TMB_Trace trace;
+
+        QuorumTrace(long quorumId, TMB_Trace trace) { // make sure trace has events
+            this.quorumIdStr = String.format("quorum-%d", quorumId);
+            this.trace = trace;
+
+            if (trace.getEvents().get(0).getService().equals(this.quorumIdStr)) {
+                this.recorder = REQUESTER;
+            } else {
+                this.recorder = RESPONSER;
+            }
+        }
     }
 
-    private static Map<Long, ClientPluginTrace> clientPluginTraces = new HashMap<>();
-    private static Map<Long, QuorumTrace> quorumTrace = new HashMap<>();
+    public class QuorumTraces {
+        private long quorumId;
+        private Map<Long, QuorumTrace> traces; // Map<traceId, Trace>
+        private ReentrantReadWriteLock lock;
+
+        QuorumTraces(long quorumId) {
+            this.quorumId = quorumId;
+            this.traces = new HashMap<>();
+            this.lock = new ReentrantReadWriteLock();
+        }
+
+        public void printAllJSON() {
+            lock.readLock().lock();
+            for (Long key: traces.keySet()) {
+                TMB_Helper.printf("[TMB_Store] [quorum-%d] %d: %d, %s\n", quorumId, key, traces.get(key).recorder, traces.get(key).trace.toJSON());
+            }
+            lock.readLock().unlock();
+        }
+
+        public void setTrace(TMB_Trace trace_) {
+            lock.writeLock().lock();
+            QuorumTrace quorumTrace = traces.get(trace_.getId());
+            if (quorumTrace != null) {
+                mergeEvents(quorumTrace.trace, trace_.getEvents());
+            } else {
+                quorumTrace = new QuorumTrace(quorumId, trace_.copy());
+            }
+            traces.put(trace_.getId(), quorumTrace);
+            lock.writeLock().unlock();
+        }
+
+        public QuorumTrace getQuorumTrace(long traceId) {
+            lock.readLock().lock();
+            QuorumTrace quorumTrace = traces.get(traceId);
+            lock.readLock().unlock();
+
+            return quorumTrace;
+        }
+
+        public QuorumTrace removeQuorumTrace(long traceId) {
+            lock.readLock().lock();
+            QuorumTrace quorumTrace = traces.remove(traceId);
+            lock.readLock().unlock();
+
+            return quorumTrace;
+        }
+    }
+
+    private Map<Long, ClientPluginTrace> clientPluginTraces; // Map<traceId, TMB_Trace>
+    private Map<Long, QuorumTraces> quorumTraces; // Map<quorumId, QuorumTrace>
+    private ReentrantReadWriteLock quorumLock;
+
+    public void quorumSendRequest(long quorumId, TMB_Trace trace_) {
+        quorumSetTrace(quorumId, trace_);
+    }
+
+    public void quorumReceiveRequest(long quorumId, TMB_Trace trace_) {
+        quorumSetTrace(quorumId, trace_);
+    }
+
+    public void quorumReceiveResponse(long quorumId, TMB_Trace trace_) {
+        quorumSetTrace(quorumId, trace_);
+    }
+
+    public void quorumSendResponse(long quorumId, TMB_Trace trace_) {
+        quorumSetTrace(quorumId, trace_);
+    }
+
+    public void quorumQuit(long quorumId, TMB_Trace trace_) {
+        quorumLock.readLock().lock();
+        QuorumTraces quorumTraces = getQuorumTraces(quorumId);
+        quorumLock.readLock().unlock();
+
+        QuorumTrace quorumTrace = quorumTraces.getQuorumTrace(trace_.getId());
+        if (quorumTrace != null && quorumTrace.recorder == RESPONSER) {
+            quorumTraces.removeQuorumTrace(trace_.getId());
+        }
+    }
+
+    public void quorumSetTrace(long quorumId, TMB_Trace trace_) {
+        QuorumTraces quorumTraces = getQuorumTraces(quorumId);
+        quorumTraces.setTrace(trace_);
+    }
+
+    public void quorumGetTrace(long quorumId, long traceId) {
+        QuorumTraces quorumTraces = getQuorumTraces(quorumId);
+
+        quorumTraces.lock.readLock().lock();
+
+        quorumTraces.lock.readLock().unlock();
+    }
+
+    public QuorumTraces getQuorumTraces(long quorumId) {
+        quorumLock.readLock().lock();
+        QuorumTraces quorumTraces = this.quorumTraces.get(quorumId);
+        quorumLock.readLock().unlock();
+
+        if (quorumTraces == null) {
+            quorumLock.writeLock().lock();
+            quorumTraces = this.quorumTraces.get(quorumId);
+            if (quorumTraces == null) {
+                quorumTraces = new QuorumTraces(quorumId);
+                this.quorumTraces.put(quorumId, quorumTraces);
+            }
+            quorumLock.writeLock().unlock();
+        }
+
+        return quorumTraces;
+    }
+
+    public static void mergeEvents(TMB_Trace trace, List<TMB_Event> events_) {
+        List<TMB_Event> events = trace.getEvents();
+        for (TMB_Event event_: events_) {
+            boolean found = false;
+            for (TMB_Event event: events) {
+                found = event.equals(event_);
+                if (found) {
+                    break;
+                }
+            }
+            if (!found) {
+                events.add(event_);
+            }
+        }
+        trace.setEvents(events);
+    }
+
+    // called when initializing TMB_ClientPlugin
+    public void setClientPluginTrace(TMB_Trace trace) {
+        if (trace == null) {
+            return;
+        }
+        long traceId = trace.getId();
+        if (traceId == 0) {
+            return;
+        }
+
+        lock.writeLock().lock();
+        if (!clientPluginTraces.containsKey(traceId)) {
+            clientPluginTraces.put(traceId, new ClientPluginTrace(trace));
+        }
+        lock.writeLock().unlock();
+    }
+
+    public void updateClientPluginTrace(TMB_Trace trace) {
+        if (trace == null) {
+            return;
+        }
+        long traceId = trace.getId();
+        if (traceId == 0) {
+            return;
+        }
+
+        lock.writeLock().lock();
+        ClientPluginTrace pluginTrace = clientPluginTraces.get(traceId);
+        if (pluginTrace != null) {
+
+        } else {
+            TMB_Helper.printf("unreachable code, trace: %s", trace.toJSON());
+        }
+
+        lock.writeLock().unlock();
+    }
 
     private static Map<Long, TMB_Trace> thread_traces = new HashMap<>();
     private static Map<Long, TMB_Trace> server_traces = new HashMap<>();
@@ -76,12 +272,12 @@ public class TMB_Store {
         lock.writeLock().unlock();
     }
 
-    public static TMB_Trace serverGetThread(long serverId) {
-        lock.readLock().lock();
-        TMB_Trace trace = server_traces.get(serverId);
-        lock.readLock().unlock();
+    public static TMB_Trace serverGetTrace(long serverId) {
+//        lock.readLock().lock();
+//        TMB_Trace trace = server_traces.get(serverId);
+//        lock.readLock().unlock();
 
-        return trace;
+        return null;
     }
 
     public static void callerAppendEventsByThreadIdUnsafe(long threadId, TMB_Trace trace) {
@@ -134,17 +330,18 @@ public class TMB_Store {
     public static void calleeInbound(String service, Record request) {
         TMB_Trace trace = request.getTrace();
         if (trace == null || trace.getId() == 0) {
+            TMB_Helper.printf(3, "[%s] callee inbound receives request with empty trace: %s, (%s)\n", service, TMB_Helper.getClassName(request), TMB_Helper.getString(request));
             return;
         }
 
         List<TMB_Event> events = trace.getEvents();
-        if (events.size() != 1) {
-            TMB_Helper.println("callee inbound receives request with invalid trace: " + TMB_Helper.getClassName(request) + "(" + TMB_Helper.getString(request) + ")");
+//        if (events.size() != 1) {
+//            TMB_Helper.printf("[%s] callee inbound receives request with invalid trace: %s, (%s)\n", service, TMB_Helper.getClassName(request), TMB_Helper.getString(request));
+//
+//            return;
+//        }
 
-            return;
-        }
-
-        TMB_Helper.println("callee inbound receives request: " + TMB_Helper.getClassName(request) + "(" + TMB_Helper.getString(request) + ")");
+        TMB_Helper.printf(3, "[%s] callee inbound receives request: %s, (%s)\n", service, TMB_Helper.getClassName(request), TMB_Helper.getString(request));
 
         long threadId = Thread.currentThread().getId();
         TMB_Event preEvent = events.get(0);
@@ -166,7 +363,7 @@ public class TMB_Store {
         lock.writeLock().unlock();
 
         if (trace == null) {
-            TMB_Helper.println("callee outbound ejects response without trace: " + TMB_Helper.getClassName(response) + "(" + TMB_Helper.getString(response) + ")");
+            TMB_Helper.printf(3, "[%s] callee outbound ejects response without trace: %s, (%s)\n", service, TMB_Helper.getClassName(response), TMB_Helper.getString(response));
 
             return;
         }
@@ -177,66 +374,6 @@ public class TMB_Store {
         trace.addEvent(event);
         response.setTrace(trace);
 
-        TMB_Helper.println("callee outbound ejects response: " + TMB_Helper.getClassName(response) + "(" + TMB_Helper.getString(response) + ")");
-    }
-
-    /**
-     * TODO: Client (Server when sending request to downstream server)
-     * submitRequest -> generate request -> callerOutbound -> network -> callerInbound -> process response
-     */
-    public static void callerOutbound(String service, Record request) {
-        TMB_Trace trace = request.getTrace();
-        // stub, should be called only once per client-level request
-        // TODO: let client generate trace_id
-        if (trace.getId() == 0) {
-            long id = TMB_Helper.newTraceId();
-            trace.setId(id);
-            trace.setEvents(new ArrayList<>());
-            TMB_Helper.println("stub trace with id:" + id);
-            new Exception().printStackTrace();
-        }
-
-        if (trace.getId() != 0) {
-            long threadId = Thread.currentThread().getId();
-            String requestName = TMB_Helper.getClassName(request);
-            String uuid = UUID.randomUUID().toString();
-            TMB_Event event = new TMB_Event(TMB_Event.RECORD_SEND, TMB_Helper.currentTimeNanos(), requestName, uuid, service);
-
-            List<TMB_Event> events = trace.getEvents();
-            events.add(event);
-            trace.setEvents(events);
-
-            lock.writeLock().lock();
-            TMB_Store.callerAppendEventsByThreadIdUnsafe(threadId, trace);
-            lock.writeLock().unlock();
-        }
-
-        TMB_Helper.println("caller outbound ejects request: " + TMB_Helper.getClassName(request) + "(" + TMB_Helper.getString(request) + ")");
-    }
-
-    public static void callerInbound(String service, Record response) {
-        TMB_Trace trace = response.getTrace();
-        if (trace.getId() == 0) {
-            return;
-        }
-
-        String responseName = TMB_Helper.getClassName(response);
-        List<TMB_Event> events = trace.getEvents();
-        if (events.size() == 0) {
-            TMB_Helper.println("caller inbound receives trace without events: " + responseName + "(" + TMB_Helper.getString(response) + ")");
-
-            return;
-        }
-
-        long threadId = Thread.currentThread().getId();
-        String uuid = events.get(0).getUuid();
-        TMB_Event event = new TMB_Event(TMB_Event.RECORD_RECV, TMB_Helper.currentTimeNanos(), responseName, uuid, service);
-        trace.addEvent(event);
-
-        lock.writeLock().lock();
-        TMB_Store.callerAppendEventsByThreadIdUnsafe(threadId, trace);
-        lock.writeLock().unlock();
-
-        TMB_Helper.println("caller inbound receives response: " + responseName + "(" + TMB_Helper.getString(response) + ")");
+        TMB_Helper.printf(3, "[%s] callee outbound ejects response: %s, (%s)\n", service, TMB_Helper.getClassName(response), TMB_Helper.getString(response));
     }
 }

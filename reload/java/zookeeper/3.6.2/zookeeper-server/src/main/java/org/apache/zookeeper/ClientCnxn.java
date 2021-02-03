@@ -1568,7 +1568,7 @@ public class ClientCnxn {
         }
 
         // 3MileBeach
-        TMB_Store.callerInbound(client, response);
+        this.zooKeeper.tmbClientPlugin.callerInbound(client, response);
 
         // TMB_Helper.println("out submitRequest, idx: " + idx);
 

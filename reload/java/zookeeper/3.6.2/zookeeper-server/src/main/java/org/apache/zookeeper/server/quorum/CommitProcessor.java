@@ -19,22 +19,14 @@
 package org.apache.zookeeper.server.quorum;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+
+import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.zookeeper.ZooDefs.OpCode;
 import org.apache.zookeeper.common.Time;
-import org.apache.zookeeper.server.Request;
-import org.apache.zookeeper.server.RequestProcessor;
-import org.apache.zookeeper.server.ServerMetrics;
-import org.apache.zookeeper.server.WorkerService;
-import org.apache.zookeeper.server.ZooKeeperCriticalThread;
-import org.apache.zookeeper.server.ZooKeeperServerListener;
+import org.apache.zookeeper.server.*;
+import org.apache.zookeeper.trace.TMB_Helper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -154,10 +146,24 @@ public class CommitProcessor extends ZooKeeperCriticalThread implements RequestP
      */
     boolean matchSyncs;
 
+    // 3MileBeach starts
+    int quorumId;
+    String quorumName;
+
+    public CommitProcessor(RequestProcessor nextProcessor, String id, boolean matchSyncs, ZooKeeperServerListener listener, QuorumPeer self) {
+        super("CommitProcessor:" + id, listener);
+        this.nextProcessor = nextProcessor;
+        this.matchSyncs = matchSyncs;
+        this.quorumId = self.hashCode();
+        this.quorumName = String.format("quorum-%d", this.quorumId);
+    }
+    // 3MileBeach ends
+
     public CommitProcessor(RequestProcessor nextProcessor, String id, boolean matchSyncs, ZooKeeperServerListener listener) {
         super("CommitProcessor:" + id, listener);
         this.nextProcessor = nextProcessor;
         this.matchSyncs = matchSyncs;
+        this.quorumName = "quorum-standalone"; // 3MileBeach
     }
 
     private boolean isProcessingRequest() {
@@ -243,6 +249,7 @@ public class CommitProcessor extends ZooKeeperCriticalThread implements RequestP
                        && requestsToProcess > 0
                        && (maxReadBatchSize < 0 || readsProcessed <= maxReadBatchSize)
                        && (request = queuedRequests.poll()) != null) {
+                    TMB_Utils.printRequestForProcessor("CommitProcessor", quorumName, nextProcessor, request); // 3MileBeach
                     requestsToProcess--;
                     if (needCommit(request) || pendingRequests.containsKey(request.sessionId)) {
                         // Add request to pending
