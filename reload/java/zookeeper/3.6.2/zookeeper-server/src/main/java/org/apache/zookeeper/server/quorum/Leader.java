@@ -42,17 +42,22 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import javax.security.sasl.SaslException;
+
+import org.apache.jute.Record;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs.OpCode;
 import org.apache.zookeeper.common.Time;
 import org.apache.zookeeper.jmx.MBeanRegistry;
 import org.apache.zookeeper.server.*;
+import org.apache.zookeeper.server.persistence.Util;
 import org.apache.zookeeper.server.quorum.QuorumPeer.LearnerType;
 import org.apache.zookeeper.server.quorum.auth.QuorumAuthServer;
 import org.apache.zookeeper.server.quorum.flexible.QuorumVerifier;
 import org.apache.zookeeper.server.util.SerializeUtils;
 import org.apache.zookeeper.server.util.ZxidUtils;
+import org.apache.zookeeper.trace.TMB_Event;
 import org.apache.zookeeper.trace.TMB_Helper;
+import org.apache.zookeeper.trace.TMB_Trace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,6 +106,7 @@ public class Leader extends LearnerMaster {
     final LeaderZooKeeperServer zk;
 
     final QuorumPeer self;
+    final String quorumName; // 3MileBeach
 
     // VisibleForTesting
     protected boolean quorumFormed = false;
@@ -266,6 +272,7 @@ public class Leader extends LearnerMaster {
 
     public Leader(QuorumPeer self, LeaderZooKeeperServer zk) throws IOException {
         this.self = self;
+        this.quorumName = String.format("quorum-%d", self.hashCode()); // 3MileBeach
         this.proposalStats = new BufferStats();
 
         Set<InetSocketAddress> addresses;
@@ -500,7 +507,8 @@ public class Leader extends LearnerMaster {
                     socket.setTcpNoDelay(nodelay);
 
                     BufferedInputStream is = new BufferedInputStream(socket.getInputStream());
-                    LearnerHandler fh = new LearnerHandler(socket, is, Leader.this);
+                    LearnerHandler fh = new LearnerHandler(socket, is, Leader.this, self); // 3MileBeach
+//                    LearnerHandler fh = new LearnerHandler(socket, is, Leader.this);
                     fh.start();
                 } catch (SocketException e) {
                     error = true;
@@ -963,7 +971,9 @@ public class Leader extends LearnerMaster {
      */
     @Override
     public synchronized void processAck(long sid, long zxid, SocketAddress followerAddr) {
+        TMB_Helper.printf("[quorum-%d] Leader processAck starts\n", self.hashCode()); // 3MileBeach
         if (!allowedToCommit) {
+            TMB_Helper.printf("[quorum-%d] Leader processAck returns (!allowedToCommit)\n", self.hashCode()); // 3MileBeach
             return; // last op committed was a leader change - from now on
         }
         // the new leader should commit
@@ -972,6 +982,7 @@ public class Leader extends LearnerMaster {
             for (Proposal p : outstandingProposals.values()) {
                 long packetZxid = p.packet.getZxid();
                 LOG.trace("outstanding proposal: 0x{}", Long.toHexString(packetZxid));
+                TMB_Helper.printf("[quorum-%d] Leader processAck outstanding proposal: 0x%s\n", self.hashCode(), Long.toHexString(packetZxid)); // 3MileBeach
             }
             LOG.trace("outstanding proposals all");
         }
@@ -982,11 +993,13 @@ public class Leader extends LearnerMaster {
              * the learner sends an ack back to the leader after it gets
              * UPTODATE, so we just ignore the message.
              */
+            TMB_Helper.printf("[quorum-%d] Leader processAck returns ((zxid & 0xffffffffL) == 0)\n", self.hashCode()); // 3MileBeach
             return;
         }
 
         if (outstandingProposals.size() == 0) {
             LOG.debug("outstanding is 0");
+            TMB_Helper.printf("[quorum-%d] Leader processAck returns (outstanding is 0)\n", self.hashCode()); // 3MileBeach
             return;
         }
         if (lastCommitted >= zxid) {
@@ -995,16 +1008,19 @@ public class Leader extends LearnerMaster {
                 Long.toHexString(lastCommitted),
                 Long.toHexString(zxid));
             // The proposal has already been committed
+            TMB_Helper.printf("[quorum-%d] Leader processAck returns (already committed)\n", self.hashCode()); // 3MileBeach
             return;
         }
         Proposal p = outstandingProposals.get(zxid);
         if (p == null) {
             LOG.warn("Trying to commit future proposal: zxid 0x{} from {}", Long.toHexString(zxid), followerAddr);
+            TMB_Helper.printf("[quorum-%d] Leader processAck returns (future proposal)\n", self.hashCode()); // 3MileBeach
             return;
         }
 
         if (ackLoggingFrequency > 0 && (zxid % ackLoggingFrequency == 0)) {
             p.request.logLatency(ServerMetrics.getMetrics().ACK_LATENCY, Long.toString(sid));
+            TMB_Helper.printf("[quorum-%d] Leader processAck logs latency %s\n", self.hashCode(), Long.toString(sid)); // 3MileBeach
         }
 
         p.addAck(sid);
@@ -1026,10 +1042,12 @@ public class Leader extends LearnerMaster {
                 curZxid++;
                 p = outstandingProposals.get(curZxid);
                 if (p != null) {
+                    TMB_Helper.printf("[quorum-%d] Leader processAck tries to commit\n", self.hashCode()); // 3MileBeach
                     hasCommitted = tryToCommit(p, curZxid, null);
                 }
             }
         }
+        TMB_Helper.printf("[quorum-%d] Leader processAck ends\n", self.hashCode()); // 3MileBeach
     }
 
     static class ToBeAppliedRequestProcessor implements RequestProcessor {
@@ -1128,6 +1146,51 @@ public class Leader extends LearnerMaster {
      */
     void sendPacket(QuorumPacket qp) {
         synchronized (forwardingFollowers) {
+            // 3MileBeach begins
+            try {
+                if (qp.getData() != null) {
+                    TxnLogEntry logEntry = SerializeUtils.deserializeTxn(qp.getData());
+                    Record record = logEntry.getTxn();
+                    if (record != null) {
+                        TMB_Trace trace = record.getTrace();
+                        if (trace != null) {
+                            List<TMB_Event> events = trace.getEvents();
+                            int eventSize = events.size();
+                            if (eventSize > 0) {
+                                TMB_Event lastEvent = events.get(eventSize - 1);
+                                String uuid = lastEvent.getUuid();
+
+                                int i = 0;
+                                for (LearnerHandler f : forwardingFollowers) {
+                                    TMB_Helper.printf("[quorum-%d] Leader forwards to follower 0x%d\n", self.hashCode(), f.sid);
+
+                                    String uuid_ = String.format("%s-%04d", uuid, i);
+
+                                    events.add(new TMB_Event(
+                                            TMB_Event.RECORD_FRWD,
+                                            TMB_Helper.currentTimeNanos(),
+                                            lastEvent.getMessage_name(),
+                                            uuid_,
+                                            String.format("quorum-%d", self.hashCode())));
+
+                                    trace.setEvents(events);
+                                    record.setTrace(trace);
+
+                                    byte[] data = Util.marshallTxnEntry(logEntry.getHeader(), record, logEntry.getDigest());
+                                    qp.setData(data);
+
+                                    f.queuePacket(qp);
+                                    i++;
+                                }
+
+                                return;
+                            }
+                        }
+                    }
+                }
+            } catch (IOException e) {}
+            // 3MileBeach ends
+
             for (LearnerHandler f : forwardingFollowers) {
                 f.queuePacket(qp);
             }

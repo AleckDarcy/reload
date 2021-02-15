@@ -27,11 +27,14 @@ import org.apache.zookeeper.ZooDefs.OpCode;
 import org.apache.zookeeper.common.Time;
 import org.apache.zookeeper.server.Request;
 import org.apache.zookeeper.server.ServerMetrics;
+import org.apache.zookeeper.server.TMB_Utils;
 import org.apache.zookeeper.server.TxnLogEntry;
 import org.apache.zookeeper.server.quorum.QuorumPeer.QuorumServer;
 import org.apache.zookeeper.server.quorum.flexible.QuorumVerifier;
 import org.apache.zookeeper.server.util.SerializeUtils;
 import org.apache.zookeeper.server.util.ZxidUtils;
+import org.apache.zookeeper.trace.TMB_Event;
+import org.apache.zookeeper.trace.TMB_Helper;
 import org.apache.zookeeper.txn.SetDataTxn;
 import org.apache.zookeeper.txn.TxnDigest;
 import org.apache.zookeeper.txn.TxnHeader;
@@ -46,11 +49,13 @@ public class Follower extends Learner {
     final FollowerZooKeeperServer fzk;
 
     ObserverMaster om;
+    String quorumName; // 3MileBeach
 
     Follower(QuorumPeer self, FollowerZooKeeperServer zk) {
         this.self = self;
         this.zk = zk;
         this.fzk = zk;
+        this.quorumName = String.format("quorum-%d", self.hashCode()); // 3MileBeach
     }
 
     @Override
@@ -158,13 +163,16 @@ public class Follower extends Learner {
     protected void processPacket(QuorumPacket qp) throws Exception {
         switch (qp.getType()) {
         case Leader.PING:
+            TMB_Helper.printf("[%s] Follower processes ping\n", quorumName); // 3MileBeach
             ping(qp);
             break;
         case Leader.PROPOSAL:
+            TMB_Helper.printf("[%s] Follower processes proposal\n", quorumName); // 3MileBeach
             ServerMetrics.getMetrics().LEARNER_PROPOSAL_RECEIVED_COUNT.add(1);
             TxnLogEntry logEntry = SerializeUtils.deserializeTxn(qp.getData());
             TxnHeader hdr = logEntry.getHeader();
             Record txn = logEntry.getTxn();
+            TMB_Utils.appendEvent(txn, TMB_Event.RECORD_RECV, quorumName); // 3MileBeach
             TxnDigest digest = logEntry.getDigest();
             if (hdr.getZxid() != lastQueued + 1) {
                 LOG.warn(
@@ -200,6 +208,7 @@ public class Follower extends Learner {
             }
             break;
         case Leader.COMMIT:
+            TMB_Helper.printf("[%s] Follower processes commit\n", quorumName); // 3MileBeach
             ServerMetrics.getMetrics().LEARNER_COMMIT_RECEIVED_COUNT.add(1);
             fzk.commit(qp.getZxid());
             if (om != null) {
@@ -210,6 +219,7 @@ public class Follower extends Learner {
             break;
 
         case Leader.COMMITANDACTIVATE:
+            TMB_Helper.printf("[%s] Follower processes commit and activate\n", quorumName); // 3MileBeach
             // get the new configuration from the request
             Request request = fzk.pendingTxns.element();
             SetDataTxn setDataTxn = (SetDataTxn) request.getTxn();
@@ -231,14 +241,17 @@ public class Follower extends Learner {
             }
             break;
         case Leader.UPTODATE:
+            TMB_Helper.printf("[%s] Follower processes update\n", quorumName); // 3MileBeach
             LOG.error("Received an UPTODATE message after Follower started");
             break;
         case Leader.REVALIDATE:
+            TMB_Helper.printf("[%s] Follower processes revalidate\n", quorumName); // 3MileBeach
             if (om == null || !om.revalidateLearnerSession(qp)) {
                 revalidate(qp);
             }
             break;
         case Leader.SYNC:
+            TMB_Helper.printf("[%s] Follower processes sync\n", quorumName); // 3MileBeach
             fzk.sync();
             break;
         default:

@@ -25,12 +25,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.nio.ByteBuffer;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -39,18 +34,18 @@ import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 import javax.security.sasl.SaslException;
 import org.apache.jute.BinaryInputArchive;
 import org.apache.jute.BinaryOutputArchive;
+import org.apache.jute.Record;
 import org.apache.zookeeper.ZooDefs.OpCode;
-import org.apache.zookeeper.server.Request;
-import org.apache.zookeeper.server.ServerMetrics;
-import org.apache.zookeeper.server.TxnLogProposalIterator;
-import org.apache.zookeeper.server.ZKDatabase;
-import org.apache.zookeeper.server.ZooKeeperThread;
-import org.apache.zookeeper.server.ZooTrace;
+import org.apache.zookeeper.proto.NullPointerResponse;
+import org.apache.zookeeper.server.*;
 import org.apache.zookeeper.server.quorum.Leader.Proposal;
 import org.apache.zookeeper.server.quorum.QuorumPeer.LearnerType;
 import org.apache.zookeeper.server.quorum.auth.QuorumAuthServer;
 import org.apache.zookeeper.server.util.MessageTracker;
 import org.apache.zookeeper.server.util.ZxidUtils;
+import org.apache.zookeeper.trace.TMB_Event;
+import org.apache.zookeeper.trace.TMB_Helper;
+import org.apache.zookeeper.trace.TMB_Store;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -259,6 +254,43 @@ public class LearnerHandler extends ZooKeeperThread {
      */
     private LearnerSyncThrottler syncThrottler = null;
 
+
+    // 3MileBeach starts
+    int quorumId;
+    String quorumName;
+
+    LearnerHandler(Socket sock, BufferedInputStream bufferedInput, LearnerMaster learnerMaster, QuorumPeer self) throws IOException {
+        super("LearnerHandler-" + sock.getRemoteSocketAddress());
+        this.sock = sock;
+        this.learnerMaster = learnerMaster;
+        this.bufferedInput = bufferedInput;
+
+        if (Boolean.getBoolean(FORCE_SNAP_SYNC)) {
+            forceSnapSync = true;
+            LOG.info("Forcing snapshot sync is enabled");
+        }
+
+        try {
+            QuorumAuthServer authServer = learnerMaster.getQuorumAuthServer();
+            if (authServer != null) {
+                authServer.authenticate(sock, new DataInputStream(bufferedInput));
+            }
+        } catch (IOException e) {
+            LOG.error("Server failed to authenticate quorum learner, addr: {}, closing connection", sock.getRemoteSocketAddress(), e);
+            try {
+                sock.close();
+            } catch (IOException ie) {
+                LOG.error("Exception while closing socket", ie);
+            }
+            throw new SaslException("Authentication failure: " + e.getMessage());
+        }
+
+        this.messageTracker = new MessageTracker(MessageTracker.BUFFERED_MESSAGE_SIZE);
+        this.quorumId = self.hashCode();
+        this.quorumName = String.format("quorum-%d", this.quorumId);
+    }
+    // 3MileBeach ends
+
     LearnerHandler(Socket sock, BufferedInputStream bufferedInput, LearnerMaster learnerMaster) throws IOException {
         super("LearnerHandler-" + sock.getRemoteSocketAddress());
         this.sock = sock;
@@ -286,6 +318,7 @@ public class LearnerHandler extends ZooKeeperThread {
         }
 
         this.messageTracker = new MessageTracker(MessageTracker.BUFFERED_MESSAGE_SIZE);
+        this.quorumName = "quorum-standalone"; // 3MileBeach
     }
 
     @Override
@@ -671,6 +704,7 @@ public class LearnerHandler extends ZooKeeperThread {
                     if (this.learnerType == LearnerType.OBSERVER) {
                         LOG.debug("Received ACK from Observer {}", this.sid);
                     }
+                    TMB_Utils.quorumCollectTraceFromQuorumPacket(quorumId, quorumName, new NullPointerResponse(), qp); // 3MileBeach
                     syncLimitCheck.updateAck(qp.getZxid());
                     learnerMaster.processAck(this.sid, qp.getZxid(), sock.getLocalSocketAddress());
                     break;

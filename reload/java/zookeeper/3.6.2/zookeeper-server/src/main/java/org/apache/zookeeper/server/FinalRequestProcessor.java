@@ -102,10 +102,12 @@ public class FinalRequestProcessor implements RequestProcessor {
         String requestName = TMB_Helper.getClassName(request.record);
         if (request.record != null) {
 //            TMB_Helper.printf("[%s] callee inbound component right now\n", quorumName);
-            TMB_Store.calleeInbound(quorumName, request.record);
+            TMB_Store.calleeInbound(quorumId, quorumName, request.record);
         } else {
             TMB_Helper.printf("[%s] callee inbound component when request is deserialized, request type: %d\n", quorumName, request.type);
         }
+        TMB_Utils.printRequestForProcessor("FinalRequestProcessor starts", quorumName, null, request); // 3MileBeach
+
         // 3MileBeach ends
         LOG.debug("Processing request:: {}", request);
 
@@ -393,7 +395,7 @@ public class FinalRequestProcessor implements RequestProcessor {
                 // 3MileBeach
                 requestName = "GetDataRequest";
                 request.record = getDataRequest;
-                TMB_Store.calleeInbound(quorumName, request.record);
+                TMB_Store.calleeInbound(quorumId, quorumName, request.record);
 
                 path = getDataRequest.getPath();
                 rsp = handleGetDataRequest(getDataRequest, cnxn, request.authInfo);
@@ -677,7 +679,7 @@ public class FinalRequestProcessor implements RequestProcessor {
                 }
 
                 // 3MileBeach
-                TMB_Store.calleeOutbound(quorumName, rsp);
+                TMB_Store.calleeOutbound(quorumId, quorumName, rsp);
 
                 cnxn.sendResponse(hdr, rsp, "response");
             } else {
@@ -688,7 +690,7 @@ public class FinalRequestProcessor implements RequestProcessor {
                 // so these values are passed along with the response.
 
                 // 3MileBeach
-                TMB_Store.calleeOutbound(quorumName, rsp);
+                TMB_Store.calleeOutbound(quorumId, quorumName, rsp);
 
                 switch (opCode) {
                     case OpCode.getData : {
@@ -714,6 +716,7 @@ public class FinalRequestProcessor implements RequestProcessor {
         } catch (IOException e) {
             LOG.error("FIXMSG", e);
         }
+        TMB_Utils.printRequestForProcessor("FinalRequestProcessor ends", quorumName, null, request); // 3MileBeach
     }
 
     private Record handleGetChildrenRequest(Record request, ServerCnxn cnxn, List<Id> authInfo) throws KeeperException, IOException {

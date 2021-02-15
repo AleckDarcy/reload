@@ -464,7 +464,8 @@ public class ObserverMaster extends LearnerMaster implements Runnable {
                 // in LearnerHandler switch to the syncLimit
                 s.setSoTimeout(self.tickTime * self.initLimit);
                 BufferedInputStream is = new BufferedInputStream(s.getInputStream());
-                LearnerHandler lh = new LearnerHandler(s, is, this);
+                LearnerHandler lh = new LearnerHandler(s, is, this, self); // 3MileBeach
+//                LearnerHandler lh = new LearnerHandler(s, is, this);
                 lh.start();
             } catch (Exception e) {
                 if (listenerRunning) {

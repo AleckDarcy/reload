@@ -1,7 +1,10 @@
 package org.apache.zookeeper.trace;
 
 import org.apache.jute.Record;
+import org.apache.zookeeper.proto.NullPointerResponse;
+import org.apache.zookeeper.server.quorum.QuorumPacket;
 
+import java.io.ByteArrayInputStream;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -133,12 +136,14 @@ public class TMB_Store {
         quorumTraces.setTrace(trace_);
     }
 
-    public void quorumGetTrace(long quorumId, long traceId) {
+    public TMB_Trace quorumGetTrace(long quorumId, long traceId) { // unsafe
         QuorumTraces quorumTraces = getQuorumTraces(quorumId);
 
         quorumTraces.lock.readLock().lock();
-
+        QuorumTrace quorumTrace = quorumTraces.getQuorumTrace(traceId);
         quorumTraces.lock.readLock().unlock();
+
+        return quorumTrace.trace;
     }
 
     public QuorumTraces getQuorumTraces(long quorumId) {
@@ -327,7 +332,7 @@ public class TMB_Store {
      * RequestProcessor -> calleeInbound -> process request -> calleeOutbound -> send response
      */
     // to be called after ByteBufferInputStream.byteBuffer2Record(buffer, record)
-    public static void calleeInbound(String service, Record request) {
+    public static void calleeInbound(int serviceId, String service, Record request) {
         TMB_Trace trace = request.getTrace();
         if (trace == null || trace.getId() == 0) {
             TMB_Helper.printf(3, "[%s] callee inbound receives request with empty trace: %s, (%s)\n", service, TMB_Helper.getClassName(request), TMB_Helper.getString(request));
@@ -335,6 +340,7 @@ public class TMB_Store {
         }
 
         List<TMB_Event> events = trace.getEvents();
+        // TODO: 3MileBeach
 //        if (events.size() != 1) {
 //            TMB_Helper.printf("[%s] callee inbound receives request with invalid trace: %s, (%s)\n", service, TMB_Helper.getClassName(request), TMB_Helper.getString(request));
 //
@@ -352,15 +358,19 @@ public class TMB_Store {
         lock.writeLock().lock();
         thread_traces.put(threadId, trace);
         lock.writeLock().unlock();
+
+        getInstance().quorumSetTrace(serviceId, trace);
     }
 
-    public static void calleeOutbound(String service, Record response) {
+    public static void calleeOutbound(int serviceId, String service, Record response) {
         long threadId = Thread.currentThread().getId();
 
         lock.writeLock().lock();
         TMB_Trace trace = thread_traces.get(threadId);
         thread_traces.remove(threadId);
         lock.writeLock().unlock();
+
+        TMB_Trace trace_ = getInstance().quorumGetTrace(serviceId, trace.getId());
 
         if (trace == null) {
             TMB_Helper.printf(3, "[%s] callee outbound ejects response without trace: %s, (%s)\n", service, TMB_Helper.getClassName(response), TMB_Helper.getString(response));
@@ -369,6 +379,8 @@ public class TMB_Store {
         }
 
         TMB_Event preEvent = trace.getEvents().get(0);
+        mergeEvents(trace, trace_.getEvents());
+
         TMB_Event event = new TMB_Event(TMB_Event.RECORD_SEND, TMB_Helper.currentTimeNanos(), TMB_Helper.getClassName(response), preEvent.getUuid(), service);
 
         trace.addEvent(event);

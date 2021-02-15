@@ -710,7 +710,12 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
         } else if (type == OpCode.createTTL) {
             request.setTxn(new CreateTTLTxn(path, data, listACL, newCversion, ttl));
         } else {
-            request.setTxn(new CreateTxn(path, data, listACL, createMode.isEphemeral(), newCversion));
+            // 3MileBeach starts
+            CreateTxn txn = new CreateTxn(path, data, listACL, createMode.isEphemeral(), newCversion);
+            txn.setTrace(record.getTrace());
+            request.setTxn(txn);
+            // 3MileBeach ends
+//            request.setTxn(new CreateTxn(path, data, listACL, createMode.isEphemeral(), newCversion));
         }
 
         TxnHeader hdr = request.getHdr();

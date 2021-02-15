@@ -96,7 +96,7 @@ public class FollowerRequestProcessor extends ZooKeeperCriticalThread implements
                 if (!zks.authWriteRequest(request)) {
                     continue;
                 }
-                TMB_Utils.printRequestForProcessor("FollowerRequestProcessor", quorumName, nextProcessor, request); // 3MileBeach
+                TMB_Utils.printRequestForProcessor("FollowerRequestProcessor starts", quorumName, nextProcessor, request); // 3MileBeach
 
                 // We want to queue the request to be processed before we submit
                 // the request to the leader so that we are ready to receive
@@ -114,33 +114,7 @@ public class FollowerRequestProcessor extends ZooKeeperCriticalThread implements
                     zks.getFollower().request(request);
                     break;
                 case OpCode.create:
-                    CreateRequest request_ = new CreateRequest();
-//                    TMB_Helper.printf("[%s] forward create request to leader: %s\n", quorumName, request_);
-
-                    ByteBufferInputStream.byteBuffer2Record(request.request, request_);
-
-                    TMB_Trace trace = request_.getTrace();
-                    List<TMB_Event> events = trace.getEvents();
-                    int eventSize = events.size();
-                    if (eventSize > 0) {
-                        TMB_Event lastEvent = events.get(eventSize - 1);
-                        events.add(new TMB_Event(
-                                TMB_Event.RECORD_FRWD,
-                                TMB_Helper.currentTimeNanos(),
-                                lastEvent.getMessage_name(),
-                                lastEvent.getUuid(),
-                                quorumName));
-                    }
-                    trace.setEvents(events);
-                    request_.setTrace(trace);
-
-                    ByteBuffer bb = ByteBuffer.allocate(request.request.capacity() + 100);
-
-                    ByteBufferOutputStream.record2ByteBuffer(request_, bb);
-
-//                    TMB_Helper.printf("[%s] forward create request to leader: %s\n", quorumName, request_);
-
-                    request.request = bb;
+                    request.request = TMB_Utils.appendEvent(request.request, new CreateRequest(), TMB_Event.RECORD_FRWD, quorumName); // TODO: 3MileBeach
 
                     zks.getFollower().request(request);
                     break;
@@ -164,6 +138,7 @@ public class FollowerRequestProcessor extends ZooKeeperCriticalThread implements
                     }
                     break;
                 }
+                TMB_Utils.printRequestForProcessor("FollowerRequestProcessor ends", quorumName, nextProcessor, request); // 3MileBeach
             }
         } catch (Exception e) {
             handleException(this.getName(), e);

@@ -238,17 +238,17 @@ public class QuorumPeerMainTest extends QuorumPeerTestBase {
         TMB_Helper.println("");
 
         Thread.sleep(1000);
-        for (int i = 0; i < SERVER_COUNT; i++) {
-            if (i != leader) {
-                zk[i].create("/zk" + i, "zk".getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-
-                trace = zk[i].TMBClientFinalize();
-
-                TMB_Helper.printf("client-%d capture trace: %s\n", zk[i].hashCode(), trace.toJSON());
-
-                break;
-            }
-        }
+//        for (int i = 0; i < SERVER_COUNT; i++) {
+//            if (i != leader) {
+//                zk[i].create("/zk" + i, "zk".getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+//
+//                trace = zk[i].TMBClientFinalize();
+//
+//                TMB_Helper.printf("client-%d capture trace: %s\n", zk[i].hashCode(), trace.toJSON());
+//
+//                break;
+//            }
+//        }
 
 //
 //        // just make sure that we actually did get it in process at the

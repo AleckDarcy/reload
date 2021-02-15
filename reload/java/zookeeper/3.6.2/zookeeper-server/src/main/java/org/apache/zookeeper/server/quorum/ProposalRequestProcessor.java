@@ -86,7 +86,7 @@ public class ProposalRequestProcessor implements RequestProcessor {
         if (request instanceof LearnerSyncRequest) {
             zks.getLeader().processSync((LearnerSyncRequest) request);
         } else {
-            TMB_Utils.printRequestForProcessor("ProposalRequestProcessor", quorumName, nextProcessor, request); // 3MileBeach
+            TMB_Utils.printRequestForProcessor("ProposalRequestProcessor starts", quorumName, nextProcessor, request); // 3MileBeach
             nextProcessor.processRequest(request);
             if (request.getHdr() != null) {
                 // We need to sync and get consensus on any transactions
@@ -97,6 +97,7 @@ public class ProposalRequestProcessor implements RequestProcessor {
                 }
                 syncProcessor.processRequest(request);
             }
+            TMB_Utils.printRequestForProcessor("ProposalRequestProcessor ends", quorumName, nextProcessor, request); // 3MileBeach
         }
     }
 

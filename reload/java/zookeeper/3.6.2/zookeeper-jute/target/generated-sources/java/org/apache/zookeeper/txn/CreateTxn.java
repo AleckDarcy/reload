@@ -29,8 +29,8 @@ public class CreateTxn implements Record {
   private java.util.List<org.apache.zookeeper.data.ACL> acl;
   private boolean ephemeral;
   private int parentCVersion;
-  public CreateTxn() {
-  }
+  private org.apache.zookeeper.trace.TMB_Trace trace;
+  public CreateTxn() { this.trace = new org.apache.zookeeper.trace.TMB_Trace(); }
   public CreateTxn(
         String path,
         byte[] data,
@@ -42,6 +42,7 @@ public class CreateTxn implements Record {
     this.acl=acl;
     this.ephemeral=ephemeral;
     this.parentCVersion=parentCVersion;
+    this.trace = new org.apache.zookeeper.trace.TMB_Trace();
   }
   public String getPath() {
     return path;
@@ -74,9 +75,11 @@ public class CreateTxn implements Record {
     parentCVersion=m_;
   }
   public org.apache.zookeeper.trace.TMB_Trace getTrace() {
-    return null;
+    return trace;
   }
-  public void setTrace(org.apache.zookeeper.trace.TMB_Trace m_) {}
+  public void setTrace(org.apache.zookeeper.trace.TMB_Trace m_) {
+    trace=m_;
+  }
   public void serialize(OutputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(this,tag);
     a_.writeString(path,"path");
@@ -93,6 +96,7 @@ public class CreateTxn implements Record {
     }
     a_.writeBool(ephemeral,"ephemeral");
     a_.writeInt(parentCVersion,"parentCVersion");
+    a_.writeRecord(trace,"trace");
     a_.endRecord(this,tag);
   }
   public void deserialize(InputArchive a_, String tag) throws java.io.IOException {
@@ -113,6 +117,7 @@ public class CreateTxn implements Record {
     }
     ephemeral=a_.readBool("ephemeral");
     parentCVersion=a_.readInt("parentCVersion");
+    a_.readRecord(trace,"trace");
     a_.endRecord(tag);
 }
   public String toString() {
@@ -136,6 +141,7 @@ public class CreateTxn implements Record {
     }
     a_.writeBool(ephemeral,"ephemeral");
     a_.writeInt(parentCVersion,"parentCVersion");
+    a_.writeRecord(trace,"trace");
       a_.endRecord(this,"");
       return new String(s.toByteArray(), "UTF-8");
     } catch (Throwable ex) {
@@ -173,6 +179,8 @@ public class CreateTxn implements Record {
     if (!ret) return ret;
     ret = (parentCVersion==peer.parentCVersion);
     if (!ret) return ret;
+    ret = trace.equals(peer.trace);
+    if (!ret) return ret;
      return ret;
   }
   public int hashCode() {
@@ -188,9 +196,11 @@ public class CreateTxn implements Record {
     result = 37*result + ret;
     ret = (int)parentCVersion;
     result = 37*result + ret;
+    ret = trace.hashCode();
+    result = 37*result + ret;
     return result;
   }
   public static String signature() {
-    return "LCreateTxn(sB[LACL(iLId(ss))]zi)";
+    return "LCreateTxn(sB[LACL(iLId(ss))]ziLTMB_Trace(l[LTMB_Event(ilsss)][LTMB_TFI(isl[LTMB_TFIMeta(sll)])]))";
   }
 }

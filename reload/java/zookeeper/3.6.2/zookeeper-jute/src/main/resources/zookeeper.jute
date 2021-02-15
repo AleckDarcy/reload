@@ -423,6 +423,8 @@ module org.apache.zookeeper.txn {
         vector<org.apache.zookeeper.data.ACL> acl;
         boolean ephemeral;
         int parentCVersion;
+
+        org.apache.zookeeper.trace.TMB_Trace trace;
     }
     class CreateTTLTxn {
         ustring path;
