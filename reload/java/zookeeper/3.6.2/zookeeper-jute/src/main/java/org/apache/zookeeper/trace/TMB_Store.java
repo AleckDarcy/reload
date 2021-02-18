@@ -370,8 +370,6 @@ public class TMB_Store {
         thread_traces.remove(threadId);
         lock.writeLock().unlock();
 
-        TMB_Trace trace_ = getInstance().quorumGetTrace(serviceId, trace.getId());
-
         if (trace == null) {
             TMB_Helper.printf(3, "[%s] callee outbound ejects response without trace: %s, (%s)\n", service, TMB_Helper.getClassName(response), TMB_Helper.getString(response));
 
@@ -379,6 +377,7 @@ public class TMB_Store {
         }
 
         TMB_Event preEvent = trace.getEvents().get(0);
+        TMB_Trace trace_ = getInstance().quorumGetTrace(serviceId, trace.getId());
         mergeEvents(trace, trace_.getEvents());
 
         TMB_Event event = new TMB_Event(TMB_Event.RECORD_SEND, TMB_Helper.currentTimeNanos(), TMB_Helper.getClassName(response), preEvent.getUuid(), service);

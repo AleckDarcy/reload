@@ -228,27 +228,22 @@ public class QuorumPeerMainTest extends QuorumPeerTestBase {
 
         TMB_Helper.println("leader is: " + leader);
 
-        zk[leader].create("/zk" + leader, "zk".getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+//        zk[leader].create("/zk" + leader, "zk".getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+//        TMB_Trace trace = zk[leader].TMBClientFinalize();
+//        TMB_Helper.printf("client-%d capture trace: %s\n", zk[leader].hashCode(), trace.toJSON());
+//        TMB_Helper.println("");
+//        TMB_Helper.println("");
+//        Thread.sleep(1000);
 
-        TMB_Trace trace = zk[leader].TMBClientFinalize();
+        for (int i = 0; i < SERVER_COUNT; i++) {
+            if (i != leader) {
+                zk[i].create("/zk" + i, "zk".getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+                TMB_Trace trace = zk[i].TMBClientFinalize();
+                TMB_Helper.printf("client-%d capture trace: %s\n", zk[i].hashCode(), trace.toJSON());
 
-        TMB_Helper.printf("client-%d capture trace: %s\n", zk[leader].hashCode(), trace.toJSON());
-
-        TMB_Helper.println("");
-        TMB_Helper.println("");
-
-        Thread.sleep(1000);
-//        for (int i = 0; i < SERVER_COUNT; i++) {
-//            if (i != leader) {
-//                zk[i].create("/zk" + i, "zk".getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-//
-//                trace = zk[i].TMBClientFinalize();
-//
-//                TMB_Helper.printf("client-%d capture trace: %s\n", zk[i].hashCode(), trace.toJSON());
-//
-//                break;
-//            }
-//        }
+                break;
+            }
+        }
 
 //
 //        // just make sure that we actually did get it in process at the
