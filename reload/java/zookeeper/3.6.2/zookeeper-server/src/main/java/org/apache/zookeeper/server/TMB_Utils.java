@@ -22,17 +22,15 @@ public class TMB_Utils {
             nextName = next.getClass().getCanonicalName();
         }
 
-        Record record = request.record;
         Record txn = request.getTxn();
 
-        String requestStr = String.format("(sessionid:0x%s, type:%s, cxid:0x%s, zxid:0x%s, txntype:%s, request:%s, record:%s, txn:%s)",
+        String requestStr = String.format("(sessionid:0x%s, type:%s, cxid:0x%s, zxid:0x%s, txntype:%s, request:%s, record:%s)",
                 Long.toHexString(request.sessionId),
                 Request.op2String(request.type),
                 Long.toHexString(request.cxid),
                 Long.toHexString(request.getHdr() == null ? -2 : request.getHdr().getZxid()),
                 request.getHdr() == null ? "unknown" : "" + request.getHdr().getType(),
                 request.request == null ? "null": "valued",
-                record == null ? "null": String.format("%s(trace:%s)", record.getClass().getCanonicalName(), record.getTrace() == null ? null: record.getTrace().getId() != 0),
                 txn == null ? "null": String.format("%s(trace:%s)", txn.getClass().getCanonicalName(), txn.getTrace() == null ? null: txn.getTrace().getId() != 0));
 
         TMB_Helper.printf(3, "[%s] %s, next %s, request-%d %s\n", quorumName, processorName, nextName, request.hashCode(), requestStr);

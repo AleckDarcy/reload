@@ -99,10 +99,10 @@ public class FinalRequestProcessor implements RequestProcessor {
 
     public void processRequest(Request request) {
         // 3MileBeach starts
-        String requestName = TMB_Helper.getClassName(request.record);
-        if (request.record != null) {
+        String requestName = TMB_Helper.getClassName(request.getTxn());
+        if (request.getTxn() != null) {
 //            TMB_Helper.printf("[%s] callee inbound component right now\n", quorumName);
-            TMB_Store.calleeInbound(quorumId, quorumName, request.record);
+            TMB_Store.calleeInbound(quorumId, quorumName, request.getTxn());
         } else {
             TMB_Helper.printf("[%s] callee inbound component when request is deserialized, request type: %d\n", quorumName, request.type);
         }
@@ -340,7 +340,6 @@ public class FinalRequestProcessor implements RequestProcessor {
                 NullPointerRequest closeRequest = new NullPointerRequest();
                 ByteBufferInputStream.byteBuffer2Record(request.request, closeRequest);
                 requestName = "CloseRequest";
-                request.record = closeRequest;
                 rsp = new NullPointerResponse(requestName);
                 // 3MileBeach ends
 
@@ -354,7 +353,6 @@ public class FinalRequestProcessor implements RequestProcessor {
 
                 // 3MileBeach starts
                 requestName = "SyncRequest";
-                request.record = syncRequest;
                 TMB_Helper.printf("[%s] sync request\n", quorumName);
                 // 3MileBeach ends
 
@@ -376,7 +374,6 @@ public class FinalRequestProcessor implements RequestProcessor {
 
                 // 3MileBeach
                 requestName = "ExistsRequest";
-                request.record = existsRequest;
 
                 path = existsRequest.getPath();
                 if (path.indexOf('\0') != -1) {
@@ -394,8 +391,7 @@ public class FinalRequestProcessor implements RequestProcessor {
 
                 // 3MileBeach
                 requestName = "GetDataRequest";
-                request.record = getDataRequest;
-                TMB_Store.calleeInbound(quorumId, quorumName, request.record);
+                TMB_Store.calleeInbound(quorumId, quorumName, request.getTxn());
 
                 path = getDataRequest.getPath();
                 rsp = handleGetDataRequest(getDataRequest, cnxn, request.authInfo);
@@ -411,7 +407,6 @@ public class FinalRequestProcessor implements RequestProcessor {
 
                 // 3MileBeach
                 requestName = "SetWatches";
-                request.record = setWatches;
 
                 long relativeZxid = setWatches.getRelativeZxid();
                 zks.getZKDatabase()
@@ -434,7 +429,6 @@ public class FinalRequestProcessor implements RequestProcessor {
 
                 // 3MileBeach
                 requestName = "SetWatches2";
-                request.record = setWatches;
 
                 long relativeZxid = setWatches.getRelativeZxid();
                 zks.getZKDatabase().setWatches(relativeZxid,
@@ -454,7 +448,6 @@ public class FinalRequestProcessor implements RequestProcessor {
 
                 // 3MileBeach
                 requestName = "AddWatchRequest";
-                request.record = addWatcherRequest;
 
                 zks.getZKDatabase().addWatch(addWatcherRequest.getPath(), cnxn, addWatcherRequest.getMode());
                 rsp = new ErrorResponse(0);
@@ -467,7 +460,6 @@ public class FinalRequestProcessor implements RequestProcessor {
 
                 // 3MileBeach
                 requestName = "GetACLRequest";
-                request.record = getACLRequest;
 
                 path = getACLRequest.getPath();
                 DataNode n = zks.getZKDatabase().getNode(path);
@@ -515,7 +507,6 @@ public class FinalRequestProcessor implements RequestProcessor {
 
                 // 3MileBeach
                 requestName = "GetChildrenRequest";
-                request.record = getChildrenRequest;
 
                 path = getChildrenRequest.getPath();
                 rsp = handleGetChildrenRequest(getChildrenRequest, cnxn, request.authInfo);
@@ -529,7 +520,6 @@ public class FinalRequestProcessor implements RequestProcessor {
 
                 // 3MileBeach
                 requestName = "GetAllChildrenNumberRequest";
-                request.record = getAllChildrenNumberRequest;
 
                 path = getAllChildrenNumberRequest.getPath();
                 DataNode n = zks.getZKDatabase().getNode(path);
@@ -554,7 +544,6 @@ public class FinalRequestProcessor implements RequestProcessor {
 
                 // 3MileBeach
                 requestName = "GetChildren2Request";
-                request.record = getChildren2Request;
 
                 Stat stat = new Stat();
                 path = getChildren2Request.getPath();
@@ -581,7 +570,6 @@ public class FinalRequestProcessor implements RequestProcessor {
 
                 // 3MileBeach
                 requestName = "CheckWatchesRequest";
-                request.record = checkWatches;
 
                 WatcherType type = WatcherType.fromInt(checkWatches.getType());
                 path = checkWatches.getPath();
@@ -600,7 +588,6 @@ public class FinalRequestProcessor implements RequestProcessor {
 
                 // 3MileBeach
                 requestName = "RemoveWatchesRequest";
-                request.record = removeWatches;
 
                 WatcherType type = WatcherType.fromInt(removeWatches.getType());
                 path = removeWatches.getPath();
@@ -619,7 +606,6 @@ public class FinalRequestProcessor implements RequestProcessor {
 
                 // 3MileBeach
                 requestName = "GetEphemeralsRequest";
-                request.record = getEphemerals;
 
                 String prefixPath = getEphemerals.getPrefixPath();
                 Set<String> allEphems = zks.getZKDatabase().getDataTree().getEphemerals(request.sessionId);
@@ -670,7 +656,7 @@ public class FinalRequestProcessor implements RequestProcessor {
         updateStats(request, lastOp, lastZxid);
 
         try {
-            TMB_Helper.printf("[%s] request: %s(%s), response: %s(%s), lastOp: %s\n", quorumName, requestName, TMB_Helper.getString(request.record), TMB_Helper.getClassName(rsp), TMB_Helper.getString(rsp), lastOp);
+            TMB_Helper.printf("[%s] request: %s(%s), response: %s(%s), lastOp: %s\n", quorumName, requestName, TMB_Helper.getString(request.getTxn()), TMB_Helper.getClassName(rsp), TMB_Helper.getString(rsp), lastOp);
 
             if (path == null || rsp == null) {
                 if (rsp == null) {
