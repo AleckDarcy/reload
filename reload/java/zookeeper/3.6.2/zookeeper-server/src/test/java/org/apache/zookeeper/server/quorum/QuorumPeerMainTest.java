@@ -228,18 +228,29 @@ public class QuorumPeerMainTest extends QuorumPeerTestBase {
 
         TMB_Helper.println("leader is: " + leader);
 
-//        zk[leader].create("/zk" + leader, "zk".getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-//        TMB_Trace trace = zk[leader].TMBClientFinalize();
-//        TMB_Helper.printf("client-%d capture trace: %s\n", zk[leader].hashCode(), trace.toJSON());
-//        TMB_Helper.println("");
-//        TMB_Helper.println("");
-//        Thread.sleep(1000);
+        TMB_Trace trace = null;
+        ZooKeeper client = null;
+
+        client = zk[leader];
+        client.create("/zk" + leader, "zk".getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+        trace = client.TMBClientFinalize();
+        TMB_Helper.printf("client-%d capture trace: %s\n", client.hashCode(), trace.toJSON());
+        TMB_Helper.println("");
+        TMB_Helper.println("");
 
         for (int i = 0; i < SERVER_COUNT; i++) {
             if (i != leader) {
-                zk[i].create("/zk" + i, "zk".getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-                TMB_Trace trace = zk[i].TMBClientFinalize();
-                TMB_Helper.printf("client-%d capture trace: %s\n", zk[i].hashCode(), trace.toJSON());
+                client = zk[i];
+                String path = "/zk" + i;
+
+                client.create(path, "zk".getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+                trace = client.TMBClientFinalize();
+                TMB_Helper.printf("client-%d capture trace: %s\n", client.hashCode(), trace.toJSON());
+
+                client.TMBClientInitialize(new TMB_Trace(TMB_Helper.newTraceId(), 0, new ArrayList<>(), new ArrayList<>()));
+                client.setData(path, "version-1".getBytes(), 0);
+                trace = client.TMBClientFinalize();
+                TMB_Helper.printf("client-%d capture trace: %s\n", client.hashCode(), trace.toJSON());
 
                 break;
             }

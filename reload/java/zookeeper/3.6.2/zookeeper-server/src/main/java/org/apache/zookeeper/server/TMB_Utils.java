@@ -62,9 +62,6 @@ public class TMB_Utils {
         if (eventSize > 0) {
             TMB_Event lastEvent = events.get(eventSize - 1);
             String uuid = lastEvent.getUuid();
-            if (type == TMB_Event.RECORD_FRWD) {
-                uuid += "-0";
-            }
 
             if (messageName.equals("")) {
                 messageName = lastEvent.getMessage_name();
