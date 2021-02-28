@@ -36,6 +36,7 @@ import org.apache.zookeeper.data.StatPersisted;
 import org.apache.zookeeper.proto.CreateRequest;
 import org.apache.zookeeper.proto.CreateTTLRequest;
 import org.apache.zookeeper.proto.RequestHeader;
+import org.apache.zookeeper.proto.SetDataRequest;
 import org.apache.zookeeper.server.*;
 import org.apache.zookeeper.trace.TMB_Event;
 import org.apache.zookeeper.trace.TMB_Helper;
@@ -115,7 +116,6 @@ public class FollowerRequestProcessor extends ZooKeeperCriticalThread implements
                     break;
                 case OpCode.create:
                     request.request = TMB_Utils.appendEvent(request.request, new CreateRequest(), TMB_Event.RECORD_FRWD, quorumName); // TODO: 3MileBeach
-
                     zks.getFollower().request(request);
                     break;
                 case OpCode.create2:
@@ -123,7 +123,12 @@ public class FollowerRequestProcessor extends ZooKeeperCriticalThread implements
                 case OpCode.createContainer:
                 case OpCode.delete:
                 case OpCode.deleteContainer:
+                    zks.getFollower().request(request);
+                    break;
                 case OpCode.setData:
+                    request.request = TMB_Utils.appendEvent(request.request, new SetDataRequest(), TMB_Event.RECORD_FRWD, quorumName); // TODO: 3MileBeach
+                    zks.getFollower().request(request);
+                    break;
                 case OpCode.reconfig:
                 case OpCode.setACL:
                 case OpCode.multi:

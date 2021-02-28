@@ -7,7 +7,9 @@ reload/java/zookeeper/3.6.2/zookeeper-server/src/main/java/org/apache/zookeeper/
             Follower forwards request to leader without deserialization
         3MileBeach:
             Deserializes request, appends event to trace, serializes request
-            Modified cases: OpCode.create
+            Modified cases:
+                OpCode.create
+                OpCode.setData
 
 reload/java/zookeeper/3.6.2/zookeeper-server/src/main/java/org/apache/zookeeper/server/quorum/SendAckRequestProcessor.java
     SendAckRequestProcessor::processRequest()
@@ -29,3 +31,13 @@ reload/java/zookeeper/3.6.2/zookeeper-server/src/main/java/org/apache/zookeeper/
             Sends packets to followers
         3MileBeach:
             Deserializes request, appends event to trace, serializes request
+
+reload/java/zookeeper/3.6.2/zookeeper-server/src/main/java/org/apache/zookeeper/server/PrepRequestProcessor.java
+    PrepRequestProcessor::pRequest2Txn()
+        Org:
+            Converts byte[] data to Record
+        3MileBeach:
+            Sets trace to Record
+            Modified cases:
+                OpCode.create
+                OpCode.setData

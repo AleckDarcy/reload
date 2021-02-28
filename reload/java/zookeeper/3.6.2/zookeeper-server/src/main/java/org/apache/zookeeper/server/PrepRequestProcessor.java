@@ -403,7 +403,16 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
             nodeRecord = getRecordForPath(path);
             zks.checkACL(request.cnxn, nodeRecord.acl, ZooDefs.Perms.WRITE, request.authInfo, path, null);
             int newVersion = checkAndIncVersion(nodeRecord.stat.getVersion(), setDataRequest.getVersion(), path);
-            request.setTxn(new SetDataTxn(path, setDataRequest.getData(), newVersion));
+
+            // 3MileBeach starts
+            SetDataTxn txn = new SetDataTxn(path, setDataRequest.getData(), newVersion);
+            TMB_Helper.printf("shshshshsh %s\n", record.getTrace());
+            txn.setTrace(record.getTrace());
+            TMB_Helper.printf("shshshshsh %s %s\n", record, txn);
+            request.setTxn(txn);
+            // 3MileBeach ends
+
+//            request.setTxn(new SetDataTxn(path, setDataRequest.getData(), newVersion));
             nodeRecord = nodeRecord.duplicate(request.getHdr().getZxid());
             nodeRecord.stat.setVersion(newVersion);
             nodeRecord.stat.setMtime(request.getHdr().getTime());
