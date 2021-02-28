@@ -91,8 +91,6 @@ public class GetEphemeralsRequest implements Record {
     int ret = 0;
     ret = prefixPath.compareTo(peer.prefixPath);
     if (ret != 0) return ret;
-    ret = trace.compareTo(peer.trace);
-    if (ret != 0) return ret;
      return ret;
   }
   public boolean equals(Object peer_) {
@@ -105,8 +103,6 @@ public class GetEphemeralsRequest implements Record {
     GetEphemeralsRequest peer = (GetEphemeralsRequest) peer_;
     boolean ret = false;
     ret = prefixPath.equals(peer.prefixPath);
-    if (!ret) return ret;
-    ret = trace.equals(peer.trace);
     if (!ret) return ret;
      return ret;
   }

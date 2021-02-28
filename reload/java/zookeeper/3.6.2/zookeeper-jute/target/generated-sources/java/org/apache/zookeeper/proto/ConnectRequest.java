@@ -151,8 +151,6 @@ public class ConnectRequest implements Record {
       ret = org.apache.jute.Utils.compareBytes(my,0,my.length,ur,0,ur.length);
     }
     if (ret != 0) return ret;
-    ret = trace.compareTo(peer.trace);
-    if (ret != 0) return ret;
      return ret;
   }
   public boolean equals(Object peer_) {
@@ -173,8 +171,6 @@ public class ConnectRequest implements Record {
     ret = (sessionId==peer.sessionId);
     if (!ret) return ret;
     ret = org.apache.jute.Utils.bufEquals(passwd,peer.passwd);
-    if (!ret) return ret;
-    ret = trace.equals(peer.trace);
     if (!ret) return ret;
      return ret;
   }

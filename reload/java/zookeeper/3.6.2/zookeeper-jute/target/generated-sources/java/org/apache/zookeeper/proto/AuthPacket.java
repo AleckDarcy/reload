@@ -123,8 +123,6 @@ public class AuthPacket implements Record {
       ret = org.apache.jute.Utils.compareBytes(my,0,my.length,ur,0,ur.length);
     }
     if (ret != 0) return ret;
-    ret = trace.compareTo(peer.trace);
-    if (ret != 0) return ret;
      return ret;
   }
   public boolean equals(Object peer_) {
@@ -141,8 +139,6 @@ public class AuthPacket implements Record {
     ret = scheme.equals(peer.scheme);
     if (!ret) return ret;
     ret = org.apache.jute.Utils.bufEquals(auth,peer.auth);
-    if (!ret) return ret;
-    ret = trace.equals(peer.trace);
     if (!ret) return ret;
      return ret;
   }

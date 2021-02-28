@@ -133,8 +133,6 @@ public class ReconfigRequest implements Record {
     if (ret != 0) return ret;
     ret = (curConfigId == peer.curConfigId)? 0 :((curConfigId<peer.curConfigId)?-1:1);
     if (ret != 0) return ret;
-    ret = trace.compareTo(peer.trace);
-    if (ret != 0) return ret;
      return ret;
   }
   public boolean equals(Object peer_) {
@@ -153,8 +151,6 @@ public class ReconfigRequest implements Record {
     ret = newMembers.equals(peer.newMembers);
     if (!ret) return ret;
     ret = (curConfigId==peer.curConfigId);
-    if (!ret) return ret;
-    ret = trace.equals(peer.trace);
     if (!ret) return ret;
      return ret;
   }

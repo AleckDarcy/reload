@@ -105,8 +105,6 @@ public class ExistsRequest implements Record {
     if (ret != 0) return ret;
     ret = (watch == peer.watch)? 0 : (watch?1:-1);
     if (ret != 0) return ret;
-    ret = trace.compareTo(peer.trace);
-    if (ret != 0) return ret;
      return ret;
   }
   public boolean equals(Object peer_) {
@@ -121,8 +119,6 @@ public class ExistsRequest implements Record {
     ret = path.equals(peer.path);
     if (!ret) return ret;
     ret = (watch==peer.watch);
-    if (!ret) return ret;
-    ret = trace.equals(peer.trace);
     if (!ret) return ret;
      return ret;
   }

@@ -92,8 +92,6 @@ public class ExistsResponse implements Record {
     int ret = 0;
     ret = stat.compareTo(peer.stat);
     if (ret != 0) return ret;
-    ret = trace.compareTo(peer.trace);
-    if (ret != 0) return ret;
      return ret;
   }
   public boolean equals(Object peer_) {
@@ -106,8 +104,6 @@ public class ExistsResponse implements Record {
     ExistsResponse peer = (ExistsResponse) peer_;
     boolean ret = false;
     ret = stat.equals(peer.stat);
-    if (!ret) return ret;
-    ret = trace.equals(peer.trace);
     if (!ret) return ret;
      return ret;
   }

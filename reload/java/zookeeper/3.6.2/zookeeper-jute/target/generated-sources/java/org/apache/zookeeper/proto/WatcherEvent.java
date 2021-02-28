@@ -119,8 +119,6 @@ public class WatcherEvent implements Record {
     if (ret != 0) return ret;
     ret = path.compareTo(peer.path);
     if (ret != 0) return ret;
-    ret = trace.compareTo(peer.trace);
-    if (ret != 0) return ret;
      return ret;
   }
   public boolean equals(Object peer_) {
@@ -137,8 +135,6 @@ public class WatcherEvent implements Record {
     ret = (state==peer.state);
     if (!ret) return ret;
     ret = path.equals(peer.path);
-    if (!ret) return ret;
-    ret = trace.equals(peer.trace);
     if (!ret) return ret;
      return ret;
   }

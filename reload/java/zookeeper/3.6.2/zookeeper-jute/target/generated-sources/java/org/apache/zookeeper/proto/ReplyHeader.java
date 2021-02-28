@@ -119,8 +119,6 @@ public class ReplyHeader implements Record {
     if (ret != 0) return ret;
     ret = (err == peer.err)? 0 :((err<peer.err)?-1:1);
     if (ret != 0) return ret;
-    ret = trace.compareTo(peer.trace);
-    if (ret != 0) return ret;
      return ret;
   }
   public boolean equals(Object peer_) {
@@ -137,8 +135,6 @@ public class ReplyHeader implements Record {
     ret = (zxid==peer.zxid);
     if (!ret) return ret;
     ret = (err==peer.err);
-    if (!ret) return ret;
-    ret = trace.equals(peer.trace);
     if (!ret) return ret;
      return ret;
   }

@@ -91,8 +91,6 @@ public class ErrorResponse implements Record {
     int ret = 0;
     ret = (err == peer.err)? 0 :((err<peer.err)?-1:1);
     if (ret != 0) return ret;
-    ret = trace.compareTo(peer.trace);
-    if (ret != 0) return ret;
      return ret;
   }
   public boolean equals(Object peer_) {
@@ -105,8 +103,6 @@ public class ErrorResponse implements Record {
     ErrorResponse peer = (ErrorResponse) peer_;
     boolean ret = false;
     ret = (err==peer.err);
-    if (!ret) return ret;
-    ret = trace.equals(peer.trace);
     if (!ret) return ret;
      return ret;
   }

@@ -125,8 +125,6 @@ public class GetEphemeralsResponse implements Record {
     boolean ret = false;
     ret = ephemerals.equals(peer.ephemerals);
     if (!ret) return ret;
-    ret = trace.equals(peer.trace);
-    if (!ret) return ret;
      return ret;
   }
   public int hashCode() {

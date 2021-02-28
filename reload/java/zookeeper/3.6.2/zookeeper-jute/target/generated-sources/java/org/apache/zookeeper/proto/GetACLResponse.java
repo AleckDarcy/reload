@@ -141,8 +141,6 @@ public class GetACLResponse implements Record {
     if (!ret) return ret;
     ret = stat.equals(peer.stat);
     if (!ret) return ret;
-    ret = trace.equals(peer.trace);
-    if (!ret) return ret;
      return ret;
   }
   public int hashCode() {

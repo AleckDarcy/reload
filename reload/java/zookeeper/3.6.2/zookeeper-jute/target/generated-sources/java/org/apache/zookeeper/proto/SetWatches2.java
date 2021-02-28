@@ -307,8 +307,6 @@ public class SetWatches2 implements Record {
     if (!ret) return ret;
     ret = persistentRecursiveWatches.equals(peer.persistentRecursiveWatches);
     if (!ret) return ret;
-    ret = trace.equals(peer.trace);
-    if (!ret) return ret;
      return ret;
   }
   public int hashCode() {

@@ -91,8 +91,6 @@ public class SyncRequest implements Record {
     int ret = 0;
     ret = path.compareTo(peer.path);
     if (ret != 0) return ret;
-    ret = trace.compareTo(peer.trace);
-    if (ret != 0) return ret;
      return ret;
   }
   public boolean equals(Object peer_) {
@@ -105,8 +103,6 @@ public class SyncRequest implements Record {
     SyncRequest peer = (SyncRequest) peer_;
     boolean ret = false;
     ret = path.equals(peer.path);
-    if (!ret) return ret;
-    ret = trace.equals(peer.trace);
     if (!ret) return ret;
      return ret;
   }

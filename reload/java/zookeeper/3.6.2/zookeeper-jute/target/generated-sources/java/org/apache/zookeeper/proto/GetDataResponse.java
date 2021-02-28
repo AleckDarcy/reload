@@ -110,8 +110,6 @@ public class GetDataResponse implements Record {
     if (ret != 0) return ret;
     ret = stat.compareTo(peer.stat);
     if (ret != 0) return ret;
-    ret = trace.compareTo(peer.trace);
-    if (ret != 0) return ret;
      return ret;
   }
   public boolean equals(Object peer_) {
@@ -126,8 +124,6 @@ public class GetDataResponse implements Record {
     ret = org.apache.jute.Utils.bufEquals(data,peer.data);
     if (!ret) return ret;
     ret = stat.equals(peer.stat);
-    if (!ret) return ret;
-    ret = trace.equals(peer.trace);
     if (!ret) return ret;
      return ret;
   }

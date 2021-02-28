@@ -91,8 +91,6 @@ public class GetMaxChildrenResponse implements Record {
     int ret = 0;
     ret = (max == peer.max)? 0 :((max<peer.max)?-1:1);
     if (ret != 0) return ret;
-    ret = trace.compareTo(peer.trace);
-    if (ret != 0) return ret;
      return ret;
   }
   public boolean equals(Object peer_) {
@@ -105,8 +103,6 @@ public class GetMaxChildrenResponse implements Record {
     GetMaxChildrenResponse peer = (GetMaxChildrenResponse) peer_;
     boolean ret = false;
     ret = (max==peer.max);
-    if (!ret) return ret;
-    ret = trace.equals(peer.trace);
     if (!ret) return ret;
      return ret;
   }
