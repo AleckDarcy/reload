@@ -28,8 +28,8 @@ public class CreateTxnV0 implements Record {
   private byte[] data;
   private java.util.List<org.apache.zookeeper.data.ACL> acl;
   private boolean ephemeral;
-  public CreateTxnV0() {
-  }
+  private org.apache.zookeeper.trace.TMB_Trace trace;
+  public CreateTxnV0() { this.trace = new org.apache.zookeeper.trace.TMB_Trace(); }
   public CreateTxnV0(
         String path,
         byte[] data,
@@ -39,6 +39,7 @@ public class CreateTxnV0 implements Record {
     this.data=data;
     this.acl=acl;
     this.ephemeral=ephemeral;
+    this.trace = new org.apache.zookeeper.trace.TMB_Trace();
   }
   public String getPath() {
     return path;
@@ -65,9 +66,11 @@ public class CreateTxnV0 implements Record {
     ephemeral=m_;
   }
   public org.apache.zookeeper.trace.TMB_Trace getTrace() {
-    return null;
+    return trace;
   }
-  public void setTrace(org.apache.zookeeper.trace.TMB_Trace m_) {}
+  public void setTrace(org.apache.zookeeper.trace.TMB_Trace m_) {
+    trace=m_;
+  }
   public void serialize(OutputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(this,tag);
     a_.writeString(path,"path");
@@ -83,6 +86,7 @@ public class CreateTxnV0 implements Record {
       a_.endVector(acl,"acl");
     }
     a_.writeBool(ephemeral,"ephemeral");
+    a_.writeRecord(trace,"trace");
     a_.endRecord(this,tag);
   }
   public void deserialize(InputArchive a_, String tag) throws java.io.IOException {
@@ -102,6 +106,7 @@ public class CreateTxnV0 implements Record {
     a_.endVector("acl");
     }
     ephemeral=a_.readBool("ephemeral");
+    a_.readRecord(trace,"trace");
     a_.endRecord(tag);
 }
   public String toString() {
@@ -124,6 +129,7 @@ public class CreateTxnV0 implements Record {
       a_.endVector(acl,"acl");
     }
     a_.writeBool(ephemeral,"ephemeral");
+    a_.writeRecord(trace,"trace");
       a_.endRecord(this,"");
       return new String(s.toByteArray(), "UTF-8");
     } catch (Throwable ex) {
@@ -172,9 +178,11 @@ public class CreateTxnV0 implements Record {
     result = 37*result + ret;
      ret = (ephemeral)?0:1;
     result = 37*result + ret;
+    ret = trace.hashCode();
+    result = 37*result + ret;
     return result;
   }
   public static String signature() {
-    return "LCreateTxnV0(sB[LACL(iLId(ss))]z)";
+    return "LCreateTxnV0(sB[LACL(iLId(ss))]zLTMB_Trace(ll[LTMB_Event(ilsss)][LTMB_TFI(isl[LTMB_TFIMeta(sll)])]))";
   }
 }

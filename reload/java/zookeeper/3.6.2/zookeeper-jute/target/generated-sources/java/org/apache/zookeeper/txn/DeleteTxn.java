@@ -25,11 +25,12 @@ import org.apache.yetus.audience.InterfaceAudience;
 @InterfaceAudience.Public
 public class DeleteTxn implements Record {
   private String path;
-  public DeleteTxn() {
-  }
+  private org.apache.zookeeper.trace.TMB_Trace trace;
+  public DeleteTxn() { this.trace = new org.apache.zookeeper.trace.TMB_Trace(); }
   public DeleteTxn(
         String path) {
     this.path=path;
+    this.trace = new org.apache.zookeeper.trace.TMB_Trace();
   }
   public String getPath() {
     return path;
@@ -38,17 +39,21 @@ public class DeleteTxn implements Record {
     path=m_;
   }
   public org.apache.zookeeper.trace.TMB_Trace getTrace() {
-    return null;
+    return trace;
   }
-  public void setTrace(org.apache.zookeeper.trace.TMB_Trace m_) {}
+  public void setTrace(org.apache.zookeeper.trace.TMB_Trace m_) {
+    trace=m_;
+  }
   public void serialize(OutputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(this,tag);
     a_.writeString(path,"path");
+    a_.writeRecord(trace,"trace");
     a_.endRecord(this,tag);
   }
   public void deserialize(InputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(tag);
     path=a_.readString("path");
+    a_.readRecord(trace,"trace");
     a_.endRecord(tag);
 }
   public String toString() {
@@ -59,6 +64,7 @@ public class DeleteTxn implements Record {
         new ToStringOutputArchive(s);
       a_.startRecord(this,"");
     a_.writeString(path,"path");
+    a_.writeRecord(trace,"trace");
       a_.endRecord(this,"");
       return new String(s.toByteArray(), "UTF-8");
     } catch (Throwable ex) {
@@ -102,9 +108,11 @@ public class DeleteTxn implements Record {
     int ret;
     ret = path.hashCode();
     result = 37*result + ret;
+    ret = trace.hashCode();
+    result = 37*result + ret;
     return result;
   }
   public static String signature() {
-    return "LDeleteTxn(s)";
+    return "LDeleteTxn(sLTMB_Trace(ll[LTMB_Event(ilsss)][LTMB_TFI(isl[LTMB_TFIMeta(sll)])]))";
   }
 }

@@ -25,11 +25,12 @@ import org.apache.yetus.audience.InterfaceAudience;
 @InterfaceAudience.Public
 public class CreateSessionTxn implements Record {
   private int timeOut;
-  public CreateSessionTxn() {
-  }
+  private org.apache.zookeeper.trace.TMB_Trace trace;
+  public CreateSessionTxn() { this.trace = new org.apache.zookeeper.trace.TMB_Trace(); }
   public CreateSessionTxn(
         int timeOut) {
     this.timeOut=timeOut;
+    this.trace = new org.apache.zookeeper.trace.TMB_Trace();
   }
   public int getTimeOut() {
     return timeOut;
@@ -38,17 +39,21 @@ public class CreateSessionTxn implements Record {
     timeOut=m_;
   }
   public org.apache.zookeeper.trace.TMB_Trace getTrace() {
-    return null;
+    return trace;
   }
-  public void setTrace(org.apache.zookeeper.trace.TMB_Trace m_) {}
+  public void setTrace(org.apache.zookeeper.trace.TMB_Trace m_) {
+    trace=m_;
+  }
   public void serialize(OutputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(this,tag);
     a_.writeInt(timeOut,"timeOut");
+    a_.writeRecord(trace,"trace");
     a_.endRecord(this,tag);
   }
   public void deserialize(InputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(tag);
     timeOut=a_.readInt("timeOut");
+    a_.readRecord(trace,"trace");
     a_.endRecord(tag);
 }
   public String toString() {
@@ -59,6 +64,7 @@ public class CreateSessionTxn implements Record {
         new ToStringOutputArchive(s);
       a_.startRecord(this,"");
     a_.writeInt(timeOut,"timeOut");
+    a_.writeRecord(trace,"trace");
       a_.endRecord(this,"");
       return new String(s.toByteArray(), "UTF-8");
     } catch (Throwable ex) {
@@ -102,9 +108,11 @@ public class CreateSessionTxn implements Record {
     int ret;
     ret = (int)timeOut;
     result = 37*result + ret;
+    ret = trace.hashCode();
+    result = 37*result + ret;
     return result;
   }
   public static String signature() {
-    return "LCreateSessionTxn(i)";
+    return "LCreateSessionTxn(iLTMB_Trace(ll[LTMB_Event(ilsss)][LTMB_TFI(isl[LTMB_TFIMeta(sll)])]))";
   }
 }

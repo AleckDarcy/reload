@@ -26,13 +26,14 @@ import org.apache.yetus.audience.InterfaceAudience;
 public class CheckVersionTxn implements Record {
   private String path;
   private int version;
-  public CheckVersionTxn() {
-  }
+  private org.apache.zookeeper.trace.TMB_Trace trace;
+  public CheckVersionTxn() { this.trace = new org.apache.zookeeper.trace.TMB_Trace(); }
   public CheckVersionTxn(
         String path,
         int version) {
     this.path=path;
     this.version=version;
+    this.trace = new org.apache.zookeeper.trace.TMB_Trace();
   }
   public String getPath() {
     return path;
@@ -47,19 +48,23 @@ public class CheckVersionTxn implements Record {
     version=m_;
   }
   public org.apache.zookeeper.trace.TMB_Trace getTrace() {
-    return null;
+    return trace;
   }
-  public void setTrace(org.apache.zookeeper.trace.TMB_Trace m_) {}
+  public void setTrace(org.apache.zookeeper.trace.TMB_Trace m_) {
+    trace=m_;
+  }
   public void serialize(OutputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(this,tag);
     a_.writeString(path,"path");
     a_.writeInt(version,"version");
+    a_.writeRecord(trace,"trace");
     a_.endRecord(this,tag);
   }
   public void deserialize(InputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(tag);
     path=a_.readString("path");
     version=a_.readInt("version");
+    a_.readRecord(trace,"trace");
     a_.endRecord(tag);
 }
   public String toString() {
@@ -71,6 +76,7 @@ public class CheckVersionTxn implements Record {
       a_.startRecord(this,"");
     a_.writeString(path,"path");
     a_.writeInt(version,"version");
+    a_.writeRecord(trace,"trace");
       a_.endRecord(this,"");
       return new String(s.toByteArray(), "UTF-8");
     } catch (Throwable ex) {
@@ -120,9 +126,11 @@ public class CheckVersionTxn implements Record {
     result = 37*result + ret;
     ret = (int)version;
     result = 37*result + ret;
+    ret = trace.hashCode();
+    result = 37*result + ret;
     return result;
   }
   public static String signature() {
-    return "LCheckVersionTxn(si)";
+    return "LCheckVersionTxn(siLTMB_Trace(ll[LTMB_Event(ilsss)][LTMB_TFI(isl[LTMB_TFIMeta(sll)])]))";
   }
 }

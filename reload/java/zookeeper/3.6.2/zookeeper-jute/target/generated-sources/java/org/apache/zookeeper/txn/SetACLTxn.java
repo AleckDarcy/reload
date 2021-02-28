@@ -27,8 +27,8 @@ public class SetACLTxn implements Record {
   private String path;
   private java.util.List<org.apache.zookeeper.data.ACL> acl;
   private int version;
-  public SetACLTxn() {
-  }
+  private org.apache.zookeeper.trace.TMB_Trace trace;
+  public SetACLTxn() { this.trace = new org.apache.zookeeper.trace.TMB_Trace(); }
   public SetACLTxn(
         String path,
         java.util.List<org.apache.zookeeper.data.ACL> acl,
@@ -36,6 +36,7 @@ public class SetACLTxn implements Record {
     this.path=path;
     this.acl=acl;
     this.version=version;
+    this.trace = new org.apache.zookeeper.trace.TMB_Trace();
   }
   public String getPath() {
     return path;
@@ -56,9 +57,11 @@ public class SetACLTxn implements Record {
     version=m_;
   }
   public org.apache.zookeeper.trace.TMB_Trace getTrace() {
-    return null;
+    return trace;
   }
-  public void setTrace(org.apache.zookeeper.trace.TMB_Trace m_) {}
+  public void setTrace(org.apache.zookeeper.trace.TMB_Trace m_) {
+    trace=m_;
+  }
   public void serialize(OutputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(this,tag);
     a_.writeString(path,"path");
@@ -73,6 +76,7 @@ public class SetACLTxn implements Record {
       a_.endVector(acl,"acl");
     }
     a_.writeInt(version,"version");
+    a_.writeRecord(trace,"trace");
     a_.endRecord(this,tag);
   }
   public void deserialize(InputArchive a_, String tag) throws java.io.IOException {
@@ -91,6 +95,7 @@ public class SetACLTxn implements Record {
     a_.endVector("acl");
     }
     version=a_.readInt("version");
+    a_.readRecord(trace,"trace");
     a_.endRecord(tag);
 }
   public String toString() {
@@ -112,6 +117,7 @@ public class SetACLTxn implements Record {
       a_.endVector(acl,"acl");
     }
     a_.writeInt(version,"version");
+    a_.writeRecord(trace,"trace");
       a_.endRecord(this,"");
       return new String(s.toByteArray(), "UTF-8");
     } catch (Throwable ex) {
@@ -156,9 +162,11 @@ public class SetACLTxn implements Record {
     result = 37*result + ret;
     ret = (int)version;
     result = 37*result + ret;
+    ret = trace.hashCode();
+    result = 37*result + ret;
     return result;
   }
   public static String signature() {
-    return "LSetACLTxn(s[LACL(iLId(ss))]i)";
+    return "LSetACLTxn(s[LACL(iLId(ss))]iLTMB_Trace(ll[LTMB_Event(ilsss)][LTMB_TFI(isl[LTMB_TFIMeta(sll)])]))";
   }
 }

@@ -26,13 +26,14 @@ import org.apache.yetus.audience.InterfaceAudience;
 public class Txn implements Record {
   private int type;
   private byte[] data;
-  public Txn() {
-  }
+  private org.apache.zookeeper.trace.TMB_Trace trace;
+  public Txn() { this.trace = new org.apache.zookeeper.trace.TMB_Trace(); }
   public Txn(
         int type,
         byte[] data) {
     this.type=type;
     this.data=data;
+    this.trace = new org.apache.zookeeper.trace.TMB_Trace();
   }
   public int getType() {
     return type;
@@ -47,19 +48,23 @@ public class Txn implements Record {
     data=m_;
   }
   public org.apache.zookeeper.trace.TMB_Trace getTrace() {
-    return null;
+    return trace;
   }
-  public void setTrace(org.apache.zookeeper.trace.TMB_Trace m_) {}
+  public void setTrace(org.apache.zookeeper.trace.TMB_Trace m_) {
+    trace=m_;
+  }
   public void serialize(OutputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(this,tag);
     a_.writeInt(type,"type");
     a_.writeBuffer(data,"data");
+    a_.writeRecord(trace,"trace");
     a_.endRecord(this,tag);
   }
   public void deserialize(InputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(tag);
     type=a_.readInt("type");
     data=a_.readBuffer("data");
+    a_.readRecord(trace,"trace");
     a_.endRecord(tag);
 }
   public String toString() {
@@ -71,6 +76,7 @@ public class Txn implements Record {
       a_.startRecord(this,"");
     a_.writeInt(type,"type");
     a_.writeBuffer(data,"data");
+    a_.writeRecord(trace,"trace");
       a_.endRecord(this,"");
       return new String(s.toByteArray(), "UTF-8");
     } catch (Throwable ex) {
@@ -124,9 +130,11 @@ public class Txn implements Record {
     result = 37*result + ret;
     ret = java.util.Arrays.toString(data).hashCode();
     result = 37*result + ret;
+    ret = trace.hashCode();
+    result = 37*result + ret;
     return result;
   }
   public static String signature() {
-    return "LTxn(iB)";
+    return "LTxn(iBLTMB_Trace(ll[LTMB_Event(ilsss)][LTMB_TFI(isl[LTMB_TFIMeta(sll)])]))";
   }
 }

@@ -179,8 +179,6 @@ public class CreateTxn implements Record {
     if (!ret) return ret;
     ret = (parentCVersion==peer.parentCVersion);
     if (!ret) return ret;
-    ret = trace.equals(peer.trace);
-    if (!ret) return ret;
      return ret;
   }
   public int hashCode() {

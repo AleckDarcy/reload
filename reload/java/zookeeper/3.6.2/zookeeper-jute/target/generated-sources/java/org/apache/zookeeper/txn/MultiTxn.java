@@ -25,11 +25,12 @@ import org.apache.yetus.audience.InterfaceAudience;
 @InterfaceAudience.Public
 public class MultiTxn implements Record {
   private java.util.List<org.apache.zookeeper.txn.Txn> txns;
-  public MultiTxn() {
-  }
+  private org.apache.zookeeper.trace.TMB_Trace trace;
+  public MultiTxn() {this.trace = new org.apache.zookeeper.trace.TMB_Trace();}
   public MultiTxn(
         java.util.List<org.apache.zookeeper.txn.Txn> txns) {
     this.txns=txns;
+    this.trace = new org.apache.zookeeper.trace.TMB_Trace();
   }
   public java.util.List<org.apache.zookeeper.txn.Txn> getTxns() {
     return txns;
@@ -38,9 +39,11 @@ public class MultiTxn implements Record {
     txns=m_;
   }
   public org.apache.zookeeper.trace.TMB_Trace getTrace() {
-    return null;
+    return trace;
   }
-  public void setTrace(org.apache.zookeeper.trace.TMB_Trace m_) {}
+  public void setTrace(org.apache.zookeeper.trace.TMB_Trace m_) {
+    trace=m_;
+  }
   public void serialize(OutputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(this,tag);
     {
@@ -53,6 +56,7 @@ public class MultiTxn implements Record {
       }
       a_.endVector(txns,"txns");
     }
+    a_.writeRecord(trace,"trace");
     a_.endRecord(this,tag);
   }
   public void deserialize(InputArchive a_, String tag) throws java.io.IOException {
@@ -69,6 +73,7 @@ public class MultiTxn implements Record {
       }
     a_.endVector("txns");
     }
+    a_.readRecord(trace,"trace");
     a_.endRecord(tag);
 }
   public String toString() {
@@ -88,6 +93,7 @@ public class MultiTxn implements Record {
       }
       a_.endVector(txns,"txns");
     }
+    a_.writeRecord(trace,"trace");
       a_.endRecord(this,"");
       return new String(s.toByteArray(), "UTF-8");
     } catch (Throwable ex) {
@@ -124,9 +130,11 @@ public class MultiTxn implements Record {
     int ret;
     ret = txns.hashCode();
     result = 37*result + ret;
+    ret = trace.hashCode();
+    result = 37*result + ret;
     return result;
   }
   public static String signature() {
-    return "LMultiTxn([LTxn(iB)])";
+    return "LMultiTxn([LTxn(iB)]LTMB_Trace(ll[LTMB_Event(ilsss)][LTMB_TFI(isl[LTMB_TFIMeta(sll)])]))";
   }
 }

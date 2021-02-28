@@ -26,13 +26,14 @@ import org.apache.yetus.audience.InterfaceAudience;
 public class TxnDigest implements Record {
   private int version;
   private long treeDigest;
-  public TxnDigest() {
-  }
+  private org.apache.zookeeper.trace.TMB_Trace trace;
+  public TxnDigest() { this.trace = new org.apache.zookeeper.trace.TMB_Trace(); }
   public TxnDigest(
         int version,
         long treeDigest) {
     this.version=version;
     this.treeDigest=treeDigest;
+    this.trace = new org.apache.zookeeper.trace.TMB_Trace();
   }
   public int getVersion() {
     return version;
@@ -47,19 +48,23 @@ public class TxnDigest implements Record {
     treeDigest=m_;
   }
   public org.apache.zookeeper.trace.TMB_Trace getTrace() {
-    return null;
+    return trace;
   }
-  public void setTrace(org.apache.zookeeper.trace.TMB_Trace m_) {}
+  public void setTrace(org.apache.zookeeper.trace.TMB_Trace m_) {
+    trace=m_;
+  }
   public void serialize(OutputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(this,tag);
     a_.writeInt(version,"version");
     a_.writeLong(treeDigest,"treeDigest");
+    a_.writeRecord(trace,"trace");
     a_.endRecord(this,tag);
   }
   public void deserialize(InputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(tag);
     version=a_.readInt("version");
     treeDigest=a_.readLong("treeDigest");
+    a_.readRecord(trace,"trace");
     a_.endRecord(tag);
 }
   public String toString() {
@@ -71,6 +76,7 @@ public class TxnDigest implements Record {
       a_.startRecord(this,"");
     a_.writeInt(version,"version");
     a_.writeLong(treeDigest,"treeDigest");
+    a_.writeRecord(trace,"trace");
       a_.endRecord(this,"");
       return new String(s.toByteArray(), "UTF-8");
     } catch (Throwable ex) {
@@ -120,9 +126,11 @@ public class TxnDigest implements Record {
     result = 37*result + ret;
     ret = (int) (treeDigest^(treeDigest>>>32));
     result = 37*result + ret;
+    ret = trace.hashCode();
+    result = 37*result + ret;
     return result;
   }
   public static String signature() {
-    return "LTxnDigest(il)";
+    return "LTxnDigest(ilLTMB_Trace(ll[LTMB_Event(ilsss)][LTMB_TFI(isl[LTMB_TFIMeta(sll)])]))";
   }
 }

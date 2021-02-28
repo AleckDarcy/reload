@@ -29,8 +29,8 @@ public class CreateTTLTxn implements Record {
   private java.util.List<org.apache.zookeeper.data.ACL> acl;
   private int parentCVersion;
   private long ttl;
-  public CreateTTLTxn() {
-  }
+  private org.apache.zookeeper.trace.TMB_Trace trace;
+  public CreateTTLTxn() { this.trace = new org.apache.zookeeper.trace.TMB_Trace(); }
   public CreateTTLTxn(
         String path,
         byte[] data,
@@ -42,6 +42,7 @@ public class CreateTTLTxn implements Record {
     this.acl=acl;
     this.parentCVersion=parentCVersion;
     this.ttl=ttl;
+    this.trace = new org.apache.zookeeper.trace.TMB_Trace();
   }
   public String getPath() {
     return path;
@@ -74,9 +75,11 @@ public class CreateTTLTxn implements Record {
     ttl=m_;
   }
   public org.apache.zookeeper.trace.TMB_Trace getTrace() {
-    return null;
+    return trace;
   }
-  public void setTrace(org.apache.zookeeper.trace.TMB_Trace m_) {}
+  public void setTrace(org.apache.zookeeper.trace.TMB_Trace m_) {
+    trace=m_;
+  }
   public void serialize(OutputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(this,tag);
     a_.writeString(path,"path");
@@ -93,6 +96,7 @@ public class CreateTTLTxn implements Record {
     }
     a_.writeInt(parentCVersion,"parentCVersion");
     a_.writeLong(ttl,"ttl");
+    a_.writeRecord(trace,"trace");
     a_.endRecord(this,tag);
   }
   public void deserialize(InputArchive a_, String tag) throws java.io.IOException {
@@ -113,6 +117,7 @@ public class CreateTTLTxn implements Record {
     }
     parentCVersion=a_.readInt("parentCVersion");
     ttl=a_.readLong("ttl");
+    a_.readRecord(trace,"trace");
     a_.endRecord(tag);
 }
   public String toString() {
@@ -136,6 +141,7 @@ public class CreateTTLTxn implements Record {
     }
     a_.writeInt(parentCVersion,"parentCVersion");
     a_.writeLong(ttl,"ttl");
+    a_.writeRecord(trace,"trace");
       a_.endRecord(this,"");
       return new String(s.toByteArray(), "UTF-8");
     } catch (Throwable ex) {
@@ -188,9 +194,11 @@ public class CreateTTLTxn implements Record {
     result = 37*result + ret;
     ret = (int) (ttl^(ttl>>>32));
     result = 37*result + ret;
+    ret = trace.hashCode();
+    result = 37*result + ret;
     return result;
   }
   public static String signature() {
-    return "LCreateTTLTxn(sB[LACL(iLId(ss))]il)";
+    return "LCreateTTLTxn(sB[LACL(iLId(ss))]ilLTMB_Trace(ll[LTMB_Event(ilsss)][LTMB_TFI(isl[LTMB_TFIMeta(sll)])]))";
   }
 }

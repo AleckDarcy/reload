@@ -27,8 +27,8 @@ public class SetDataTxn implements Record {
   private String path;
   private byte[] data;
   private int version;
-  public SetDataTxn() {
-  }
+  private org.apache.zookeeper.trace.TMB_Trace trace;
+  public SetDataTxn() { this.trace = new org.apache.zookeeper.trace.TMB_Trace(); }
   public SetDataTxn(
         String path,
         byte[] data,
@@ -36,6 +36,7 @@ public class SetDataTxn implements Record {
     this.path=path;
     this.data=data;
     this.version=version;
+    this.trace = new org.apache.zookeeper.trace.TMB_Trace();
   }
   public String getPath() {
     return path;
@@ -56,14 +57,15 @@ public class SetDataTxn implements Record {
     version=m_;
   }
   public org.apache.zookeeper.trace.TMB_Trace getTrace() {
-    return null;
+    return trace;
   }
-  public void setTrace(org.apache.zookeeper.trace.TMB_Trace m_) {}
+  public void setTrace(org.apache.zookeeper.trace.TMB_Trace m_) { trace=m_; }
   public void serialize(OutputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(this,tag);
     a_.writeString(path,"path");
     a_.writeBuffer(data,"data");
     a_.writeInt(version,"version");
+    a_.writeRecord(trace,"trace");
     a_.endRecord(this,tag);
   }
   public void deserialize(InputArchive a_, String tag) throws java.io.IOException {
@@ -71,6 +73,7 @@ public class SetDataTxn implements Record {
     path=a_.readString("path");
     data=a_.readBuffer("data");
     version=a_.readInt("version");
+    a_.readRecord(trace,"trace");
     a_.endRecord(tag);
 }
   public String toString() {
@@ -83,6 +86,7 @@ public class SetDataTxn implements Record {
     a_.writeString(path,"path");
     a_.writeBuffer(data,"data");
     a_.writeInt(version,"version");
+    a_.writeRecord(trace,"trace");
       a_.endRecord(this,"");
       return new String(s.toByteArray(), "UTF-8");
     } catch (Throwable ex) {
@@ -131,6 +135,8 @@ public class SetDataTxn implements Record {
     if (!ret) return ret;
     ret = (version==peer.version);
     if (!ret) return ret;
+    ret = trace.equals(peer.trace);
+    if (!ret) return ret;
      return ret;
   }
   public int hashCode() {
@@ -142,9 +148,11 @@ public class SetDataTxn implements Record {
     result = 37*result + ret;
     ret = (int)version;
     result = 37*result + ret;
+    ret = trace.hashCode();
+    result = 37*result + ret;
     return result;
   }
   public static String signature() {
-    return "LSetDataTxn(sBi)";
+    return "LSetDataTxn(sBiLTMB_Trace(ll[LTMB_Event(ilsss)][LTMB_TFI(isl[LTMB_TFIMeta(sll)])]))";
   }
 }
