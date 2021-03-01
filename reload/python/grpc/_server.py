@@ -28,6 +28,12 @@ from grpc import _compression
 from grpc import _interceptor
 from grpc._cython import cygrpc
 
+# 3mb plug ins
+from grpc.tracer import Store
+from grpc.tracer import Tracer
+
+# end 3mb
+
 _LOGGER = logging.getLogger(__name__)
 
 _SHUTDOWN_TAG = 'shutdown'
@@ -80,10 +86,10 @@ def _details(state):
 
 
 class _HandlerCallDetails(
-        collections.namedtuple('_HandlerCallDetails', (
+    collections.namedtuple('_HandlerCallDetails', (
             'method',
             'invocation_metadata',
-        )), grpc.HandlerCallDetails):
+    )), grpc.HandlerCallDetails):
     pass
 
 
@@ -123,7 +129,6 @@ def _possibly_finish_call(state, token):
 
 
 def _send_status_from_server(state, token):
-
     def send_status_from_server(unused_send_status_from_server_event):
         with state.condition:
             return _possibly_finish_call(state, token)
@@ -175,7 +180,6 @@ def _abort(state, call, code, details):
 
 
 def _receive_close_on_server(state):
-
     def receive_close_on_server(receive_close_on_server_event):
         with state.condition:
             if receive_close_on_server_event.batch_operations[0].cancelled():
@@ -189,7 +193,7 @@ def _receive_close_on_server(state):
 
 
 def _receive_message(state, call, request_deserializer):
-
+    # Deserialize with Trace
     def receive_message(receive_message_event):
         serialized_request = _serialized_request(receive_message_event)
         if serialized_request is None:
@@ -199,14 +203,96 @@ def _receive_message(state, call, request_deserializer):
                 state.condition.notify_all()
                 return _possibly_finish_call(state, _RECEIVE_MESSAGE_TOKEN)
         else:
+            meta = {
+                hasTrace: False,
+                traceID: -1,
+                name: "",
+                uuid: "",
+            }
+
+            crashed = False
+
+            # m = DESERIALIZE(d)
             request = _common.deserialize(serialized_request,
                                           request_deserializer)
+
             with state.condition:
                 if request is None:
                     _abort(state, call, cygrpc.StatusCode.internal,
                            b'Exception deserializing request!')
                 else:
+                    # 3mb start
+                    try:
+                        if isinstance(request, "FI_TRACE"):
+                            trace = request.FI_Trace
+
+                            if trace is not None:
+                                if trace.records.length == 1:
+                                    meta.hasTrace = True
+                                    meta.traceID = trace.id
+                                    meta.name = trace.records[0].message_name
+                                    meta.uuid = trace.records[0].uuid
+
+                                    # print("[RELOAD] handleUnary, meta:", meta)
+
+                                    trace.records[0].type = 2
+                                    trace.records[0].service = serviceUUID
+
+                                    rlfis = trace.rlfis
+                                    tfis = trace.tfis
+
+                                    if rlfis is not None:
+                                        for rlfi in rlfis:
+                                            if rlfi.name == meta.name:
+                                                if rlfi.type == "FaultCrash":  # case 1
+                                                    crashed = True
+                                                    break
+                                                elif rlfi.type == "FaultDelay":  # case 2
+                                                    time.sleep(rlfi.delay)
+                                                    break
+                                    elif tfis is not None:
+                                        for tfi in tfis:
+                                            if tfi.name == meta.name:
+                                                trigger = True
+
+                                                for after in tfi.after:
+                                                    if after.name == meta.name:
+                                                        after.already += 1
+                                                        if after.already <= after.times:
+                                                            trigger = False
+                                                            break
+                                                    elif after.already < after.times:
+                                                        trigger = False
+                                                        break
+
+                                                if trigger:
+                                                    if tfi.type == "FaultCrash":  # 1
+                                                        crashed = True
+                                                    elif tfi.type == "FaultDelay":  # 2
+                                                        time.sleep(tfi.delay)
+
+                                                    break
+                                else:
+                                    print("[RELOAD] handleUnary, records length must be 1")
+                            else:
+                                print("[RELOAD] handleUnary, Unmarshal, no trace")
+                    except [state]:
+                        _raise_rpc_error(state)
+                        return
+
+                    if crashed:
+                        batch = {
+                            [grpc.opType.RECV_INITIAL_METADATA]: True,
+                            [grpc.opType.RECV_MESSAGE]: True,
+                            [grpc.opType.SEND_CLOSE_FROM_CLIENT]: True
+                        }
+
+                        call.start_server_batch(batch, _send_status_from_server(state, _SEND_STATUS_FROM_SERVER_TOKEN))
+                        return
+                    # 3mb end
+
                     state.request = request
+
                 state.condition.notify_all()
                 return _possibly_finish_call(state, _RECEIVE_MESSAGE_TOKEN)
 
@@ -214,7 +300,6 @@ def _receive_message(state, call, request_deserializer):
 
 
 def _send_initial_metadata(state):
-
     def send_initial_metadata(unused_send_initial_metadata_event):
         with state.condition:
             return _possibly_finish_call(state, _SEND_INITIAL_METADATA_TOKEN)
@@ -223,7 +308,6 @@ def _send_initial_metadata(state):
 
 
 def _send_message(state, token):
-
     def send_message(unused_send_message_event):
         with state.condition:
             state.condition.notify_all()
@@ -385,7 +469,6 @@ class _RequestIterator(object):
 
 
 def _unary_request(rpc_event, state, request_deserializer):
-
     def unary_request():
         with state.condition:
             if not _is_rpc_state_active(state):
@@ -465,7 +548,21 @@ def _take_response_from_response_iterator(rpc_event, state, response_iterator):
         return None, False
 
 
+# Serialize with trace
 def _serialize_response(rpc_event, state, response, response_serializer):
+    if (meta.hasTrace):
+        trace = response.FI_Trace
+
+        trace.records[1] = {
+            type: 1,
+            timestamp: time.now() * 1e6,
+            uuid: meta.uuid,
+            service: serviceUUID,
+        };
+
+        response.FI_Trace = trace;
+
+    # d = SERIALIZE(m)
     serialized_response = _common.serialize(response, response_serializer)
     if serialized_response is None:
         with state.condition:
@@ -473,6 +570,7 @@ def _serialize_response(rpc_event, state, response, response_serializer):
                    b'Failed to serialize response!')
         return None
     else:
+        # return d
         return serialized_response
 
 
@@ -575,7 +673,7 @@ def _stream_response_in_pool(rpc_event, state, behavior, argument_thunk,
         argument = argument_thunk()
         if argument is not None:
             if hasattr(behavior, 'experimental_non_blocking'
-                      ) and behavior.experimental_non_blocking:
+                       ) and behavior.experimental_non_blocking:
                 _call_behavior(
                     rpc_event,
                     state,
@@ -664,7 +762,6 @@ def _handle_stream_stream(rpc_event, state, method_handler,
 
 
 def _find_method_handler(rpc_event, generic_handlers, interceptor_pipeline):
-
     def query_handlers(handler_call_details):
         for generic_handler in generic_handlers:
             method_handler = generic_handler.service(handler_call_details)
@@ -826,8 +923,8 @@ def _process_event_and_continue(state, event):
         with state.lock:
             state.due.remove(_REQUEST_CALL_TAG)
             concurrency_exceeded = (
-                state.maximum_concurrent_rpcs is not None and
-                state.active_rpc_count >= state.maximum_concurrent_rpcs)
+                    state.maximum_concurrent_rpcs is not None and
+                    state.active_rpc_count >= state.maximum_concurrent_rpcs)
             rpc_state, rpc_future = _handle_call(
                 event, state.generic_handlers, state.interceptor_pipeline,
                 state.thread_pool, concurrency_exceeded)
