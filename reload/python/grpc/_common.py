@@ -12,13 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Shared implementation."""
-
+import datetime
 import logging
+import sys
+import uuid
 
 import six
 
 import grpc
 from grpc._cython import cygrpc
+
+from Store import Store
+import message_pb2
+
+s = Store()
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -65,13 +72,18 @@ def encode(s):
     if isinstance(s, bytes):
         return s
     else:
-        return s.encode('utf8')
+        return s.encode('ascii')
 
 
 def decode(b):
-    if isinstance(b, bytes):
-        return b.decode('utf-8', 'replace')
-    return b
+    if isinstance(b, str):
+        return b
+    else:
+        try:
+            return b.decode('utf8')
+        except UnicodeDecodeError:
+            _LOGGER.exception('Invalid encoding on %s', b)
+            return b.decode('latin1')
 
 
 def _transform(message, transformer, exception_message):
@@ -86,12 +98,84 @@ def _transform(message, transformer, exception_message):
 
 
 def serialize(message, serializer):
+    # 3mb start
+    if hasattr(message, 'FI_Trace'):
+        if message.FI_Trace:
+            #print("serialize message FI_trace: ", message.FI_Trace)
+
+            #record = message_pb2.Record(type=1, message_name="Message_Request")
+            record = message_pb2.Record(type=1, message_name="Message_Request",
+                                        timestamp=int(datetime.datetime.now().microsecond * 1e6),
+                                        uuid=str(uuid.uuid4()))
+
+            message.FI_Trace.records.extend([record])
+
+            s.SetTrace(str(message.FI_Trace.id), message.FI_Trace)
+
+            #if msgT == "RESPONSE":
+                # delete trace
+                #s.FetchTrace(message.FI_Trace.id)
+            # else:
+                # SimulateFault(t)
+
+            tmp = s.GetTrace(str(message.FI_Trace.id))
+            if tmp.id:
+                message.FI_Trace.id = tmp.id
+            if tmp.records:
+                for i in range(len(tmp.records)):
+                    record = tmp.records[i]
+                    message.FI_Trace.records.extend([record])
+            if tmp.rlfis:
+                for i in range(len(tmp.rlfis)):
+                    rlfi = tmp.rlfis[i]
+                    message.FI_Trace.rlfis.extend([rlfi])
+            if tmp.tfis:
+                for i in range(len(tmp.tfis)):
+                    tfi = tmp.tfis[i]
+                    message.FI_Trace.tfis.extend([tfi])
+
+            #print("SERIALIZE Global Store:", s.PrintStore())
+    # 3mb end
+
     return _transform(message, serializer, 'Exception serializing message!')
 
 
 def deserialize(serialized_message, deserializer):
-    return _transform(serialized_message, deserializer,
-                      'Exception deserializing message!')
+    m = _transform(serialized_message, deserializer, 'Exception deserializing message!')
+
+    # 3mb start
+    if hasattr(m, 'FI_Trace'):
+        if m.FI_Trace:
+            #print("deserialize message FI_trace: ", m.FI_Trace)
+
+            record = message_pb2.Record(type=2, message_name="Message_Response",
+                                        timestamp=int(datetime.datetime.now().microsecond * 1e6),
+                                        uuid=str(uuid.uuid4()))
+
+            m.FI_Trace.records.extend([record])
+
+            s.SetTrace(str(m.FI_Trace.id), m.FI_Trace)
+
+            tmp = s.GetTrace(str(m.FI_Trace.id))
+            if tmp.id:
+                m.FI_Trace.id = tmp.id
+            if tmp.records:
+                for i in range(len(tmp.records)):
+                    record = tmp.records[i]
+                    m.FI_Trace.records.extend([record])
+            if tmp.rlfis:
+                for i in range(len(tmp.rlfis)):
+                    rlfi = tmp.rlfis[i]
+                    m.FI_Trace.rlfis.extend([rlfi])
+            if tmp.tfis:
+                for i in range(len(tmp.tfis)):
+                    tfi = tmp.tfis[i]
+                    m.FI_Trace.tfis.extend([tfi])
+
+            #print("DESERIALIZE Global Store:", s.PrintStore())
+    # 3mb end
+
+    return m
 
 
 def fully_qualified_method(group, method):

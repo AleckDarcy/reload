@@ -3,36 +3,38 @@
 import uuid
 import threading
 
-
 class Store:
+    def __init__(self):
+        pass
+
     uuid = str(uuid.uuid4())
     lock = threading.RLock()
 
-    # hashmap of int(long threadID) to traces
+    # hashmap of int(long traceID) to traces
     traces = dict()
 
-    def SetTrace(self, threadID: int, t: Message.Trace):
+    def SetTrace(self, traceID, t):
         with self.lock:
-            self.traces[threadID] = t
+            self.traces[traceID] = t
 
-    def GetTrace(self, threadID: int) -> Message.Trace:
-        t = None
-
+    def GetTrace(self, traceID):
         with self.lock:
-            if self.traces[threadID]:
-                t = self.traces[threadID]
+            t = self.traces.get(traceID)
 
         return t
 
-    def FetchTrace(self, threadID: int) -> Message.Trace:
+    def FetchTrace(self, traceID):
         t = None
 
         with self.lock:
-            if self.traces[threadID]:
-                t = self.traces[threadID]
-                del self.traces[threadID]
+            if self.traces[traceID]:
+                t = self.traces.get(traceID)
+                del self.traces[traceID]
 
         return t
+
+    def PrintStore(self):
+        return self.traces
 
     # class ContextMeta:
     #    traceID = int()
