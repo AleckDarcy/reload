@@ -22,7 +22,6 @@ import threading
 import time
 # 3mb start
 import uuid
-import datetime
 # end
 import six
 
@@ -32,6 +31,8 @@ import _interceptor
 from grpc._cython import cygrpc
 from grpc.framework.foundation import callable_util
 import message_pb2
+
+serviceUUID = str(uuid.uuid4())
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -514,7 +515,7 @@ def _unary_response_in_pool(rpc_event, state, behavior, argument_thunk,
                         meta["uuid"] = trace.records[0].uuid
 
                         trace.records[0].type = 2
-                        trace.records[0].service = str(uuid.uuid4())
+                        trace.records[0].service = serviceUUID
 
                         rlfis = trace.rlfis
                         tfis = trace.tfis
@@ -580,12 +581,12 @@ def _unary_response_in_pool(rpc_event, state, behavior, argument_thunk,
             # 3mb start
             if meta["hasTrace"]:
                 #print("[RELOAD] Meta:", meta)
-                record = message_pb2.Record(type=1, message_name=meta["name"],
-                                            timestamp=int(datetime.datetime.now().microsecond * 1e6),
-                                            uuid=meta["uuid"], service=str(uuid.uuid4()))
+                record = message_pb2.Record(type=1, service=serviceUUID, message_name=meta["name"],
+                                            timestamp=int(time.time() * 1e9), uuid=meta["uuid"])
                 trace.records.extend([record])
                 response.FI_Trace = trace
-                #print("[RELOAD] end Response FI_trace:", response.FI_Trace)
+
+                print("[RELOAD] end Response FI_trace:", response.FI_Trace.records)
             # 3mb end
 
             serialized_response = _serialize_response(

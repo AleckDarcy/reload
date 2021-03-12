@@ -12,9 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Shared implementation."""
-import datetime
+import time
 import logging
-import sys
 import uuid
 
 import six
@@ -101,26 +100,33 @@ def serialize(message, serializer):
     # 3mb start
     if hasattr(message, 'FI_Trace'):
         if message.FI_Trace:
-            #print("serialize message FI_trace: ", message.FI_Trace)
+            print("serialize records before extend message FI_trace: ", message.FI_Trace.records)
 
-            #record = message_pb2.Record(type=1, message_name="Message_Request")
-            record = message_pb2.Record(type=1, message_name="Message_Request",
-                                        timestamp=int(datetime.datetime.now().microsecond * 1e6),
-                                        uuid=str(uuid.uuid4()))
+            name = ""
+            if message.FI_Type == 1:
+                name = "Message_Request"
+            elif message.FI_Type == 2:
+                name = "Message_Response"
+
+            record = message_pb2.Record(type=1, service=str(uuid.uuid4()), message_name=name,
+                                        timestamp=int(time.time() * 1e9),
+                                        uuid=message.FI_Trace.records[0].uuid)
 
             message.FI_Trace.records.extend([record])
 
+            print("serialize records after extend: ", message.FI_Trace.records)
+
+            # add to store
             s.SetTrace(str(message.FI_Trace.id), message.FI_Trace)
 
-            #if msgT == "RESPONSE":
+            #if name == "Message_Response":
                 # delete trace
                 #s.FetchTrace(message.FI_Trace.id)
             # else:
                 # SimulateFault(t)
 
+            # get from store and update current message FI_Trace
             tmp = s.GetTrace(str(message.FI_Trace.id))
-            if tmp.id:
-                message.FI_Trace.id = tmp.id
             if tmp.records:
                 for i in range(len(tmp.records)):
                     record = tmp.records[i]
@@ -134,7 +140,7 @@ def serialize(message, serializer):
                     tfi = tmp.tfis[i]
                     message.FI_Trace.tfis.extend([tfi])
 
-            #print("SERIALIZE Global Store:", s.PrintStore())
+            print("SERIALIZE Global Store:", s.PrintStore())
     # 3mb end
 
     return _transform(message, serializer, 'Exception serializing message!')
@@ -146,19 +152,27 @@ def deserialize(serialized_message, deserializer):
     # 3mb start
     if hasattr(m, 'FI_Trace'):
         if m.FI_Trace:
-            #print("deserialize message FI_trace: ", m.FI_Trace)
+            print("deserialize records before extend message FI_trace: ", m.FI_Trace.records)
 
-            record = message_pb2.Record(type=2, message_name="Message_Response",
-                                        timestamp=int(datetime.datetime.now().microsecond * 1e6),
-                                        uuid=str(uuid.uuid4()))
+            name = ""
+            if m.FI_Type == 1:
+                name = "Message_Request"
+            elif m.FI_Type == 2:
+                name = "Message_Response"
+
+            record = message_pb2.Record(type=2, service=str(uuid.uuid4()), message_name=name,
+                                        timestamp=int(time.time() * 1e9),
+                                        uuid=m.FI_Trace.records[len(m.FI_Trace.records) - 1].uuid)
 
             m.FI_Trace.records.extend([record])
 
+            print("deserialize records after extend: ", m.FI_Trace.records)
+
+            # add to store
             s.SetTrace(str(m.FI_Trace.id), m.FI_Trace)
 
+            # get from store and update current message FI_Trace
             tmp = s.GetTrace(str(m.FI_Trace.id))
-            if tmp.id:
-                m.FI_Trace.id = tmp.id
             if tmp.records:
                 for i in range(len(tmp.records)):
                     record = tmp.records[i]
@@ -172,7 +186,7 @@ def deserialize(serialized_message, deserializer):
                     tfi = tmp.tfis[i]
                     m.FI_Trace.tfis.extend([tfi])
 
-            #print("DESERIALIZE Global Store:", s.PrintStore())
+           print("DESERIALIZE Global Store:", s.PrintStore())
     # 3mb end
 
     return m
