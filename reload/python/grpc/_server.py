@@ -173,7 +173,7 @@ def _receive_close_on_server(state):
     return receive_close_on_server
 
 
-def _receive_message(state, call, request_deserializer):
+def _receive_message(state, call, request_deserializer, Context = None):
 
     def receive_message(receive_message_event):
         serialized_request = _serialized_request(receive_message_event)
@@ -184,8 +184,9 @@ def _receive_message(state, call, request_deserializer):
                 state.condition.notify_all()
                 return _possibly_finish_call(state, _RECEIVE_MESSAGE_TOKEN)
         else:
+            # 3mb update propagate context
             request = _common.deserialize(serialized_request,
-                                          request_deserializer)
+                                          request_deserializer, Context)
             with state.condition:
                 if request is None:
                     _abort(state, call, cygrpc.StatusCode.internal,
@@ -425,8 +426,9 @@ def _take_response_from_response_iterator(rpc_event, state, response_iterator):
         return None, False
 
 
-def _serialize_response(rpc_event, state, response, response_serializer):
-    serialized_response = _common.serialize(response, response_serializer)
+def _serialize_response(rpc_event, state, response, response_serializer, Context = None):
+    # 3mb update with context
+    serialized_response = _common.serialize(response, response_serializer, Context)
     if serialized_response is None:
         with state.condition:
             _abort(state, rpc_event.call, cygrpc.StatusCode.internal,
@@ -484,13 +486,15 @@ def _status(rpc_event, state, serialized_response):
             state.statused = True
             state.due.add(_SEND_STATUS_FROM_SERVER_TOKEN)
 
-
-# reload                                                
+# reload -> maintain the context
+# propagate context along with FI_Trace
 def _unary_response_in_pool(rpc_event, state, behavior, argument_thunk,
                             request_deserializer, response_serializer):
     argument = argument_thunk()
 
     if argument is not None:
+        context = {}
+
         # 3mb start
         trace = None
         meta = {
@@ -587,10 +591,13 @@ def _unary_response_in_pool(rpc_event, state, behavior, argument_thunk,
                 response.FI_Trace = trace
 
                 print("[RELOAD] end Response FI_trace:", response.FI_Trace.records)
+
+                context["traceID"] = meta["traceID"]
+                context["uuid"] = meta["uuid"]
             # 3mb end
 
             serialized_response = _serialize_response(
-                rpc_event, state, response, response_serializer)
+                rpc_event, state, response, response_serializer, context)
             if serialized_response is not None:
                 _status(rpc_event, state, serialized_response)
 
