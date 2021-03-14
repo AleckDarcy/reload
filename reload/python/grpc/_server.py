@@ -14,7 +14,6 @@
 """Service-side implementation of gRPC Python."""
 
 import collections
-import sys
 
 import enum
 import logging
@@ -22,6 +21,7 @@ import threading
 import time
 # 3mb start
 import uuid
+import sys
 # end
 import six
 
@@ -428,6 +428,7 @@ def _take_response_from_response_iterator(rpc_event, state, response_iterator):
 
 def _serialize_response(rpc_event, state, response, response_serializer, Context = None):
     # 3mb update with context
+    #print("[Serialize response] context:", Context)
     serialized_response = _common.serialize(response, response_serializer, Context)
     if serialized_response is None:
         with state.condition:
@@ -493,16 +494,11 @@ def _unary_response_in_pool(rpc_event, state, behavior, argument_thunk,
     argument = argument_thunk()
 
     if argument is not None:
-        context = {}
-
         # 3mb start
         trace = None
-        meta = {
-            "hasTrace": False,
-            "traceID": -1,
-            "name": "",
-            "uuid": "",
-        }
+
+        # context
+        meta = {}
         crashed = False
 
         #print("[RELOAD] request:", argument, argument_thunk, request_deserializer, response_serializer)
@@ -512,14 +508,17 @@ def _unary_response_in_pool(rpc_event, state, behavior, argument_thunk,
 
                 #print("[RELOAD] handleUnary, start request FI trace:", trace)
                 if trace.id:
+                    #print("[RELOAD] handleUnary, start request FI trace id:", trace.id)
                     if len(trace.records) == 1:
-                        meta["hasTrace"] = True
-                        meta["traceID"] = trace.id
-                        meta["name"] = trace.records[0].message_name
-                        meta["uuid"] = trace.records[0].uuid
+                        #meta["hasTrace"] = True
+                        meta["traceID"] = str(trace.id)
+                        meta["name"] = str(trace.records[0].message_name)
+                        meta["uuid"] = str(trace.records[0].uuid)
 
                         trace.records[0].type = 2
                         trace.records[0].service = serviceUUID
+
+                        #print("[RELOAD] Meta:", meta)
 
                         rlfis = trace.rlfis
                         tfis = trace.tfis
@@ -583,21 +582,20 @@ def _unary_response_in_pool(rpc_event, state, behavior, argument_thunk,
         response, proceed = _call_behavior(rpc_event, state, behavior, argument, request_deserializer)
         if proceed:
             # 3mb start
-            if meta["hasTrace"]:
-                #print("[RELOAD] Meta:", meta)
+            if meta.has_key("traceID"):
+                #print("[RELOAD] has key traceID")
                 record = message_pb2.Record(type=1, service=serviceUUID, message_name=meta["name"],
                                             timestamp=int(time.time() * 1e9), uuid=meta["uuid"])
                 trace.records.extend([record])
-                response.FI_Trace = trace
+                #print("[RELOAD] after extend", trace, response, response.FI_Trace, type(response.FI_Trace), type(trace))
+                # TODO: response fi trace empty?? -> FIXED with copy from
+                response.FI_Trace.CopyFrom(trace)
 
-                print("[RELOAD] end Response FI_trace:", response.FI_Trace.records)
-
-                context["traceID"] = meta["traceID"]
-                context["uuid"] = meta["uuid"]
+                print("[RELOAD] end Response FI_trace:", response.FI_Trace, meta)
             # 3mb end
 
             serialized_response = _serialize_response(
-                rpc_event, state, response, response_serializer, context)
+                rpc_event, state, response, response_serializer, meta)
             if serialized_response is not None:
                 _status(rpc_event, state, serialized_response)
 

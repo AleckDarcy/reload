@@ -42,12 +42,15 @@ class Store:
 
         with self.lock:
             # check if meta.traceID exists in store and get traces dict
-            traces = self.store.get(meta.traceID)
-            if traces:
+            traces = self.store.get(meta["traceID"])
+            if traces is not None:
                 # check if meta.uuid yields us a trace -> set ok true
-                tmp = traces.get(meta.uuid)
+                tmp = traces.get(meta["uuid"])
                 if tmp:
                     ok = True
+            else:
+                pass
+                #print("stuck in lock?")
 
         return ok
 
@@ -58,10 +61,10 @@ class Store:
 
         with self.lock:
             # check if meta.traceID exists in store and get traces dict
-            traces = self.store.get(meta.traceID)
-            if traces:
+            traces = self.store.get(meta["traceID"])
+            if traces is not None:
                 # check if meta.uuid yields us a trace -> set ok true
-                t = traces.get(meta.uuid)
+                t = traces.get(meta["uuid"])
                 if t:
                     ok = True
                     # shallow copy in python 2.7
@@ -72,17 +75,17 @@ class Store:
     def SetByContextMeta(self, meta, trace):
         with self.lock:
             # check if meta.traceID exists in store and get traces dict
-            traces = self.store.get(meta.traceID)
-            if traces:
+            traces = self.store.get(meta["traceID"])
+            if traces is not None:
                 # check if meta.uuid yields us a trace -> set ok true
-                t = traces.get(meta.uuid)
+                t = traces.get(meta["uuid"])
                 if t:
                     merge(t, trace)
                 else:
-                    traces[meta.uuid] = trace
+                    traces[meta["uuid"]] = trace
             else:
-                tmpTrace = {meta.uuid: trace}
-                self.store[meta.traceID] = tmpTrace
+                tmpTrace = {meta["uuid"]: trace}
+                self.store[meta["traceID"]] = tmpTrace
 
     def UpdateFunctionByContextMeta(self, meta, function):
         ok = False
@@ -90,10 +93,10 @@ class Store:
 
         with self.lock:
             # check if meta.traceID exists in store and get traces dict
-            traces = self.store.get(meta.traceID)
-            if traces:
+            traces = self.store.get(meta["traceID"])
+            if traces is not None:
                 # check if meta.uuid yields us a trace -> set ok true
-                t = traces.get(meta.uuid)
+                t = traces.get(meta["uuid"])
                 if t:
                     ok = True
 
@@ -108,16 +111,16 @@ class Store:
 
         with self.lock:
             # check if meta.traceID exists in store and get traces dict
-            traces = self.store.get(meta.traceID)
-            if traces:
+            traces = self.store.get(meta["traceID"])
+            if traces is not None:
                 # check if meta.uuid yields us a trace -> set ok true
-                t = traces.get(meta.uuid)
+                t = traces.get(meta["uuid"])
                 if t:
                     ok = True
-                    del traces[meta.uuid]
+                    del traces[meta["uuid"]]
 
                     if len(traces) == 0:
-                        del self.store[meta.traceID]
+                        del self.store[meta["traceID"]]
 
         return ok
 
