@@ -184,7 +184,7 @@ def _receive_message(state, call, request_deserializer, Context = None):
                 state.condition.notify_all()
                 return _possibly_finish_call(state, _RECEIVE_MESSAGE_TOKEN)
         else:
-            # 3mb update propagate context
+            # 3mb update deserialize should update context
             request = _common.deserialize(serialized_request,
                                           request_deserializer, Context)
             with state.condition:
@@ -359,7 +359,7 @@ class _RequestIterator(object):
         return self._next()
 
 
-def _unary_request(rpc_event, state, request_deserializer):
+def _unary_request(rpc_event, state, request_deserializer, Context = None):
 
     def unary_request():
         with state.condition:
@@ -369,7 +369,7 @@ def _unary_request(rpc_event, state, request_deserializer):
                 rpc_event.call.start_server_batch(
                     (cygrpc.ReceiveMessageOperation(_EMPTY_FLAGS),),
                     _receive_message(state, rpc_event.call,
-                                     request_deserializer))
+                                     request_deserializer, Context))
                 state.due.add(_RECEIVE_MESSAGE_TOKEN)
                 while True:
                     state.condition.wait()
@@ -428,7 +428,6 @@ def _take_response_from_response_iterator(rpc_event, state, response_iterator):
 
 def _serialize_response(rpc_event, state, response, response_serializer, Context = None):
     # 3mb update with context
-    #print("[Serialize response] context:", Context)
     serialized_response = _common.serialize(response, response_serializer, Context)
     if serialized_response is None:
         with state.condition:
@@ -490,14 +489,13 @@ def _status(rpc_event, state, serialized_response):
 # reload -> maintain the context
 # propagate context along with FI_Trace
 def _unary_response_in_pool(rpc_event, state, behavior, argument_thunk,
-                            request_deserializer, response_serializer):
+                            request_deserializer, response_serializer, Context = None):
     argument = argument_thunk()
 
     if argument is not None:
         # 3mb start
         trace = None
 
-        # context
         meta = {}
         crashed = False
 
@@ -515,8 +513,8 @@ def _unary_response_in_pool(rpc_event, state, behavior, argument_thunk,
                         meta["name"] = str(trace.records[0].message_name)
                         meta["uuid"] = str(trace.records[0].uuid)
 
-                        trace.records[0].type = 2
-                        trace.records[0].service = serviceUUID
+                        #trace.records[0].type = 2
+                        #trace.records[0].service = serviceUUID
 
                         #print("[RELOAD] Meta:", meta)
 
@@ -588,10 +586,9 @@ def _unary_response_in_pool(rpc_event, state, behavior, argument_thunk,
                                             timestamp=int(time.time() * 1e9), uuid=meta["uuid"])
                 trace.records.extend([record])
                 #print("[RELOAD] after extend", trace, response, response.FI_Trace, type(response.FI_Trace), type(trace))
-                # TODO: response fi trace empty?? -> FIXED with copy from
                 response.FI_Trace.CopyFrom(trace)
 
-                print("[RELOAD] end Response FI_trace:", response.FI_Trace, meta)
+                print("[RELOAD] end Response FI_trace:", response.FI_Trace, Context)
             # 3mb end
 
             serialized_response = _serialize_response(
@@ -629,12 +626,13 @@ def _stream_response_in_pool(rpc_event, state, behavior, argument_thunk,
 
 
 def _handle_unary_unary(rpc_event, state, method_handler, thread_pool):
+    context = {}
     unary_request = _unary_request(rpc_event, state,
-                                   method_handler.request_deserializer)
+                                   method_handler.request_deserializer, context)
     return thread_pool.submit(_unary_response_in_pool, rpc_event, state,
                               method_handler.unary_unary, unary_request,
                               method_handler.request_deserializer,
-                              method_handler.response_serializer)
+                              method_handler.response_serializer, context)
 
 
 def _handle_unary_stream(rpc_event, state, method_handler, thread_pool):

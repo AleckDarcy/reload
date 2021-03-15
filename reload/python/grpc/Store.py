@@ -68,7 +68,7 @@ class Store:
                 if t:
                     ok = True
                     # shallow copy in python 2.7
-                    t = t[:]
+                    #t = t[:]
 
         return t, ok
 
@@ -92,6 +92,7 @@ class Store:
         t = None
 
         with self.lock:
+            #print("store update func:", function)
             # check if meta.traceID exists in store and get traces dict
             traces = self.store.get(meta["traceID"])
             if traces is not None:
@@ -101,8 +102,9 @@ class Store:
                     ok = True
 
                     function(t)
+                    #print("after function:", t)
                     # shallow copy in python 2.7
-                    t = t[:]
+                    #t = t[:]
 
         return t, ok
 

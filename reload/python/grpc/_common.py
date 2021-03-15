@@ -26,6 +26,7 @@ from Store import Store
 import message_pb2
 
 serviceUUID = str(uuid.uuid4())
+# global store s
 s = Store()
 TMB_CTXIDKEY = "traceID"
 
@@ -108,48 +109,47 @@ def serialize(message, serializer, Context = None):
     if hasattr(message, 'FI_Trace'):
         print("[Serialize] start:", message.FI_Trace, Context)
         # default function has key -> do we have field TraceID added by deserialize / context propagation
-        # default function has key -> do we have field TraceID added by deserialize / context propagation
-        if Context is not None and Context.has_key(TMB_CTXIDKEY):
-            # context should have uuid and traceID
-            if s.CheckByContextMeta(Context):
-                # tmp = s.GetByContextMeta(meta)
-                Serialize_Uuid = ""
-                name = ""
+        if Context is not None:
+            if Context.has_key(TMB_CTXIDKEY):
+                # context should have uuid and traceID
+                if s.CheckByContextMeta(Context):
+                    Serialize_Uuid = ""
+                    name = ""
 
-                print("[Serialize] made it passed check by context meta")
+                    print("[Serialize] made it past check by context meta")
 
-                if message.FI_Type == 1:
-                    name = "Message_Request"
-                    Serialize_Uuid = str(uuid.uuid4())
-                elif message.FI_Type == 2:
-                    name = "Message_Response"
-                    Serialize_Uuid = Context.uuid
+                    if message.FI_Type == 1:
+                        name = "Message_Request"
+                        Serialize_Uuid = str(uuid.uuid4())
+                    elif message.FI_Type == 2:
+                        name = "Message_Response"
+                        Serialize_Uuid = Context["uuid"]
 
-                # TODO: (if needed) if two records are same dont extend that record
-                record = message_pb2.Record(type=1, message_name=name, timestamp=int(time.time() * 1e9),
-                                            uuid=Serialize_Uuid, service=serviceUUID)
+                    # TODO: (if needed) if two records are same dont extend that record
+                    record = message_pb2.Record(type=1, message_name=name, timestamp=int(time.time() * 1e9),
+                                                uuid=Serialize_Uuid, service=serviceUUID)
 
-                def updateFunction(trace):
-                    trace.records.extend([record])
+                    def updateFunction(trace):
+                        trace.records.extend([record])
 
-                trace, ok = Store.UpdateFunctionByContextMeta(Context, updateFunction)
-                print("[Serialize] trace after update function:", trace, ok)
+                    trace, ok = s.UpdateFunctionByContextMeta(Context, updateFunction)
+                    print("[Serialize] trace after update function:", trace, ok)
 
-                if ok:
-                    # TODO: fault injection
-                    if name == "Message_Request":
-                        # fault injection
-                        pass
-                    elif name == "Message_Response":
-                        s.DeleteByContextMeta(Context)
+                    if ok:
+                        # TODO: fault injection
+                        if name == "Message_Request":
+                            # fault injection
+                            pass
+                        elif name == "Message_Response":
+                            #s.DeleteByContextMeta(Context)
+                            pass
 
-                    # Set FI trace
-                    message.FI_Trace = trace
+                        # Set FI trace
+                        message.FI_Trace.CopyFrom(trace)
 
-                    print("SERIALIZE Global Store:", s.GetStore())
-            else:
-                # TODO: fix this, this should not happen lmao
-                print("[serialize] check by context meta returned false")
+                        print("SERIALIZE Global Store:", s.GetStore())
+                else:
+                    print("[serialize] check by context meta returned false")
     # 3mb end
 
     return _transform(message, serializer, 'Exception serializing message!')
@@ -161,52 +161,50 @@ def deserialize(serialized_message, deserializer, Context=None):
 
     # 3mb start
     if hasattr(m, 'FI_Trace'):
-        print("Deserialize start:", m.FI_Trace, Context)
+        print("Deserialize start:", m.FI_Trace, type(m), type(m.FI_Trace), Context)
 
-        # default function has key -> do we have field TraceID added by deserialize / context propagation
-        if Context is not None and Context.has_key(TMB_CTXIDKEY):
-            # context should have uuid and traceID
-            if s.CheckByContextMeta(Context):
-                # tmp = s.GetByContextMeta(meta)
+        trace = m.FI_Trace
+        if trace is not None:
+            if trace.IsInitialized():
                 name = ""
-
                 if m.FI_Type == 1:
                     name = "Message_Request"
                 elif m.FI_Type == 2:
                     name = "Message_Response"
 
-                trace = m.FI_Trace
-                if trace is not None:
-                    # TODO: fault injection
+                # TODO: fault injection
+                if name == "Message_Request":
+                    print("[deserialize] Unmarshal, receive request: ", name)
+                    if len(trace.records) != 1:
+                        print("[deserialize] Unmarshal, receive invalid trace:", trace)
+                    elif str(trace.records[0].uuid) == "":
+                        print("[deserialize] Unmarshal, receive invalid uuid")
+                    else:
+                        Context[TMB_CTXIDKEY] = str(trace.id)
+                        Context["uuid"] = str(trace.records[0].uuid)
 
-                    if name == "Message_Request":
-                        print("[RELOAD] Unmarshal, receive request: ", name)
-                        if len(trace.records) != 1:
-                            print("[RELOAD] Unmarshal, receive invalid trace:", trace)
-                        elif trace.records[0].uuid == "":
-                            print("[RELOAD] Unmarshal, receive invalid uuid")
-                        else:
-                            Context.TMB_CTXIDKEY = trace.id
-                            Context.uuid = trace.records[0].uuid
+                        trace.records[0].type = 2
+                        trace.records[0].message_name = str(name)
+                        trace.records[0].timestamp = int(time.time() * 1e9)
+                        trace.records[0].uuid = str(trace.records[0].uuid)
+                        trace.records[0].service = serviceUUID
 
-                            record = message_pb2.Record(type=2, message_name=name,
-                                                        timestamp=int(time.time() * 1e9),
-                                                        uuid=trace.records[0].uuid, service=serviceUUID)
+                        s.SetByContextMeta(Context, trace)
+                elif name == "Message_Response":
+                    print("[deserialize] Unmarshal, receive response: ", name)
+                    if len(trace.records) == 0:
+                        print("[deserialize] Unmarshal, receive empty trace")
+                    elif str(trace.records[0].uuid) == "":
+                        print("[deserialize] Unmarshal, receive invalid uuid: ", uuid)
+                    else:
+                        pass
+                        # TODO: fix this
+                        # def oldFunction(oldTrace):
 
-                            s.SetByContextMeta(Context, trace)
+                        #m.FI_Trace.clear()
+                        # m.FI_Trace = None
 
-                    elif name == "Message_Response":
-                        if len(trace.records) == 0:
-                            print("[RELOAD] Unmarshal, receive empty trace")
-                        elif trace.records[0].uuid == "":
-                            print("[RELOAD] Unmarshal, receive invalid uuid: ", uuid)
-                        else:
-                            # def oldFunction(oldTrace):
-
-                            m.FI_Trace = None
-
-                    print("DESERIALIZE Global Store:", s.GetStore())
-
+                print("DESERIALIZE Global Store:", s.GetStore())
     # 3mb end
 
     return m
