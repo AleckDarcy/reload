@@ -427,7 +427,6 @@ def _take_response_from_response_iterator(rpc_event, state, response_iterator):
 
 
 def _serialize_response(rpc_event, state, response, response_serializer, Context = None):
-    # 3mb update with context
     serialized_response = _common.serialize(response, response_serializer, Context)
     if serialized_response is None:
         with state.condition:
@@ -486,113 +485,15 @@ def _status(rpc_event, state, serialized_response):
             state.statused = True
             state.due.add(_SEND_STATUS_FROM_SERVER_TOKEN)
 
-# reload -> maintain the context
-# propagate context along with FI_Trace
 def _unary_response_in_pool(rpc_event, state, behavior, argument_thunk,
                             request_deserializer, response_serializer, Context = None):
     argument = argument_thunk()
 
     if argument is not None:
-        # 3mb start
-        trace = None
-
-        meta = {}
-        crashed = False
-
-        #print("[RELOAD] request:", argument, argument_thunk, request_deserializer, response_serializer)
-        try:
-            if hasattr(argument, 'FI_Trace'):
-                trace = argument.FI_Trace
-
-                #print("[RELOAD] handleUnary, start request FI trace:", trace)
-                if trace.id:
-                    #print("[RELOAD] handleUnary, start request FI trace id:", trace.id)
-                    if len(trace.records) == 1:
-                        #meta["hasTrace"] = True
-                        meta["traceID"] = str(trace.id)
-                        meta["name"] = str(trace.records[0].message_name)
-                        meta["uuid"] = str(trace.records[0].uuid)
-
-                        #trace.records[0].type = 2
-                        #trace.records[0].service = serviceUUID
-
-                        #print("[RELOAD] Meta:", meta)
-
-                        rlfis = trace.rlfis
-                        tfis = trace.tfis
-                        if rlfis:
-                            for rlfi in rlfis:
-                                if rlfi.name == meta["name"]:
-                                    if rlfi.type == "FaultCrash":  # case 1
-                                        print("[RELOAD] handleUnary, error FI: RLFI crash triggered")
-                                        crashed = True
-                                        break
-                                    elif rlfi.type == "FaultDelay":  # case 2
-                                        print("[RELOAD] handleUnary, error FI: RLFI delay triggered")
-                                        time.sleep(rlfi.delay)
-                                        break
-                        elif tfis:
-                            for tfi in tfis:
-                                if tfi.name == meta["name"]:
-                                    print("[RELOAD] handleUnary, tfi.name == meta.Name:", tfi.name == meta["name"])
-                                    trigger = True
-                                    for after in tfi.after:
-                                        print("[RELOAD] handleUnary, after:", after)
-                                        if after.name == meta["name"]:
-                                            after.already += 1
-                                            if after.already <= after.times:
-                                                print("[RELOAD] handleUnary, do not trigger 1")
-                                                trigger = False
-                                                break
-                                        elif after.already < after.times:
-                                            print("[RELOAD] handleUnary, do not trigger 2")
-                                            trigger = False
-                                            break
-
-                                    if trigger:
-                                        if tfi.type == "FaultCrash":  # 1
-                                            print("[RELOAD] handleUnary, error FI: TFI crash triggered")
-                                            crashed = True
-                                        elif tfi.type == "FaultDelay":  # 2
-                                            print("[RELOAD] handleUnary, error FI: TFI delay triggered")
-                                            time.sleep(tfi.delay)
-                                        break
-                    else:
-                        print("[RELOAD] handleUnary, records length must be 1")
-                else:
-                    print("[RELOAD] handleUnary, Unmarshal, no trace")
-        except (RuntimeError, TypeError, NameError):
-            t, value, traceback = sys.exc_info()
-            print(ValueError, ("You did something wrong!", t, value), traceback)
-
-        # TODO: fix this
-        if crashed:
-            batch = {
-                [grpc.opType.RECV_INITIAL_METADATA]: True,
-                [grpc.opType.RECV_MESSAGE]: True,
-                [grpc.opType.SEND_CLOSE_FROM_CLIENT]: True,
-            }
-
-            # call.start_server_batch(batch, _send_status_from_server(state, _SEND_STATUS_FROM_SERVER_TOKEN))
-            return
-        # 3mb end
-
         response, proceed = _call_behavior(rpc_event, state, behavior, argument, request_deserializer)
         if proceed:
-            # 3mb start
-            if meta.has_key("traceID"):
-                #print("[RELOAD] has key traceID")
-                record = message_pb2.Record(type=1, service=serviceUUID, message_name=meta["name"],
-                                            timestamp=int(time.time() * 1e9), uuid=meta["uuid"])
-                trace.records.extend([record])
-                #print("[RELOAD] after extend", trace, response, response.FI_Trace, type(response.FI_Trace), type(trace))
-                response.FI_Trace.CopyFrom(trace)
-
-                print("[RELOAD] end Response FI_trace:", response.FI_Trace, Context)
-            # 3mb end
-
             serialized_response = _serialize_response(
-                rpc_event, state, response, response_serializer, meta)
+                rpc_event, state, response, response_serializer, Context)
             if serialized_response is not None:
                 _status(rpc_event, state, serialized_response)
 
@@ -624,7 +525,7 @@ def _stream_response_in_pool(rpc_event, state, behavior, argument_thunk,
                 else:
                     break
 
-
+# TODO: future-> propagate context on other three paths as well (unary stream, stream unary, stream stream)
 def _handle_unary_unary(rpc_event, state, method_handler, thread_pool):
     context = {}
     unary_request = _unary_request(rpc_event, state,
