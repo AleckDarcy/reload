@@ -1,6 +1,7 @@
 package org.apache.zookeeper.server;
 
 import org.apache.jute.Record;
+import org.apache.zookeeper.proto.NullPointerResponse;
 import org.apache.zookeeper.server.quorum.QuorumPacket;
 import org.apache.zookeeper.trace.TMB_Event;
 import org.apache.zookeeper.trace.TMB_Helper;
@@ -8,6 +9,7 @@ import org.apache.zookeeper.trace.TMB_Store;
 import org.apache.zookeeper.trace.TMB_Trace;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -48,6 +50,43 @@ public class TMB_Utils {
         }
 
         TMB_Helper.printf(3, "[%s] %s, next %s, request-%d %s\n", quorumName, processorName, nextName, request.hashCode(), requestStr);
+    }
+
+    public static byte[] commitHelper(Request request, String messageName, String quorumName) {
+        return ackCommitHelper(request, messageName, quorumName);
+    }
+
+    public static byte[] ackHelper(Request request, String messageName, String quorumName) {
+        return ackCommitHelper(request, messageName, quorumName);
+    }
+
+    private static byte[] ackCommitHelper(Request request, String messageName, String quorumName) {
+        byte[] data = null;
+        if (request != null) {
+            Record txn = request.getTxn();
+            if (txn != null) {
+                Record record = new NullPointerResponse(messageName);
+                TMB_Trace trace = txn.getTrace();
+                if (trace != null) {
+                    record.setTrace(trace);
+                    record = TMB_Utils.appendEvent(record, TMB_Event.RECORD_SEND, messageName, quorumName);
+
+                    try {
+                        ByteArrayOutputStream bao = TMB_Helper.serialize(record);
+                        data = bao.toByteArray();
+                    } catch (IOException e) {
+                    }
+                }
+            }
+        }
+
+        return data;
+    }
+
+    public static Record pRequestHelper(Record record, Record txn) {
+        txn.setTrace(record.getTrace());
+
+        return txn;
     }
 
     public static Record appendEvent(Record record, int type, String messageName, String service) {

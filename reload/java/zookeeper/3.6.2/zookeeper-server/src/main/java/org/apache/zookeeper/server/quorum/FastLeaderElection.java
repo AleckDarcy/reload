@@ -28,8 +28,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.apache.jute.BinaryOutputArchive;
-import org.apache.jute.OutputArchive;
 import org.apache.zookeeper.common.Time;
 import org.apache.zookeeper.jmx.MBeanRegistry;
 import org.apache.zookeeper.server.ZooKeeperThread;
@@ -190,7 +188,7 @@ public class FastLeaderElection implements Election {
         }
 
         ToSend(mType type, long leader, long zxid, long electionEpoch, ServerState state, long sid, long peerEpoch, byte[] configData, String name, String uuid, int quorumId) { // 3MileBeach
-//        ToSend(mType type, long leader, long zxid, long electionEpoch, ServerState state, long sid, long peerEpoch, byte[] configData) {
+        // ToSend(mType type, long leader, long zxid, long electionEpoch, ServerState state, long sid, long peerEpoch, byte[] configData) {
 
             this.leader = leader;
             this.zxid = zxid;
@@ -204,9 +202,7 @@ public class FastLeaderElection implements Election {
             this.trace = new TMB_Trace();
             this.name = name;
             this.uuid = uuid;
-
-//            TMB_Helper.printf("[quorum-%d] new ToSend: %s\n", quorumId, this.toJSON());
-//            new Exception().printStackTrace();
+            // TMB_Helper.printf("[quorum-%d] new ToSend: %s\n", quorumId, this.toJSON());
             // 3MileBeach ends
         }
 
@@ -293,7 +289,7 @@ public class FastLeaderElection implements Election {
             QuorumCnxManager manager;
 
             WorkerReceiver(QuorumPeer self, QuorumCnxManager manager) { // 3MileBeach
-//            WorkerReceiver(QuorumCnxManager manager) {
+            // WorkerReceiver(QuorumCnxManager manager) {
                 super("WorkerReceiver");
                 this.quorumId = self.hashCode(); // 3MileBeach
                 this.stop = false;
@@ -379,7 +375,7 @@ public class FastLeaderElection implements Election {
                                 // 3MileBeach begins
                                 if (response.buffer.remaining() > 4) {
                                     int traceLength = response.buffer.getInt();
-//                                    TMB_Helper.println("trace length: " + traceLength);
+                                    // TMB_Helper.println("trace length: " + traceLength);
                                     if (response.buffer.remaining() >= traceLength) {
                                         byte[] bytes = new byte[traceLength];
                                         response.buffer.get(bytes);
@@ -393,8 +389,7 @@ public class FastLeaderElection implements Election {
                                         List<TMB_Event> events = trace.getEvents();
                                         int eventSize = events.size();
                                         if (eventSize != 0) {
-                                            TMB_Helper.printf("[quorum-%d] event size: %d\n", quorumId, eventSize);
-
+                                            // TMB_Helper.printf("[quorum-%d] event size: %d\n", quorumId, eventSize);
                                             TMB_Event lastEvent = events.get(eventSize - 1);
                                             String name = lastEvent.getMessage_name();
                                             uuid = lastEvent.getUuid();
@@ -404,9 +399,7 @@ public class FastLeaderElection implements Election {
                                                     name,
                                                     uuid,
                                                     String.format("quorum-%d", quorumId));
-
-                                            TMB_Helper.printf("[quorum-%d] new event: %s\n", quorumId, event.toJSON());
-
+                                            // TMB_Helper.printf("[quorum-%d] new event: %s\n", quorumId, event.toJSON());
                                             events.add(event);
                                             trace.setEvents(events);
 
@@ -414,7 +407,7 @@ public class FastLeaderElection implements Election {
                                             n.trace = trace;
                                         }
 
-                                        TMB_Helper.printf("[quorum-%d] response contains trace: %s\n", quorumId, trace.toJSON());
+                                        // TMB_Helper.printf("[quorum-%d] response contains trace: %s\n", quorumId, trace.toJSON());
                                     } else {
                                         TMB_Helper.printf("[quorum-%d] TODO\n", quorumId);
                                     }
@@ -461,7 +454,7 @@ public class FastLeaderElection implements Election {
                             TMB_Helper.printf("[quorum-%d] TODO\n", quorumId); // 3MileBeach
                             continue;
                         }
-//                        TMB_Helper.printf("[quorum-%d] receives: %s\n", quorumId, n.toJSON()); // 3MileBeach
+                        // TMB_Helper.printf("[quorum-%d] receives: %s\n", quorumId, n.toJSON()); // 3MileBeach
 
                         /*
                          * If it is from a non-voting server (such as an observer or
@@ -541,9 +534,7 @@ public class FastLeaderElection implements Election {
 
                             if (self.getPeerState() == QuorumPeer.ServerState.LOOKING) {
                                 recvqueue.offer(n);
-
-                                TMB_Helper.printf("[quorum-%d] looking receives: %s\n", quorumId, n.toJSON());
-
+                                // TMB_Helper.printf("[quorum-%d] looking receives: %s\n", quorumId, n.toJSON()); // 3MileBeach
                                 /*
                                  * Send a notification back if the peer that sent this
                                  * message is also looking and its logical clock is
@@ -640,7 +631,7 @@ public class FastLeaderElection implements Election {
             QuorumCnxManager manager;
 
             WorkerSender(QuorumPeer self, QuorumCnxManager manager) { // 3MileBeach
-//            WorkerSender(QuorumCnxManager manager) {
+            // WorkerSender(QuorumCnxManager manager) {
                 super("WorkerSender");
                 this.self = self; // 3MileBeach
                 this.stop = false;
@@ -673,7 +664,7 @@ public class FastLeaderElection implements Election {
                 // 3MileBeach begins
                 int quorumId = self.hashCode();
                 TMB_Trace trace = m.trace;
-                TMB_Helper.printf("[quorum-%d] process ToSend: %s\n", quorumId, m.toJSON());
+                // TMB_Helper.printf("[quorum-%d] process ToSend: %s\n", quorumId, m.toJSON());
                 byte[] bytes = new byte[0];
 
                 if (trace.getId() != 0) {
@@ -685,7 +676,7 @@ public class FastLeaderElection implements Election {
                                 TMB_Helper.UUID(),
                                 String.format("quorum-%d", quorumId));
 
-                        TMB_Helper.printf("[quorum-%d] new event: %s\n", quorumId, event.toJSON());
+                        // TMB_Helper.printf("[quorum-%d] new event: %s\n", quorumId, event.toJSON());
 
                         List<TMB_Event> events = m.trace.getEvents();
                         List<TMB_Event> events_ = new ArrayList<>(events.size() + 1);
@@ -697,18 +688,16 @@ public class FastLeaderElection implements Election {
                         TMB_Store.getInstance().quorumSetTrace(quorumId, m.trace); // todo
                         ByteArrayOutputStream os = TMB_Helper.serialize(m.trace);
 
-                        TMB_Helper.printf("[quorum-%d] add send event: %s\n", quorumId, m.toJSON());
-                        TMB_Helper.printf("[quorum-%d] add send trace: %d, %s\n", quorumId, m.trace.getEvents().size(), m.trace.toJSON());
+                        // TMB_Helper.printf("[quorum-%d] add send event: %s\n", quorumId, m.toJSON());
+                        // TMB_Helper.printf("[quorum-%d] add send trace: %d, %s\n", quorumId, m.trace.getEvents().size(), m.trace.toJSON());
                         bytes = os.toByteArray();
                     } catch (IOException e) {
 
                     }
                 }
-
                 ByteBuffer requestBuffer = buildMsg(m.state.ordinal(), m.leader, m.zxid, m.electionEpoch, m.peerEpoch, m.configData, bytes);
                 // 3MileBeach ends
-
-//                ByteBuffer requestBuffer = buildMsg(m.state.ordinal(), m.leader, m.zxid, m.electionEpoch, m.peerEpoch, m.configData);
+                // ByteBuffer requestBuffer = buildMsg(m.state.ordinal(), m.leader, m.zxid, m.electionEpoch, m.peerEpoch, m.configData);
 
                 manager.toSend(m.sid, requestBuffer);
 
@@ -729,17 +718,17 @@ public class FastLeaderElection implements Election {
          * @param manager   Connection manager
          */
         Messenger(QuorumPeer self, QuorumCnxManager manager) { // 3MileBeach
-//        Messenger(QuorumCnxManager manager) {
+        // Messenger(QuorumCnxManager manager) {
             this.self = self; // 3MileBeach
 
             this.ws = new WorkerSender(self, manager); // 3MileBeach
-//            this.ws = new WorkerSender(manager);
+            // this.ws = new WorkerSender(manager);
 
             this.wsThread = new Thread(this.ws, "WorkerSender[myid=" + self.getId() + "]");
             this.wsThread.setDaemon(true);
 
             this.wr = new WorkerReceiver(self, manager); // 3MileBeach
-//            this.wr = new WorkerReceiver(manager);
+            // this.wr = new WorkerReceiver(manager);
 
             this.wrThread = new Thread(this.wr, "WorkerReceiver[myid=" + self.getId() + "]");
             this.wrThread.setDaemon(true);
@@ -798,7 +787,7 @@ public class FastLeaderElection implements Election {
     }
 
     static ByteBuffer buildMsg(int state, long leader, long zxid, long electionEpoch, long epoch, byte[] configData, byte[] trace) { // 3MileBeach
-//    static ByteBuffer buildMsg(int state, long leader, long zxid, long electionEpoch, long epoch, byte[] configData) {
+    // static ByteBuffer buildMsg(int state, long leader, long zxid, long electionEpoch, long epoch, byte[] configData) {
         //  3MileBeach begins
         int length = 44 + configData.length;
         if (trace.length != 0) {
@@ -806,7 +795,7 @@ public class FastLeaderElection implements Election {
         }
         byte[] requestBytes = new byte[length];
         //  3MileBeach ends
-//        byte[] requestBytes = new byte[44 + configData.length];
+        // byte[] requestBytes = new byte[44 + configData.length];
         ByteBuffer requestBuffer = ByteBuffer.wrap(requestBytes);
 
         /*
@@ -846,8 +835,7 @@ public class FastLeaderElection implements Election {
         this.manager = manager;
         starter(self, manager);
 
-        // TODO: 3MileBeach
-        TMB_Helper.printf("[quorum-%d] new FastLeaderElection\n", self.hashCode());
+        // TMB_Helper.printf("[quorum-%d] new FastLeaderElection\n", self.hashCode()); // 3MileBeach
     }
 
     /**
@@ -869,7 +857,7 @@ public class FastLeaderElection implements Election {
         sendqueue = new LinkedBlockingQueue<ToSend>();
         recvqueue = new LinkedBlockingQueue<Notification>();
         this.messenger = new Messenger(self, manager); // 3MileBeach
-//        this.messenger = new Messenger(manager);
+        // this.messenger = new Messenger(manager);
     }
 
     /**
@@ -910,7 +898,7 @@ public class FastLeaderElection implements Election {
      * Send notifications to all peers upon a change in our vote
      */
     private void sendNotifications(String name, TMB_Trace trace) { // 3MileBeach
-//    private void sendNotifications() {
+    // private void sendNotifications() {
         for (long sid : self.getCurrentAndNextConfigVoters()) {
             QuorumVerifier qv = self.getQuorumVerifier();
             ToSend notmsg = new ToSend(
@@ -927,7 +915,7 @@ public class FastLeaderElection implements Election {
                 quorumId); // 3MileBeach
 
             notmsg.trace = trace.copy(); // 3MileBeach
-            TMB_Helper.printf("[quorum-%d] sends notification, ToSend: %s\n", quorumId, notmsg.toJSON()); // 3MileBeach
+            // TMB_Helper.printf("[quorum-%d] sends notification, ToSend: %s\n", quorumId, notmsg.toJSON()); // 3MileBeach
 
             LOG.debug(
                 "Sending Notification: {} (n.leader), 0x{} (n.zxid), 0x{} (n.round), {} (recipient),"
@@ -1178,12 +1166,11 @@ public class FastLeaderElection implements Election {
 
             // 3MileBeach begins
             TMB_Trace tmpTrace = new TMB_Trace(TMB_Helper.newTraceId(), 0, new ArrayList<>(), new ArrayList<>());
-//            TMB_Store.getInstance().quorumSetTrace(quorumId, tmpTrace);
+            // TMB_Store.getInstance().quorumSetTrace(quorumId, tmpTrace);
             sendNotifications("LeaderElection(New)", tmpTrace);
             TMB_Helper.printf("[quorum-%d] start leader election\n", quorumId);
             // 3MileBeach ends
-
-//            sendNotifications();
+            // sendNotifications();
 
             SyncedLearnerTracker voteSet;
 
@@ -1205,7 +1192,7 @@ public class FastLeaderElection implements Election {
                 if (n == null) {
                     if (manager.haveDelivered()) {
                         sendNotifications("LeaderElection(More)", tmpTrace); // 3MileBeach
-//                        sendNotifications();
+                        // sendNotifications();
                     } else {
                         manager.connectAll();
                     }
@@ -1217,8 +1204,7 @@ public class FastLeaderElection implements Election {
                     notTimeout = Math.min(tmpTimeOut, maxNotificationInterval);
                     LOG.info("Notification time out: {}", notTimeout);
                 } else if (validVoter(n.sid) && validVoter(n.leader)) {
-                    TMB_Helper.printf("[quorum-%d] receive notification: %s\n", quorumId, n.toJSON()); // 3MileBeach
-
+                    // TMB_Helper.printf("[quorum-%d] receive notification: %s\n", quorumId, n.toJSON()); // 3MileBeach
                     /*
                      * Only proceed if the vote comes from a replica in the current or next
                      * voting view for a replica in the current or next voting view.
@@ -1243,7 +1229,7 @@ public class FastLeaderElection implements Election {
                                 updateProposal(getInitId(), getInitLastLoggedZxid(), getPeerEpoch());
                             }
                             sendNotifications("LeaderElection(VoteFromNext)", n.trace); // 3MileBeach
-//                            sendNotifications();
+                            // sendNotifications();
                         } else if (n.electionEpoch < logicalclock.get()) {
                                 LOG.debug(
                                     "Notification election epoch is smaller than logicalclock. n.electionEpoch = 0x{}, logicalclock=0x{}",
@@ -1253,7 +1239,7 @@ public class FastLeaderElection implements Election {
                         } else if (totalOrderPredicate(n.leader, n.zxid, n.peerEpoch, proposedLeader, proposedZxid, proposedEpoch)) {
                             updateProposal(n.leader, n.zxid, n.peerEpoch);
                             sendNotifications("LeaderElection(Vote)", n.trace); // 3MileBeach
-//                            sendNotifications();
+                            // sendNotifications();
                         }
 
                         LOG.debug(

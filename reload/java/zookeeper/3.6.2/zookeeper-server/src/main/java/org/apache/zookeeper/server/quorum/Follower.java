@@ -25,6 +25,7 @@ import java.util.Map;
 import org.apache.jute.Record;
 import org.apache.zookeeper.ZooDefs.OpCode;
 import org.apache.zookeeper.common.Time;
+import org.apache.zookeeper.proto.NullPointerResponse;
 import org.apache.zookeeper.server.Request;
 import org.apache.zookeeper.server.ServerMetrics;
 import org.apache.zookeeper.server.TMB_Utils;
@@ -49,12 +50,16 @@ public class Follower extends Learner {
     final FollowerZooKeeperServer fzk;
 
     ObserverMaster om;
+
+    int quorumId; // 3MileBeach
     String quorumName; // 3MileBeach
 
     Follower(QuorumPeer self, FollowerZooKeeperServer zk) {
         this.self = self;
         this.zk = zk;
         this.fzk = zk;
+
+        this.quorumId = self.hashCode(); // 3MileBeach
         this.quorumName = String.format("quorum-%d", self.hashCode()); // 3MileBeach
     }
 
@@ -208,7 +213,9 @@ public class Follower extends Learner {
             }
             break;
         case Leader.COMMIT:
-            TMB_Helper.printf("[%s] Follower processes commit\n", quorumName); // 3MileBeach
+            // TMB_Helper.printf("[%s] Follower processes commit\n", quorumName); // 3MileBeach
+            TMB_Utils.quorumCollectTraceFromQuorumPacket(quorumId, quorumName, new NullPointerResponse(), qp); // 3MileBeach
+
             ServerMetrics.getMetrics().LEARNER_COMMIT_RECEIVED_COUNT.add(1);
             fzk.commit(qp.getZxid());
             if (om != null) {

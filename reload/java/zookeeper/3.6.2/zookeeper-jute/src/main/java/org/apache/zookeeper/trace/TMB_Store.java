@@ -9,20 +9,18 @@ import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class TMB_Store {
-    private static TMB_Store instance = null;
+    private static TMB_Store instance = new TMB_Store();
 
     public static int REQUESTER = 1;
     public static int RESPONSER = 2;
 
+    private TMB_Store() {
+        this.clientPluginTraces = new HashMap<>();
+        this.quorumTraces = new HashMap<>();
+        this.quorumLock = new ReentrantReadWriteLock();
+    }
+
     public static TMB_Store getInstance() {
-        if (instance == null) {
-            instance = new TMB_Store();
-
-            instance.clientPluginTraces = new HashMap<>();
-            instance.quorumTraces = new HashMap<>();
-            instance.quorumLock = new ReentrantReadWriteLock();
-        }
-
         return instance;
     }
 
@@ -132,6 +130,9 @@ public class TMB_Store {
     }
 
     public void quorumSetTrace(long quorumId, TMB_Trace trace_) {
+        if (trace_.getId() == 0) {
+            return;
+        }
         QuorumTraces quorumTraces = getQuorumTraces(quorumId);
         quorumTraces.setTrace(trace_);
     }

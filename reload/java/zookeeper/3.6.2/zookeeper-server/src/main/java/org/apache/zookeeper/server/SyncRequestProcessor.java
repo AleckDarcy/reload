@@ -197,7 +197,7 @@ public class SyncRequestProcessor extends ZooKeeperCriticalThread implements Req
 
                 // track the number of records written to the log
                 if (zks.getZKDatabase().append(si)) {
-                    TMB_Utils.printRequestForProcessor("SyncRequestProcessor starts", quorumName, nextProcessor, si); // 3MileBeach
+                    // TMB_Utils.printRequestForProcessor("SyncRequestProcessor starts", quorumName, nextProcessor, si); // 3MileBeach
 
                     if (shouldSnapshot()) {
                         resetSnapshotStats();
@@ -241,7 +241,7 @@ public class SyncRequestProcessor extends ZooKeeperCriticalThread implements Req
                 }
                 ServerMetrics.getMetrics().SYNC_PROCESS_TIME.add(Time.currentElapsedTime() - startProcessTime);
 
-                TMB_Helper.printf("[%s] SyncRequestProcessor ends\n", quorumName); // 3MileBeach
+                // TMB_Helper.printf("[%s] SyncRequestProcessor ends\n", quorumName); // 3MileBeach
             }
         } catch (Throwable t) {
             handleException(this.getName(), t);
@@ -267,7 +267,7 @@ public class SyncRequestProcessor extends ZooKeeperCriticalThread implements Req
                 final Request i = this.toFlush.remove();
                 long latency = Time.currentElapsedTime() - i.syncQueueStartTime;
                 ServerMetrics.getMetrics().SYNC_PROCESSOR_QUEUE_AND_FLUSH_TIME.add(latency);
-                TMB_Helper.printf("[%s] SyncRequestProcessor flush\n", quorumName); // 3MileBeach
+                // TMB_Helper.printf("[%s] SyncRequestProcessor flush\n", quorumName); // 3MileBeach
                 this.nextProcessor.processRequest(i);
             }
             if (this.nextProcessor instanceof Flushable) {

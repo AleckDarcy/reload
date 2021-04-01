@@ -9,7 +9,16 @@ reload/java/zookeeper/3.6.2/zookeeper-server/src/main/java/org/apache/zookeeper/
             Deserializes request, appends event to trace, serializes request
             Modified cases:
                 OpCode.create
+                OpCode.create2
+                OpCode.createTTL
+                OpCode.createContainer
+                OpCode.delete
+                OpCode.deleteContainer
                 OpCode.setData
+                OpCode.reconfig
+                OpCode.setACL
+                OpCode.multi
+                OpCode.check
 
 reload/java/zookeeper/3.6.2/zookeeper-server/src/main/java/org/apache/zookeeper/server/quorum/SendAckRequestProcessor.java
     SendAckRequestProcessor::processRequest()
@@ -24,8 +33,13 @@ reload/java/zookeeper/3.6.2/zookeeper-server/src/main/java/org/apache/zookeeper/
             Receives messages from peers
         3MileBeach:
             Modified cases: Leader.ACK
-
+            
 reload/java/zookeeper/3.6.2/zookeeper-server/src/main/java/org/apache/zookeeper/server/quorum/Leader.java
+    Leader::tryToCommit()
+        Org:
+            Leader sends COMMIT messages to followers without data
+        3MileBeach:
+            Add data to COMMIT messages
     Leader::sendPacket()
         Org:
             Sends packets to followers
@@ -40,4 +54,13 @@ reload/java/zookeeper/3.6.2/zookeeper-server/src/main/java/org/apache/zookeeper/
             Sets trace to Record
             Modified cases:
                 OpCode.create
+                OpCode.create2
+                OpCode.createTTL
+                OpCode.createContainer
+                OpCode.delete
+                OpCode.deleteContainer
                 OpCode.setData
+                OpCode.reconfig
+                OpCode.setACL
+                OpCode.createSession
+                OpCode.check

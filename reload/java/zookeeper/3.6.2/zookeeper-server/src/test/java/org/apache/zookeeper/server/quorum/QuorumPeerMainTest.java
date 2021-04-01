@@ -231,10 +231,10 @@ public class QuorumPeerMainTest extends QuorumPeerTestBase {
         TMB_Trace trace = null;
         ZooKeeper client = null;
 
-        client = zk[leader];
-        client.create("/zk" + leader, "zk".getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-        trace = client.TMBClientFinalize();
-        TMB_Helper.printf("client-%d capture trace: %s\n", client.hashCode(), trace.toJSON());
+//        client = zk[leader];
+//        client.create("/zk" + leader, "zk".getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+//        trace = client.TMBClientFinalize();
+//        TMB_Helper.printf("client-%d capture trace: %s\n", client.hashCode(), trace.toJSON());
         TMB_Helper.println("");
         TMB_Helper.println("");
 
@@ -247,10 +247,10 @@ public class QuorumPeerMainTest extends QuorumPeerTestBase {
                 trace = client.TMBClientFinalize();
                 TMB_Helper.printf("client-%d capture trace: %s\n", client.hashCode(), trace.toJSON());
 
-                client.TMBClientInitialize(new TMB_Trace(TMB_Helper.newTraceId(), 0, new ArrayList<>(), new ArrayList<>()));
-                client.setData(path, "version-1".getBytes(), 0);
-                trace = client.TMBClientFinalize();
-                TMB_Helper.printf("client-%d capture trace: %s\n", client.hashCode(), trace.toJSON());
+//                client.TMBClientInitialize(new TMB_Trace(TMB_Helper.newTraceId(), 0, new ArrayList<>(), new ArrayList<>()));
+//                client.setData(path, "version-1".getBytes(), 0);
+//                trace = client.TMBClientFinalize();
+//                TMB_Helper.printf("client-%d capture trace: %s\n", client.hashCode(), trace.toJSON());
 
                 break;
             }

@@ -52,7 +52,6 @@ import org.apache.zookeeper.server.quorum.QuorumPeerConfig;
 import org.apache.zookeeper.server.quorum.QuorumPeerConfig.ConfigException;
 import org.apache.zookeeper.server.quorum.flexible.QuorumMaj;
 import org.apache.zookeeper.server.quorum.flexible.QuorumVerifier;
-import org.apache.zookeeper.trace.TMB_Helper;
 import org.apache.zookeeper.txn.CheckVersionTxn;
 import org.apache.zookeeper.txn.CloseSessionTxn;
 import org.apache.zookeeper.txn.CreateContainerTxn;
@@ -350,7 +349,8 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
                 throw new KeeperException.BadVersionException(path);
             }
             ChangeRecord parentRecord = getRecordForPath(parentPath);
-            request.setTxn(new DeleteTxn(path));
+            request.setTxn(TMB_Utils.pRequestHelper(record, new DeleteTxn(path))); // 3MileBeach
+            // request.setTxn(new DeleteTxn(path));
             parentRecord = parentRecord.duplicate(request.getHdr().getZxid());
             parentRecord.childCount--;
             parentRecord.stat.setPzxid(request.getHdr().getZxid());
@@ -379,7 +379,8 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
             if (nodeRecord.childCount > 0) {
                 throw new KeeperException.NotEmptyException(path);
             }
-            request.setTxn(new DeleteTxn(path));
+            request.setTxn(TMB_Utils.pRequestHelper(record, new DeleteTxn(path))); // 3MileBeach
+            // request.setTxn(new DeleteTxn(path));
             parentRecord = parentRecord.duplicate(request.getHdr().getZxid());
             parentRecord.childCount--;
             parentRecord.stat.setPzxid(request.getHdr().getZxid());
@@ -404,15 +405,8 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
             zks.checkACL(request.cnxn, nodeRecord.acl, ZooDefs.Perms.WRITE, request.authInfo, path, null);
             int newVersion = checkAndIncVersion(nodeRecord.stat.getVersion(), setDataRequest.getVersion(), path);
 
-            // 3MileBeach starts
-            SetDataTxn txn = new SetDataTxn(path, setDataRequest.getData(), newVersion);
-            TMB_Helper.printf("shshshshsh %s\n", record.getTrace());
-            txn.setTrace(record.getTrace());
-            TMB_Helper.printf("shshshshsh %s %s\n", record, txn);
-            request.setTxn(txn);
-            // 3MileBeach ends
-
-//            request.setTxn(new SetDataTxn(path, setDataRequest.getData(), newVersion));
+            request.setTxn(TMB_Utils.pRequestHelper(record, new SetDataTxn(path, setDataRequest.getData(), newVersion))); // 3MileBeach
+            // request.setTxn(new SetDataTxn(path, setDataRequest.getData(), newVersion));
             nodeRecord = nodeRecord.duplicate(request.getHdr().getZxid());
             nodeRecord.stat.setVersion(newVersion);
             nodeRecord.stat.setMtime(request.getHdr().getTime());
@@ -552,7 +546,8 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
             nodeRecord = getRecordForPath(ZooDefs.CONFIG_NODE);
             zks.checkACL(request.cnxn, nodeRecord.acl, ZooDefs.Perms.WRITE, request.authInfo, null, null);
             SetDataTxn setDataTxn = new SetDataTxn(ZooDefs.CONFIG_NODE, request.qv.toString().getBytes(), -1);
-            request.setTxn(setDataTxn);
+            request.setTxn(TMB_Utils.pRequestHelper(record, setDataTxn)); // 3MileBeach
+            // request.setTxn(setDataTxn);
             nodeRecord = nodeRecord.duplicate(request.getHdr().getZxid());
             nodeRecord.stat.setVersion(-1);
             nodeRecord.stat.setMtime(request.getHdr().getTime());
@@ -578,7 +573,8 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
             nodeRecord = getRecordForPath(path);
             zks.checkACL(request.cnxn, nodeRecord.acl, ZooDefs.Perms.ADMIN, request.authInfo, path, listACL);
             newVersion = checkAndIncVersion(nodeRecord.stat.getAversion(), setAclRequest.getVersion(), path);
-            request.setTxn(new SetACLTxn(path, listACL, newVersion));
+            request.setTxn(TMB_Utils.pRequestHelper(record, new SetACLTxn(path, listACL, newVersion)));
+            // request.setTxn(new SetACLTxn(path, listACL, newVersion));
             nodeRecord = nodeRecord.duplicate(request.getHdr().getZxid());
             nodeRecord.stat.setAversion(newVersion);
             nodeRecord.precalculatedDigest = precalculateDigest(
@@ -648,9 +644,8 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
             validatePath(path, request.sessionId);
             nodeRecord = getRecordForPath(path);
             zks.checkACL(request.cnxn, nodeRecord.acl, ZooDefs.Perms.READ, request.authInfo, path, null);
-            request.setTxn(new CheckVersionTxn(
-                path,
-                checkAndIncVersion(nodeRecord.stat.getVersion(), checkVersionRequest.getVersion(), path)));
+            request.setTxn(TMB_Utils.pRequestHelper(record, new CheckVersionTxn(path, checkAndIncVersion(nodeRecord.stat.getVersion(), checkVersionRequest.getVersion(), path)))); // 3MileBeach
+            // request.setTxn(new CheckVersionTxn(path, checkAndIncVersion(nodeRecord.stat.getVersion(), checkVersionRequest.getVersion(), path)));
             break;
         default:
             LOG.warn("unknown type {}", type);
@@ -715,16 +710,14 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
         }
         int newCversion = parentRecord.stat.getCversion() + 1;
         if (type == OpCode.createContainer) {
-            request.setTxn(new CreateContainerTxn(path, data, listACL, newCversion));
+            request.setTxn(TMB_Utils.pRequestHelper(record, new CreateContainerTxn(path, data, listACL, newCversion))); // 3MileBeach
+            // request.setTxn(new CreateContainerTxn(path, data, listACL, newCversion));
         } else if (type == OpCode.createTTL) {
-            request.setTxn(new CreateTTLTxn(path, data, listACL, newCversion, ttl));
+            request.setTxn(TMB_Utils.pRequestHelper(record, new CreateTTLTxn(path, data, listACL, newCversion, ttl))); // 3MileBeach
+            // request.setTxn(new CreateTTLTxn(path, data, listACL, newCversion, ttl));
         } else {
-            // 3MileBeach starts
-            CreateTxn txn = new CreateTxn(path, data, listACL, createMode.isEphemeral(), newCversion);
-            txn.setTrace(record.getTrace());
-            request.setTxn(txn);
-            // 3MileBeach ends
-//            request.setTxn(new CreateTxn(path, data, listACL, createMode.isEphemeral(), newCversion));
+            request.setTxn(TMB_Utils.pRequestHelper(record, new CreateTxn(path, data, listACL, createMode.isEphemeral(), newCversion))); // 3MileBeach
+            // request.setTxn(new CreateTxn(path, data, listACL, createMode.isEphemeral(), newCversion));
         }
 
         TxnHeader hdr = request.getHdr();
@@ -891,7 +884,8 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
                     }
                 }
 
-                request.setTxn(new MultiTxn(txns));
+                request.setTxn(TMB_Utils.pRequestHelper(multiRequest, new MultiTxn(txns))); // 3MileBeach
+                // request.setTxn(new MultiTxn(txns));
                 if (digestEnabled) {
                     setTxnDigest(request);
                 }
@@ -902,10 +896,11 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
             case OpCode.createSession:
             case OpCode.closeSession:
                 if (!request.isLocalSession()) {
-                    // TODO 3MileBeach
+                    // 3MileBeach begins TODO: not implemented
                     Record closeRequest = new NullPointerRequest("CloseRequest");
                     pRequest2Txn(request.type, zks.getNextZxid(), request, closeRequest, true);
-//                    pRequest2Txn(request.type, zks.getNextZxid(), request, null, true);
+                    // 3MileBeach ends
+                    // pRequest2Txn(request.type, zks.getNextZxid(), request, null, true);
                 }
                 break;
 

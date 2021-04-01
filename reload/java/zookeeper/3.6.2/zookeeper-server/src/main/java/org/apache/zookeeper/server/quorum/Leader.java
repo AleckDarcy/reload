@@ -508,7 +508,7 @@ public class Leader extends LearnerMaster {
 
                     BufferedInputStream is = new BufferedInputStream(socket.getInputStream());
                     LearnerHandler fh = new LearnerHandler(socket, is, Leader.this, self); // 3MileBeach
-//                    LearnerHandler fh = new LearnerHandler(socket, is, Leader.this);
+                    // LearnerHandler fh = new LearnerHandler(socket, is, Leader.this);
                     fh.start();
                 } catch (SocketException e) {
                     error = true;
@@ -948,7 +948,14 @@ public class Leader extends LearnerMaster {
             //turnOffFollowers();
         } else {
             p.request.logLatency(ServerMetrics.getMetrics().QUORUM_ACK_LATENCY);
-            commit(zxid);
+
+            // 3MileBeach starts
+            TMB_Helper.printf("[%s] let's commit! request %s\n", quorumName, p.request.getTxn());
+            byte[] data = TMB_Utils.commitHelper(p.request, "LeaderCommit", quorumName);
+            commit(zxid, data);
+            // 3MileBeach ends
+
+            // commit(zxid);
             inform(p);
         }
         zk.commitProcessor.commit(p.request);
@@ -973,7 +980,7 @@ public class Leader extends LearnerMaster {
     public synchronized void processAck(long sid, long zxid, SocketAddress followerAddr) {
         TMB_Helper.printf("[quorum-%d] Leader processAck starts\n", self.hashCode()); // 3MileBeach
         if (!allowedToCommit) {
-            TMB_Helper.printf("[quorum-%d] Leader processAck returns (!allowedToCommit)\n", self.hashCode()); // 3MileBeach
+            // TMB_Helper.printf("[quorum-%d] Leader processAck returns (!allowedToCommit)\n", self.hashCode()); // 3MileBeach
             return; // last op committed was a leader change - from now on
         }
         // the new leader should commit
@@ -982,7 +989,7 @@ public class Leader extends LearnerMaster {
             for (Proposal p : outstandingProposals.values()) {
                 long packetZxid = p.packet.getZxid();
                 LOG.trace("outstanding proposal: 0x{}", Long.toHexString(packetZxid));
-                TMB_Helper.printf("[quorum-%d] Leader processAck outstanding proposal: 0x%s\n", self.hashCode(), Long.toHexString(packetZxid)); // 3MileBeach
+                // TMB_Helper.printf("[quorum-%d] Leader processAck outstanding proposal: 0x%s\n", self.hashCode(), Long.toHexString(packetZxid)); // 3MileBeach
             }
             LOG.trace("outstanding proposals all");
         }
@@ -993,13 +1000,13 @@ public class Leader extends LearnerMaster {
              * the learner sends an ack back to the leader after it gets
              * UPTODATE, so we just ignore the message.
              */
-            TMB_Helper.printf("[quorum-%d] Leader processAck returns ((zxid & 0xffffffffL) == 0)\n", self.hashCode()); // 3MileBeach
+            // TMB_Helper.printf("[quorum-%d] Leader processAck returns ((zxid & 0xffffffffL) == 0)\n", self.hashCode()); // 3MileBeach
             return;
         }
 
         if (outstandingProposals.size() == 0) {
             LOG.debug("outstanding is 0");
-            TMB_Helper.printf("[quorum-%d] Leader processAck returns (outstanding is 0)\n", self.hashCode()); // 3MileBeach
+            // TMB_Helper.printf("[quorum-%d] Leader processAck returns (outstanding is 0)\n", self.hashCode()); // 3MileBeach
             return;
         }
         if (lastCommitted >= zxid) {
@@ -1008,19 +1015,19 @@ public class Leader extends LearnerMaster {
                 Long.toHexString(lastCommitted),
                 Long.toHexString(zxid));
             // The proposal has already been committed
-            TMB_Helper.printf("[quorum-%d] Leader processAck returns (already committed)\n", self.hashCode()); // 3MileBeach
+            // TMB_Helper.printf("[quorum-%d] Leader processAck returns (already committed)\n", self.hashCode()); // 3MileBeach
             return;
         }
         Proposal p = outstandingProposals.get(zxid);
         if (p == null) {
             LOG.warn("Trying to commit future proposal: zxid 0x{} from {}", Long.toHexString(zxid), followerAddr);
-            TMB_Helper.printf("[quorum-%d] Leader processAck returns (future proposal)\n", self.hashCode()); // 3MileBeach
+            // TMB_Helper.printf("[quorum-%d] Leader processAck returns (future proposal)\n", self.hashCode()); // 3MileBeach
             return;
         }
 
         if (ackLoggingFrequency > 0 && (zxid % ackLoggingFrequency == 0)) {
             p.request.logLatency(ServerMetrics.getMetrics().ACK_LATENCY, Long.toString(sid));
-            TMB_Helper.printf("[quorum-%d] Leader processAck logs latency %s\n", self.hashCode(), Long.toString(sid)); // 3MileBeach
+            // TMB_Helper.printf("[quorum-%d] Leader processAck logs latency %s\n", self.hashCode(), Long.toString(sid)); // 3MileBeach
         }
 
         p.addAck(sid);
@@ -1121,7 +1128,7 @@ public class Leader extends LearnerMaster {
                         return;
                     }
                 }
-                TMB_Helper.printf("[%s] ToBeAppliedRequestProcessor\n", quorumName); // 3MileBeach
+                // TMB_Helper.printf("[%s] ToBeAppliedRequestProcessor\n", quorumName); // 3MileBeach
                 LOG.error("Committed request not found on toBeApplied: {}", request);
             }
         }
@@ -1160,10 +1167,9 @@ public class Leader extends LearnerMaster {
                                 TMB_Event lastEvent = events.get(eventSize - 1);
                                 String uuid = lastEvent.getUuid();
 
+                                TMB_Helper.printf("[quorum-%d] Leader forwards to %d follower(s)\n", self.hashCode(), forwardingFollowers.size());
                                 int i = 0;
                                 for (LearnerHandler f : forwardingFollowers) {
-                                    TMB_Helper.printf("[quorum-%d] Leader forwards to follower 0x%d\n", self.hashCode(), f.sid);
-
                                     String uuid_ = String.format("%s-%04d", uuid, i);
 
                                     events.add(new TMB_Event(
@@ -1213,11 +1219,13 @@ public class Leader extends LearnerMaster {
      *
      * @param zxid
      */
-    public void commit(long zxid) {
+    public void commit(long zxid, byte[] data) { // 3MileBeach
+    // public void commit(long zxid) {
         synchronized (this) {
             lastCommitted = zxid;
         }
-        QuorumPacket qp = new QuorumPacket(Leader.COMMIT, zxid, null, null);
+        QuorumPacket qp = new QuorumPacket(Leader.COMMIT, zxid, data, null);
+        // QuorumPacket qp = new QuorumPacket(Leader.COMMIT, zxid, null, null);
         sendPacket(qp);
         ServerMetrics.getMetrics().COMMIT_COUNT.add(1);
     }

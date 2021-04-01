@@ -18,17 +18,12 @@
 
 package org.apache.zookeeper.server.quorum;
 
-import java.io.ByteArrayOutputStream;
 import java.io.Flushable;
 import java.io.IOException;
 
-import org.apache.jute.Record;
 import org.apache.zookeeper.ZooDefs.OpCode;
-import org.apache.zookeeper.proto.NullPointerResponse;
 import org.apache.zookeeper.server.*;
-import org.apache.zookeeper.trace.TMB_Event;
 import org.apache.zookeeper.trace.TMB_Helper;
-import org.apache.zookeeper.trace.TMB_Trace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,22 +52,7 @@ public class SendAckRequestProcessor implements RequestProcessor, Flushable {
         if (si.type != OpCode.sync) {
             // 3MileBeach starts
             TMB_Utils.printRequestForProcessor("SendAckRequestProcessor", quorumName, learner, si);
-            byte[] data = null;
-            Record txn = si.getTxn();
-            if (txn != null) {
-                Record record = new NullPointerResponse("QuorumAck");
-                TMB_Trace trace = txn.getTrace();
-                if (trace != null) {
-                    record.setTrace(trace);
-                    record = TMB_Utils.appendEvent(record, TMB_Event.RECORD_SEND, "QuorumAck", quorumName);
-
-                    try {
-                        ByteArrayOutputStream bao = TMB_Helper.serialize(record);
-                        data = bao.toByteArray();
-                    } catch (IOException e) {
-                    }
-                }
-            }
+            byte[] data = TMB_Utils.ackHelper(si, "QuorumAck", quorumName);
             QuorumPacket qp = new QuorumPacket(Leader.ACK, si.getHdr().getZxid(), data, null);
             // 3MileBeach ends
 

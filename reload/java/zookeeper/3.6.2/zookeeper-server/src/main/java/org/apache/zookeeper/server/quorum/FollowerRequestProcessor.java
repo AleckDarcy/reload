@@ -18,29 +18,15 @@
 
 package org.apache.zookeeper.server.quorum;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.apache.jute.Record;
-import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.ZooDefs;
+import org.apache.zookeeper.MultiOperationRecord;
 import org.apache.zookeeper.ZooDefs.OpCode;
-import org.apache.zookeeper.data.ACL;
-import org.apache.zookeeper.data.StatPersisted;
-import org.apache.zookeeper.proto.CreateRequest;
-import org.apache.zookeeper.proto.CreateTTLRequest;
-import org.apache.zookeeper.proto.RequestHeader;
-import org.apache.zookeeper.proto.SetDataRequest;
+import org.apache.zookeeper.proto.*;
 import org.apache.zookeeper.server.*;
 import org.apache.zookeeper.trace.TMB_Event;
-import org.apache.zookeeper.trace.TMB_Helper;
-import org.apache.zookeeper.trace.TMB_Trace;
 import org.apache.zookeeper.txn.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -115,24 +101,43 @@ public class FollowerRequestProcessor extends ZooKeeperCriticalThread implements
                     zks.getFollower().request(request);
                     break;
                 case OpCode.create:
-                    request.request = TMB_Utils.appendEvent(request.request, new CreateRequest(), TMB_Event.RECORD_FRWD, quorumName); // TODO: 3MileBeach
-                    zks.getFollower().request(request);
-                    break;
                 case OpCode.create2:
                 case OpCode.createTTL:
                 case OpCode.createContainer:
+                    // 3MileBeach begins
+                    request.request = TMB_Utils.appendEvent(request.request, new CreateRequest(), TMB_Event.RECORD_FRWD, quorumName);
+                    zks.getFollower().request(request);
+                    break;
+                    // 3MileBeach ends
                 case OpCode.delete:
                 case OpCode.deleteContainer:
+                    request.request = TMB_Utils.appendEvent(request.request, new DeleteRequest(), TMB_Event.RECORD_FRWD, quorumName); // 3MileBeach
                     zks.getFollower().request(request);
                     break;
                 case OpCode.setData:
-                    request.request = TMB_Utils.appendEvent(request.request, new SetDataRequest(), TMB_Event.RECORD_FRWD, quorumName); // TODO: 3MileBeach
+                    request.request = TMB_Utils.appendEvent(request.request, new SetDataRequest(), TMB_Event.RECORD_FRWD, quorumName); // 3MileBeach
                     zks.getFollower().request(request);
                     break;
                 case OpCode.reconfig:
+                    // 3MileBeach begins
+                    request.request = TMB_Utils.appendEvent(request.request, new ReconfigRequest(), TMB_Event.RECORD_FRWD, quorumName);
+                    zks.getFollower().request(request);
+                    break;
+                    // 3MileBeach ends
                 case OpCode.setACL:
+                    // 3MileBeach begins
+                    request.request = TMB_Utils.appendEvent(request.request, new SetACLRequest(), TMB_Event.RECORD_FRWD, quorumName);
+                    zks.getFollower().request(request);
+                    break;
+                    // 3MileBeach ends
                 case OpCode.multi:
+                    // 3MileBeach begins
+                    request.request = TMB_Utils.appendEvent(request.request, new MultiOperationRecord(), TMB_Event.RECORD_FRWD, quorumName);
+                    zks.getFollower().request(request);
+                    break;
+                    // 3MileBeach ends
                 case OpCode.check:
+                    request.request = TMB_Utils.appendEvent(request.request, new CheckVersionRequest(), TMB_Event.RECORD_FRWD, quorumName); // 3MileBeach
                     zks.getFollower().request(request);
                     break;
                 case OpCode.createSession:
