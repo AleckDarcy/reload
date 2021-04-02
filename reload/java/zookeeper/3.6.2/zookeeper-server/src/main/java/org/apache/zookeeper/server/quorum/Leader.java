@@ -107,6 +107,7 @@ public class Leader extends LearnerMaster {
 
     final QuorumPeer self;
     final String quorumName; // 3MileBeach
+    final int quorumId; // 3MileBeach
 
     // VisibleForTesting
     protected boolean quorumFormed = false;
@@ -272,6 +273,7 @@ public class Leader extends LearnerMaster {
 
     public Leader(QuorumPeer self, LeaderZooKeeperServer zk) throws IOException {
         this.self = self;
+        this.quorumId = self.hashCode(); // 3MileBeach
         this.quorumName = String.format("quorum-%d", self.hashCode()); // 3MileBeach
         this.proposalStats = new BufferStats();
 
@@ -951,7 +953,7 @@ public class Leader extends LearnerMaster {
 
             // 3MileBeach starts
             TMB_Helper.printf("[%s] let's commit! request %s\n", quorumName, p.request.getTxn());
-            byte[] data = TMB_Utils.commitHelper(p.request, "LeaderCommit", quorumName);
+            byte[] data = TMB_Utils.commitHelper(p.request, "LeaderCommit", quorumName, quorumId);
             commit(zxid, data);
             // 3MileBeach ends
 
@@ -1183,9 +1185,15 @@ public class Leader extends LearnerMaster {
                                     record.setTrace(trace);
 
                                     byte[] data = Util.marshallTxnEntry(logEntry.getHeader(), record, logEntry.getDigest());
-                                    qp.setData(data);
 
-                                    f.queuePacket(qp);
+                                    if (i == forwardingFollowers.size() - 1) {
+                                        qp.setData(data);
+                                        f.queuePacket(qp);
+                                    } else {
+                                        QuorumPacket qp_ = new QuorumPacket(qp.getType(), qp.getZxid(), data, qp.getAuthinfo());
+                                        f.queuePacket(qp_);
+                                    }
+
                                     i++;
                                 }
 

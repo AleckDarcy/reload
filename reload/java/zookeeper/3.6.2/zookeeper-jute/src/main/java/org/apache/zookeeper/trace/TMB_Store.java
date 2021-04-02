@@ -294,11 +294,11 @@ public class TMB_Store {
         } else {
 //            TMB_Helper.println("before appending, length: " + trace_.getEvents().size() + " + " + trace.getEvents().size());
 
-            List<TMB_Event> events_ = trace_.getEvents();
-            List<TMB_Event> events = trace.getEvents();
-
-            events_.addAll(events);
-            trace_.setEvents(events_);
+//            List<TMB_Event> events_ = trace_.getEvents();
+//            List<TMB_Event> events = trace.getEvents();
+            mergeEvents(trace_, trace.getEvents());
+//            events_.addAll(events);
+//            trace_.setEvents(events_);
 
 //            TMB_Helper.println("after appending, length: " + trace_.getEvents().size());
         }

@@ -59,7 +59,7 @@ public class TMB_ClientPlugin {
             events.add(event);
             trace.setEvents(events);
 
-            TMB_Store.callerAppendEventsByThreadIdUnsafe(threadId, trace);
+            TMB_Store.getInstance().callerAppendEventsByThreadIdUnsafe(threadId, trace);
         }
 
         TMB_Helper.println("caller outbound ejects request: " + TMB_Helper.getClassName(request) + "(" + TMB_Helper.getString(request) + ")");
@@ -84,7 +84,7 @@ public class TMB_ClientPlugin {
         TMB_Event event = new TMB_Event(TMB_Event.RECORD_RECV, TMB_Helper.currentTimeNanos(), responseName, uuid, service);
         trace.addEvent(event);
 
-        TMB_Store.callerAppendEventsByThreadIdUnsafe(threadId, trace);
+        TMB_Store.getInstance().callerAppendEventsByThreadIdUnsafe(threadId, trace);
 
         TMB_Helper.println("caller inbound receives response: " + responseName + "(" + TMB_Helper.getString(response) + ")");
     }

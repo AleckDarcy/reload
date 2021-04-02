@@ -172,11 +172,11 @@ public class Follower extends Learner {
             ping(qp);
             break;
         case Leader.PROPOSAL:
-            TMB_Helper.printf("[%s] Follower processes proposal\n", quorumName); // 3MileBeach
             ServerMetrics.getMetrics().LEARNER_PROPOSAL_RECEIVED_COUNT.add(1);
             TxnLogEntry logEntry = SerializeUtils.deserializeTxn(qp.getData());
             TxnHeader hdr = logEntry.getHeader();
             Record txn = logEntry.getTxn();
+            TMB_Helper.printf("[%s] Follower processes proposal, request: %s\n", quorumName, txn); // 3MileBeach
             TMB_Utils.appendEvent(txn, TMB_Event.RECORD_RECV, quorumName); // 3MileBeach
             TxnDigest digest = logEntry.getDigest();
             if (hdr.getZxid() != lastQueued + 1) {
