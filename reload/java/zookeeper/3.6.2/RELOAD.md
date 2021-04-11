@@ -26,6 +26,8 @@ reload/java/zookeeper/3.6.2/zookeeper-server/src/main/java/org/apache/zookeeper/
             Follower sends ACK messages to leader without data
         3MileBeach:
             Add data to ACK messages
+        TODO:
+            Inject faults
 
 reload/java/zookeeper/3.6.2/zookeeper-server/src/main/java/org/apache/zookeeper/server/quorum/LearnerHandler.java
     LearnerHandler::run()
