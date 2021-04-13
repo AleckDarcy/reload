@@ -8,6 +8,7 @@ import (
 
 	"github.com/AleckDarcy/reload/core/client/data"
 	"github.com/AleckDarcy/reload/core/tracer"
+	"github.com/goombaio/dag"
 )
 
 type Interpreter struct {
@@ -75,42 +76,31 @@ func (i *Interpreter) handleTrace(reqs *data.Requests, resp *data.Response) *dat
 		nodeNeighbors[node.Service] = append(nodeNeighbors[node.Service], neighbor.Service)
 	}
 
-	//d :=  dag.NewDAG()
+	d :=  dag.NewDAG()
 
-	uniqueKeys := make(map[string]int)
+	uniqueKeys := make(map[string]*dag.Vertex)
 	for key, val := range nodeNeighbors {
 		if _, ok := uniqueKeys[key]; ok {
 			// key exists so do nothing
 		} else {
-			uniqueKeys[key] = 1
-			//d.NewVertex(key)
+			v := dag.NewVertex(key, nil)
+			uniqueKeys[key] = v
+			d.AddVertex(v)
 		}
 
 		for _, neighbor := range val {
 			if _, ok := uniqueKeys[neighbor]; ok {
 				// key exists so do nothing
 			} else {
-				uniqueKeys[neighbor] = 1
-
+				v := dag.NewVertex(neighbor, nil)
+				uniqueKeys[neighbor] = v
+				d.AddVertex(v)
 			}
-
+			d.AddEdge(uniqueKeys[key], uniqueKeys[neighbor])
 		}
 	}
-	/*
-	uniqueKeys := make(map[string]int)
 
-	for _, val := range recordMap {
-
-		for _, record := range val {
-			if _, ok := uniqueKeys[record.Service]; ok {
-				continue
-			} else {
-				uniqueKeys[record.Service] = 1
-			}
-
-		}
-	}
-	*/
+	fmt.Println(d.String())
 
 
 	return &data.Requests{}
