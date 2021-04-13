@@ -64,5 +64,54 @@ func (i *Interpreter) handleTrace(reqs *data.Requests, resp *data.Response) *dat
 		recordMap[k] = val
 	}
 
+	/*
+		6. Create new DAG
+	 */
+	nodeNeighbors := make(map[string][]string)
+	for _, val := range recordMap {
+		node := val[0]
+		neighbor := val[1]
+
+		nodeNeighbors[node.Service] = append(nodeNeighbors[node.Service], neighbor.Service)
+	}
+
+	//d :=  dag.NewDAG()
+
+	uniqueKeys := make(map[string]int)
+	for key, val := range nodeNeighbors {
+		if _, ok := uniqueKeys[key]; ok {
+			// key exists so do nothing
+		} else {
+			uniqueKeys[key] = 1
+			//d.NewVertex(key)
+		}
+
+		for _, neighbor := range val {
+			if _, ok := uniqueKeys[neighbor]; ok {
+				// key exists so do nothing
+			} else {
+				uniqueKeys[neighbor] = 1
+
+			}
+
+		}
+	}
+	/*
+	uniqueKeys := make(map[string]int)
+
+	for _, val := range recordMap {
+
+		for _, record := range val {
+			if _, ok := uniqueKeys[record.Service]; ok {
+				continue
+			} else {
+				uniqueKeys[record.Service] = 1
+			}
+
+		}
+	}
+	*/
+
+
 	return &data.Requests{}
 }
