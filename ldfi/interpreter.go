@@ -13,11 +13,13 @@ import (
 
 type Interpreter struct {
 	rounds int
+	crashes int
+	goalDAG *dag.DAG
 }
 
-func (i *Interpreter) handleTrace(reqs *data.Requests, resp *data.Response) *data.Requests {
-	fmt.Println("HERE")
+func (interpreter *Interpreter) handleTraceProcessing(resp *data.Response) map[string][]*tracer.Record {
 	recordMap := make(map[string][]*tracer.Record)
+
 	/*
 		1. Write trace to JSON File
 	*/
@@ -32,7 +34,6 @@ func (i *Interpreter) handleTrace(reqs *data.Requests, resp *data.Response) *dat
 
 		recordMap[currRecord.Uuid] = append(recordMap[currRecord.Uuid], currRecord)
 		fmt.Println(currRecord)
-
 	}
 
 	/*
@@ -48,28 +49,31 @@ func (i *Interpreter) handleTrace(reqs *data.Requests, resp *data.Response) *dat
 
 	/*
 		4. We can prune out all requests that were not correctly handled
-	 */
+	*/
 	for k, val := range recordMap {
 		if len(val) < 4 {
 			delete(recordMap, k)
 		}
 	}
 
-
 	/*
 		5. Prune out the responses from the UUid -> records mapping
 		they are not needed for the formation of the dag
-	 */
+	*/
 	for k, val := range recordMap {
 		val = val[:2]
 		recordMap[k] = val
 	}
 
+	return recordMap
+}
+
+func (interpreter *Interpreter) createDAG(data map[string][]*tracer.Record) *dag.DAG {
 	/*
-		6. Create new DAG
-	 */
+		1. Create new DAG
+	*/
 	nodeNeighbors := make(map[string][]string)
-	for _, val := range recordMap {
+	for _, val := range data {
 		node := val[0]
 		neighbor := val[1]
 
@@ -100,8 +104,33 @@ func (i *Interpreter) handleTrace(reqs *data.Requests, resp *data.Response) *dat
 		}
 	}
 
-	fmt.Println(d.String())
+	return d
+}
 
+/*
+func (i *Interpreter) forwardStep(reqs *data.Requests, resp *data.Response) *data.Requests {
+
+	return &data.Requests{}
+}
+*/
+
+func (interpreter *Interpreter) forwardStep(reqs *data.Requests, resp *data.Response) *data.Requests {
+	/*
+		1. Process Trace information
+	 */
+	recordMap := interpreter.handleTraceProcessing(resp)
+
+	/*
+		2. Analyze processed data to create DAG
+	 */
+	d := interpreter.createDAG(recordMap)
+
+	interpreter.goalDAG = d
+
+	/*
+		3. Feed DAG to SAT Solver to determine possible faults
+	 */
+	fmt.Println(d.String())
 
 	return &data.Requests{}
 }
