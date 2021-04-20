@@ -8,7 +8,7 @@ import (
 
 	"github.com/AleckDarcy/reload/core/client/data"
 	"github.com/AleckDarcy/reload/core/tracer"
-	"github.com/goombaio/dag"
+	"github.com/hashicorp/terraform/dag"
 )
 
 var service2Requests = map[string][]string{
@@ -26,7 +26,7 @@ var service2Requests = map[string][]string{
 type Interpreter struct {
 	rounds int
 	crashes int
-	goalDAG *dag.DAG
+	goalDAG *dag.Graph
 }
 
 func (interpreter *Interpreter) handleTraceProcessing(resp *data.Response) map[string][]*tracer.Record {
@@ -80,7 +80,7 @@ func (interpreter *Interpreter) handleTraceProcessing(resp *data.Response) map[s
 	return recordMap
 }
 
-func (interpreter *Interpreter) createDAG(data map[string][]*tracer.Record) *dag.DAG {
+func (interpreter *Interpreter) createDAG(data map[string][]*tracer.Record) *dag.Graph {
 	/*
 		1. Create new DAG
 	*/
@@ -92,27 +92,29 @@ func (interpreter *Interpreter) createDAG(data map[string][]*tracer.Record) *dag
 		nodeNeighbors[node.Service] = append(nodeNeighbors[node.Service], neighbor.Service)
 	}
 
-	d :=  dag.NewDAG()
+	d :=  &dag.Graph{}
 
-	uniqueKeys := make(map[string]*dag.Vertex)
+	uniqueKeys := make(map[string]int)
 	for key, val := range nodeNeighbors {
 		if _, ok := uniqueKeys[key]; ok {
 			// key exists so do nothing
 		} else {
-			v := dag.NewVertex(key, nil)
-			uniqueKeys[key] = v
-			d.AddVertex(v)
+			//v := dag.NewVertex(key, nil)
+			uniqueKeys[key] = 1
+			d.Add(key)
 		}
 
 		for _, neighbor := range val {
 			if _, ok := uniqueKeys[neighbor]; ok {
 				// key exists so do nothing
 			} else {
-				v := dag.NewVertex(neighbor, nil)
-				uniqueKeys[neighbor] = v
-				d.AddVertex(v)
+				uniqueKeys[neighbor] = 1
+				d.Add(neighbor)
 			}
-			d.AddEdge(uniqueKeys[key], uniqueKeys[neighbor])
+			//d.AddEdge(uniqueKeys[key], uniqueKeys[neighbor])
+			// edge := dag.BasicEdge(uniqueKeys[key], uniqueKeys[neighbor])
+			edge := dag.BasicEdge(key, neighbor)
+			d.Connect(edge)
 		}
 	}
 
@@ -123,7 +125,7 @@ func (interpreter *Interpreter) createDAG(data map[string][]*tracer.Record) *dag
 	Method used to take edges from a trace and produce their corresponding
 	Fault Injections (Fault Crashes)
  */
-func (interpreter *Interpreter) edgesToFaults(d *dag.DAG) []*tracer.Trace {
+func (interpreter *Interpreter) edgesToFaults(d *dag.AcyclicGraph) []*tracer.Trace {
 	/*
 		1. We have our DAG, now we need to convert to possible
 		crash faults that we can inject into the system
