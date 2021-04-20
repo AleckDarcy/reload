@@ -11,6 +11,18 @@ import (
 	"github.com/goombaio/dag"
 )
 
+var service2Requests = map[string][]string{
+	"cartservice": {"AddItemRequest", "EmptyCartRequest", "GetCartRequest"},
+	"recommendationservice": {"ListRecommendationsRequest"},
+	"productcatalogservice": {"ListProductsRequest", "GetProductRequest", "SearchProductsRequest"},
+	"shippingservice": {"GetQuoteRequest", "ShipOrderRequest"},
+	"currencyservice": {"GetSupportedCurrenciesRequest", "CurrencyConversionRequest"},
+	"paymentservice": {"ChargeRequest"},
+	"emailservice": {"EmailService", "SendOrderConfirmationRequest"},
+	"checkoutservice": {"PlaceOrderRequest"},
+	"adservice": {"AdRequest"},
+}
+
 type Interpreter struct {
 	rounds int
 	crashes int
@@ -108,11 +120,18 @@ func (interpreter *Interpreter) createDAG(data map[string][]*tracer.Record) *dag
 }
 
 /*
-func (i *Interpreter) forwardStep(reqs *data.Requests, resp *data.Response) *data.Requests {
+	Method used to take edges from a trace and produce their corresponding
+	Fault Injections (Fault Crashes)
+ */
+func (interpreter *Interpreter) edgesToFaults(d *dag.DAG) []*tracer.Trace {
+	/*
+		1. We have our DAG, now we need to convert to possible
+		crash faults that we can inject into the system
+	 */
 
-	return &data.Requests{}
+	return []*tracer.Trace{}
 }
-*/
+
 
 func (interpreter *Interpreter) forwardStep(reqs *data.Requests, resp *data.Response) *data.Requests {
 	/*
