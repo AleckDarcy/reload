@@ -23,14 +23,21 @@ var service2Requests = map[string][]string{
 	"adservice": {"AdRequest"},
 }
 
+type RequestFault struct {
+	source string
+	target string
+	request string
+}
+
 type Interpreter struct {
 	rounds int
 	crashes int
 	goalDAG *dag.Graph
 }
 
-func (interpreter *Interpreter) handleTraceProcessing(resp *data.Response) map[string][]*tracer.Record {
+func (interpreter *Interpreter) handleTraceProcessing(resp *data.Response) (map[string][]*tracer.Record, map[string]string) {
 	recordMap := make(map[string][]*tracer.Record)
+	uuid2Request := make(map[string]string)
 
 	/*
 		1. Write trace to JSON File
@@ -44,8 +51,12 @@ func (interpreter *Interpreter) handleTraceProcessing(resp *data.Response) map[s
 	for i := 0; i < len(resp.Trace.Records); i++ {
 		currRecord := resp.Trace.Records[i]
 
+		// Create uuid mapping to the request name
+		if _, ok := recordMap[currRecord.Uuid]; !ok {
+			uuid2Request[currRecord.Uuid] = currRecord.MessageName
+		}
+
 		recordMap[currRecord.Uuid] = append(recordMap[currRecord.Uuid], currRecord)
-		fmt.Println(currRecord)
 	}
 
 	/*
@@ -77,10 +88,11 @@ func (interpreter *Interpreter) handleTraceProcessing(resp *data.Response) map[s
 		recordMap[k] = val
 	}
 
-	return recordMap
+	return recordMap, uuid2Request
 }
 
-func (interpreter *Interpreter) createDAG(data map[string][]*tracer.Record) *dag.Graph {
+func (interpreter *Interpreter) createDAG(data map[string][]*tracer.Record, uuid2Request map[string]string) (*dag.Graph, []*RequestFault) {
+	faults := make([]*RequestFault, 0)
 	/*
 		1. Create new DAG
 	*/
@@ -90,6 +102,9 @@ func (interpreter *Interpreter) createDAG(data map[string][]*tracer.Record) *dag
 		neighbor := val[1]
 
 		nodeNeighbors[node.Service] = append(nodeNeighbors[node.Service], neighbor.Service)
+		fault := &RequestFault{source: node.Service, target: neighbor.Service, request: uuid2Request[node.Uuid]}
+		faults = append(faults, fault)
+
 	}
 
 	d :=  &dag.Graph{}
@@ -99,7 +114,6 @@ func (interpreter *Interpreter) createDAG(data map[string][]*tracer.Record) *dag
 		if _, ok := uniqueKeys[key]; ok {
 			// key exists so do nothing
 		} else {
-			//v := dag.NewVertex(key, nil)
 			uniqueKeys[key] = 1
 			d.Add(key)
 		}
@@ -118,20 +132,31 @@ func (interpreter *Interpreter) createDAG(data map[string][]*tracer.Record) *dag
 		}
 	}
 
-	return d
+	return d, faults
 }
 
 /*
 	Method used to take edges from a trace and produce their corresponding
 	Fault Injections (Fault Crashes)
  */
-func (interpreter *Interpreter) edgesToFaults(d *dag.AcyclicGraph) []*tracer.Trace {
-	/*
-		1. We have our DAG, now we need to convert to possible
-		crash faults that we can inject into the system
-	 */
+func (interpreter *Interpreter) edgesToFaults(d *dag.Graph, faults []*RequestFault) []*tracer.TFI {
+	tfis := make([]*tracer.TFI ,0)
+	edges := d.Edges()
 
-	return []*tracer.Trace{}
+	/*
+			1. We have our DAG, and list of possible crash faults
+		       Now we need to create the corresponding TFI's
+	*/
+	for _, fault := range faults {
+		tfi := &tracer.TFI{
+			Type: tracer.FaultType_FaultCrash,
+			Name: []string{fault.request},
+		}
+
+		tfis = append(tfis, tfi)
+	}
+
+	return tfis
 }
 
 
@@ -139,19 +164,25 @@ func (interpreter *Interpreter) forwardStep(reqs *data.Requests, resp *data.Resp
 	/*
 		1. Process Trace information
 	 */
-	recordMap := interpreter.handleTraceProcessing(resp)
+	recordMap, uuid2Request := interpreter.handleTraceProcessing(resp)
 
 	/*
 		2. Analyze processed data to create DAG
 	 */
-	d := interpreter.createDAG(recordMap)
+	d, faults := interpreter.createDAG(recordMap, uuid2Request)
 
 	interpreter.goalDAG = d
 
 	/*
-		3. Feed DAG to SAT Solver to determine possible faults
+		3. Determine possible faults, initially start with
+		   support of crash faults
 	 */
-	fmt.Println(d.String())
+	tfis := interpreter.edgesToFaults(d, faults)
+
+	/*
+		4. Now we need to select a TFI for the list of possibilities
+	       and return new Request suggestion
+	 */
 
 	return &data.Requests{}
 }
