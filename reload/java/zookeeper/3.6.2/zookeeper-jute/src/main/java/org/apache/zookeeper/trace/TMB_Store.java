@@ -165,8 +165,9 @@ public class TMB_Store {
         return quorumTraces;
     }
 
-    public static void mergeEvents(TMB_Trace trace, List<TMB_Event> events_) {
+    private static void mergeEvents(TMB_Trace trace, List<TMB_Event> events_) {
         List<TMB_Event> events = trace.getEvents();
+        int new_events = 0;
         for (TMB_Event event_: events_) {
             boolean found = false;
             for (TMB_Event event: events) {
@@ -177,9 +178,27 @@ public class TMB_Store {
             }
             if (!found) {
                 events.add(event_);
+                new_events ++;
             }
         }
-        trace.setEvents(events);
+        trace.setEvents(events, new_events);
+    }
+
+    public static void updateTFIs(List<TMB_TFI> tfis, TMB_Event event) {
+        boolean updated = false;
+        for (TMB_TFI tfi: tfis) {
+            for (TMB_TFIMeta meta: tfi.getAfter()) {
+                if (meta.getName().equals(event.getMessage_name()) && meta.getEvent_type() == event.getType()) {
+                    updated = true;
+                    meta.setAlready(meta.getAlready() + 1);
+                }
+            }
+        }
+
+        if (updated) {
+            new Exception().printStackTrace();
+            TMB_Helper.printf("updated!!! %s, %s\n", tfis, event);
+        }
     }
 
     // called when initializing TMB_ClientPlugin
@@ -227,63 +246,6 @@ public class TMB_Store {
         lock.writeLock().lock();
         server_traces.clear();
         lock.writeLock().unlock();
-    }
-
-    public static void serverSetTrace(long serverId, TMB_Trace trace) {
-        if (trace.getId() == 0) {
-            return;
-        }
-
-        lock.writeLock().lock();
-        server_traces.put(serverId, trace);
-        lock.writeLock().unlock();
-    }
-
-    public static void serverMergeTrace(long serverId, TMB_Trace trace) {
-        if (trace == null || trace.getId() == 0) {
-            return;
-        }
-
-        List<TMB_Event> events = trace.getEvents();
-        int reqEvent = (int) trace.getReqEvent();
-        if (events.size() <= reqEvent) {
-            return;
-        }
-
-        events = events.subList(reqEvent, events.size());
-
-        lock.writeLock().lock();
-        TMB_Trace trace_ = server_traces.get(serverId);
-        if (trace_ == null || trace_.getId() != trace.getId()) {
-            lock.writeLock().unlock();
-
-            return;
-        }
-
-        List<TMB_Event> events_ = trace_.getEvents();
-        for (TMB_Event event: events) {
-            boolean found = false;
-            for (TMB_Event event_: events_) {
-                found = event_.equals(event);
-                if (found) {
-                    break;
-                }
-            }
-            if (!found) {
-                events_.add(event);
-            }
-        }
-        trace_.setEvents(events_);
-
-        lock.writeLock().unlock();
-    }
-
-    public static TMB_Trace serverGetTrace(long serverId) {
-//        lock.readLock().lock();
-//        TMB_Trace trace = server_traces.get(serverId);
-//        lock.readLock().unlock();
-
-        return null;
     }
 
     public static void callerAppendEventsByThreadIdUnsafe(long threadId, TMB_Trace trace) {
@@ -341,20 +303,13 @@ public class TMB_Store {
         }
 
         List<TMB_Event> events = trace.getEvents();
-        // TODO: 3MileBeach
-//        if (events.size() != 1) {
-//            TMB_Helper.printf("[%s] callee inbound receives request with invalid trace: %s, (%s)\n", service, TMB_Helper.getClassName(request), TMB_Helper.getString(request));
-//
-//            return;
-//        }
-
         TMB_Helper.printf(3, "[%s] callee inbound receives request: %s, (%s)\n", service, TMB_Helper.getClassName(request), TMB_Helper.getString(request));
 
         long threadId = Thread.currentThread().getId();
         TMB_Event preEvent = events.get(0);
         TMB_Event event = new TMB_Event(TMB_Event.RECORD_RECV, TMB_Helper.currentTimeNanos(), preEvent.getMessage_name(), preEvent.getUuid(), service);
-        events.set(0, event);
-        trace.setEvents(events);
+        events.add(event);
+        trace.setEvents(events, 1);
 
         lock.writeLock().lock();
         thread_traces.put(threadId, trace);

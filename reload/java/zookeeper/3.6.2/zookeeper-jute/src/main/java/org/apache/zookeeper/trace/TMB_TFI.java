@@ -25,7 +25,12 @@ import org.apache.yetus.audience.InterfaceAudience;
 
 @InterfaceAudience.Public
 public class TMB_TFI implements Record {
+  public static final int CRASH = 1;
+  public static final int DELAY = 2;
+  public static final int DROP = 3;
+
   private int type;
+  private int event_type;
   private String name;
   private long delay;
   private java.util.List<TMB_TFIMeta> after;
@@ -33,10 +38,12 @@ public class TMB_TFI implements Record {
   }
   public TMB_TFI(
         int type,
+        int event_type,
         String name,
         long delay,
         java.util.List<TMB_TFIMeta> after) {
     this.type=type;
+    this.event_type=event_type;
     this.name=name;
     this.delay=delay;
     this.after=after;
@@ -46,6 +53,12 @@ public class TMB_TFI implements Record {
   }
   public void setType(int m_) {
     type=m_;
+  }
+  public int getEvent_type() {
+    return event_type;
+  }
+  public void setEvent_type(int m_) {
+    event_type=m_;
   }
   public String getName() {
     return name;
@@ -72,6 +85,7 @@ public class TMB_TFI implements Record {
   public void serialize(OutputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(this,tag);
     a_.writeInt(type,"type");
+    a_.writeInt(event_type,"event_type");
     a_.writeString(name,"name");
     a_.writeLong(delay,"delay");
     {
@@ -89,6 +103,7 @@ public class TMB_TFI implements Record {
   public void deserialize(InputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(tag);
     type=a_.readInt("type");
+    event_type=a_.readInt("event_type");
     name=a_.readString("name");
     delay=a_.readLong("delay");
     {
@@ -113,6 +128,7 @@ public class TMB_TFI implements Record {
         new ToStringOutputArchive(s);
       a_.startRecord(this,"");
     a_.writeInt(type,"type");
+    a_.writeInt(event_type,"event_type");
     a_.writeString(name,"name");
     a_.writeLong(delay,"delay");
     {
@@ -154,6 +170,8 @@ public class TMB_TFI implements Record {
     boolean ret = false;
     ret = (type==peer.type);
     if (!ret) return ret;
+    ret = (event_type==peer.event_type);
+    if (!ret) return ret;
     ret = name.equals(peer.name);
     if (!ret) return ret;
     ret = (delay==peer.delay);
@@ -167,6 +185,8 @@ public class TMB_TFI implements Record {
     int ret;
     ret = (int)type;
     result = 37*result + ret;
+    ret = (int)event_type;
+    result = 37*result + ret;
     ret = name.hashCode();
     result = 37*result + ret;
     ret = (int) (delay^(delay>>>32));
@@ -176,6 +196,6 @@ public class TMB_TFI implements Record {
     return result;
   }
   public static String signature() {
-    return "LTMB_TFI(isl[LTMB_TFIMeta(sll)])";
+    return "LTMB_TFI(iisl[LTMB_TFIMeta(sll)])";
   }
 }

@@ -65,12 +65,12 @@ import org.apache.zookeeper.common.X509Exception;
 import org.apache.zookeeper.data.Stat;
 import org.apache.zookeeper.metrics.BaseTestMetricsProvider;
 import org.apache.zookeeper.metrics.impl.NullMetricsProvider;
+import org.apache.zookeeper.proto.CreateRequest;
+import org.apache.zookeeper.server.TMB_Utils;
 import org.apache.zookeeper.server.persistence.FileTxnSnapLog;
 import org.apache.zookeeper.server.quorum.Leader.Proposal;
 import org.apache.zookeeper.test.ClientBase;
-import org.apache.zookeeper.trace.TMB_Helper;
-import org.apache.zookeeper.trace.TMB_Store;
-import org.apache.zookeeper.trace.TMB_Trace;
+import org.apache.zookeeper.trace.*;
 import org.junit.Test;
 
 /**
@@ -238,24 +238,43 @@ public class QuorumPeerMainTest extends QuorumPeerTestBase {
         TMB_Helper.println("");
         TMB_Helper.println("");
 
+        // find follower
         for (int i = 0; i < SERVER_COUNT; i++) {
             if (i != leader) {
                 client = zk[i];
-                String path = "/zk" + i;
 
-                client.create(path, "zk".getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-                trace = client.TMBClientFinalize();
-                TMB_Helper.printf("client-%d capture trace: %s\n", client.hashCode(), trace.toJSON());
+                break;
+            }
+        }
+
+//        TMB_TFI tfi = new TMB_TFI(TMB_TFI.CRASH, TMB_Event.RECORD_SEND, TMB_Utils.LEADER_COMMIT, 0, null);
+//        TMB_TFI tfi = new TMB_TFI(TMB_TFI.CRASH, TMB_Event.RECORD_SEND, TMB_Utils.QUORUM_ACK, 0, null);
+//        TMB_TFI tfi = new TMB_TFI(TMB_TFI.CRASH, TMB_Event.RECORD_SEND, TMB_Utils.QUORUM_ACK, 0, new ArrayList<TMB_TFIMeta>(){
+//            {
+//                add(new TMB_TFIMeta(TMB_Helper.getClassNameFromName(CreateRequest.class.getCanonicalName()), TMB_Event.RECORD_SEND, 1));
+//            }
+//        });
+        TMB_TFI tfi = new TMB_TFI(TMB_TFI.CRASH, TMB_Event.RECORD_SEND, TMB_Utils.QUORUM_ACK, 0, new ArrayList<TMB_TFIMeta>(){
+            {
+                add(new TMB_TFIMeta(TMB_Helper.getClassNameFromName(CreateRequest.class.getCanonicalName()), TMB_Event.RECORD_PRSL, 2));
+            }
+        });
+        client.TMBClientInitialize(new TMB_Trace(TMB_Helper.newTraceId(), 0, new ArrayList<>(), new ArrayList<TMB_TFI>(){
+            {
+//                add(tfi);
+            }
+        }));
+
+        client.create("/zk_follower", "zk".getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+        trace = client.TMBClientFinalize();
+        TMB_Helper.printf("client-%d capture trace: %s\n", client.hashCode(), trace.toJSON());
 
 //                client.TMBClientInitialize(new TMB_Trace(TMB_Helper.newTraceId(), 0, new ArrayList<>(), new ArrayList<>()));
 //                client.setData(path, "version-1".getBytes(), 0);
 //                trace = client.TMBClientFinalize();
 //                TMB_Helper.printf("client-%d capture trace: %s\n", client.hashCode(), trace.toJSON());
 
-                break;
-            }
-        }
-
+// ================================= end ============================
 //
 //        // just make sure that we actually did get it in process at the
 //        // leader

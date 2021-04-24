@@ -104,6 +104,15 @@ public class TMB_Trace implements Record {
   public void setEvents(java.util.List<TMB_Event> m_) {
     events=m_;
   }
+  // 3MileBeach starts
+  public void setEvents(java.util.List<TMB_Event> m_, int new_events) {
+    events=m_;
+
+    for (int i = m_.size() - new_events; i < m_.size(); i ++) {
+      TMB_Store.updateTFIs(tfis, m_.get(i));
+    }
+  }
+  // 3MileBeach ends
   public java.util.List<TMB_TFI> getTfis() {
     return tfis;
   }

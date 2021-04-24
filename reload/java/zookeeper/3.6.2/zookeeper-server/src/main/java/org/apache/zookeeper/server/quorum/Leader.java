@@ -55,9 +55,7 @@ import org.apache.zookeeper.server.quorum.auth.QuorumAuthServer;
 import org.apache.zookeeper.server.quorum.flexible.QuorumVerifier;
 import org.apache.zookeeper.server.util.SerializeUtils;
 import org.apache.zookeeper.server.util.ZxidUtils;
-import org.apache.zookeeper.trace.TMB_Event;
-import org.apache.zookeeper.trace.TMB_Helper;
-import org.apache.zookeeper.trace.TMB_Trace;
+import org.apache.zookeeper.trace.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -952,18 +950,32 @@ public class Leader extends LearnerMaster {
             p.request.logLatency(ServerMetrics.getMetrics().QUORUM_ACK_LATENCY);
 
             // 3MileBeach starts
-            TMB_Helper.printf("[%s] let's commit! request %s\n", quorumName, p.request.getTxn());
-            byte[] data = TMB_Utils.commitHelper(p.request, "LeaderCommit", quorumName, quorumId);
-            commit(zxid, data);
+            try {
+                TMB_Helper.printf("[%s] let's commit! request %s\n", quorumName, p.request.getTxn());
+                byte[] data = TMB_Utils.commitHelper(p.request, TMB_Utils.LEADER_COMMIT, quorumName, quorumId);
+                commit(zxid, data);
+                inform(p);
+            } catch (FaultInjectedException e) {
+                TMB_Helper.printf("[%s] Fault injected, no commit messages were sent to followers or observers\n", quorumName);
+            }
             // 3MileBeach ends
 
             // commit(zxid);
-            inform(p);
+            // inform(p);
         }
         zk.commitProcessor.commit(p.request);
         if (pendingSyncs.containsKey(zxid)) {
             for (LearnerSyncRequest r : pendingSyncs.remove(zxid)) {
-                sendSync(r);
+                // 3MileBeach starts
+                try {
+                    byte[] data = TMB_Utils.commitHelper(r, TMB_Utils.LEADER_COMMIT, quorumName, quorumId);
+                    sendSync(r, data);
+                } catch (FaultInjectedException e) {
+                    TMB_Helper.printf("[%s] Fault injected, no sync messages were sent to learners\n", quorumName);
+                }
+                // 3MileBeach ends
+
+                // sendSync(r);
             }
         }
 
@@ -1126,11 +1138,11 @@ public class Leader extends LearnerMaster {
                     Proposal p = iter.next();
                     if (p.request != null && p.request.zxid == zxid) {
                         iter.remove();
-                        TMB_Utils.printRequestForProcessorUnsafe("ToBeAppliedRequestProcessor", quorumName, next, p.request); // 3MileBeach
+                        TMB_Utils.printRequestForProcessor("ToBeAppliedRequestProcessor", quorumName, next, p.request); // 3MileBeach
                         return;
                     }
                 }
-                // TMB_Helper.printf("[%s] ToBeAppliedRequestProcessor\n", quorumName); // 3MileBeach
+                TMB_Helper.printf("[%s] ToBeAppliedRequestProcessor\n", quorumName); // 3MileBeach
                 LOG.error("Committed request not found on toBeApplied: {}", request);
             }
         }
@@ -1175,13 +1187,13 @@ public class Leader extends LearnerMaster {
                                     String uuid_ = String.format("%s-%04d", uuid, i);
 
                                     events.add(new TMB_Event(
-                                            TMB_Event.RECORD_FRWD,
+                                            TMB_Event.RECORD_PRSL,
                                             TMB_Helper.currentTimeNanos(),
                                             lastEvent.getMessage_name(),
                                             uuid_,
                                             String.format("quorum-%d", self.hashCode())));
 
-                                    trace.setEvents(events);
+                                    trace.setEvents(events, 1);
                                     record.setTrace(trace);
 
                                     byte[] data = Util.marshallTxnEntry(logEntry.getHeader(), record, logEntry.getDigest());
@@ -1355,7 +1367,8 @@ public class Leader extends LearnerMaster {
 
     public synchronized void processSync(LearnerSyncRequest r) {
         if (outstandingProposals.isEmpty()) {
-            sendSync(r);
+            sendSync(r, null); // 3MileBeach
+            // sendSync(r);
         } else {
             List<LearnerSyncRequest> l = pendingSyncs.get(lastProposed);
             if (l == null) {
@@ -1369,8 +1382,10 @@ public class Leader extends LearnerMaster {
     /**
      * Sends a sync message to the appropriate server
      */
-    public void sendSync(LearnerSyncRequest r) {
-        QuorumPacket qp = new QuorumPacket(Leader.SYNC, 0, null, null);
+    public void sendSync(LearnerSyncRequest r, byte[] data) { // 3MileBeach
+    // public void sendSync(LearnerSyncRequest r) {
+        QuorumPacket qp = new QuorumPacket(Leader.SYNC, 0, data, null); // 3MileBeach
+        // QuorumPacket qp = new QuorumPacket(Leader.SYNC, 0, null, null);
         r.fh.queuePacket(qp);
     }
 

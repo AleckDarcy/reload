@@ -25,9 +25,11 @@ import org.apache.yetus.audience.InterfaceAudience;
 
 @InterfaceAudience.Public
 public class TMB_Event implements Record {
-  public static final int RECORD_SEND = 1;
-  public static final int RECORD_RECV = 2;
-  public static final int RECORD_FRWD = 3;
+  public static final int RECORD_SEND = 0x1;
+  public static final int RECORD_RECV = 0x2;
+  public static final int RECORD_FRWD = 0x4; // follower forward
+  public static final int RECORD_PRSL = 0x8; // leader proposal
+  public static final int RECORD_MASK = 0xF;
 
   private int type;
   private long timestamp;
@@ -47,19 +49,29 @@ public class TMB_Event implements Record {
     this.message_name=message_name;
     this.uuid=uuid;
     this.service=service;
+
+    // TMB_Helper.printf(3, "[%s] a new event: %s", service, this);
   }
 
-  // 3MileBeach
-  public String toJSON() {
-    String type = "SEND";
-    if (this.getType() == 2) {
-      type = "RECV";
-    } else if (this.getType() == 3) {
-      type = "FRWD";
+  // 3MileBeach starts
+  public String getTypeString() {
+    switch (type) {
+      case RECORD_SEND:
+        return "SEND";
+      case RECORD_RECV:
+        return "RECV";
+      case RECORD_FRWD:
+        return "FRWD";
+      default:
+        return "PRSL";
     }
-    return String.format("{\"service\":\"%s\",\"timestamp\":%d,\"type\":\"%s\",\"message_name\":\"%s\",\"uuid\":\"%s\"}",
-              this.getService(), this.getTimestamp(), type, this.getMessage_name(), this.getUuid());
   }
+
+  public String toJSON() {
+    return String.format("{\"service\":\"%s\",\"timestamp\":%d,\"type\":\"%s\",\"message_name\":\"%s\",\"uuid\":\"%s\"}",
+              this.getService(), this.getTimestamp(), this.getTypeString(), this.getMessage_name(), this.getUuid());
+  }
+  // 3MileBeach ends
 
   public int getType() {
     return type;

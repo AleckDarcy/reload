@@ -11,6 +11,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.String;
 import java.lang.Thread;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -20,9 +21,34 @@ public class TMB_Helper {
 
     public static boolean printable = true;
 
+    public static final int UUID_LEN = 10;
+    public static final int UUID_SUF_LEN = 5;
+
     public static String UUID() {
         return String.format("%010d", uuid.addAndGet(1));
 //        return UUID.randomUUID().toString();
+    }
+
+    public static void checkTFIs(TMB_Trace trace, String messageName) throws FaultInjectedException {
+        List<TMB_TFI> tfis = trace.getTfis();
+        for (TMB_TFI tfi: tfis) {
+            if (tfi.getName().equals(messageName) && (tfi.getEvent_type() & TMB_Event.RECORD_SEND) != 0) {
+                List<TMB_TFIMeta> metas = tfi.getAfter();
+                boolean injected = true;
+                if (metas != null && metas.size() > 0) {
+                    for (TMB_TFIMeta meta : tfi.getAfter()) {
+                        if (meta.getAlready() < meta.getTimes()) {
+                            injected = false;
+                            break;
+                        }
+                    }
+                }
+
+                if (injected) {
+                    throw new FaultInjectedException(tfi.getType(), tfi.getDelay());
+                }
+            }
+        }
     }
 
     public static void println(String x) {
@@ -33,10 +59,7 @@ public class TMB_Helper {
     }
 
     public static void printf(String format, Object ... args) {
-        if (printable) {
-            StackTraceElement trace = Thread.currentThread().getStackTrace()[2];
-            System.out.printf("[3MileBeach] %s:%d [%d] %s", trace.getFileName(), trace.getLineNumber(), Thread.currentThread().getId(), String.format(format, args));
-        }
+        printf(3, format, args);
     }
 
     public static void printf(int depth, String format, Object ... args) {
@@ -57,8 +80,10 @@ public class TMB_Helper {
             return ((NullPointerResponse) o).getRequestName() + "(*)";
         }
 
-        String name = o.getClass().getCanonicalName();
+        return getClassNameFromName(o.getClass().getCanonicalName());
+    }
 
+    public static String getClassNameFromName(String name) {
         return name.substring(name.lastIndexOf('.') + 1);
     }
 

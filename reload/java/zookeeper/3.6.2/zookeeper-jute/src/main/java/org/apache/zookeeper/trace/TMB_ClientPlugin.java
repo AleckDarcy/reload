@@ -45,7 +45,7 @@ public class TMB_ClientPlugin {
         if (trace.getId() == 0) {
             long id = TMB_Helper.newTraceId();
             trace.setId(id);
-            trace.setEvents(new ArrayList<>());
+            trace.setEvents(new ArrayList<>(), 0);
             TMB_Helper.println("stub trace with id:" + id);
         }
 
@@ -57,7 +57,7 @@ public class TMB_ClientPlugin {
 
             List<TMB_Event> events = trace.getEvents();
             events.add(event);
-            trace.setEvents(events);
+            trace.setEvents(events, 1);
 
             TMB_Store.getInstance().callerAppendEventsByThreadIdUnsafe(threadId, trace);
         }

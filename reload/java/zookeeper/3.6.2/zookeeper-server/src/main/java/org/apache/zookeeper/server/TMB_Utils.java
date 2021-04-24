@@ -3,10 +3,7 @@ package org.apache.zookeeper.server;
 import org.apache.jute.Record;
 import org.apache.zookeeper.proto.NullPointerResponse;
 import org.apache.zookeeper.server.quorum.QuorumPacket;
-import org.apache.zookeeper.trace.TMB_Event;
-import org.apache.zookeeper.trace.TMB_Helper;
-import org.apache.zookeeper.trace.TMB_Store;
-import org.apache.zookeeper.trace.TMB_Trace;
+import org.apache.zookeeper.trace.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -17,6 +14,10 @@ import java.util.List;
 
 public class TMB_Utils {
     public static final int EVENT_SERIALIZE_SIZE = 100;
+
+    public static final String QUORUM_ACK = "QuorumAck";
+    public static final String LEADER_COMMIT = "LeaderCommit";
+    public static final String LEADER_SYNC = "LeaderSync";
 
     public static void printRequestForProcessor(String processorName, String quorumName, Object next, Request request) {
         String nextName = "null";
@@ -52,7 +53,7 @@ public class TMB_Utils {
         TMB_Helper.printf(3, "[%s] %s, next %s, request-%d %s\n", quorumName, processorName, nextName, request.hashCode(), requestStr);
     }
 
-    public static byte[] commitHelper(Request request, String messageName, String quorumName, int quorumId) {
+    public static byte[] commitHelper(Request request, String messageName, String quorumName, int quorumId) throws FaultInjectedException {
         byte[] data = null;
         if (request != null) {
             Record txn = request.getTxn();
@@ -61,9 +62,10 @@ public class TMB_Utils {
                 TMB_Trace trace = txn.getTrace();
                 if (trace != null && trace.getId() != 0) {
                     TMB_Trace trace_ = TMB_Store.getInstance().quorumGetTrace(quorumId, trace.getId());
+                    TMB_Helper.checkTFIs(trace_, messageName);
 
                     record.setTrace(trace_);
-                    record = TMB_Utils.appendEvent(record, TMB_Event.RECORD_SEND, messageName, quorumName);
+                    record = TMB_Utils.appendEvent(record, TMB_Event.RECORD_SEND, messageName, quorumName, true);
 
                     try {
                         ByteArrayOutputStream bao = TMB_Helper.serialize(record);
@@ -77,16 +79,21 @@ public class TMB_Utils {
         return data;
     }
 
-    public static byte[] ackHelper(Request request, String messageName, String quorumName) {
+    public static byte[] ackHelper(Request request, String messageName, String quorumName, int quorumId) throws FaultInjectedException {
         byte[] data = null;
         if (request != null) {
             Record txn = request.getTxn();
             if (txn != null) {
                 Record record = new NullPointerResponse(messageName);
                 TMB_Trace trace = txn.getTrace();
-                if (trace != null) {
+                if (trace != null && trace.getId() != 0) {
+                    // Direct Response Circle, the trace is carried by txn
+                    // do not need TMB_Store.getInstance().quorumGetTrace(quorumId, trace.getId()) here
+
+                    TMB_Helper.checkTFIs(trace, messageName);
+
                     record.setTrace(trace);
-                    record = TMB_Utils.appendEvent(record, TMB_Event.RECORD_SEND, messageName, quorumName);
+                    record = TMB_Utils.appendEvent(record, TMB_Event.RECORD_SEND, messageName, quorumName, false);
 
                     try {
                         ByteArrayOutputStream bao = TMB_Helper.serialize(record);
@@ -106,7 +113,7 @@ public class TMB_Utils {
         return txn;
     }
 
-    public static Record appendEvent(Record record, int type, String messageName, String service) {
+    public static Record appendEvent(Record record, int type, String messageName, String service, boolean truncateUUID) {
         TMB_Trace trace = record.getTrace();
         if (trace == null) {
             return record;
@@ -118,6 +125,9 @@ public class TMB_Utils {
         if (eventSize > 0) {
             TMB_Event lastEvent = events.get(eventSize - 1);
             String uuid = lastEvent.getUuid();
+            if (truncateUUID && uuid.length() == TMB_Helper.UUID_LEN + TMB_Helper.UUID_SUF_LEN) {
+                uuid = uuid.substring(0, TMB_Helper.UUID_LEN);
+            }
 
             if (messageName.equals("")) {
                 messageName = lastEvent.getMessage_name();
@@ -129,7 +139,7 @@ public class TMB_Utils {
                     uuid,
                     service));
 
-            trace.setEvents(events);
+            trace.setEvents(events, 1);
             record.setTrace(trace);
         }
 
@@ -137,7 +147,7 @@ public class TMB_Utils {
     }
 
     public static Record appendEvent(Record record, int type, String service) {
-        return appendEvent(record, type, "", service);
+        return appendEvent(record, type, "", service, false);
     }
 
     // before sending the message,

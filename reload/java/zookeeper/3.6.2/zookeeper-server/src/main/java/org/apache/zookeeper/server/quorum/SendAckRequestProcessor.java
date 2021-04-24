@@ -23,6 +23,7 @@ import java.io.IOException;
 
 import org.apache.zookeeper.ZooDefs.OpCode;
 import org.apache.zookeeper.server.*;
+import org.apache.zookeeper.trace.FaultInjectedException;
 import org.apache.zookeeper.trace.TMB_Helper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +53,14 @@ public class SendAckRequestProcessor implements RequestProcessor, Flushable {
         if (si.type != OpCode.sync) {
             // 3MileBeach starts
             TMB_Utils.printRequestForProcessor("SendAckRequestProcessor", quorumName, learner, si);
-            byte[] data = TMB_Utils.ackHelper(si, "QuorumAck", quorumName);
+            byte[] data;
+            try {
+                TMB_Helper.printf("[%s] let's ack! request %s\n", quorumName, si.getTxn());
+                data = TMB_Utils.ackHelper(si, TMB_Utils.QUORUM_ACK, quorumName, quorumId);
+            } catch (FaultInjectedException e) {
+                TMB_Helper.printf("[%s] Fault injected, won't send ACK to the leader\n", quorumName);
+                return;
+            }
             QuorumPacket qp = new QuorumPacket(Leader.ACK, si.getHdr().getZxid(), data, null);
             // 3MileBeach ends
 

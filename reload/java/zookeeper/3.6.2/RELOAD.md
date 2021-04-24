@@ -42,8 +42,10 @@ reload/java/zookeeper/3.6.2/zookeeper-server/src/main/java/org/apache/zookeeper/
             Leader sends COMMIT messages to followers without data
         3MileBeach:
             Add data to COMMIT messages
-        TODO:
-            Inject faults
+            Inject faults:
+                Block commit messages to followers and observers
+                TODO:
+                    Block CommitProcessor and pendingSyncs
     Leader::sendPacket()
         Org:
             Sends packets to followers

@@ -401,7 +401,7 @@ public class FastLeaderElection implements Election {
                                                     String.format("quorum-%d", quorumId));
                                             // TMB_Helper.printf("[quorum-%d] new event: %s\n", quorumId, event.toJSON());
                                             events.add(event);
-                                            trace.setEvents(events);
+                                            trace.setEvents(events, 1);
 
                                             TMB_Store.getInstance().quorumSetTrace(quorumId, trace);
                                             n.trace = trace;
@@ -683,7 +683,7 @@ public class FastLeaderElection implements Election {
 
                         events_.addAll(events);
                         events_.add(event);
-                        m.trace.setEvents(events_);
+                        m.trace.setEvents(events_, 1);
 
                         TMB_Store.getInstance().quorumSetTrace(quorumId, m.trace); // todo
                         ByteArrayOutputStream os = TMB_Helper.serialize(m.trace);
