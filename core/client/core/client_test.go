@@ -139,7 +139,7 @@ func Test1(t *testing.T) {
 					Type: tracer.FaultType_FaultCrash,
 					Name: []string{"CurrencyConversionRequest"},
 					After: []*tracer.TFIMeta{
-						{Name: "CurrencyConversionRequest", Times: 1},
+						{Name: "CurrencyConversionRequest", Times: 0},
 					},
 				},
 			},
@@ -147,9 +147,9 @@ func Test1(t *testing.T) {
 	}
 
 	for i := 0; i < len(traces); i++ {
-		if i != 3 {
-			continue
-		}
+		//if i != 3 {
+		//	continue
+		//}
 
 		client := NewClient()
 
@@ -163,8 +163,8 @@ func Test1(t *testing.T) {
 					MessageName: "home",
 					Trace:       traces[i],
 					Expect: &data.ExpectedResponse{
-						ContentType: rHtml.ContentTypeHTML,
-						//Action:      data.PrintResponse,
+						ContentType: rHtml.ContentTypeJSON,
+						Action:      data.PrintResponse | data.DeserializeTrace,
 					},
 				},
 			},
@@ -173,9 +173,10 @@ func Test1(t *testing.T) {
 
 		rsp, err := client.SendRequests(reqs)
 		if err != nil {
-			t.Errorf("%d err: %v", i, err)
+			t.Errorf("case %d err: %v", i, err)
 		} else {
-			t.Logf("body: %s", string(rsp.Body))
+			t.Logf("case %d body: %s", i, string(rsp.Body))
+			t.Logf("case %d trace: %s", i, rsp.Trace.String())
 		}
 	}
 }
