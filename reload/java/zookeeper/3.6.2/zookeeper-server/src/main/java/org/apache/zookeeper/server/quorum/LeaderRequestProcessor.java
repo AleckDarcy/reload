@@ -19,14 +19,13 @@
 package org.apache.zookeeper.server.quorum;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs.OpCode;
 import org.apache.zookeeper.server.Request;
 import org.apache.zookeeper.server.RequestProcessor;
 import org.apache.zookeeper.server.TMB_Utils;
-import org.apache.zookeeper.trace.TMB_Helper;
+import org.apache.zookeeper.trace.TMB_Store;
 import org.apache.zookeeper.txn.ErrorTxn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,21 +43,19 @@ public class LeaderRequestProcessor implements RequestProcessor {
     private final RequestProcessor nextProcessor;
 
     // 3MileBeach starts
-    int quorumId;
-    String quorumName;
+    TMB_Store.QuorumMeta quorumMeta;
 
     public LeaderRequestProcessor(LeaderZooKeeperServer zks, RequestProcessor nextProcessor, QuorumPeer self) {
         this.lzks = zks;
         this.nextProcessor = nextProcessor;
-        this.quorumId = self.hashCode();
-        this.quorumName = String.format("quorum-%d", this.quorumId);
+        this.quorumMeta = self.getQuorumMeta();
     }
     // 3MileBeach ends
 
     public LeaderRequestProcessor(LeaderZooKeeperServer zks, RequestProcessor nextProcessor) {
         this.lzks = zks;
         this.nextProcessor = nextProcessor;
-        this.quorumName = "quorum-standalone"; // 3MileBeach
+        this.quorumMeta = new TMB_Store.QuorumMeta(0, "quorum-standalone"); // 3MileBeach
     }
 
     @Override
@@ -85,11 +82,11 @@ public class LeaderRequestProcessor implements RequestProcessor {
             LOG.error("Unexpected error in upgrade", ie);
         }
         if (upgradeRequest != null) {
-            TMB_Utils.printRequestForProcessor("LeaderRequestProcessor", quorumName, nextProcessor, upgradeRequest); // 3MileBeach
+            TMB_Utils.printRequestForProcessor("LeaderRequestProcessor", quorumMeta, nextProcessor, upgradeRequest); // 3MileBeach
             nextProcessor.processRequest(upgradeRequest);
         }
 
-        TMB_Utils.printRequestForProcessor("LeaderRequestProcessor", quorumName, nextProcessor, request); // 3MileBeach
+        TMB_Utils.printRequestForProcessor("LeaderRequestProcessor", quorumMeta, nextProcessor, request); // 3MileBeach
         nextProcessor.processRequest(request);
     }
 

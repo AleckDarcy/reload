@@ -104,8 +104,7 @@ public class Leader extends LearnerMaster {
     final LeaderZooKeeperServer zk;
 
     final QuorumPeer self;
-    final String quorumName; // 3MileBeach
-    final int quorumId; // 3MileBeach
+    final TMB_Store.QuorumMeta quorumMeta; // 3MileBeach
 
     // VisibleForTesting
     protected boolean quorumFormed = false;
@@ -271,8 +270,7 @@ public class Leader extends LearnerMaster {
 
     public Leader(QuorumPeer self, LeaderZooKeeperServer zk) throws IOException {
         this.self = self;
-        this.quorumId = self.hashCode(); // 3MileBeach
-        this.quorumName = String.format("quorum-%d", self.hashCode()); // 3MileBeach
+        this.quorumMeta = self.getQuorumMeta(); // 3MileBeach
         this.proposalStats = new BufferStats();
 
         Set<InetSocketAddress> addresses;
@@ -951,12 +949,12 @@ public class Leader extends LearnerMaster {
 
             // 3MileBeach starts
             try {
-                TMB_Helper.printf("[%s] let's commit! request %s\n", quorumName, p.request.getTxn());
-                byte[] data = TMB_Utils.commitHelper(p.request, TMB_Utils.LEADER_COMMIT, quorumName, quorumId);
+                TMB_Helper.printf("[%s] let's commit! request %s\n", quorumMeta.getName(), p.request.getTxn());
+                byte[] data = TMB_Utils.commitHelper(p.request, TMB_Utils.LEADER_COMMIT, quorumMeta, this.getClass());
                 commit(zxid, data);
                 inform(p);
             } catch (FaultInjectedException e) {
-                TMB_Helper.printf("[%s] Fault injected, no commit messages were sent to followers or observers\n", quorumName);
+                TMB_Helper.printf("[%s] Fault injected, no commit messages were sent to followers or observers\n", quorumMeta.getName());
             }
             // 3MileBeach ends
 
@@ -968,10 +966,10 @@ public class Leader extends LearnerMaster {
             for (LearnerSyncRequest r : pendingSyncs.remove(zxid)) {
                 // 3MileBeach starts
                 try {
-                    byte[] data = TMB_Utils.commitHelper(r, TMB_Utils.LEADER_COMMIT, quorumName, quorumId);
+                    byte[] data = TMB_Utils.commitHelper(r, TMB_Utils.LEADER_COMMIT, quorumMeta, this.getClass());
                     sendSync(r, data);
                 } catch (FaultInjectedException e) {
-                    TMB_Helper.printf("[%s] Fault injected, no sync messages were sent to learners\n", quorumName);
+                    TMB_Helper.printf("[%s] Fault injected, no sync messages were sent to learners\n", quorumMeta.getName());
                 }
                 // 3MileBeach ends
 
@@ -992,7 +990,7 @@ public class Leader extends LearnerMaster {
      */
     @Override
     public synchronized void processAck(long sid, long zxid, SocketAddress followerAddr) {
-        TMB_Helper.printf("[quorum-%d] Leader processAck starts\n", self.hashCode()); // 3MileBeach
+        TMB_Helper.printf("[%s] Leader processAck starts\n", quorumMeta.getName()); // 3MileBeach
         if (!allowedToCommit) {
             // TMB_Helper.printf("[quorum-%d] Leader processAck returns (!allowedToCommit)\n", self.hashCode()); // 3MileBeach
             return; // last op committed was a leader change - from now on
@@ -1063,12 +1061,12 @@ public class Leader extends LearnerMaster {
                 curZxid++;
                 p = outstandingProposals.get(curZxid);
                 if (p != null) {
-                    TMB_Helper.printf("[quorum-%d] Leader processAck tries to commit\n", self.hashCode()); // 3MileBeach
+                    TMB_Helper.printf("[%s] Leader processAck tries to commit\n", quorumMeta.getName()); // 3MileBeach
                     hasCommitted = tryToCommit(p, curZxid, null);
                 }
             }
         }
-        TMB_Helper.printf("[quorum-%d] Leader processAck ends\n", self.hashCode()); // 3MileBeach
+        TMB_Helper.printf("[%s] Leader processAck ends\n", quorumMeta.getName()); // 3MileBeach
     }
 
     static class ToBeAppliedRequestProcessor implements RequestProcessor {
@@ -1078,8 +1076,7 @@ public class Leader extends LearnerMaster {
         private final Leader leader;
 
         // 3MileBeach starts
-        int quorumId;
-        String quorumName;
+        TMB_Store.QuorumMeta quorumMeta;
 
         ToBeAppliedRequestProcessor(RequestProcessor next, Leader leader, QuorumPeer self) {
             if (!(next instanceof FinalRequestProcessor)) {
@@ -1091,8 +1088,7 @@ public class Leader extends LearnerMaster {
             }
             this.leader = leader;
             this.next = next;
-            this.quorumId = self.hashCode();
-            this.quorumName = String.format("quorum-%d", this.quorumId);
+            this.quorumMeta = self.getQuorumMeta();
         }
         // 3MileBeach ends
 
@@ -1115,7 +1111,7 @@ public class Leader extends LearnerMaster {
             }
             this.leader = leader;
             this.next = next;
-            this.quorumName = "quorum-standalone"; // 3MileBeach
+            this.quorumMeta = new TMB_Store.QuorumMeta(0, "quorum-standalone"); // 3MileBeach
         }
 
         /*
@@ -1124,7 +1120,7 @@ public class Leader extends LearnerMaster {
          * @see org.apache.zookeeper.server.RequestProcessor#processRequest(org.apache.zookeeper.server.Request)
          */
         public void processRequest(Request request) throws RequestProcessorException {
-            TMB_Utils.printRequestForProcessor("ToBeAppliedRequestProcessor", quorumName, next, request); // 3MileBeach
+            TMB_Utils.printRequestForProcessor("ToBeAppliedRequestProcessor", quorumMeta, next, request); // 3MileBeach
             next.processRequest(request);
 
             // The only requests that should be on toBeApplied are write
@@ -1138,11 +1134,11 @@ public class Leader extends LearnerMaster {
                     Proposal p = iter.next();
                     if (p.request != null && p.request.zxid == zxid) {
                         iter.remove();
-                        TMB_Utils.printRequestForProcessor("ToBeAppliedRequestProcessor", quorumName, next, p.request); // 3MileBeach
+                        TMB_Utils.printRequestForProcessor("ToBeAppliedRequestProcessor", quorumMeta, next, p.request); // 3MileBeach
                         return;
                     }
                 }
-                TMB_Helper.printf("[%s] ToBeAppliedRequestProcessor\n", quorumName); // 3MileBeach
+                TMB_Helper.printf("[%s] ToBeAppliedRequestProcessor\n", quorumMeta.getName()); // 3MileBeach
                 LOG.error("Committed request not found on toBeApplied: {}", request);
             }
         }
@@ -1181,17 +1177,12 @@ public class Leader extends LearnerMaster {
                                 TMB_Event lastEvent = events.get(eventSize - 1);
                                 String uuid = lastEvent.getUuid();
 
-                                TMB_Helper.printf("[quorum-%d] Leader forwards to %d follower(s)\n", self.hashCode(), forwardingFollowers.size());
+                                TMB_Helper.printf("[%s] Leader forwards to %d follower(s)\n", quorumMeta.getName(), forwardingFollowers.size());
                                 int i = 0;
                                 for (LearnerHandler f : forwardingFollowers) {
                                     String uuid_ = String.format("%s-%04d", uuid, i);
 
-                                    events.add(new TMB_Event(
-                                            TMB_Event.RECORD_PRSL,
-                                            TMB_Helper.currentTimeNanos(),
-                                            lastEvent.getMessage_name(),
-                                            uuid_,
-                                            String.format("quorum-%d", self.hashCode())));
+                                    events.add(new TMB_Event(TMB_Event.RECORD_PRSL, TMB_Helper.currentTimeNanos(), lastEvent.getMessage_name(), uuid_, quorumMeta.getName(), this.getClass()));
 
                                     trace.setEvents(events, 1);
                                     record.setTrace(trace);

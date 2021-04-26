@@ -27,6 +27,7 @@ import org.apache.zookeeper.ZooDefs.OpCode;
 import org.apache.zookeeper.proto.*;
 import org.apache.zookeeper.server.*;
 import org.apache.zookeeper.trace.TMB_Event;
+import org.apache.zookeeper.trace.TMB_Store;
 import org.apache.zookeeper.txn.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,15 +49,13 @@ public class FollowerRequestProcessor extends ZooKeeperCriticalThread implements
     boolean finished = false;
 
     // 3MileBeach starts
-    int quorumId;
-    String quorumName;
+    TMB_Store.QuorumMeta quorumMeta;
 
     public FollowerRequestProcessor(FollowerZooKeeperServer zks, RequestProcessor nextProcessor, QuorumPeer self) {
         super("FollowerRequestProcessor:" + zks.getServerId(), zks.getZooKeeperServerListener());
         this.zks = zks;
         this.nextProcessor = nextProcessor;
-        this.quorumId = self.hashCode();
-        this.quorumName = String.format("quorum-%d", this.quorumId);
+        this.quorumMeta = self.getQuorumMeta();
     }
     // 3MileBeach ends
 
@@ -64,7 +63,7 @@ public class FollowerRequestProcessor extends ZooKeeperCriticalThread implements
         super("FollowerRequestProcessor:" + zks.getServerId(), zks.getZooKeeperServerListener());
         this.zks = zks;
         this.nextProcessor = nextProcessor;
-        this.quorumName = "quorum-standalone"; // 3MileBeach
+        this.quorumMeta = new TMB_Store.QuorumMeta(0, "quorum-standalone"); // 3MileBeach
     }
 
     @Override
@@ -83,7 +82,7 @@ public class FollowerRequestProcessor extends ZooKeeperCriticalThread implements
                 if (!zks.authWriteRequest(request)) {
                     continue;
                 }
-                TMB_Utils.printRequestForProcessor("FollowerRequestProcessor starts", quorumName, nextProcessor, request); // 3MileBeach
+                TMB_Utils.printRequestForProcessor("FollowerRequestProcessor starts", quorumMeta, nextProcessor, request); // 3MileBeach
 
                 // We want to queue the request to be processed before we submit
                 // the request to the leader so that we are ready to receive
@@ -105,39 +104,39 @@ public class FollowerRequestProcessor extends ZooKeeperCriticalThread implements
                 case OpCode.createTTL:
                 case OpCode.createContainer:
                     // 3MileBeach begins
-                    request.request = TMB_Utils.appendEvent(request.request, new CreateRequest(), TMB_Event.RECORD_FRWD, quorumName);
+                    request.request = TMB_Utils.appendEvent(request.request, new CreateRequest(), TMB_Event.RECORD_FRWD, quorumMeta, this.getClass());
                     zks.getFollower().request(request);
                     break;
                     // 3MileBeach ends
                 case OpCode.delete:
                 case OpCode.deleteContainer:
-                    request.request = TMB_Utils.appendEvent(request.request, new DeleteRequest(), TMB_Event.RECORD_FRWD, quorumName); // 3MileBeach
+                    request.request = TMB_Utils.appendEvent(request.request, new DeleteRequest(), TMB_Event.RECORD_FRWD, quorumMeta, this.getClass()); // 3MileBeach
                     zks.getFollower().request(request);
                     break;
                 case OpCode.setData:
-                    request.request = TMB_Utils.appendEvent(request.request, new SetDataRequest(), TMB_Event.RECORD_FRWD, quorumName); // 3MileBeach
+                    request.request = TMB_Utils.appendEvent(request.request, new SetDataRequest(), TMB_Event.RECORD_FRWD, quorumMeta, this.getClass()); // 3MileBeach
                     zks.getFollower().request(request);
                     break;
                 case OpCode.reconfig:
                     // 3MileBeach begins
-                    request.request = TMB_Utils.appendEvent(request.request, new ReconfigRequest(), TMB_Event.RECORD_FRWD, quorumName);
+                    request.request = TMB_Utils.appendEvent(request.request, new ReconfigRequest(), TMB_Event.RECORD_FRWD, quorumMeta, this.getClass());
                     zks.getFollower().request(request);
                     break;
                     // 3MileBeach ends
                 case OpCode.setACL:
                     // 3MileBeach begins
-                    request.request = TMB_Utils.appendEvent(request.request, new SetACLRequest(), TMB_Event.RECORD_FRWD, quorumName);
+                    request.request = TMB_Utils.appendEvent(request.request, new SetACLRequest(), TMB_Event.RECORD_FRWD, quorumMeta, this.getClass());
                     zks.getFollower().request(request);
                     break;
                     // 3MileBeach ends
                 case OpCode.multi:
                     // 3MileBeach begins
-                    request.request = TMB_Utils.appendEvent(request.request, new MultiOperationRecord(), TMB_Event.RECORD_FRWD, quorumName);
+                    request.request = TMB_Utils.appendEvent(request.request, new MultiOperationRecord(), TMB_Event.RECORD_FRWD, quorumMeta, this.getClass());
                     zks.getFollower().request(request);
                     break;
                     // 3MileBeach ends
                 case OpCode.check:
-                    request.request = TMB_Utils.appendEvent(request.request, new CheckVersionRequest(), TMB_Event.RECORD_FRWD, quorumName); // 3MileBeach
+                    request.request = TMB_Utils.appendEvent(request.request, new CheckVersionRequest(), TMB_Event.RECORD_FRWD, quorumMeta, this.getClass()); // 3MileBeach
                     zks.getFollower().request(request);
                     break;
                 case OpCode.createSession:
@@ -148,7 +147,7 @@ public class FollowerRequestProcessor extends ZooKeeperCriticalThread implements
                     }
                     break;
                 }
-                TMB_Utils.printRequestForProcessor("FollowerRequestProcessor ends", quorumName, nextProcessor, request); // 3MileBeach
+                TMB_Utils.printRequestForProcessor("FollowerRequestProcessor ends", quorumMeta, nextProcessor, request); // 3MileBeach
             }
         } catch (Exception e) {
             handleException(this.getName(), e);

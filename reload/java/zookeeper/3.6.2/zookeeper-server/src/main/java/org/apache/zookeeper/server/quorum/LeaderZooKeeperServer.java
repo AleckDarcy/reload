@@ -56,7 +56,7 @@ public class LeaderZooKeeperServer extends QuorumZooKeeperServer {
      */
     public LeaderZooKeeperServer(FileTxnSnapLog logFactory, QuorumPeer self, ZKDatabase zkDb) throws IOException {
         super(logFactory, self.tickTime, self.minSessionTimeout, self.maxSessionTimeout, self.clientPortListenBacklog, zkDb, self);
-        TMB_Helper.printf("[quorum-%d] new LeaderZookeeperServer\n", self.hashCode()); // 3MileBeach
+        TMB_Helper.printf("[%s] new LeaderZookeeperServer\n", self.getQuorumMeta().getName()); // 3MileBeach
     }
 
     public Leader getLeader() {
@@ -77,15 +77,15 @@ public class LeaderZooKeeperServer extends QuorumZooKeeperServer {
         firstProcessor = new LeaderRequestProcessor(this, prepRequestProcessor, self);
         // 3MileBeach ends
 
-//        RequestProcessor finalProcessor = new FinalRequestProcessor(this);
-//        RequestProcessor toBeAppliedProcessor = new Leader.ToBeAppliedRequestProcessor(finalProcessor, getLeader());
-//        commitProcessor = new CommitProcessor(toBeAppliedProcessor, Long.toString(getServerId()), false, getZooKeeperServerListener());
-//        commitProcessor.start();
-//        ProposalRequestProcessor proposalProcessor = new ProposalRequestProcessor(this, commitProcessor);
-//        proposalProcessor.initialize();
-//        prepRequestProcessor = new PrepRequestProcessor(this, proposalProcessor);
-//        prepRequestProcessor.start();
-//        firstProcessor = new LeaderRequestProcessor(this, prepRequestProcessor);
+        // RequestProcessor finalProcessor = new FinalRequestProcessor(this);
+        // RequestProcessor toBeAppliedProcessor = new Leader.ToBeAppliedRequestProcessor(finalProcessor, getLeader());
+        // commitProcessor = new CommitProcessor(toBeAppliedProcessor, Long.toString(getServerId()), false, getZooKeeperServerListener());
+        // commitProcessor.start();
+        // ProposalRequestProcessor proposalProcessor = new ProposalRequestProcessor(this, commitProcessor);
+        // proposalProcessor.initialize();
+        // prepRequestProcessor = new PrepRequestProcessor(this, proposalProcessor);
+        // prepRequestProcessor.start();
+        // firstProcessor = new LeaderRequestProcessor(this, prepRequestProcessor);
 
         setupContainerManager();
     }

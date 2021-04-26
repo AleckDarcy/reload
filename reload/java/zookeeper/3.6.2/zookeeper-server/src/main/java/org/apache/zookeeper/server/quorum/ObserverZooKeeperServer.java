@@ -54,7 +54,8 @@ public class ObserverZooKeeperServer extends LearnerZooKeeperServer {
     ObserverZooKeeperServer(FileTxnSnapLog logFactory, QuorumPeer self, ZKDatabase zkDb) throws IOException {
         super(logFactory, self.tickTime, self.minSessionTimeout, self.maxSessionTimeout, self.clientPortListenBacklog, zkDb, self);
         LOG.info("syncEnabled ={}", syncRequestProcessorEnabled);
-        TMB_Helper.printf("[quorum-%d] new ObserverZookeeperServer\n", self.hashCode()); // 3MileBeach
+
+        // TMB_Helper.printf("[quorum-%d] new ObserverZookeeperServer\n", self.hashCode()); // 3MileBeach
     }
 
     public Observer getObserver() {

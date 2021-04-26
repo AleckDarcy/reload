@@ -256,8 +256,7 @@ public class LearnerHandler extends ZooKeeperThread {
 
 
     // 3MileBeach starts
-    int quorumId;
-    String quorumName;
+    TMB_Store.QuorumMeta quorumMeta;
 
     LearnerHandler(Socket sock, BufferedInputStream bufferedInput, LearnerMaster learnerMaster, QuorumPeer self) throws IOException {
         super("LearnerHandler-" + sock.getRemoteSocketAddress());
@@ -286,8 +285,7 @@ public class LearnerHandler extends ZooKeeperThread {
         }
 
         this.messageTracker = new MessageTracker(MessageTracker.BUFFERED_MESSAGE_SIZE);
-        this.quorumId = self.hashCode();
-        this.quorumName = String.format("quorum-%d", this.quorumId);
+        this.quorumMeta = self.getQuorumMeta();
     }
     // 3MileBeach ends
 
@@ -318,7 +316,7 @@ public class LearnerHandler extends ZooKeeperThread {
         }
 
         this.messageTracker = new MessageTracker(MessageTracker.BUFFERED_MESSAGE_SIZE);
-        this.quorumName = "quorum-standalone"; // 3MileBeach
+        this.quorumMeta = new TMB_Store.QuorumMeta(0, "quorum-standalone"); // 3MileBeach
     }
 
     @Override
@@ -704,7 +702,7 @@ public class LearnerHandler extends ZooKeeperThread {
                     if (this.learnerType == LearnerType.OBSERVER) {
                         LOG.debug("Received ACK from Observer {}", this.sid);
                     }
-                    TMB_Utils.quorumCollectTraceFromQuorumPacket(quorumId, quorumName, new NullPointerResponse(), qp); // 3MileBeach
+                    TMB_Utils.quorumCollectTraceFromQuorumPacket(quorumMeta, new NullPointerResponse(), qp, this.getClass()); // 3MileBeach
                     syncLimitCheck.updateAck(qp.getZxid());
                     learnerMaster.processAck(this.sid, qp.getZxid(), sock.getLocalSocketAddress());
                     break;

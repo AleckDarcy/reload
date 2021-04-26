@@ -22,6 +22,7 @@ import org.apache.zookeeper.server.Request;
 import org.apache.zookeeper.server.RequestProcessor;
 import org.apache.zookeeper.server.ServerMetrics;
 import org.apache.zookeeper.server.TMB_Utils;
+import org.apache.zookeeper.trace.TMB_Store;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,19 +36,17 @@ class AckRequestProcessor implements RequestProcessor {
     Leader leader;
 
     // 3MileBeach starts
-    int quorumId;
-    String quorumName;
+    TMB_Store.QuorumMeta quorumMeta;
 
     AckRequestProcessor(Leader leader, QuorumPeer self) {
         this.leader = leader;
-        this.quorumId = self.hashCode();
-        this.quorumName = String.format("quorum-%d", this.quorumId);
+        this.quorumMeta = self.getQuorumMeta();
     }
     // 3MileBeach ends
 
     AckRequestProcessor(Leader leader) {
         this.leader = leader;
-        this.quorumName = "quorum-standalone"; // 3MileBeach
+        this.quorumMeta = new TMB_Store.QuorumMeta(0, "quorum-standalone"); // 3MileBeach
     }
 
     /**
@@ -55,14 +54,14 @@ class AckRequestProcessor implements RequestProcessor {
      */
     public void processRequest(Request request) {
         QuorumPeer self = leader.self;
-        TMB_Utils.printRequestForProcessor("AckRequestProcessor starts", quorumName, self, request); // 3MileBeach
+        TMB_Utils.printRequestForProcessor("AckRequestProcessor starts", quorumMeta, self, request); // 3MileBeach
         if (self != null) {
             request.logLatency(ServerMetrics.getMetrics().PROPOSAL_ACK_CREATION_LATENCY);
             leader.processAck(self.getId(), request.zxid, null);
         } else {
             LOG.error("Null QuorumPeer");
         }
-        TMB_Utils.printRequestForProcessor("AckRequestProcessor ends", quorumName, self, request); // 3MileBeach
+        TMB_Utils.printRequestForProcessor("AckRequestProcessor ends", quorumMeta, self, request); // 3MileBeach
     }
 
     public void shutdown() {

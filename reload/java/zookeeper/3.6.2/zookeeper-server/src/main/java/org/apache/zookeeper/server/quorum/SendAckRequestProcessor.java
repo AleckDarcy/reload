@@ -25,6 +25,7 @@ import org.apache.zookeeper.ZooDefs.OpCode;
 import org.apache.zookeeper.server.*;
 import org.apache.zookeeper.trace.FaultInjectedException;
 import org.apache.zookeeper.trace.TMB_Helper;
+import org.apache.zookeeper.trace.TMB_Store;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,31 +35,29 @@ public class SendAckRequestProcessor implements RequestProcessor, Flushable {
 
     Learner learner;
     // 3MileBeach starts
-    int quorumId;
-    String quorumName;
+    TMB_Store.QuorumMeta quorumMeta;
 
     SendAckRequestProcessor(Learner peer, QuorumPeer self) {
         this.learner = peer;
-        this.quorumId = self.hashCode();
-        this.quorumName = String.format("quorum-%d", this.quorumId);
+        this.quorumMeta = self.getQuorumMeta();
     }
     // 3MileBeach ends
 
     SendAckRequestProcessor(Learner peer) {
         this.learner = peer;
-        this.quorumName = "quorum-standalone"; // 3MileBeach
+        this.quorumMeta = new TMB_Store.QuorumMeta(0, "quorum-standalone"); // 3MileBeach
     }
 
     public void processRequest(Request si) {
         if (si.type != OpCode.sync) {
             // 3MileBeach starts
-            TMB_Utils.printRequestForProcessor("SendAckRequestProcessor", quorumName, learner, si);
+            TMB_Utils.printRequestForProcessor("SendAckRequestProcessor", quorumMeta, learner, si);
             byte[] data;
             try {
-                TMB_Helper.printf("[%s] let's ack! request %s\n", quorumName, si.getTxn());
-                data = TMB_Utils.ackHelper(si, TMB_Utils.QUORUM_ACK, quorumName, quorumId);
+                TMB_Helper.printf("[%s] let's ack! request %s\n", quorumMeta.getName(), si.getTxn());
+                data = TMB_Utils.ackHelper(si, TMB_Utils.QUORUM_ACK, quorumMeta, this.getClass());
             } catch (FaultInjectedException e) {
-                TMB_Helper.printf("[%s] Fault injected, won't send ACK to the leader\n", quorumName);
+                TMB_Helper.printf("[%s] Fault injected, won't send ACK to the leader\n", quorumMeta.getName());
                 return;
             }
             QuorumPacket qp = new QuorumPacket(Leader.ACK, si.getHdr().getZxid(), data, null);
@@ -81,7 +80,7 @@ public class SendAckRequestProcessor implements RequestProcessor, Flushable {
                 }
             }
         } else {
-            TMB_Helper.printf("[%s] SendAckRequestProcessor\n", quorumName); // 3MileBeach
+            TMB_Helper.printf("[%s] SendAckRequestProcessor\n", quorumMeta.getName()); // 3MileBeach
         }
     }
 

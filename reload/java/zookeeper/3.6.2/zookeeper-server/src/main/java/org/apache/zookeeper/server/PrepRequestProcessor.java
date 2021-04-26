@@ -52,6 +52,7 @@ import org.apache.zookeeper.server.quorum.QuorumPeerConfig;
 import org.apache.zookeeper.server.quorum.QuorumPeerConfig.ConfigException;
 import org.apache.zookeeper.server.quorum.flexible.QuorumMaj;
 import org.apache.zookeeper.server.quorum.flexible.QuorumVerifier;
+import org.apache.zookeeper.trace.TMB_Store;
 import org.apache.zookeeper.txn.CheckVersionTxn;
 import org.apache.zookeeper.txn.CloseSessionTxn;
 import org.apache.zookeeper.txn.CreateContainerTxn;
@@ -99,8 +100,7 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
     }
 
     // 3MileBeach begins
-    int quorumId;
-    String quorumName;
+    TMB_Store.QuorumMeta quorumMeta;
 
     public PrepRequestProcessor(ZooKeeperServer zks, RequestProcessor nextProcessor, QuorumPeer self) {
         super(
@@ -113,8 +113,7 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
         if (this.digestEnabled) {
             this.digestCalculator = new DigestCalculator();
         }
-        this.quorumId = self.hashCode();
-        this.quorumName = String.format("quorum-%d", this.quorumId);
+        this.quorumMeta = self.getQuorumMeta();
     }
     // 3MileBeach ends
 
@@ -129,7 +128,7 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
         if (this.digestEnabled) {
             this.digestCalculator = new DigestCalculator();
         }
-        this.quorumName = "quorum-standalone"; // 3MileBeach
+        this.quorumMeta = new TMB_Store.QuorumMeta(0, "quorum-standalone"); // 3MileBeach
     }
 
     /**
@@ -777,7 +776,7 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
      * @param request
      */
     protected void pRequest(Request request) throws RequestProcessorException {
-        TMB_Utils.printRequestForProcessor("PreRequestProcessor", quorumName, nextProcessor, request); // 3MileBeach
+        TMB_Utils.printRequestForProcessor("PreRequestProcessor", quorumMeta, nextProcessor, request); // 3MileBeach
         // LOG.info("Prep>>> cxid = " + request.cxid + " type = " +
         // request.type + " id = 0x" + Long.toHexString(request.sessionId));
         request.setHdr(null);

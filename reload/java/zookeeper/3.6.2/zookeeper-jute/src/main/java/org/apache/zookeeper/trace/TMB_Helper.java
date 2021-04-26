@@ -83,6 +83,10 @@ public class TMB_Helper {
         return getClassNameFromName(o.getClass().getCanonicalName());
     }
 
+    public static String getClassNameFromClass(Class c) {
+        return getClassNameFromName(c.getCanonicalName());
+    }
+
     public static String getClassNameFromName(String name) {
         return name.substring(name.lastIndexOf('.') + 1);
     }

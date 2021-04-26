@@ -1,10 +1,7 @@
 package org.apache.zookeeper.trace;
 
 import org.apache.jute.Record;
-import org.apache.zookeeper.proto.NullPointerResponse;
-import org.apache.zookeeper.server.quorum.QuorumPacket;
 
-import java.io.ByteArrayInputStream;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -29,6 +26,29 @@ public class TMB_Store {
 
         ClientPluginTrace(TMB_Trace trace) {
             this.trace = trace;
+        }
+    }
+
+    public static class QuorumMeta {
+        private long id;
+        private String name;
+
+        public QuorumMeta(long quorumId) {
+            this.id = quorumId;
+            this.name = String.format("quorum-%d", quorumId);
+        }
+
+        public QuorumMeta(long quorumId, String name) {
+            this.id = quorumId;
+            this.name = name;
+        }
+
+        public long getId() {
+            return id;
+        }
+
+        public String getName() {
+            return name;
         }
     }
 
@@ -102,25 +122,9 @@ public class TMB_Store {
     private Map<Long, QuorumTraces> quorumTraces; // Map<quorumId, QuorumTrace>
     private ReentrantReadWriteLock quorumLock;
 
-    public void quorumSendRequest(long quorumId, TMB_Trace trace_) {
-        quorumSetTrace(quorumId, trace_);
-    }
-
-    public void quorumReceiveRequest(long quorumId, TMB_Trace trace_) {
-        quorumSetTrace(quorumId, trace_);
-    }
-
-    public void quorumReceiveResponse(long quorumId, TMB_Trace trace_) {
-        quorumSetTrace(quorumId, trace_);
-    }
-
-    public void quorumSendResponse(long quorumId, TMB_Trace trace_) {
-        quorumSetTrace(quorumId, trace_);
-    }
-
-    public void quorumQuit(long quorumId, TMB_Trace trace_) {
+    public void quorumQuit(QuorumMeta quorumMeta, TMB_Trace trace_) {
         quorumLock.readLock().lock();
-        QuorumTraces quorumTraces = getQuorumTraces(quorumId);
+        QuorumTraces quorumTraces = getQuorumTraces(quorumMeta);
         quorumLock.readLock().unlock();
 
         QuorumTrace quorumTrace = quorumTraces.getQuorumTrace(trace_.getId());
@@ -129,16 +133,16 @@ public class TMB_Store {
         }
     }
 
-    public void quorumSetTrace(long quorumId, TMB_Trace trace_) {
+    public void quorumSetTrace(QuorumMeta quorumMeta, TMB_Trace trace_) {
         if (trace_.getId() == 0) {
             return;
         }
-        QuorumTraces quorumTraces = getQuorumTraces(quorumId);
+        QuorumTraces quorumTraces = getQuorumTraces(quorumMeta);
         quorumTraces.setTrace(trace_);
     }
 
-    public TMB_Trace quorumGetTrace(long quorumId, long traceId) { // unsafe
-        QuorumTraces quorumTraces = getQuorumTraces(quorumId);
+    public TMB_Trace quorumGetTrace(QuorumMeta quorumMeta, long traceId) { // unsafe
+        QuorumTraces quorumTraces = getQuorumTraces(quorumMeta);
 
         quorumTraces.lock.readLock().lock();
         QuorumTrace quorumTrace = quorumTraces.getQuorumTrace(traceId);
@@ -147,7 +151,9 @@ public class TMB_Store {
         return quorumTrace.trace;
     }
 
-    public QuorumTraces getQuorumTraces(long quorumId) {
+    public QuorumTraces getQuorumTraces(QuorumMeta quorumMeta) {
+        long quorumId = quorumMeta.getId();
+
         quorumLock.readLock().lock();
         QuorumTraces quorumTraces = this.quorumTraces.get(quorumId);
         quorumLock.readLock().unlock();
@@ -295,19 +301,19 @@ public class TMB_Store {
      * RequestProcessor -> calleeInbound -> process request -> calleeOutbound -> send response
      */
     // to be called after ByteBufferInputStream.byteBuffer2Record(buffer, record)
-    public static void calleeInbound(int serviceId, String service, Record request) {
+    public static void calleeInbound(QuorumMeta quorumMeta, Record request, Class processor) {
         TMB_Trace trace = request.getTrace();
         if (trace == null || trace.getId() == 0) {
-            TMB_Helper.printf(3, "[%s] callee inbound receives request with empty trace: %s, (%s)\n", service, TMB_Helper.getClassName(request), TMB_Helper.getString(request));
+            TMB_Helper.printf(3, "[%s] callee inbound receives request with empty trace: %s, (%s)\n", quorumMeta.getName(), TMB_Helper.getClassName(request), TMB_Helper.getString(request));
             return;
         }
 
         List<TMB_Event> events = trace.getEvents();
-        TMB_Helper.printf(3, "[%s] callee inbound receives request: %s, (%s)\n", service, TMB_Helper.getClassName(request), TMB_Helper.getString(request));
+        TMB_Helper.printf(3, "[%s] callee inbound receives request: %s, (%s)\n", quorumMeta.getName(), TMB_Helper.getClassName(request), TMB_Helper.getString(request));
 
         long threadId = Thread.currentThread().getId();
         TMB_Event preEvent = events.get(0);
-        TMB_Event event = new TMB_Event(TMB_Event.RECORD_RECV, TMB_Helper.currentTimeNanos(), preEvent.getMessage_name(), preEvent.getUuid(), service);
+        TMB_Event event = new TMB_Event(TMB_Event.RECORD_RECV, TMB_Helper.currentTimeNanos(), preEvent.getMessage_name(), preEvent.getUuid(), quorumMeta.getName(), processor);
         events.add(event);
         trace.setEvents(events, 1);
 
@@ -315,10 +321,10 @@ public class TMB_Store {
         thread_traces.put(threadId, trace);
         lock.writeLock().unlock();
 
-        getInstance().quorumSetTrace(serviceId, trace);
+        getInstance().quorumSetTrace(quorumMeta, trace);
     }
 
-    public static void calleeOutbound(int serviceId, String service, Record response) {
+    public static void calleeOutbound(QuorumMeta quorumMeta, Record response, Class processor) {
         long threadId = Thread.currentThread().getId();
 
         lock.writeLock().lock();
@@ -327,20 +333,20 @@ public class TMB_Store {
         lock.writeLock().unlock();
 
         if (trace == null) {
-            TMB_Helper.printf(3, "[%s] callee outbound ejects response without trace: %s, (%s)\n", service, TMB_Helper.getClassName(response), TMB_Helper.getString(response));
+            TMB_Helper.printf(3, "[%s] callee outbound ejects response without trace: %s, (%s)\n", quorumMeta.getName(), TMB_Helper.getClassName(response), TMB_Helper.getString(response));
 
             return;
         }
 
         TMB_Event preEvent = trace.getEvents().get(0);
-        TMB_Trace trace_ = getInstance().quorumGetTrace(serviceId, trace.getId());
+        TMB_Trace trace_ = getInstance().quorumGetTrace(quorumMeta, trace.getId());
         mergeEvents(trace, trace_.getEvents());
 
-        TMB_Event event = new TMB_Event(TMB_Event.RECORD_SEND, TMB_Helper.currentTimeNanos(), TMB_Helper.getClassName(response), preEvent.getUuid(), service);
+        TMB_Event event = new TMB_Event(TMB_Event.RECORD_SEND, TMB_Helper.currentTimeNanos(), TMB_Helper.getClassName(response), preEvent.getUuid(), quorumMeta.getName(), processor);
 
         trace.addEvent(event);
         response.setTrace(trace);
 
-        TMB_Helper.printf(3, "[%s] callee outbound ejects response: %s, (%s)\n", service, TMB_Helper.getClassName(response), TMB_Helper.getString(response));
+        TMB_Helper.printf(3, "[%s] callee outbound ejects response: %s, (%s)\n", quorumMeta.getName(), TMB_Helper.getClassName(response), TMB_Helper.getString(response));
     }
 }

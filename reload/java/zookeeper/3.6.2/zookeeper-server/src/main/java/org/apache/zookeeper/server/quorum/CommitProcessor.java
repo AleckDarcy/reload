@@ -27,6 +27,7 @@ import org.apache.zookeeper.ZooDefs.OpCode;
 import org.apache.zookeeper.common.Time;
 import org.apache.zookeeper.server.*;
 import org.apache.zookeeper.trace.TMB_Helper;
+import org.apache.zookeeper.trace.TMB_Store;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -147,15 +148,13 @@ public class CommitProcessor extends ZooKeeperCriticalThread implements RequestP
     boolean matchSyncs;
 
     // 3MileBeach starts
-    int quorumId;
-    String quorumName;
+    TMB_Store.QuorumMeta quorumMeta;
 
     public CommitProcessor(RequestProcessor nextProcessor, String id, boolean matchSyncs, ZooKeeperServerListener listener, QuorumPeer self) {
         super("CommitProcessor:" + id, listener);
         this.nextProcessor = nextProcessor;
         this.matchSyncs = matchSyncs;
-        this.quorumId = self.hashCode();
-        this.quorumName = String.format("quorum-%d", this.quorumId);
+        this.quorumMeta = self.getQuorumMeta();
     }
     // 3MileBeach ends
 
@@ -163,7 +162,7 @@ public class CommitProcessor extends ZooKeeperCriticalThread implements RequestP
         super("CommitProcessor:" + id, listener);
         this.nextProcessor = nextProcessor;
         this.matchSyncs = matchSyncs;
-        this.quorumName = "quorum-standalone"; // 3MileBeach
+        this.quorumMeta = new TMB_Store.QuorumMeta(0, "quorum-standalone"); // 3MileBeach
     }
 
     private boolean isProcessingRequest() {
@@ -249,7 +248,7 @@ public class CommitProcessor extends ZooKeeperCriticalThread implements RequestP
                        && requestsToProcess > 0
                        && (maxReadBatchSize < 0 || readsProcessed <= maxReadBatchSize)
                        && (request = queuedRequests.poll()) != null) {
-                    TMB_Utils.printRequestForProcessor("CommitProcessor starts", quorumName, nextProcessor, request); // 3MileBeach
+                    TMB_Utils.printRequestForProcessor("CommitProcessor starts", quorumMeta, nextProcessor, request); // 3MileBeach
                     requestsToProcess--;
                     if (needCommit(request) || pendingRequests.containsKey(request.sessionId)) {
                         // Add request to pending
@@ -261,7 +260,7 @@ public class CommitProcessor extends ZooKeeperCriticalThread implements RequestP
                         numReadQueuedRequests.decrementAndGet();
                         sendToNextProcessor(request);
                     }
-                    TMB_Utils.printRequestForProcessor("CommitProcessor ends", quorumName, nextProcessor, request); // 3MileBeach
+                    TMB_Utils.printRequestForProcessor("CommitProcessor ends", quorumMeta, nextProcessor, request); // 3MileBeach
                     /*
                      * Stop feeding the pool if there is a local pending update
                      * and a committed request that is ready. Once we have a

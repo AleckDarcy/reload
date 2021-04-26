@@ -1008,6 +1008,14 @@ public class QuorumPeer extends ZooKeeperThread implements QuorumStats.Provider 
 
     private final boolean reconfigEnabled;
 
+    // 3MileBeach starts
+    private TMB_Store.QuorumMeta quorumMeta;
+
+    public TMB_Store.QuorumMeta getQuorumMeta() {
+        return quorumMeta;
+    }
+    // 3MileBeach ends
+
     public static QuorumPeer testingQuorumPeer() throws SaslException {
         return new QuorumPeer();
     }
@@ -1020,6 +1028,7 @@ public class QuorumPeer extends ZooKeeperThread implements QuorumStats.Provider 
         x509Util = createX509Util();
         initialize();
         reconfigEnabled = QuorumPeerConfig.isReconfigEnabled();
+        quorumMeta = new TMB_Store.QuorumMeta(this.hashCode()); // 3MileBeach
     }
 
     // VisibleForTesting
@@ -1438,7 +1447,7 @@ public class QuorumPeer extends ZooKeeperThread implements QuorumStats.Provider 
                     }
                     break;
                 case OBSERVING:
-                    TMB_Store.getInstance().getQuorumTraces(this.hashCode()).printAllJSON(); // 3MileBeach
+                    TMB_Store.getInstance().getQuorumTraces(quorumMeta).printAllJSON(); // 3MileBeach
 
                     try {
                         LOG.info("OBSERVING");
@@ -1459,7 +1468,7 @@ public class QuorumPeer extends ZooKeeperThread implements QuorumStats.Provider 
                     }
                     break;
                 case FOLLOWING:
-                    TMB_Store.getInstance().getQuorumTraces(this.hashCode()).printAllJSON(); // 3MileBeach
+                    TMB_Store.getInstance().getQuorumTraces(quorumMeta).printAllJSON(); // 3MileBeach
 
                     try {
                         LOG.info("FOLLOWING");
@@ -1474,7 +1483,7 @@ public class QuorumPeer extends ZooKeeperThread implements QuorumStats.Provider 
                     }
                     break;
                 case LEADING:
-                    TMB_Store.getInstance().getQuorumTraces(this.hashCode()).printAllJSON(); // 3MileBeach
+                    TMB_Store.getInstance().getQuorumTraces(quorumMeta).printAllJSON(); // 3MileBeach
 
                     LOG.info("LEADING");
                     try {

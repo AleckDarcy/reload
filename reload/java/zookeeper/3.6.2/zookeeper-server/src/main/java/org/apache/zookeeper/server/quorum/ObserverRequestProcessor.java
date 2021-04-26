@@ -23,6 +23,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs.OpCode;
 import org.apache.zookeeper.server.*;
+import org.apache.zookeeper.trace.TMB_Store;
 import org.apache.zookeeper.txn.ErrorTxn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,15 +47,13 @@ public class ObserverRequestProcessor extends ZooKeeperCriticalThread implements
     boolean finished = false;
 
     // 3MileBeach starts
-    int quorumId;
-    String quorumName;
+    TMB_Store.QuorumMeta quorumMeta;
 
     public ObserverRequestProcessor(ObserverZooKeeperServer zks, RequestProcessor nextProcessor, QuorumPeer self) {
         super("ObserverRequestProcessor:" + zks.getServerId(), zks.getZooKeeperServerListener());
         this.zks = zks;
         this.nextProcessor = nextProcessor;
-        this.quorumId = self.hashCode();
-        this.quorumName = String.format("quorum-%d", this.quorumId);
+        this.quorumMeta = self.getQuorumMeta();
     }
     // 3MileBeach ends
 
@@ -68,7 +67,7 @@ public class ObserverRequestProcessor extends ZooKeeperCriticalThread implements
         super("ObserverRequestProcessor:" + zks.getServerId(), zks.getZooKeeperServerListener());
         this.zks = zks;
         this.nextProcessor = nextProcessor;
-        this.quorumName = "quorum-standalone"; // 3MileBeach
+        this.quorumMeta = new TMB_Store.QuorumMeta(0, "quorum-standalone"); // 3MileBeach
     }
 
     @Override
@@ -88,7 +87,7 @@ public class ObserverRequestProcessor extends ZooKeeperCriticalThread implements
                     continue;
                 }
 
-                TMB_Utils.printRequestForProcessor("ObserverRequestProcessor", quorumName, nextProcessor, request); // 3MileBeach
+                TMB_Utils.printRequestForProcessor("ObserverRequestProcessor", quorumMeta, nextProcessor, request); // 3MileBeach
                 // We want to queue the request to be processed before we submit
                 // the request to the leader so that we are ready to receive
                 // the response

@@ -21,7 +21,6 @@ package org.apache.zookeeper.server;
 import java.io.Flushable;
 import java.io.IOException;
 import java.util.ArrayDeque;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
@@ -31,7 +30,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import org.apache.zookeeper.common.Time;
 import org.apache.zookeeper.server.quorum.QuorumPeer;
-import org.apache.zookeeper.trace.TMB_Helper;
+import org.apache.zookeeper.trace.TMB_Store;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,16 +88,14 @@ public class SyncRequestProcessor extends ZooKeeperCriticalThread implements Req
     private long lastFlushTime;
 
     // 3MileBeach starts
-    int quorumId;
-    String quorumName;
+    TMB_Store.QuorumMeta quorumMeta;
 
     public SyncRequestProcessor(ZooKeeperServer zks, RequestProcessor nextProcessor, QuorumPeer self) {
         super("SyncThread:" + zks.getServerId(), zks.getZooKeeperServerListener());
         this.zks = zks;
         this.nextProcessor = nextProcessor;
         this.toFlush = new ArrayDeque<>(zks.getMaxBatchSize());
-        this.quorumId = self.hashCode();
-        this.quorumName = String.format("quorum-%d", this.quorumId);
+        this.quorumMeta = self.getQuorumMeta();
     }
     // 3MileBeach ends
 
@@ -107,7 +104,7 @@ public class SyncRequestProcessor extends ZooKeeperCriticalThread implements Req
         this.zks = zks;
         this.nextProcessor = nextProcessor;
         this.toFlush = new ArrayDeque<>(zks.getMaxBatchSize());
-        this.quorumName = "quorum-standalone"; // 3MileBeach
+        this.quorumMeta = new TMB_Store.QuorumMeta(0, "quorum-standalone"); // 3MileBeach
     }
 
     /**
@@ -221,7 +218,7 @@ public class SyncRequestProcessor extends ZooKeeperCriticalThread implements Req
                         }
                     }
                 } else if (toFlush.isEmpty()) {
-                    TMB_Utils.printRequestForProcessor("SyncRequestProcessor starts (read optimization)", quorumName, nextProcessor, si); // 3MileBeach
+                    TMB_Utils.printRequestForProcessor("SyncRequestProcessor starts (read optimization)", quorumMeta, nextProcessor, si); // 3MileBeach
 
                     // optimization for read heavy workloads
                     // iff this is a read, and there are no pending

@@ -36,6 +36,7 @@ public class TMB_Event implements Record {
   private String message_name;
   private String uuid;
   private String service;
+  private String processor; // Zookeeper specified field
   public TMB_Event() {
   }
   public TMB_Event(
@@ -43,12 +44,14 @@ public class TMB_Event implements Record {
         long timestamp,
         String message_name,
         String uuid,
-        String service) {
+        String service,
+        Class processor) {
     this.type=type;
     this.timestamp=timestamp;
     this.message_name=message_name;
     this.uuid=uuid;
     this.service=service;
+    this.processor=TMB_Helper.getClassNameFromClass(processor);
 
     // TMB_Helper.printf(3, "[%s] a new event: %s", service, this);
   }
@@ -68,8 +71,8 @@ public class TMB_Event implements Record {
   }
 
   public String toJSON() {
-    return String.format("{\"service\":\"%s\",\"timestamp\":%d,\"type\":\"%s\",\"message_name\":\"%s\",\"uuid\":\"%s\"}",
-              this.getService(), this.getTimestamp(), this.getTypeString(), this.getMessage_name(), this.getUuid());
+    return String.format("{\"service\":\"%s\",\"timestamp\":%d,\"type\":\"%s\",\"message_name\":\"%s\",\"uuid\":\"%s\",\"processor\":\"%s\"}",
+              this.getService(), this.getTimestamp(), this.getTypeString(), this.getMessage_name(), this.getUuid(), this.getProcessor());
   }
   // 3MileBeach ends
 
@@ -103,6 +106,12 @@ public class TMB_Event implements Record {
   public void setService(String m_) {
     service=m_;
   }
+  public String getProcessor() {
+    return processor;
+  }
+  public void setProcessor(String m_) {
+    processor=m_;
+  }
   public org.apache.zookeeper.trace.TMB_Trace getTrace() {
     return null;
   }
@@ -114,6 +123,7 @@ public class TMB_Event implements Record {
     a_.writeString(message_name,"message_name");
     a_.writeString(uuid,"uuid");
     a_.writeString(service,"service");
+    a_.writeString(processor,"processor");
     a_.endRecord(this,tag);
   }
   public void deserialize(InputArchive a_, String tag) throws java.io.IOException {
@@ -123,6 +133,7 @@ public class TMB_Event implements Record {
     message_name=a_.readString("message_name");
     uuid=a_.readString("uuid");
     service=a_.readString("service");
+    processor=a_.readString("processor");
     a_.endRecord(tag);
 }
   public String toString() {
@@ -137,6 +148,7 @@ public class TMB_Event implements Record {
     a_.writeString(message_name,"message_name");
     a_.writeString(uuid,"uuid");
     a_.writeString(service,"service");
+    a_.writeString(processor,"processor");
       a_.endRecord(this,"");
       return new String(s.toByteArray(), "UTF-8");
     } catch (Throwable ex) {
@@ -168,6 +180,8 @@ public class TMB_Event implements Record {
     if (ret != 0) return ret;
     ret = service.compareTo(peer.service);
     if (ret != 0) return ret;
+    ret = processor.compareTo(peer.processor);
+    if (ret != 0) return ret;
      return ret;
   }
   public boolean equals(Object peer_) {
@@ -189,6 +203,8 @@ public class TMB_Event implements Record {
     if (!ret) return ret;
     ret = service.equals(peer.service);
     if (!ret) return ret;
+    ret = processor.equals(peer.processor);
+    if (!ret) return ret;
      return ret;
   }
   public int hashCode() {
@@ -204,9 +220,11 @@ public class TMB_Event implements Record {
     result = 37*result + ret;
     ret = service.hashCode();
     result = 37*result + ret;
+    ret = processor.hashCode();
+    result = 37*result + ret;
     return result;
   }
   public static String signature() {
-    return "LTMB_Event(ilsss)";
+    return "LTMB_Event(ilssss)";
   }
 }

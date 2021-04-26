@@ -61,7 +61,7 @@ public class FollowerZooKeeperServer extends LearnerZooKeeperServer {
     FollowerZooKeeperServer(FileTxnSnapLog logFactory, QuorumPeer self, ZKDatabase zkDb) throws IOException {
         super(logFactory, self.tickTime, self.minSessionTimeout, self.maxSessionTimeout, self.clientPortListenBacklog, zkDb, self);
         this.pendingSyncs = new ConcurrentLinkedQueue<Request>();
-        TMB_Helper.printf("[quorum-%d] new FollowerZookeeperServer\n", self.hashCode()); // 3MileBeach
+        TMB_Helper.printf("[%s] new FollowerZookeeperServer\n", self.getQuorumMeta().getName()); // 3MileBeach
     }
 
     public Follower getFollower() {
@@ -80,13 +80,13 @@ public class FollowerZooKeeperServer extends LearnerZooKeeperServer {
         syncProcessor.start();
         // 3MileBeach ends
 
-//        RequestProcessor finalProcessor = new FinalRequestProcessor(this);
-//        commitProcessor = new CommitProcessor(finalProcessor, Long.toString(getServerId()), true, getZooKeeperServerListener());
-//        commitProcessor.start();
-//        firstProcessor = new FollowerRequestProcessor(this, commitProcessor);
-//        ((FollowerRequestProcessor) firstProcessor).start();
-//        syncProcessor = new SyncRequestProcessor(this, new SendAckRequestProcessor(getFollower()));
-//        syncProcessor.start();
+        // RequestProcessor finalProcessor = new FinalRequestProcessor(this);
+        // commitProcessor = new CommitProcessor(finalProcessor, Long.toString(getServerId()), true, getZooKeeperServerListener());
+        // commitProcessor.start();
+        // firstProcessor = new FollowerRequestProcessor(this, commitProcessor);
+        // ((FollowerRequestProcessor) firstProcessor).start();
+        // syncProcessor = new SyncRequestProcessor(this, new SendAckRequestProcessor(getFollower()));
+        // syncProcessor.start();
     }
 
     LinkedBlockingQueue<Request> pendingTxns = new LinkedBlockingQueue<Request>();

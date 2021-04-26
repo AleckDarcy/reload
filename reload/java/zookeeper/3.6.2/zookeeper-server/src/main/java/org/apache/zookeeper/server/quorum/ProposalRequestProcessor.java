@@ -23,6 +23,7 @@ import org.apache.zookeeper.server.RequestProcessor;
 import org.apache.zookeeper.server.SyncRequestProcessor;
 import org.apache.zookeeper.server.TMB_Utils;
 import org.apache.zookeeper.server.quorum.Leader.XidRolloverException;
+import org.apache.zookeeper.trace.TMB_Store;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,16 +42,14 @@ public class ProposalRequestProcessor implements RequestProcessor {
     SyncRequestProcessor syncProcessor;
 
     // 3MileBeach starts
-    int quorumId;
-    String quorumName;
+    TMB_Store.QuorumMeta quorumMeta;
 
     public ProposalRequestProcessor(LeaderZooKeeperServer zks, RequestProcessor nextProcessor, QuorumPeer self) {
         this.zks = zks;
         this.nextProcessor = nextProcessor;
         AckRequestProcessor ackProcessor = new AckRequestProcessor(zks.getLeader(), self);
         syncProcessor = new SyncRequestProcessor(zks, ackProcessor, self);
-        this.quorumId = self.hashCode();
-        this.quorumName = String.format("quorum-%d", this.quorumId);
+        this.quorumMeta = self.getQuorumMeta();
     }
     // 3MileBeach ends
 
@@ -59,7 +58,7 @@ public class ProposalRequestProcessor implements RequestProcessor {
         this.nextProcessor = nextProcessor;
         AckRequestProcessor ackProcessor = new AckRequestProcessor(zks.getLeader());
         syncProcessor = new SyncRequestProcessor(zks, ackProcessor);
-        this.quorumName = "quorum-standalone"; // 3MileBeach
+        this.quorumMeta = new TMB_Store.QuorumMeta(0, "quorum-standalone"); // 3MileBeach
     }
 
     /**
@@ -86,7 +85,7 @@ public class ProposalRequestProcessor implements RequestProcessor {
         if (request instanceof LearnerSyncRequest) {
             zks.getLeader().processSync((LearnerSyncRequest) request);
         } else {
-            TMB_Utils.printRequestForProcessor("ProposalRequestProcessor starts", quorumName, nextProcessor, request); // 3MileBeach
+            TMB_Utils.printRequestForProcessor("ProposalRequestProcessor starts", quorumMeta, nextProcessor, request); // 3MileBeach
             nextProcessor.processRequest(request);
             if (request.getHdr() != null) {
                 // We need to sync and get consensus on any transactions
@@ -97,7 +96,7 @@ public class ProposalRequestProcessor implements RequestProcessor {
                 }
                 syncProcessor.processRequest(request);
             }
-            TMB_Utils.printRequestForProcessor("ProposalRequestProcessor ends", quorumName, nextProcessor, request); // 3MileBeach
+            TMB_Utils.printRequestForProcessor("ProposalRequestProcessor ends", quorumMeta, nextProcessor, request); // 3MileBeach
         }
     }
 
