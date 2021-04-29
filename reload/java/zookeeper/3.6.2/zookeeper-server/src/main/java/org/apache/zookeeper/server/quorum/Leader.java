@@ -48,6 +48,7 @@ import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs.OpCode;
 import org.apache.zookeeper.common.Time;
 import org.apache.zookeeper.jmx.MBeanRegistry;
+import org.apache.zookeeper.proto.NullPointerResponse;
 import org.apache.zookeeper.server.*;
 import org.apache.zookeeper.server.persistence.Util;
 import org.apache.zookeeper.server.quorum.QuorumPeer.LearnerType;
@@ -938,24 +939,29 @@ public class Leader extends LearnerMaster {
                 allowedToCommit = false;
             }
 
-            // we're sending the designated leader, and if the leader is changing the followers are
-            // responsible for closing the connection - this way we are sure that at least a majority of them
-            // receive the commit message.
-            commitAndActivate(zxid, designatedLeader);
+            // 3MileBeach starts
+            TMB_Helper.printf("[%s] let's commit and activate! request %s\n", quorumMeta.getName(), p.request.getTxn());
+            NullPointerResponse record = TMB_Utils.commitHelperBegins(quorumMeta, p.request, TMB_Utils.LEADER_COMMIT);
+            commitAndActivate(zxid, designatedLeader, record);
             informAndActivate(p, designatedLeader);
-            //turnOffFollowers();
+            TMB_Utils.commitHelperEnds(quorumMeta, record);
+            // 3MileBeach ends
+
+            // // we're sending the designated leader, and if the leader is changing the followers are
+            // // responsible for closing the connection - this way we are sure that at least a majority of them
+            // // receive the commit message.
+            // commitAndActivate(zxid, designatedLeader);
+            // informAndActivate(p, designatedLeader);
+            // //turnOffFollowers();
         } else {
             p.request.logLatency(ServerMetrics.getMetrics().QUORUM_ACK_LATENCY);
 
             // 3MileBeach starts
-            try {
-                TMB_Helper.printf("[%s] let's commit! request %s\n", quorumMeta.getName(), p.request.getTxn());
-                byte[] data = TMB_Utils.commitHelper(p.request, TMB_Utils.LEADER_COMMIT, quorumMeta, this.getClass());
-                commit(zxid, data);
-                inform(p);
-            } catch (FaultInjectedException e) {
-                TMB_Helper.printf("[%s] Fault injected, no commit messages were sent to followers or observers\n", quorumMeta.getName());
-            }
+            TMB_Helper.printf("[%s] let's commit! request %s\n", quorumMeta.getName(), p.request.getTxn());
+            NullPointerResponse record = TMB_Utils.commitHelperBegins(quorumMeta, p.request, TMB_Utils.LEADER_COMMIT);
+            commit(zxid, record);
+            inform(p);
+            TMB_Utils.commitHelperEnds(quorumMeta, record);
             // 3MileBeach ends
 
             // commit(zxid);
@@ -964,16 +970,7 @@ public class Leader extends LearnerMaster {
         zk.commitProcessor.commit(p.request);
         if (pendingSyncs.containsKey(zxid)) {
             for (LearnerSyncRequest r : pendingSyncs.remove(zxid)) {
-                // 3MileBeach starts
-                try {
-                    byte[] data = TMB_Utils.commitHelper(r, TMB_Utils.LEADER_COMMIT, quorumMeta, this.getClass());
-                    sendSync(r, data);
-                } catch (FaultInjectedException e) {
-                    TMB_Helper.printf("[%s] Fault injected, no sync messages were sent to learners\n", quorumMeta.getName());
-                }
-                // 3MileBeach ends
-
-                // sendSync(r);
+                sendSync(r);
             }
         }
 
@@ -1155,17 +1152,72 @@ public class Leader extends LearnerMaster {
 
     }
 
-    /**
-     * send a packet to all the followers ready to follow
-     *
-     * @param qp
-     *                the packet to be sent
-     */
-    void sendPacket(QuorumPacket qp) {
+    // 3MileBeach begins
+    void sendCommitPacket(QuorumPacket qp, NullPointerResponse record) {
         synchronized (forwardingFollowers) {
-            // 3MileBeach begins
-            try {
-                if (qp.getData() != null) {
+            if (record != null) {
+                TMB_Trace trace = record.getTrace();
+                List<TMB_Event> events = trace.getEvents();
+                int eventSize = events.size();
+                if (eventSize > 0) {
+                    TMB_Event lastEvent = events.get(eventSize - 1);
+                    String uuid = lastEvent.getUuid();
+                    if (uuid.length() == TMB_Helper.UUID_LEN + TMB_Helper.UUID_SUF_LEN) {
+                        uuid = uuid.substring(0, TMB_Helper.UUID_LEN);
+                    }
+
+                    TMB_Helper.printf("[%s] Leader commits to %d follower(s)\n", quorumMeta.getName(), forwardingFollowers.size());
+                    int i = 0;
+
+                    for (LearnerHandler f : forwardingFollowers) {
+                        boolean injected = false;
+                        try {
+                            TMB_Helper.checkTFIs(trace, record.getRequestName());
+                        } catch (FaultInjectedException e) {
+                            TMB_Helper.printf("[%s] Leader commits to follower-%d, fault injected\n", quorumMeta.getName(), i);
+                            injected = true;
+                        }
+
+                        String uuid_ = String.format("%s-%04d", uuid, i);
+                        events.add(new TMB_Event(TMB_Event.RECORD_SEND, TMB_Helper.currentTimeNanos(), TMB_Utils.LEADER_COMMIT, uuid_, quorumMeta.getName(), this.getClass()));
+                        trace.setEvents(events, 1);
+
+                        if (injected) {
+                            i++;
+                            continue;
+                        }
+
+                        record.setTrace(trace);
+
+                        try {
+                            byte[] data = TMB_Helper.serialize(record, qp.getData(), null);
+
+                            if (i == forwardingFollowers.size() - 1) {
+                                qp.setData(data);
+                                f.queuePacket(qp);
+                            } else {
+                                QuorumPacket qp_ = new QuorumPacket(qp.getType(), qp.getZxid(), data, qp.getAuthinfo());
+                                f.queuePacket(qp_);
+                            }
+                        } catch (IOException e) { // shouldn't reach here
+                            e.printStackTrace();
+                        }
+
+                        i++;
+                    }
+
+                    return;
+                }
+            }
+        }
+
+        sendPacket(qp);
+    }
+
+    void sendProposalPacket(QuorumPacket qp) {
+        synchronized (forwardingFollowers) {
+            if (qp.getData() != null) {
+                try {
                     TxnLogEntry logEntry = SerializeUtils.deserializeTxn(qp.getData());
                     Record record = logEntry.getTxn();
                     if (record != null) {
@@ -1177,24 +1229,40 @@ public class Leader extends LearnerMaster {
                                 TMB_Event lastEvent = events.get(eventSize - 1);
                                 String uuid = lastEvent.getUuid();
 
-                                TMB_Helper.printf("[%s] Leader forwards to %d follower(s)\n", quorumMeta.getName(), forwardingFollowers.size());
+                                TMB_Helper.printf("[%s] Leader proposals to %d follower(s)\n", quorumMeta.getName(), forwardingFollowers.size());
                                 int i = 0;
                                 for (LearnerHandler f : forwardingFollowers) {
+                                    boolean injected = false;
+                                    try {
+                                        TMB_Helper.checkTFIs(trace, lastEvent.getMessage_name());
+                                    } catch (FaultInjectedException e) {
+                                        TMB_Helper.printf("[%s] Leader proposals to follower-%d, fault injected\n", quorumMeta.getName(), i);
+                                        injected = true;
+                                    }
+
                                     String uuid_ = String.format("%s-%04d", uuid, i);
-
                                     events.add(new TMB_Event(TMB_Event.RECORD_PRSL, TMB_Helper.currentTimeNanos(), lastEvent.getMessage_name(), uuid_, quorumMeta.getName(), this.getClass()));
-
                                     trace.setEvents(events, 1);
+
+                                    if (injected) {
+                                        i++;
+                                        continue;
+                                    }
+
                                     record.setTrace(trace);
 
-                                    byte[] data = Util.marshallTxnEntry(logEntry.getHeader(), record, logEntry.getDigest());
+                                    try {
+                                        byte[] data = Util.marshallTxnEntry(logEntry.getHeader(), record, logEntry.getDigest());
 
-                                    if (i == forwardingFollowers.size() - 1) {
-                                        qp.setData(data);
-                                        f.queuePacket(qp);
-                                    } else {
-                                        QuorumPacket qp_ = new QuorumPacket(qp.getType(), qp.getZxid(), data, qp.getAuthinfo());
-                                        f.queuePacket(qp_);
+                                        if (i == forwardingFollowers.size() - 1) {
+                                            qp.setData(data);
+                                            f.queuePacket(qp);
+                                        } else {
+                                            QuorumPacket qp_ = new QuorumPacket(qp.getType(), qp.getZxid(), data, qp.getAuthinfo());
+                                            f.queuePacket(qp_);
+                                        }
+                                    } catch (IOException e) { // shouldn't reach here
+                                        e.printStackTrace();
                                     }
 
                                     i++;
@@ -1204,10 +1272,26 @@ public class Leader extends LearnerMaster {
                             }
                         }
                     }
-                }
-            } catch (IOException e) {}
-            // 3MileBeach ends
 
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        sendPacket(qp);
+    }
+    // 3MileBeach ends
+
+    /**
+     * send a packet to all the followers ready to follow
+     *
+     * @param qp
+     *                the packet to be sent
+     */
+    void sendPacket(QuorumPacket qp) {
+        TMB_Helper.printf("[%s] Leader uses default sendPacker()\n", quorumMeta.getName()); // 3MileBeach
+        synchronized (forwardingFollowers) {
             for (LearnerHandler f : forwardingFollowers) {
                 f.queuePacket(qp);
             }
@@ -1230,19 +1314,20 @@ public class Leader extends LearnerMaster {
      *
      * @param zxid
      */
-    public void commit(long zxid, byte[] data) { // 3MileBeach
+    public void commit(long zxid, NullPointerResponse record) { // 3MileBeach
     // public void commit(long zxid) {
         synchronized (this) {
             lastCommitted = zxid;
         }
-        QuorumPacket qp = new QuorumPacket(Leader.COMMIT, zxid, data, null);
-        // QuorumPacket qp = new QuorumPacket(Leader.COMMIT, zxid, null, null);
-        sendPacket(qp);
+        QuorumPacket qp = new QuorumPacket(Leader.COMMIT, zxid, null, null);
+        sendCommitPacket(qp, record); // 3MileBeach
+        // sendPacket(qp);
         ServerMetrics.getMetrics().COMMIT_COUNT.add(1);
     }
 
     //commit and send some info
-    public void commitAndActivate(long zxid, long designatedLeader) {
+    public void commitAndActivate(long zxid, long designatedLeader, NullPointerResponse record) { // 3MileBeach
+    // public void commitAndActivate(long zxid, long designatedLeader) {
         synchronized (this) {
             lastCommitted = zxid;
         }
@@ -1252,7 +1337,8 @@ public class Leader extends LearnerMaster {
         buffer.putLong(designatedLeader);
 
         QuorumPacket qp = new QuorumPacket(Leader.COMMITANDACTIVATE, zxid, data, null);
-        sendPacket(qp);
+        sendCommitPacket(qp, record); // 3MileBeach
+        // sendPacket(qp);
     }
 
     /**
@@ -1344,7 +1430,8 @@ public class Leader extends LearnerMaster {
 
             lastProposed = p.packet.getZxid();
             outstandingProposals.put(lastProposed, p);
-            sendPacket(pp);
+            sendProposalPacket(pp);
+            // sendPacket(pp);
         }
         ServerMetrics.getMetrics().PROPOSAL_COUNT.add(1);
         return p;
@@ -1358,8 +1445,7 @@ public class Leader extends LearnerMaster {
 
     public synchronized void processSync(LearnerSyncRequest r) {
         if (outstandingProposals.isEmpty()) {
-            sendSync(r, null); // 3MileBeach
-            // sendSync(r);
+            sendSync(r);
         } else {
             List<LearnerSyncRequest> l = pendingSyncs.get(lastProposed);
             if (l == null) {
@@ -1373,10 +1459,8 @@ public class Leader extends LearnerMaster {
     /**
      * Sends a sync message to the appropriate server
      */
-    public void sendSync(LearnerSyncRequest r, byte[] data) { // 3MileBeach
-    // public void sendSync(LearnerSyncRequest r) {
-        QuorumPacket qp = new QuorumPacket(Leader.SYNC, 0, data, null); // 3MileBeach
-        // QuorumPacket qp = new QuorumPacket(Leader.SYNC, 0, null, null);
+     public void sendSync(LearnerSyncRequest r) {
+        QuorumPacket qp = new QuorumPacket(Leader.SYNC, 0, null, null);
         r.fh.queuePacket(qp);
     }
 

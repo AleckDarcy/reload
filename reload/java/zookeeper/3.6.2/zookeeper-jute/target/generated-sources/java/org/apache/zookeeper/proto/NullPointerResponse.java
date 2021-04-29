@@ -22,6 +22,8 @@ package org.apache.zookeeper.proto;
 import org.apache.jute.*;
 import org.apache.jute.Record; // JDK14 needs explicit import due to clash with java.lang.Record
 import org.apache.yetus.audience.InterfaceAudience;
+import org.apache.zookeeper.trace.TMB_Trace;
+
 @InterfaceAudience.Public
 public class NullPointerResponse implements Record {
   private String requestName;
@@ -33,6 +35,12 @@ public class NullPointerResponse implements Record {
         String requestName) {
     this.requestName=requestName;
     this.trace = new org.apache.zookeeper.trace.TMB_Trace();
+  }
+  public NullPointerResponse(
+          String requestName,
+          TMB_Trace trace) {
+    this.requestName=requestName;
+    this.trace=trace;
   }
   public String getRequestName() {
     return requestName;

@@ -21,6 +21,7 @@ package org.apache.zookeeper.server.quorum;
 import java.io.IOException;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.apache.jute.Record;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.MultiOperationRecord;
 import org.apache.zookeeper.ZooDefs.OpCode;
@@ -89,6 +90,7 @@ public class FollowerRequestProcessor extends ZooKeeperCriticalThread implements
                 // the response
                 nextProcessor.processRequest(request);
 
+                Record empty = null; // 3MileBeach
                 // We now ship the request to the leader. As with all
                 // other quorum operations, sync also follows this code
                 // path, but different from others, we need to keep track
@@ -103,41 +105,27 @@ public class FollowerRequestProcessor extends ZooKeeperCriticalThread implements
                 case OpCode.create2:
                 case OpCode.createTTL:
                 case OpCode.createContainer:
-                    // 3MileBeach begins
-                    request.request = TMB_Utils.appendEvent(request.request, new CreateRequest(), TMB_Event.RECORD_FRWD, quorumMeta, this.getClass());
-                    zks.getFollower().request(request);
-                    break;
-                    // 3MileBeach ends
+                    empty = new CreateRequest(); // 3MileBeach
+                    break; // 3MileBeach
                 case OpCode.delete:
                 case OpCode.deleteContainer:
-                    request.request = TMB_Utils.appendEvent(request.request, new DeleteRequest(), TMB_Event.RECORD_FRWD, quorumMeta, this.getClass()); // 3MileBeach
-                    zks.getFollower().request(request);
-                    break;
+                    empty = new DeleteRequest(); // 3MileBeach
+                    break; // 3MileBeach
                 case OpCode.setData:
-                    request.request = TMB_Utils.appendEvent(request.request, new SetDataRequest(), TMB_Event.RECORD_FRWD, quorumMeta, this.getClass()); // 3MileBeach
-                    zks.getFollower().request(request);
-                    break;
+                    empty = new SetDataRequest(); // 3MileBeach
+                    break; // 3MileBeach
                 case OpCode.reconfig:
-                    // 3MileBeach begins
-                    request.request = TMB_Utils.appendEvent(request.request, new ReconfigRequest(), TMB_Event.RECORD_FRWD, quorumMeta, this.getClass());
-                    zks.getFollower().request(request);
-                    break;
-                    // 3MileBeach ends
+                    empty = new ReconfigRequest(); // 3MileBeach
+                    break; // 3MileBeach
                 case OpCode.setACL:
-                    // 3MileBeach begins
-                    request.request = TMB_Utils.appendEvent(request.request, new SetACLRequest(), TMB_Event.RECORD_FRWD, quorumMeta, this.getClass());
-                    zks.getFollower().request(request);
-                    break;
-                    // 3MileBeach ends
+                    empty = new SetACLRequest(); // 3MileBeach
+                    break; // 3MileBeach
                 case OpCode.multi:
-                    // 3MileBeach begins
-                    request.request = TMB_Utils.appendEvent(request.request, new MultiOperationRecord(), TMB_Event.RECORD_FRWD, quorumMeta, this.getClass());
-                    zks.getFollower().request(request);
-                    break;
-                    // 3MileBeach ends
+                    empty = new MultiOperationRecord(); // 3MileBeach
+                    break; // 3MileBeach
                 case OpCode.check:
-                    request.request = TMB_Utils.appendEvent(request.request, new CheckVersionRequest(), TMB_Event.RECORD_FRWD, quorumMeta, this.getClass()); // 3MileBeach
-                    zks.getFollower().request(request);
+                    empty = new CheckVersionRequest(); // 3MileBeach
+                    // zks.getFollower().request(request);
                     break;
                 case OpCode.createSession:
                 case OpCode.closeSession:
@@ -147,7 +135,15 @@ public class FollowerRequestProcessor extends ZooKeeperCriticalThread implements
                     }
                     break;
                 }
-                TMB_Utils.printRequestForProcessor("FollowerRequestProcessor ends", quorumMeta, nextProcessor, request); // 3MileBeach
+
+                // 3MileBeach starts
+                if (empty != null) {
+                    request.request = TMB_Utils.appendEvent(request.request, empty, TMB_Event.RECORD_FRWD, quorumMeta, this.getClass());
+                    zks.getFollower().request(request);
+                }
+
+                TMB_Utils.printRequestForProcessor("FollowerRequestProcessor ends", quorumMeta, nextProcessor, request);
+                // 3MileBeach ends
             }
         } catch (Exception e) {
             handleException(this.getName(), e);

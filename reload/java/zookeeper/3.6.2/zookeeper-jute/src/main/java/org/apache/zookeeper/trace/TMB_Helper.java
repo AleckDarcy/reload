@@ -64,7 +64,11 @@ public class TMB_Helper {
 
     public static void printf(int depth, String format, Object ... args) {
         if (printable) {
-            StackTraceElement trace = Thread.currentThread().getStackTrace()[depth];
+            StackTraceElement[] traces = Thread.currentThread().getStackTrace();
+            if (traces.length <= depth) { // protection
+                depth = traces.length - 1;
+            }
+            StackTraceElement trace = traces[depth];
             System.out.printf("[3MileBeach] %s:%d [%d] %s", trace.getFileName(), trace.getLineNumber(), Thread.currentThread().getId(), String.format(format, args));
         }
     }
@@ -91,13 +95,24 @@ public class TMB_Helper {
         return name.substring(name.lastIndexOf('.') + 1);
     }
 
-    public static ByteArrayOutputStream serialize(Record record) throws IOException {
+    // serialize with extra bytes
+    public static byte[] serialize(Record record, byte[] prefix, byte[] suffix) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         BinaryOutputArchive bos = BinaryOutputArchive.getArchive(baos);
+        if (prefix != null) {
+            baos.write(prefix);
+        }
         record.serialize(bos, "");
+        if (suffix != null) {
+            baos.write(suffix);
+        }
         baos.close();
 
-        return baos;
+        return baos.toByteArray();
+    }
+
+    public static byte[] serialize(Record record) throws IOException {
+        return serialize(record, null, null);
     }
 
     public static void deserialize(ByteArrayInputStream in, Record record) throws IOException {

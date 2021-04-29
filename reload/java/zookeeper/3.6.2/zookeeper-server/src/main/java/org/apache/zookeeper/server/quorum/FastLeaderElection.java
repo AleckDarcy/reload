@@ -680,11 +680,10 @@ public class FastLeaderElection implements Election {
                         m.trace.setEvents(events_, 1);
 
                         TMB_Store.getInstance().quorumSetTrace(quorumMeta, m.trace); // todo
-                        ByteArrayOutputStream os = TMB_Helper.serialize(m.trace);
+                        bytes = TMB_Helper.serialize(m.trace);
 
                         // TMB_Helper.printf("[quorum-%d] add send event: %s\n", quorumId, m.toJSON());
                         // TMB_Helper.printf("[quorum-%d] add send trace: %d, %s\n", quorumId, m.trace.getEvents().size(), m.trace.toJSON());
-                        bytes = os.toByteArray();
                     } catch (IOException e) {
 
                     }

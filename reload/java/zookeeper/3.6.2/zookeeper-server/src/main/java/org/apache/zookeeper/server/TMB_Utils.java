@@ -53,30 +53,33 @@ public class TMB_Utils {
         TMB_Helper.printf(3, "[%s] %s, next %s, request-%d %s\n", quorumName, processorName, nextName, request.hashCode(), requestStr);
     }
 
-    public static byte[] commitHelper(Request request, String messageName, TMB_Store.QuorumMeta quorumMeta, Class processor) throws FaultInjectedException {
-        byte[] data = null;
+    public static NullPointerResponse commitHelperBegins(TMB_Store.QuorumMeta quorumMeta, Request request, String messageName) {
         if (request != null) {
             Record txn = request.getTxn();
             if (txn != null) {
-                Record record = new NullPointerResponse(messageName);
                 TMB_Trace trace = txn.getTrace();
                 if (trace != null && trace.getId() != 0) {
                     TMB_Trace trace_ = TMB_Store.getInstance().quorumGetTrace(quorumMeta, trace.getId());
-                    TMB_Helper.checkTFIs(trace_, messageName);
 
-                    record.setTrace(trace_);
-                    record = TMB_Utils.appendEvent(record, TMB_Event.RECORD_SEND, messageName, quorumMeta, true, processor);
-
-                    try {
-                        ByteArrayOutputStream bao = TMB_Helper.serialize(record);
-                        data = bao.toByteArray();
-                    } catch (IOException e) {
+                    if (trace_ != null) {
+                        return new NullPointerResponse(messageName, trace_);
+                    } else { // TODO: a report this case
+                        return new NullPointerResponse(messageName, trace);
                     }
                 }
             }
         }
 
-        return data;
+        return null;
+    }
+
+    public static void commitHelperEnds(TMB_Store.QuorumMeta quorumMeta, Record record) {
+        if (record != null) {
+            TMB_Trace trace = record.getTrace();
+            if (trace != null && trace.getId() != 0) {
+                TMB_Store.getInstance().quorumSetTrace(quorumMeta, trace);
+            }
+        }
     }
 
     public static byte[] ackHelper(Request request, String messageName, TMB_Store.QuorumMeta quorumMeta, Class processor) throws FaultInjectedException {
@@ -96,8 +99,7 @@ public class TMB_Utils {
                     record = TMB_Utils.appendEvent(record, TMB_Event.RECORD_SEND, messageName, quorumMeta, false, processor);
 
                     try {
-                        ByteArrayOutputStream bao = TMB_Helper.serialize(record);
-                        data = bao.toByteArray();
+                        data = TMB_Helper.serialize(record);
                     } catch (IOException e) {
                     }
                 }

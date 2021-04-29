@@ -340,12 +340,12 @@ public class TMB_Store {
 
         TMB_Event preEvent = trace.getEvents().get(0);
         TMB_Trace trace_ = getInstance().quorumGetTrace(quorumMeta, trace.getId());
-        mergeEvents(trace, trace_.getEvents());
+        mergeEvents(trace_, trace.getEvents()); // merge events of the current SRC to those of the current client request
 
         TMB_Event event = new TMB_Event(TMB_Event.RECORD_SEND, TMB_Helper.currentTimeNanos(), TMB_Helper.getClassName(response), preEvent.getUuid(), quorumMeta.getName(), processor);
 
-        trace.addEvent(event);
-        response.setTrace(trace);
+        trace_.addEvent(event);
+        response.setTrace(trace_);
 
         TMB_Helper.printf(3, "[%s] callee outbound ejects response: %s, (%s)\n", quorumMeta.getName(), TMB_Helper.getClassName(response), TMB_Helper.getString(response));
     }

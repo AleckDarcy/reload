@@ -48,7 +48,7 @@ reload/java/zookeeper/3.6.2/zookeeper-server/src/main/java/org/apache/zookeeper/
                     Block CommitProcessor and pendingSyncs
     Leader::sendPacket()
         Org:
-            Sends packets to followers
+            Sends proposal packets to followers
         3MileBeach:
             Deserializes request, appends event to trace, serializes request
 
