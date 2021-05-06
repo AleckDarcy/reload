@@ -6,7 +6,6 @@ import org.apache.zookeeper.server.quorum.QuorumPacket;
 import org.apache.zookeeper.trace.*;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -16,6 +15,7 @@ public class TMB_Utils {
     public static final int EVENT_SERIALIZE_SIZE = 100;
 
     public static final String QUORUM_ACK = "QuorumAck";
+    public static final String LEADER_COMMIT_READY = "LeaderCommitReady";
     public static final String LEADER_COMMIT = "LeaderCommit";
     public static final String LEADER_SYNC = "LeaderSync";
 
@@ -53,7 +53,7 @@ public class TMB_Utils {
         TMB_Helper.printf(3, "[%s] %s, next %s, request-%d %s\n", quorumName, processorName, nextName, request.hashCode(), requestStr);
     }
 
-    public static NullPointerResponse commitHelperBegins(TMB_Store.QuorumMeta quorumMeta, Request request, String messageName) {
+    public static NullPointerResponse commitHelperBegins(TMB_Store.QuorumMeta quorumMeta, Request request, String messageName, Class processor) {
         if (request != null) {
             Record txn = request.getTxn();
             if (txn != null) {
@@ -62,10 +62,23 @@ public class TMB_Utils {
                     TMB_Trace trace_ = TMB_Store.getInstance().quorumGetTrace(quorumMeta, trace.getId());
 
                     if (trace_ != null) {
-                        return new NullPointerResponse(messageName, trace_);
+                        trace = trace_;
                     } else { // TODO: a report this case
-                        return new NullPointerResponse(messageName, trace);
+
                     }
+
+                    // TODO: a uuid
+                    List<TMB_Event> events = trace.getEvents();
+                    int eventSize = events.size();
+                    if (eventSize > 0) {
+                        TMB_Event lastEvent = events.get(eventSize - 1);
+                        String uuid = TMB_Helper.UUID();
+
+                        TMB_Event event = new TMB_Event(TMB_Event.LOGIC_COMMIT_READY, TMB_Helper.currentTimeNanos(), LEADER_COMMIT_READY, uuid, quorumMeta.getName(), processor);
+                        trace.addEvent(event);
+                    }
+
+                    return new NullPointerResponse(messageName, trace);
                 }
             }
         }
@@ -96,7 +109,7 @@ public class TMB_Utils {
                     TMB_Helper.checkTFIs(trace, messageName);
 
                     record.setTrace(trace);
-                    record = TMB_Utils.appendEvent(record, TMB_Event.RECORD_SEND, messageName, quorumMeta, false, processor);
+                    record = TMB_Utils.appendEvent(record, TMB_Event.ACTION_SEND, messageName, quorumMeta, false, processor);
 
                     try {
                         data = TMB_Helper.serialize(record);
@@ -110,6 +123,7 @@ public class TMB_Utils {
     }
 
     public static Record pRequestHelper(Record record, Record txn) {
+        // TODO: a capture RECV event
         txn.setTrace(record.getTrace());
 
         return txn;
@@ -179,12 +193,43 @@ public class TMB_Utils {
         return data;
     }
 
+    // TODO: a using int[] types
+    public static ByteBuffer appendEvents(ByteBuffer data, Record request, int type1, int type2, TMB_Store.QuorumMeta quorumMeta, Class processor) throws IOException {
+        try {
+            ByteBufferInputStream.byteBuffer2Record(data, request);
+        } catch (IOException e) {
+            data.rewind();
+            throw e;
+        }
+
+
+        request = appendEvent(request, type1, quorumMeta, processor);
+        request = appendEvent(request, type2, quorumMeta, processor);
+
+        TMB_Trace trace = request.getTrace();
+        if (trace != null) {
+            List<TMB_Event> events = request.getTrace().getEvents();
+
+            int eventSize = events.size();
+            if (eventSize > 0) {
+                ByteBuffer bb = ByteBuffer.allocate(data.capacity() + EVENT_SERIALIZE_SIZE * 2);
+                ByteBufferOutputStream.record2ByteBuffer(request, bb);
+
+                return bb;
+            }
+        }
+
+        data.rewind();
+
+        return data;
+    }
+
     public static void quorumCollectTraceFromQuorumPacket(TMB_Store.QuorumMeta quorumMeta, Record record, QuorumPacket qp, Class processor) {
         byte[] data = qp.getData();
         if (data != null) {
             try {
                 TMB_Helper.deserialize(new ByteArrayInputStream(data), record);
-                record = TMB_Utils.appendEvent(record, TMB_Event.RECORD_RECV, quorumMeta, processor);
+                record = TMB_Utils.appendEvent(record, TMB_Event.ACTION_RECV, quorumMeta, processor);
                 TMB_Store.getInstance().quorumSetTrace(quorumMeta, record.getTrace());
             } catch (IOException e) {
                 e.printStackTrace();

@@ -941,7 +941,7 @@ public class Leader extends LearnerMaster {
 
             // 3MileBeach starts
             TMB_Helper.printf("[%s] let's commit and activate! request %s\n", quorumMeta.getName(), p.request.getTxn());
-            NullPointerResponse record = TMB_Utils.commitHelperBegins(quorumMeta, p.request, TMB_Utils.LEADER_COMMIT);
+            NullPointerResponse record = TMB_Utils.commitHelperBegins(quorumMeta, p.request, TMB_Utils.LEADER_COMMIT, this.getClass());
             commitAndActivate(zxid, designatedLeader, record);
             informAndActivate(p, designatedLeader);
             TMB_Utils.commitHelperEnds(quorumMeta, record);
@@ -958,7 +958,7 @@ public class Leader extends LearnerMaster {
 
             // 3MileBeach starts
             TMB_Helper.printf("[%s] let's commit! request %s\n", quorumMeta.getName(), p.request.getTxn());
-            NullPointerResponse record = TMB_Utils.commitHelperBegins(quorumMeta, p.request, TMB_Utils.LEADER_COMMIT);
+            NullPointerResponse record = TMB_Utils.commitHelperBegins(quorumMeta, p.request, TMB_Utils.LEADER_COMMIT, this.getClass());
             commit(zxid, record);
             inform(p);
             TMB_Utils.commitHelperEnds(quorumMeta, record);
@@ -1179,7 +1179,7 @@ public class Leader extends LearnerMaster {
                         }
 
                         String uuid_ = String.format("%s-%04d", uuid, i);
-                        events.add(new TMB_Event(TMB_Event.RECORD_SEND, TMB_Helper.currentTimeNanos(), TMB_Utils.LEADER_COMMIT, uuid_, quorumMeta.getName(), this.getClass()));
+                        events.add(new TMB_Event(TMB_Event.ACTION_SEND, TMB_Helper.currentTimeNanos(), TMB_Utils.LEADER_COMMIT, uuid_, quorumMeta.getName(), this.getClass()));
                         trace.setEvents(events, 1);
 
                         if (injected) {
@@ -1241,7 +1241,7 @@ public class Leader extends LearnerMaster {
                                     }
 
                                     String uuid_ = String.format("%s-%04d", uuid, i);
-                                    events.add(new TMB_Event(TMB_Event.RECORD_PRSL, TMB_Helper.currentTimeNanos(), lastEvent.getMessage_name(), uuid_, quorumMeta.getName(), this.getClass()));
+                                    events.add(new TMB_Event(TMB_Event.ACTION_PRSL, TMB_Helper.currentTimeNanos(), lastEvent.getMessage_name(), uuid_, quorumMeta.getName(), this.getClass()));
                                     trace.setEvents(events, 1);
 
                                     if (injected) {

@@ -176,7 +176,7 @@ public class Follower extends Learner {
             TxnHeader hdr = logEntry.getHeader();
             Record txn = logEntry.getTxn();
             TMB_Helper.printf("[%s] Follower processes proposal, request: %s\n", quorumMeta.getName(), txn); // 3MileBeach
-            TMB_Utils.appendEvent(txn, TMB_Event.RECORD_RECV, quorumMeta, this.getClass()); // 3MileBeach
+            TMB_Utils.appendEvent(txn, TMB_Event.ACTION_RECV, quorumMeta, this.getClass()); // 3MileBeach
             TxnDigest digest = logEntry.getDigest();
             if (hdr.getZxid() != lastQueued + 1) {
                 LOG.warn(

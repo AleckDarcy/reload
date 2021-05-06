@@ -52,7 +52,7 @@ import org.apache.zookeeper.server.quorum.QuorumPeerConfig;
 import org.apache.zookeeper.server.quorum.QuorumPeerConfig.ConfigException;
 import org.apache.zookeeper.server.quorum.flexible.QuorumMaj;
 import org.apache.zookeeper.server.quorum.flexible.QuorumVerifier;
-import org.apache.zookeeper.trace.TMB_Store;
+import org.apache.zookeeper.trace.*;
 import org.apache.zookeeper.txn.CheckVersionTxn;
 import org.apache.zookeeper.txn.CloseSessionTxn;
 import org.apache.zookeeper.txn.CreateContainerTxn;
@@ -708,16 +708,33 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
             throw new KeeperException.NoChildrenForEphemeralsException(path);
         }
         int newCversion = parentRecord.stat.getCversion() + 1;
+        Record txn = null; // 3MileBeach
         if (type == OpCode.createContainer) {
-            request.setTxn(TMB_Utils.pRequestHelper(record, new CreateContainerTxn(path, data, listACL, newCversion))); // 3MileBeach
+            txn = TMB_Utils.pRequestHelper(record, new CreateContainerTxn(path, data, listACL, newCversion)); // 3MileBeach
             // request.setTxn(new CreateContainerTxn(path, data, listACL, newCversion));
         } else if (type == OpCode.createTTL) {
-            request.setTxn(TMB_Utils.pRequestHelper(record, new CreateTTLTxn(path, data, listACL, newCversion, ttl))); // 3MileBeach
+            txn = TMB_Utils.pRequestHelper(record, new CreateTTLTxn(path, data, listACL, newCversion, ttl)); // 3MileBeach
             // request.setTxn(new CreateTTLTxn(path, data, listACL, newCversion, ttl));
         } else {
-            request.setTxn(TMB_Utils.pRequestHelper(record, new CreateTxn(path, data, listACL, createMode.isEphemeral(), newCversion))); // 3MileBeach
+            txn = TMB_Utils.pRequestHelper(record, new CreateTxn(path, data, listACL, createMode.isEphemeral(), newCversion)); // 3MileBeach
             // request.setTxn(new CreateTxn(path, data, listACL, createMode.isEphemeral(), newCversion));
         }
+
+        // 3MileBeach starts
+        // TODO: a move to pRequestHelper
+        TMB_Trace trace = txn.getTrace();
+        if (trace != null && trace.getId() != 0) {
+            List<TMB_Event> events = trace.getEvents();
+            if (events.size() != 0) {
+                TMB_Event lastEvent = events.get(events.size() - 1);
+                TMB_Event event = new TMB_Event(TMB_Event.ACTION_RECV, TMB_Helper.currentTimeNanos(), lastEvent.getMessage_name(), lastEvent.getUuid(), quorumMeta.getName(), this.getClass());
+                events.add(event);
+                trace.setEvents(events);
+            }
+        }
+
+        request.setTxn(txn);
+        // 3MileBeach ends
 
         TxnHeader hdr = request.getHdr();
         long ephemeralOwner = 0;

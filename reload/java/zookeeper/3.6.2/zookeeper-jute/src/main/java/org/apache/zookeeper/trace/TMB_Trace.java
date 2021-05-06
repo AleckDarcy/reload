@@ -80,7 +80,6 @@ public class TMB_Trace implements Record {
   }
 
   public void addEvent(TMB_Event e) {
-    // TODO: remove
     if (events == null) {
       events = new ArrayList<>();
     }

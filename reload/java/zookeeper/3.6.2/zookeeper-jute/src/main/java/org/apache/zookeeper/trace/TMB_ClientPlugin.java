@@ -4,7 +4,6 @@ import org.apache.jute.Record;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class TMB_ClientPlugin {
     private final long threadID = Thread.currentThread().getId();
@@ -53,7 +52,7 @@ public class TMB_ClientPlugin {
             long threadId = Thread.currentThread().getId();
             String requestName = TMB_Helper.getClassName(request);
             String uuid = TMB_Helper.UUID();
-            TMB_Event event = new TMB_Event(TMB_Event.RECORD_SEND, TMB_Helper.currentTimeNanos(), requestName, uuid, service, TMB_ClientPlugin.class);
+            TMB_Event event = new TMB_Event(TMB_Event.ACTION_SEND, TMB_Helper.currentTimeNanos(), requestName, uuid, service, TMB_ClientPlugin.class);
 
             List<TMB_Event> events = trace.getEvents();
             events.add(event);
@@ -81,7 +80,7 @@ public class TMB_ClientPlugin {
 
         long threadId = Thread.currentThread().getId();
         String uuid = events.get(0).getUuid();
-        TMB_Event event = new TMB_Event(TMB_Event.RECORD_RECV, TMB_Helper.currentTimeNanos(), responseName, uuid, service, TMB_ClientPlugin.class);
+        TMB_Event event = new TMB_Event(TMB_Event.ACTION_RECV, TMB_Helper.currentTimeNanos(), responseName, uuid, service, TMB_ClientPlugin.class);
         trace.addEvent(event);
 
         TMB_Store.getInstance().callerAppendEventsByThreadIdUnsafe(threadId, trace);

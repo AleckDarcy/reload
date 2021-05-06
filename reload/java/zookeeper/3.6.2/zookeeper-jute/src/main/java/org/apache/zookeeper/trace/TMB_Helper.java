@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.lang.String;
 import java.lang.Thread;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class TMB_Helper {
@@ -32,7 +31,7 @@ public class TMB_Helper {
     public static void checkTFIs(TMB_Trace trace, String messageName) throws FaultInjectedException {
         List<TMB_TFI> tfis = trace.getTfis();
         for (TMB_TFI tfi: tfis) {
-            if (tfi.getName().equals(messageName) && (tfi.getEvent_type() & TMB_Event.RECORD_SEND) != 0) {
+            if (tfi.getName().equals(messageName) && (tfi.getEvent_type() & TMB_Event.ACTION_SEND) != 0) {
                 List<TMB_TFIMeta> metas = tfi.getAfter();
                 boolean injected = true;
                 if (metas != null && metas.size() > 0) {

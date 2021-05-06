@@ -25,11 +25,14 @@ import org.apache.yetus.audience.InterfaceAudience;
 
 @InterfaceAudience.Public
 public class TMB_Event implements Record {
-  public static final int RECORD_SEND = 0x1;
-  public static final int RECORD_RECV = 0x2;
-  public static final int RECORD_FRWD = 0x4; // follower forward
-  public static final int RECORD_PRSL = 0x8; // leader proposal
-  public static final int RECORD_MASK = 0xF;
+  public static final int ACTION_PREFIX = 0x00;
+  public static final int ACTION_SEND = ACTION_PREFIX | 0x1;
+  public static final int ACTION_RECV = ACTION_PREFIX | 0x2;
+  public static final int ACTION_FRWD = ACTION_PREFIX | 0x4; // follower forward
+  public static final int ACTION_PRSL = ACTION_PREFIX | 0x8; // leader proposal
+  public static final int LOGIC_PREFIX = 0x80;
+  public static final int LOGIC_COMMIT_READY = LOGIC_PREFIX | 0x1;
+  public static final int TYPE_MASK = 0xFF;
 
   private int type;
   private long timestamp;
@@ -59,14 +62,18 @@ public class TMB_Event implements Record {
   // 3MileBeach starts
   public String getTypeString() {
     switch (type) {
-      case RECORD_SEND:
-        return "SEND";
-      case RECORD_RECV:
-        return "RECV";
-      case RECORD_FRWD:
-        return "FRWD";
+      case ACTION_SEND:
+        return "A_SEND";
+      case ACTION_RECV:
+        return "A_RECV";
+      case ACTION_FRWD:
+        return "A_FRWD";
+      case ACTION_PRSL:
+        return "A_PRSL";
+      case LOGIC_COMMIT_READY:
+        return "L_COMMITREADY";
       default:
-        return "PRSL";
+        return "UNKNOWN";
     }
   }
 
