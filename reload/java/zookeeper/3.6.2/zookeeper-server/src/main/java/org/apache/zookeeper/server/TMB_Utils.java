@@ -120,8 +120,17 @@ public class TMB_Utils {
         return data;
     }
 
-    public static Record pRequestHelper(Record record, Record txn) {
-        // TODO: a capture RECV event
+    public static Record pRequestHelper(TMB_Store.QuorumMeta quorumMeta, Class processor, Record record, Record txn) {
+        TMB_Trace trace = record.getTrace();
+        if (trace != null && trace.getId() != 0) {
+            List<TMB_Event> events = trace.getEvents();
+            if (events.size() != 0) {
+                TMB_Event lastEvent = events.get(events.size() - 1);
+                TMB_Event event = new TMB_Event(TMB_Event.SERVICE_RECV, TMB_Helper.currentTimeNanos(), lastEvent.getMessage_name(), lastEvent.getUuid(), quorumMeta.getName(), processor);
+                events.add(event);
+                trace.setEvents(events);
+            }
+        }
         txn.setTrace(record.getTrace());
 
         return txn;
