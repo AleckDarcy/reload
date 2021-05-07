@@ -28,6 +28,7 @@ import org.apache.zookeeper.ZooDefs.OpCode;
 import org.apache.zookeeper.proto.*;
 import org.apache.zookeeper.server.*;
 import org.apache.zookeeper.trace.TMB_Event;
+import org.apache.zookeeper.trace.TMB_Helper;
 import org.apache.zookeeper.trace.TMB_Store;
 import org.apache.zookeeper.txn.*;
 import org.slf4j.Logger;
@@ -139,8 +140,8 @@ public class FollowerRequestProcessor extends ZooKeeperCriticalThread implements
                 // 3MileBeach starts
                 if (empty != null) {
                     // TODO: a appendEvents()
+                    request.setProcessorFlag(TMB_Utils.ProcessorFlag.RECV);
                     request.request = TMB_Utils.appendEvents(request.request, empty, TMB_Event.SERVICE_RECV, TMB_Event.SERVICE_FRWD, quorumMeta, this.getClass());
-//                    request.request = TMB_Utils.appendEvent(request.request, empty, TMB_Event.RECORD_FRWD, quorumMeta, this.getClass());
                     zks.getFollower().request(request);
                 }
 

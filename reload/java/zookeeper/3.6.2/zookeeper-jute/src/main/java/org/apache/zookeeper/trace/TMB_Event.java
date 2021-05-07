@@ -25,18 +25,20 @@ import org.apache.yetus.audience.InterfaceAudience;
 
 @InterfaceAudience.Public
 public class TMB_Event implements Record {
-  // service-level
+  // service-level events, captured on service boundaries
   public static final int SERVICE_PREFIX = 0x000;
-  public static final int SERVICE_SEND = SERVICE_PREFIX | 0x1;
-  public static final int SERVICE_RECV = SERVICE_PREFIX | 0x2;
-  public static final int SERVICE_FRWD = SERVICE_PREFIX | 0x4; // follower forward
-  public static final int SERVICE_PRSL = SERVICE_PREFIX | 0x8; // leader proposal
-  // processor-level
-  public static final int PROCSSR_PREFIX = 0x080;
-  public static final int PROCSSR_RECV = PROCSSR_PREFIX | 0x1;
-  // logical
-  public static final int LOGICAL_PREFIX = 0x800;
-  public static final int LOGICAL_COMMIT_READY = LOGICAL_PREFIX | 0x1;
+  public static final int SERVICE_SEND   = SERVICE_PREFIX | 0x1;
+  public static final int SERVICE_RECV   = SERVICE_PREFIX | 0x2;
+  public static final int SERVICE_FRWD   = SERVICE_PREFIX | 0x4; // follower forward
+  public static final int SERVICE_PRPS = SERVICE_PREFIX | 0x8;   // leader proposal
+  // processor-level events, captured on processor boundaries
+  public static final int PROCESSOR_PREFIX = 0x080;
+  public static final int PROCESSOR_RECV = PROCESSOR_PREFIX | 0x1; // processor received a message from other processors
+  // logical events, captured when logical pre-requisites are satisfied
+  public static final int LOGICAL_PREFIX     = 0x800;
+  public static final int LOGICAL_PRPS_READY = LOGICAL_PREFIX | 0x1; // leader starts to send proposals to followers
+  public static final int LOGICAL_CMMT_READY = LOGICAL_PREFIX | 0x2; // leader has received enough ACK's and starts to send commit to the followers
+  // mask
   public static final int TYPE_MASK = 0xFFF;
 
   private int type;
@@ -68,17 +70,19 @@ public class TMB_Event implements Record {
   public String getTypeString() {
     switch (type) {
       case SERVICE_SEND:
-        return "S_SEND";
+        return "SERVICE_SEND";
       case SERVICE_RECV:
-        return "S_RECV";
+        return "SERVICE_RECV";
       case SERVICE_FRWD:
-        return "S_FRWD";
-      case SERVICE_PRSL:
-        return "S_PRSL";
-      case PROCSSR_RECV:
-        return "P_RECV";
-      case LOGICAL_COMMIT_READY:
-        return "L_COMMITREADY";
+        return "SERVICE_FRWD";
+      case SERVICE_PRPS:
+        return "SERVICE_PRPS";
+      case PROCESSOR_RECV:
+        return "PROCESSOR_RECV";
+      case LOGICAL_PRPS_READY:
+        return "LOGICAL_PRPS_READY";
+      case LOGICAL_CMMT_READY:
+        return "LOGICAL_CMMT_READY";
       default:
         return "UNKNOWN";
     }

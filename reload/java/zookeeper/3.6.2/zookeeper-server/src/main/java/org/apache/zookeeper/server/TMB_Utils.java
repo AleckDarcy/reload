@@ -15,9 +15,18 @@ public class TMB_Utils {
     public static final int EVENT_SERIALIZE_SIZE = 100;
 
     public static final String QUORUM_ACK = "QuorumAck";
+    public static final String LEADER_PRPS_READY = "LeaderProposeReady";
     public static final String LEADER_COMMIT_READY = "LeaderCommitReady";
     public static final String LEADER_COMMIT = "LeaderCommit";
     public static final String LEADER_SYNC = "LeaderSync";
+
+    public static class ProcessorFlag {
+        public static final int RECV = 0x1;
+
+        public static boolean isReceived(int flag) {
+            return (flag & RECV) != 0;
+        }
+    }
 
     public static void printRequestForProcessor(String processorName, TMB_Store.QuorumMeta quorumMeta, Object next, Request request) {
         String nextName = "null";
@@ -65,17 +74,6 @@ public class TMB_Utils {
                         trace = trace_;
                     } else { // TODO: a report this case
 
-                    }
-
-                    // TODO: a uuid
-                    List<TMB_Event> events = trace.getEvents();
-                    int eventSize = events.size();
-                    if (eventSize > 0) {
-                        TMB_Event lastEvent = events.get(eventSize - 1);
-                        String uuid = TMB_Helper.UUID();
-
-                        TMB_Event event = new TMB_Event(TMB_Event.LOGIC_COMMIT_READY, TMB_Helper.currentTimeNanos(), LEADER_COMMIT_READY, uuid, quorumMeta.getName(), processor);
-                        trace.addEvent(event);
                     }
 
                     return new NullPointerResponse(messageName, trace);
@@ -159,38 +157,6 @@ public class TMB_Utils {
 
     public static Record appendEvent(Record record, int type, TMB_Store.QuorumMeta quorumMeta, Class processor) {
         return appendEvent(record, type, "", quorumMeta, false, processor);
-    }
-
-    // before sending the message,
-    // deserialize message and append an event to the message,
-    // finally serialize message
-    public static ByteBuffer appendEvent(ByteBuffer data, Record request, int type, TMB_Store.QuorumMeta quorumMeta, Class processor) throws IOException {
-        try {
-            ByteBufferInputStream.byteBuffer2Record(data, request);
-        } catch (IOException e) {
-            data.rewind();
-            throw e;
-        }
-
-
-        request = appendEvent(request, type, quorumMeta, processor);
-
-        TMB_Trace trace = request.getTrace();
-        if (trace != null) {
-            List<TMB_Event> events = request.getTrace().getEvents();
-
-            int eventSize = events.size();
-            if (eventSize > 0) {
-                ByteBuffer bb = ByteBuffer.allocate(data.capacity() + EVENT_SERIALIZE_SIZE);
-                ByteBufferOutputStream.record2ByteBuffer(request, bb);
-
-                return bb;
-            }
-        }
-
-        data.rewind();
-
-        return data;
     }
 
     // TODO: a using int[] types

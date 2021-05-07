@@ -84,6 +84,18 @@ public class Request {
 
     private Record txn;
 
+    // 3MileBeach starts
+    private int processorFlag;
+
+    public int getProcessorFlag() {
+        return processorFlag;
+    }
+
+    public void setProcessorFlag(int flag) {
+        this.processorFlag |= flag;
+    }
+    // 3MileBeach ends
+
     public long zxid = -1;
 
     public final List<Id> authInfo;

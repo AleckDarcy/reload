@@ -293,7 +293,7 @@ public class TMB_Store {
      * RequestProcessor -> calleeInbound -> process request -> calleeOutbound -> send response
      */
     // to be called after ByteBufferInputStream.byteBuffer2Record(buffer, record)
-    public static void calleeInbound(QuorumMeta quorumMeta, Record request, Class processor) {
+    public static void calleeInbound(QuorumMeta quorumMeta, Record request, int type, Class processor) {
         TMB_Trace trace = request.getTrace();
         if (trace == null || trace.getId() == 0) {
             TMB_Helper.printf(3, "[%s] callee inbound receives request with empty trace: %s, (%s)\n", quorumMeta.getName(), TMB_Helper.getClassName(request), TMB_Helper.getString(request));
@@ -305,7 +305,7 @@ public class TMB_Store {
 
         long threadId = Thread.currentThread().getId();
         TMB_Event preEvent = events.get(0);
-        TMB_Event event = new TMB_Event(TMB_Event.SERVICE_RECV, TMB_Helper.currentTimeNanos(), preEvent.getMessage_name(), preEvent.getUuid(), quorumMeta.getName(), processor);
+        TMB_Event event = new TMB_Event(type, TMB_Helper.currentTimeNanos(), preEvent.getMessage_name(), preEvent.getUuid(), quorumMeta.getName(), processor);
         events.add(event);
         trace.setEvents(events, 1);
 

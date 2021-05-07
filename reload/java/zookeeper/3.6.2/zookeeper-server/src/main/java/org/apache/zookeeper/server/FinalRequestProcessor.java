@@ -55,6 +55,7 @@ import org.apache.zookeeper.server.DataTree.ProcessTxnResult;
 import org.apache.zookeeper.server.quorum.QuorumPeer;
 import org.apache.zookeeper.server.quorum.QuorumZooKeeperServer;
 import org.apache.zookeeper.server.util.RequestPathMetricsCollector;
+import org.apache.zookeeper.trace.TMB_Event;
 import org.apache.zookeeper.trace.TMB_Helper;
 import org.apache.zookeeper.trace.TMB_Store;
 import org.apache.zookeeper.txn.ErrorTxn;
@@ -98,9 +99,13 @@ public class FinalRequestProcessor implements RequestProcessor {
     public void processRequest(Request request) {
         // 3MileBeach starts
         String requestName = TMB_Helper.getClassName(request.getTxn());
+        int eventType = TMB_Event.SERVICE_RECV;
         if (request.getTxn() != null) {
             // TMB_Helper.printf("[%s] callee inbound component right now\n", quorumName);
-            TMB_Store.calleeInbound(quorumMeta, request.getTxn(), this.getClass());
+            if (TMB_Utils.ProcessorFlag.isReceived(request.getProcessorFlag())) {
+                eventType = TMB_Event.PROCESSOR_RECV;
+            }
+            TMB_Store.calleeInbound(quorumMeta, request.getTxn(), eventType, this.getClass());
         } else {
             TMB_Helper.printf("[%s] callee inbound component when request is deserialized, request type: %d\n", quorumMeta.getName(), request.type);
         }
@@ -389,7 +394,7 @@ public class FinalRequestProcessor implements RequestProcessor {
 
                 // 3MileBeach
                 requestName = "GetDataRequest";
-                TMB_Store.calleeInbound(quorumMeta, request.getTxn(), this.getClass());
+                TMB_Store.calleeInbound(quorumMeta, request.getTxn(), eventType, this.getClass());
 
                 path = getDataRequest.getPath();
                 rsp = handleGetDataRequest(getDataRequest, cnxn, request.authInfo);

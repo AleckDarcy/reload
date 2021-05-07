@@ -1158,13 +1158,16 @@ public class Leader extends LearnerMaster {
             if (record != null) {
                 TMB_Trace trace = record.getTrace();
                 List<TMB_Event> events = trace.getEvents();
-                int eventSize = events.size();
+                int eventSize = (events == null ? 0: events.size());
                 if (eventSize > 0) {
-                    TMB_Event lastEvent = events.get(eventSize - 1);
-                    String uuid = lastEvent.getUuid();
-                    if (uuid.length() == TMB_Helper.UUID_LEN + TMB_Helper.UUID_SUF_LEN) {
-                        uuid = uuid.substring(0, TMB_Helper.UUID_LEN);
-                    }
+                    String uuid = TMB_Helper.UUID();
+                    // String uuid = lastEvent.getUuid();
+                    // if (uuid.length() == TMB_Helper.UUID_LEN + TMB_Helper.UUID_SUF_LEN) {
+                    //    uuid = uuid.substring(0, TMB_Helper.UUID_LEN);
+                    // }
+
+                    TMB_Event event = new TMB_Event(TMB_Event.LOGICAL_CMMT_READY, TMB_Helper.currentTimeNanos(), TMB_Utils.LEADER_COMMIT_READY, uuid, quorumMeta.getName(), this.getClass());
+                    trace.addEvent(event);
 
                     TMB_Helper.printf("[%s] Leader commits to %d follower(s)\n", quorumMeta.getName(), forwardingFollowers.size());
                     int i = 0;
@@ -1227,7 +1230,10 @@ public class Leader extends LearnerMaster {
                             int eventSize = events.size();
                             if (eventSize > 0) {
                                 TMB_Event lastEvent = events.get(eventSize - 1);
-                                String uuid = lastEvent.getUuid();
+                                String uuid = TMB_Helper.UUID();
+
+                                TMB_Event event = new TMB_Event(TMB_Event.LOGICAL_PRPS_READY, TMB_Helper.currentTimeNanos(), TMB_Utils.LEADER_PRPS_READY, uuid, quorumMeta.getName(), this.getClass());
+                                trace.addEvent(event);
 
                                 TMB_Helper.printf("[%s] Leader proposals to %d follower(s)\n", quorumMeta.getName(), forwardingFollowers.size());
                                 int i = 0;
@@ -1241,7 +1247,7 @@ public class Leader extends LearnerMaster {
                                     }
 
                                     String uuid_ = String.format("%s-%04d", uuid, i);
-                                    events.add(new TMB_Event(TMB_Event.SERVICE_PRSL, TMB_Helper.currentTimeNanos(), lastEvent.getMessage_name(), uuid_, quorumMeta.getName(), this.getClass()));
+                                    events.add(new TMB_Event(TMB_Event.SERVICE_PRPS, TMB_Helper.currentTimeNanos(), lastEvent.getMessage_name(), uuid_, quorumMeta.getName(), this.getClass()));
                                     trace.setEvents(events, 1);
 
                                     if (injected) {
