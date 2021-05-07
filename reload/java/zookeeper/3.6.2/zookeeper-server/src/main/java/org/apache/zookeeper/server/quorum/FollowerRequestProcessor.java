@@ -28,7 +28,6 @@ import org.apache.zookeeper.ZooDefs.OpCode;
 import org.apache.zookeeper.proto.*;
 import org.apache.zookeeper.server.*;
 import org.apache.zookeeper.trace.TMB_Event;
-import org.apache.zookeeper.trace.TMB_Helper;
 import org.apache.zookeeper.trace.TMB_Store;
 import org.apache.zookeeper.txn.*;
 import org.slf4j.Logger;
@@ -51,13 +50,13 @@ public class FollowerRequestProcessor extends ZooKeeperCriticalThread implements
     boolean finished = false;
 
     // 3MileBeach starts
-    TMB_Store.QuorumMeta quorumMeta;
+    TMB_Store.ProcessorMeta procMeta;
 
     public FollowerRequestProcessor(FollowerZooKeeperServer zks, RequestProcessor nextProcessor, QuorumPeer self) {
         super("FollowerRequestProcessor:" + zks.getServerId(), zks.getZooKeeperServerListener());
         this.zks = zks;
         this.nextProcessor = nextProcessor;
-        this.quorumMeta = self.getQuorumMeta();
+        this.procMeta = new TMB_Store.ProcessorMeta(self.getQuorumMeta(), this.getClass());
     }
     // 3MileBeach ends
 
@@ -65,7 +64,6 @@ public class FollowerRequestProcessor extends ZooKeeperCriticalThread implements
         super("FollowerRequestProcessor:" + zks.getServerId(), zks.getZooKeeperServerListener());
         this.zks = zks;
         this.nextProcessor = nextProcessor;
-        this.quorumMeta = new TMB_Store.QuorumMeta(0, "quorum-standalone"); // 3MileBeach
     }
 
     @Override
@@ -84,7 +82,7 @@ public class FollowerRequestProcessor extends ZooKeeperCriticalThread implements
                 if (!zks.authWriteRequest(request)) {
                     continue;
                 }
-                TMB_Utils.printRequestForProcessor("FollowerRequestProcessor starts", quorumMeta, nextProcessor, request); // 3MileBeach
+                TMB_Utils.printRequestForProcessor("FollowerRequestProcessor starts", procMeta.getQuorumMeta(), nextProcessor, request); // 3MileBeach
 
                 // We want to queue the request to be processed before we submit
                 // the request to the leader so that we are ready to receive
@@ -139,13 +137,12 @@ public class FollowerRequestProcessor extends ZooKeeperCriticalThread implements
 
                 // 3MileBeach starts
                 if (empty != null) {
-                    // TODO: a appendEvents()
                     request.setProcessorFlag(TMB_Utils.ProcessorFlag.RECV);
-                    request.request = TMB_Utils.appendEvents(request.request, empty, TMB_Event.SERVICE_RECV, TMB_Event.SERVICE_FRWD, quorumMeta, this.getClass());
+                    request.request = TMB_Utils.appendEvents(procMeta, request.request, empty, new int[]{TMB_Event.SERVICE_RECV, TMB_Event.SERVICE_FRWD});
                     zks.getFollower().request(request);
                 }
 
-                TMB_Utils.printRequestForProcessor("FollowerRequestProcessor ends", quorumMeta, nextProcessor, request);
+                TMB_Utils.printRequestForProcessor("FollowerRequestProcessor ends", procMeta.getQuorumMeta(), nextProcessor, request);
                 // 3MileBeach ends
             }
         } catch (Exception e) {

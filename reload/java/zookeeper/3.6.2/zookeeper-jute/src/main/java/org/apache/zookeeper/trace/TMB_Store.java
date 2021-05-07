@@ -29,6 +29,32 @@ public class TMB_Store {
         }
     }
 
+    public static class ProcessorMeta {
+        private QuorumMeta quorumMeta;
+        private Class processor;
+
+        public ProcessorMeta(QuorumMeta quorumMeta, Class processor) {
+            this.quorumMeta = quorumMeta;
+            this.processor = processor;
+        }
+
+        public QuorumMeta getQuorumMeta() {
+            return quorumMeta;
+        }
+
+        public long getQuorumId() {
+            return quorumMeta.getId();
+        }
+
+        public String getQuorumName() {
+            return quorumMeta.name;
+        }
+
+        public Class getProcessor() {
+            return processor;
+        }
+    }
+
     public static class QuorumMeta {
         private long id;
         private String name;

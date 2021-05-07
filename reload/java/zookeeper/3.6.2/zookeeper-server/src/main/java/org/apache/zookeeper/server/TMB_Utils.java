@@ -148,10 +148,6 @@ public class TMB_Utils {
         if (eventSize > 0) {
             TMB_Event lastEvent = events.get(eventSize - 1);
             String uuid = lastEvent.getUuid();
-            if (truncateUUID && uuid.length() == TMB_Helper.UUID_LEN + TMB_Helper.UUID_SUF_LEN) {
-                uuid = uuid.substring(0, TMB_Helper.UUID_LEN);
-            }
-
             if (messageName.equals("")) {
                 messageName = lastEvent.getMessage_name();
             }
@@ -168,8 +164,7 @@ public class TMB_Utils {
         return appendEvent(record, type, "", quorumMeta, false, processor);
     }
 
-    // TODO: a using int[] types
-    public static ByteBuffer appendEvents(ByteBuffer data, Record request, int type1, int type2, TMB_Store.QuorumMeta quorumMeta, Class processor) throws IOException {
+    public static ByteBuffer appendEvents(TMB_Store.ProcessorMeta procMeta, ByteBuffer data, Record request, int[] types) throws IOException {
         try {
             ByteBufferInputStream.byteBuffer2Record(data, request);
         } catch (IOException e) {
@@ -177,17 +172,17 @@ public class TMB_Utils {
             throw e;
         }
 
-
-        request = appendEvent(request, type1, quorumMeta, processor);
-        request = appendEvent(request, type2, quorumMeta, processor);
-
         TMB_Trace trace = request.getTrace();
         if (trace != null) {
             List<TMB_Event> events = request.getTrace().getEvents();
-
             int eventSize = events.size();
             if (eventSize > 0) {
-                ByteBuffer bb = ByteBuffer.allocate(data.capacity() + EVENT_SERIALIZE_SIZE * 2);
+                TMB_Event lastEvent = events.get(eventSize - 1);
+                for (int type: types) {
+                    events.add(new TMB_Event(type, TMB_Helper.currentTimeNanos(), lastEvent.getMessage_name(), lastEvent.getUuid(), procMeta.getQuorumName(), procMeta.getProcessor()));
+                }
+
+                ByteBuffer bb = ByteBuffer.allocate(data.capacity() + EVENT_SERIALIZE_SIZE * types.length);
                 ByteBufferOutputStream.record2ByteBuffer(request, bb);
 
                 return bb;

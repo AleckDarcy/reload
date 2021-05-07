@@ -20,9 +20,6 @@ public class TMB_Helper {
 
     public static boolean printable = true;
 
-    public static final int UUID_LEN = 10;
-    public static final int UUID_SUF_LEN = 5;
-
     public static String UUID() {
         return String.format("%010d", uuid.addAndGet(1));
 //        return UUID.randomUUID().toString();

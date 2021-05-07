@@ -50,6 +50,19 @@ public class TMB_Event implements Record {
   public TMB_Event() {
   }
   public TMB_Event(
+          int type,
+          long timestamp,
+          String message_name,
+          String uuid,
+          TMB_Store.ProcessorMeta procMeta) {
+    this.type = type;
+    this.timestamp = timestamp;
+    this.message_name = message_name;
+    this.uuid = uuid;
+    this.service = procMeta.getQuorumName();
+    this.processor = TMB_Helper.getClassNameFromClass(procMeta.getProcessor());
+  }
+  public TMB_Event(
         int type,
         long timestamp,
         String message_name,
