@@ -31,7 +31,7 @@ public class TMB_Helper {
     public static void checkTFIs(TMB_Trace trace, String messageName) throws FaultInjectedException {
         List<TMB_TFI> tfis = trace.getTfis();
         for (TMB_TFI tfi: tfis) {
-            if (tfi.getName().equals(messageName) && (tfi.getEvent_type() & TMB_Event.ACTION_SEND) != 0) {
+            if (tfi.getName().equals(messageName) && (tfi.getEvent_type() & TMB_Event.SERVICE_SEND) != 0) {
                 List<TMB_TFIMeta> metas = tfi.getAfter();
                 boolean injected = true;
                 if (metas != null && metas.size() > 0) {

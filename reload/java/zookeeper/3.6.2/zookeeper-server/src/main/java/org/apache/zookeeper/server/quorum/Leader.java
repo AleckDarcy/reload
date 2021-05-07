@@ -1179,7 +1179,7 @@ public class Leader extends LearnerMaster {
                         }
 
                         String uuid_ = String.format("%s-%04d", uuid, i);
-                        events.add(new TMB_Event(TMB_Event.ACTION_SEND, TMB_Helper.currentTimeNanos(), TMB_Utils.LEADER_COMMIT, uuid_, quorumMeta.getName(), this.getClass()));
+                        events.add(new TMB_Event(TMB_Event.SERVICE_SEND, TMB_Helper.currentTimeNanos(), TMB_Utils.LEADER_COMMIT, uuid_, quorumMeta.getName(), this.getClass()));
                         trace.setEvents(events, 1);
 
                         if (injected) {
@@ -1241,7 +1241,7 @@ public class Leader extends LearnerMaster {
                                     }
 
                                     String uuid_ = String.format("%s-%04d", uuid, i);
-                                    events.add(new TMB_Event(TMB_Event.ACTION_PRSL, TMB_Helper.currentTimeNanos(), lastEvent.getMessage_name(), uuid_, quorumMeta.getName(), this.getClass()));
+                                    events.add(new TMB_Event(TMB_Event.SERVICE_PRSL, TMB_Helper.currentTimeNanos(), lastEvent.getMessage_name(), uuid_, quorumMeta.getName(), this.getClass()));
                                     trace.setEvents(events, 1);
 
                                     if (injected) {

@@ -109,7 +109,7 @@ public class TMB_Utils {
                     TMB_Helper.checkTFIs(trace, messageName);
 
                     record.setTrace(trace);
-                    record = TMB_Utils.appendEvent(record, TMB_Event.ACTION_SEND, messageName, quorumMeta, false, processor);
+                    record = TMB_Utils.appendEvent(record, TMB_Event.SERVICE_SEND, messageName, quorumMeta, false, processor);
 
                     try {
                         data = TMB_Helper.serialize(record);
@@ -229,7 +229,7 @@ public class TMB_Utils {
         if (data != null) {
             try {
                 TMB_Helper.deserialize(new ByteArrayInputStream(data), record);
-                record = TMB_Utils.appendEvent(record, TMB_Event.ACTION_RECV, quorumMeta, processor);
+                record = TMB_Utils.appendEvent(record, TMB_Event.SERVICE_RECV, quorumMeta, processor);
                 TMB_Store.getInstance().quorumSetTrace(quorumMeta, record.getTrace());
             } catch (IOException e) {
                 e.printStackTrace();

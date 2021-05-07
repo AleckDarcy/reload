@@ -52,7 +52,7 @@ public class TMB_ClientPlugin {
             long threadId = Thread.currentThread().getId();
             String requestName = TMB_Helper.getClassName(request);
             String uuid = TMB_Helper.UUID();
-            TMB_Event event = new TMB_Event(TMB_Event.ACTION_SEND, TMB_Helper.currentTimeNanos(), requestName, uuid, service, TMB_ClientPlugin.class);
+            TMB_Event event = new TMB_Event(TMB_Event.SERVICE_SEND, TMB_Helper.currentTimeNanos(), requestName, uuid, service, TMB_ClientPlugin.class);
 
             List<TMB_Event> events = trace.getEvents();
             events.add(event);
@@ -80,7 +80,7 @@ public class TMB_ClientPlugin {
 
         long threadId = Thread.currentThread().getId();
         String uuid = events.get(0).getUuid();
-        TMB_Event event = new TMB_Event(TMB_Event.ACTION_RECV, TMB_Helper.currentTimeNanos(), responseName, uuid, service, TMB_ClientPlugin.class);
+        TMB_Event event = new TMB_Event(TMB_Event.SERVICE_RECV, TMB_Helper.currentTimeNanos(), responseName, uuid, service, TMB_ClientPlugin.class);
         trace.addEvent(event);
 
         TMB_Store.getInstance().callerAppendEventsByThreadIdUnsafe(threadId, trace);

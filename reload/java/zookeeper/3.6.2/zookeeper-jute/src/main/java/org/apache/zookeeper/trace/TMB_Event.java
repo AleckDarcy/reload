@@ -25,14 +25,19 @@ import org.apache.yetus.audience.InterfaceAudience;
 
 @InterfaceAudience.Public
 public class TMB_Event implements Record {
-  public static final int ACTION_PREFIX = 0x00;
-  public static final int ACTION_SEND = ACTION_PREFIX | 0x1;
-  public static final int ACTION_RECV = ACTION_PREFIX | 0x2;
-  public static final int ACTION_FRWD = ACTION_PREFIX | 0x4; // follower forward
-  public static final int ACTION_PRSL = ACTION_PREFIX | 0x8; // leader proposal
-  public static final int LOGIC_PREFIX = 0x80;
-  public static final int LOGIC_COMMIT_READY = LOGIC_PREFIX | 0x1;
-  public static final int TYPE_MASK = 0xFF;
+  // service-level
+  public static final int SERVICE_PREFIX = 0x000;
+  public static final int SERVICE_SEND = SERVICE_PREFIX | 0x1;
+  public static final int SERVICE_RECV = SERVICE_PREFIX | 0x2;
+  public static final int SERVICE_FRWD = SERVICE_PREFIX | 0x4; // follower forward
+  public static final int SERVICE_PRSL = SERVICE_PREFIX | 0x8; // leader proposal
+  // processor-level
+  public static final int PROCSSR_PREFIX = 0x080;
+  public static final int PROCSSR_RECV = PROCSSR_PREFIX | 0x1;
+  // logical
+  public static final int LOGICAL_PREFIX = 0x800;
+  public static final int LOGICAL_COMMIT_READY = LOGICAL_PREFIX | 0x1;
+  public static final int TYPE_MASK = 0xFFF;
 
   private int type;
   private long timestamp;
@@ -62,15 +67,17 @@ public class TMB_Event implements Record {
   // 3MileBeach starts
   public String getTypeString() {
     switch (type) {
-      case ACTION_SEND:
-        return "A_SEND";
-      case ACTION_RECV:
-        return "A_RECV";
-      case ACTION_FRWD:
-        return "A_FRWD";
-      case ACTION_PRSL:
-        return "A_PRSL";
-      case LOGIC_COMMIT_READY:
+      case SERVICE_SEND:
+        return "S_SEND";
+      case SERVICE_RECV:
+        return "S_RECV";
+      case SERVICE_FRWD:
+        return "S_FRWD";
+      case SERVICE_PRSL:
+        return "S_PRSL";
+      case PROCSSR_RECV:
+        return "P_RECV";
+      case LOGICAL_COMMIT_READY:
         return "L_COMMITREADY";
       default:
         return "UNKNOWN";

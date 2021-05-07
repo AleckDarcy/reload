@@ -727,7 +727,7 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
             List<TMB_Event> events = trace.getEvents();
             if (events.size() != 0) {
                 TMB_Event lastEvent = events.get(events.size() - 1);
-                TMB_Event event = new TMB_Event(TMB_Event.ACTION_RECV, TMB_Helper.currentTimeNanos(), lastEvent.getMessage_name(), lastEvent.getUuid(), quorumMeta.getName(), this.getClass());
+                TMB_Event event = new TMB_Event(TMB_Event.SERVICE_RECV, TMB_Helper.currentTimeNanos(), lastEvent.getMessage_name(), lastEvent.getUuid(), quorumMeta.getName(), this.getClass());
                 events.add(event);
                 trace.setEvents(events);
             }

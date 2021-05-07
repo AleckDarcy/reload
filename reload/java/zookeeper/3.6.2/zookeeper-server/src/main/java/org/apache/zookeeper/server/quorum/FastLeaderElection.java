@@ -392,7 +392,7 @@ public class FastLeaderElection implements Election {
                                             TMB_Event lastEvent = events.get(eventSize - 1);
                                             String name = lastEvent.getMessage_name();
                                             uuid = lastEvent.getUuid();
-                                            TMB_Event event = new TMB_Event(TMB_Event.ACTION_RECV, TMB_Helper.currentTimeNanos(), name, uuid,
+                                            TMB_Event event = new TMB_Event(TMB_Event.SERVICE_RECV, TMB_Helper.currentTimeNanos(), name, uuid,
                                                     quorumMeta.getName(), this.getClass());
                                             // TMB_Helper.printf("[quorum-%d] new event: %s\n", quorumId, event.toJSON());
                                             events.add(event);
@@ -662,7 +662,7 @@ public class FastLeaderElection implements Election {
                 if (trace.getId() != 0) {
                     try {
                         TMB_Event event = new TMB_Event(
-                                TMB_Event.ACTION_SEND,
+                                TMB_Event.SERVICE_SEND,
                                 TMB_Helper.currentTimeNanos(),
                                 m.name,
                                 TMB_Helper.UUID(),

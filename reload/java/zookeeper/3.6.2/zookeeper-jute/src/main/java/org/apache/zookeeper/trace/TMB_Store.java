@@ -305,7 +305,7 @@ public class TMB_Store {
 
         long threadId = Thread.currentThread().getId();
         TMB_Event preEvent = events.get(0);
-        TMB_Event event = new TMB_Event(TMB_Event.ACTION_RECV, TMB_Helper.currentTimeNanos(), preEvent.getMessage_name(), preEvent.getUuid(), quorumMeta.getName(), processor);
+        TMB_Event event = new TMB_Event(TMB_Event.SERVICE_RECV, TMB_Helper.currentTimeNanos(), preEvent.getMessage_name(), preEvent.getUuid(), quorumMeta.getName(), processor);
         events.add(event);
         trace.setEvents(events, 1);
 
@@ -334,7 +334,7 @@ public class TMB_Store {
         TMB_Trace trace_ = getInstance().quorumGetTrace(quorumMeta, trace.getId());
         mergeEvents(trace_, trace.getEvents()); // merge events of the current SRC to those of the current client request
 
-        TMB_Event event = new TMB_Event(TMB_Event.ACTION_SEND, TMB_Helper.currentTimeNanos(), TMB_Helper.getClassName(response), preEvent.getUuid(), quorumMeta.getName(), processor);
+        TMB_Event event = new TMB_Event(TMB_Event.SERVICE_SEND, TMB_Helper.currentTimeNanos(), TMB_Helper.getClassName(response), preEvent.getUuid(), quorumMeta.getName(), processor);
         trace_.addEvent(event);
         response.setTrace(trace_);
 

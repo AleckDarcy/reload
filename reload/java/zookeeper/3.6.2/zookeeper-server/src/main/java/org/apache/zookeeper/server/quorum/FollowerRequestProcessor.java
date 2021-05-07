@@ -139,7 +139,7 @@ public class FollowerRequestProcessor extends ZooKeeperCriticalThread implements
                 // 3MileBeach starts
                 if (empty != null) {
                     // TODO: a appendEvents()
-                    request.request = TMB_Utils.appendEvents(request.request, empty, TMB_Event.ACTION_RECV, TMB_Event.ACTION_FRWD, quorumMeta, this.getClass());
+                    request.request = TMB_Utils.appendEvents(request.request, empty, TMB_Event.SERVICE_RECV, TMB_Event.SERVICE_FRWD, quorumMeta, this.getClass());
 //                    request.request = TMB_Utils.appendEvent(request.request, empty, TMB_Event.RECORD_FRWD, quorumMeta, this.getClass());
                     zks.getFollower().request(request);
                 }
