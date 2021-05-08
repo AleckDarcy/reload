@@ -35,29 +35,28 @@ public class SendAckRequestProcessor implements RequestProcessor, Flushable {
 
     Learner learner;
     // 3MileBeach starts
-    TMB_Store.QuorumMeta quorumMeta;
+    TMB_Store.ProcessorMeta procMeta;
 
     SendAckRequestProcessor(Learner peer, QuorumPeer self) {
         this.learner = peer;
-        this.quorumMeta = self.getQuorumMeta();
+        this.procMeta = new TMB_Store.ProcessorMeta(self.getQuorumMeta(), this.getClass());
     }
     // 3MileBeach ends
 
     SendAckRequestProcessor(Learner peer) {
         this.learner = peer;
-        this.quorumMeta = new TMB_Store.QuorumMeta(0, "quorum-standalone"); // 3MileBeach
     }
 
     public void processRequest(Request si) {
         if (si.type != OpCode.sync) {
             // 3MileBeach starts
-            TMB_Utils.printRequestForProcessor("SendAckRequestProcessor", quorumMeta, learner, si);
+            TMB_Utils.printRequestForProcessor("SendAckRequestProcessor", procMeta.getQuorumMeta(), learner, si);
             byte[] data;
             try {
-                TMB_Helper.printf("[%s] let's ack! request %s\n", quorumMeta.getName(), si.getTxn());
-                data = TMB_Utils.ackHelper(si, TMB_Utils.QUORUM_ACK, quorumMeta, this.getClass());
+                TMB_Helper.printf("[%s] let's ack! request %s\n", procMeta.getQuorumName(), si.getTxn());
+                data = TMB_Utils.ackHelper(procMeta, si, TMB_Utils.QUORUM_ACK);
             } catch (FaultInjectedException e) {
-                TMB_Helper.printf("[%s] Fault injected, won't send ACK to the leader\n", quorumMeta.getName());
+                TMB_Helper.printf("[%s] Fault injected, won't send ACK to the leader\n", procMeta.getQuorumName());
                 return;
             }
             QuorumPacket qp = new QuorumPacket(Leader.ACK, si.getHdr().getZxid(), data, null);
@@ -80,7 +79,7 @@ public class SendAckRequestProcessor implements RequestProcessor, Flushable {
                 }
             }
         } else {
-            TMB_Helper.printf("[%s] SendAckRequestProcessor\n", quorumMeta.getName()); // 3MileBeach
+            TMB_Helper.printf("[%s] SendAckRequestProcessor\n", procMeta.getQuorumName()); // 3MileBeach
         }
     }
 

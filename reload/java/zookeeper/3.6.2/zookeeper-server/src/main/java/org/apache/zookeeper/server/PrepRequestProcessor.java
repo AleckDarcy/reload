@@ -100,7 +100,7 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
     }
 
     // 3MileBeach begins
-    TMB_Store.QuorumMeta quorumMeta;
+    TMB_Store.ProcessorMeta procMeta;
 
     public PrepRequestProcessor(ZooKeeperServer zks, RequestProcessor nextProcessor, QuorumPeer self) {
         super(
@@ -113,7 +113,7 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
         if (this.digestEnabled) {
             this.digestCalculator = new DigestCalculator();
         }
-        this.quorumMeta = self.getQuorumMeta();
+        this.procMeta = new TMB_Store.ProcessorMeta(self.getQuorumMeta(), this.getClass());
     }
     // 3MileBeach ends
 
@@ -128,7 +128,7 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
         if (this.digestEnabled) {
             this.digestCalculator = new DigestCalculator();
         }
-        this.quorumMeta = new TMB_Store.QuorumMeta(0, "quorum-standalone"); // 3MileBeach
+        this.procMeta = new TMB_Store.ProcessorMeta(new TMB_Store.QuorumMeta(0, "quorum-standalone"), this.getClass()); // 3MileBeach
     }
 
     /**
@@ -348,7 +348,7 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
                 throw new KeeperException.BadVersionException(path);
             }
             ChangeRecord parentRecord = getRecordForPath(parentPath);
-            request.setTxn(TMB_Utils.pRequestHelper(quorumMeta, this.getClass(), record, new DeleteTxn(path))); // 3MileBeach
+            request.setTxn(TMB_Utils.pRequestHelper(procMeta, record, new DeleteTxn(path))); // 3MileBeach
             // request.setTxn(new DeleteTxn(path));
             parentRecord = parentRecord.duplicate(request.getHdr().getZxid());
             parentRecord.childCount--;
@@ -378,7 +378,7 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
             if (nodeRecord.childCount > 0) {
                 throw new KeeperException.NotEmptyException(path);
             }
-            request.setTxn(TMB_Utils.pRequestHelper(quorumMeta, this.getClass(), record, new DeleteTxn(path))); // 3MileBeach
+            request.setTxn(TMB_Utils.pRequestHelper(procMeta, record, new DeleteTxn(path))); // 3MileBeach
             // request.setTxn(new DeleteTxn(path));
             parentRecord = parentRecord.duplicate(request.getHdr().getZxid());
             parentRecord.childCount--;
@@ -404,7 +404,7 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
             zks.checkACL(request.cnxn, nodeRecord.acl, ZooDefs.Perms.WRITE, request.authInfo, path, null);
             int newVersion = checkAndIncVersion(nodeRecord.stat.getVersion(), setDataRequest.getVersion(), path);
 
-            request.setTxn(TMB_Utils.pRequestHelper(quorumMeta, this.getClass(), record, new SetDataTxn(path, setDataRequest.getData(), newVersion))); // 3MileBeach
+            request.setTxn(TMB_Utils.pRequestHelper(procMeta, record, new SetDataTxn(path, setDataRequest.getData(), newVersion))); // 3MileBeach
             // request.setTxn(new SetDataTxn(path, setDataRequest.getData(), newVersion));
             nodeRecord = nodeRecord.duplicate(request.getHdr().getZxid());
             nodeRecord.stat.setVersion(newVersion);
@@ -545,7 +545,7 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
             nodeRecord = getRecordForPath(ZooDefs.CONFIG_NODE);
             zks.checkACL(request.cnxn, nodeRecord.acl, ZooDefs.Perms.WRITE, request.authInfo, null, null);
             SetDataTxn setDataTxn = new SetDataTxn(ZooDefs.CONFIG_NODE, request.qv.toString().getBytes(), -1);
-            request.setTxn(TMB_Utils.pRequestHelper(quorumMeta, this.getClass(), record, setDataTxn)); // 3MileBeach
+            request.setTxn(TMB_Utils.pRequestHelper(procMeta, record, setDataTxn)); // 3MileBeach
             // request.setTxn(setDataTxn);
             nodeRecord = nodeRecord.duplicate(request.getHdr().getZxid());
             nodeRecord.stat.setVersion(-1);
@@ -572,7 +572,7 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
             nodeRecord = getRecordForPath(path);
             zks.checkACL(request.cnxn, nodeRecord.acl, ZooDefs.Perms.ADMIN, request.authInfo, path, listACL);
             newVersion = checkAndIncVersion(nodeRecord.stat.getAversion(), setAclRequest.getVersion(), path);
-            request.setTxn(TMB_Utils.pRequestHelper(quorumMeta, this.getClass(), record, new SetACLTxn(path, listACL, newVersion)));
+            request.setTxn(TMB_Utils.pRequestHelper(procMeta, record, new SetACLTxn(path, listACL, newVersion)));
             // request.setTxn(new SetACLTxn(path, listACL, newVersion));
             nodeRecord = nodeRecord.duplicate(request.getHdr().getZxid());
             nodeRecord.stat.setAversion(newVersion);
@@ -643,7 +643,7 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
             validatePath(path, request.sessionId);
             nodeRecord = getRecordForPath(path);
             zks.checkACL(request.cnxn, nodeRecord.acl, ZooDefs.Perms.READ, request.authInfo, path, null);
-            request.setTxn(TMB_Utils.pRequestHelper(quorumMeta, this.getClass(), record, new CheckVersionTxn(path, checkAndIncVersion(nodeRecord.stat.getVersion(), checkVersionRequest.getVersion(), path)))); // 3MileBeach
+            request.setTxn(TMB_Utils.pRequestHelper(procMeta, record, new CheckVersionTxn(path, checkAndIncVersion(nodeRecord.stat.getVersion(), checkVersionRequest.getVersion(), path)))); // 3MileBeach
             // request.setTxn(new CheckVersionTxn(path, checkAndIncVersion(nodeRecord.stat.getVersion(), checkVersionRequest.getVersion(), path)));
             break;
         default:
@@ -709,13 +709,13 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
         }
         int newCversion = parentRecord.stat.getCversion() + 1;
         if (type == OpCode.createContainer) {
-            request.setTxn(TMB_Utils.pRequestHelper(quorumMeta, this.getClass(), record, new CreateContainerTxn(path, data, listACL, newCversion))); // 3MileBeach
+            request.setTxn(TMB_Utils.pRequestHelper(procMeta, record, new CreateContainerTxn(path, data, listACL, newCversion))); // 3MileBeach
             // request.setTxn(new CreateContainerTxn(path, data, listACL, newCversion));
         } else if (type == OpCode.createTTL) {
-            request.setTxn(TMB_Utils.pRequestHelper(quorumMeta, this.getClass(), record, new CreateTTLTxn(path, data, listACL, newCversion, ttl))); // 3MileBeach
+            request.setTxn(TMB_Utils.pRequestHelper(procMeta, record, new CreateTTLTxn(path, data, listACL, newCversion, ttl))); // 3MileBeach
             // request.setTxn(new CreateTTLTxn(path, data, listACL, newCversion, ttl));
         } else {
-            request.setTxn(TMB_Utils.pRequestHelper(quorumMeta, this.getClass(), record, new CreateTxn(path, data, listACL, createMode.isEphemeral(), newCversion))); // 3MileBeach
+            request.setTxn(TMB_Utils.pRequestHelper(procMeta, record, new CreateTxn(path, data, listACL, createMode.isEphemeral(), newCversion))); // 3MileBeach
             // request.setTxn(new CreateTxn(path, data, listACL, createMode.isEphemeral(), newCversion));
         }
 
@@ -776,7 +776,7 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
      * @param request
      */
     protected void pRequest(Request request) throws RequestProcessorException {
-        TMB_Utils.printRequestForProcessor("PreRequestProcessor", quorumMeta, nextProcessor, request); // 3MileBeach
+        TMB_Utils.printRequestForProcessor("PreRequestProcessor", procMeta.getQuorumMeta(), nextProcessor, request); // 3MileBeach
         // LOG.info("Prep>>> cxid = " + request.cxid + " type = " +
         // request.type + " id = 0x" + Long.toHexString(request.sessionId));
         request.setHdr(null);
@@ -883,7 +883,7 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
                     }
                 }
 
-                request.setTxn(TMB_Utils.pRequestHelper(quorumMeta, this.getClass(), multiRequest, new MultiTxn(txns))); // 3MileBeach
+                request.setTxn(TMB_Utils.pRequestHelper(procMeta, multiRequest, new MultiTxn(txns))); // 3MileBeach
                 // request.setTxn(new MultiTxn(txns));
                 if (digestEnabled) {
                     setTxnDigest(request);

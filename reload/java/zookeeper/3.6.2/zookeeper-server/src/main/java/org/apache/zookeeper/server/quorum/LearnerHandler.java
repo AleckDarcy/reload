@@ -34,7 +34,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 import javax.security.sasl.SaslException;
 import org.apache.jute.BinaryInputArchive;
 import org.apache.jute.BinaryOutputArchive;
-import org.apache.jute.Record;
 import org.apache.zookeeper.ZooDefs.OpCode;
 import org.apache.zookeeper.proto.NullPointerResponse;
 import org.apache.zookeeper.server.*;
@@ -43,7 +42,6 @@ import org.apache.zookeeper.server.quorum.QuorumPeer.LearnerType;
 import org.apache.zookeeper.server.quorum.auth.QuorumAuthServer;
 import org.apache.zookeeper.server.util.MessageTracker;
 import org.apache.zookeeper.server.util.ZxidUtils;
-import org.apache.zookeeper.trace.TMB_Event;
 import org.apache.zookeeper.trace.TMB_Helper;
 import org.apache.zookeeper.trace.TMB_Store;
 import org.slf4j.Logger;
@@ -256,7 +254,7 @@ public class LearnerHandler extends ZooKeeperThread {
 
 
     // 3MileBeach starts
-    TMB_Store.QuorumMeta quorumMeta;
+    TMB_Store.ProcessorMeta procMeta;
 
     LearnerHandler(Socket sock, BufferedInputStream bufferedInput, LearnerMaster learnerMaster, QuorumPeer self) throws IOException {
         super("LearnerHandler-" + sock.getRemoteSocketAddress());
@@ -285,7 +283,7 @@ public class LearnerHandler extends ZooKeeperThread {
         }
 
         this.messageTracker = new MessageTracker(MessageTracker.BUFFERED_MESSAGE_SIZE);
-        this.quorumMeta = self.getQuorumMeta();
+        this.procMeta = new TMB_Store.ProcessorMeta(self.getQuorumMeta(), this.getClass());
     }
     // 3MileBeach ends
 
@@ -316,7 +314,7 @@ public class LearnerHandler extends ZooKeeperThread {
         }
 
         this.messageTracker = new MessageTracker(MessageTracker.BUFFERED_MESSAGE_SIZE);
-        this.quorumMeta = new TMB_Store.QuorumMeta(0, "quorum-standalone"); // 3MileBeach
+        this.procMeta = new TMB_Store.ProcessorMeta(new TMB_Store.QuorumMeta(0, "quorum-standalone"), this.getClass()); // 3MileBeach
     }
 
     @Override
@@ -702,7 +700,7 @@ public class LearnerHandler extends ZooKeeperThread {
                     if (this.learnerType == LearnerType.OBSERVER) {
                         LOG.debug("Received ACK from Observer {}", this.sid);
                     }
-                    TMB_Utils.quorumCollectTraceFromQuorumPacket(quorumMeta, new NullPointerResponse(), qp, this.getClass()); // 3MileBeach
+                    TMB_Utils.quorumCollectTraceFromQuorumPacket(procMeta, new NullPointerResponse(), qp); // 3MileBeach
                     syncLimitCheck.updateAck(qp.getZxid());
                     learnerMaster.processAck(this.sid, qp.getZxid(), sock.getLocalSocketAddress());
                     break;

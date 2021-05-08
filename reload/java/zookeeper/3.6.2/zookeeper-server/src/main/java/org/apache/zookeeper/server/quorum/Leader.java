@@ -105,7 +105,7 @@ public class Leader extends LearnerMaster {
     final LeaderZooKeeperServer zk;
 
     final QuorumPeer self;
-    final TMB_Store.QuorumMeta quorumMeta; // 3MileBeach
+    final TMB_Store.ProcessorMeta procMeta; // 3MileBeach
 
     // VisibleForTesting
     protected boolean quorumFormed = false;
@@ -271,7 +271,7 @@ public class Leader extends LearnerMaster {
 
     public Leader(QuorumPeer self, LeaderZooKeeperServer zk) throws IOException {
         this.self = self;
-        this.quorumMeta = self.getQuorumMeta(); // 3MileBeach
+        this.procMeta = new TMB_Store.ProcessorMeta(self.getQuorumMeta(), this.getClass()); // 3MileBeach
         this.proposalStats = new BufferStats();
 
         Set<InetSocketAddress> addresses;
@@ -940,11 +940,11 @@ public class Leader extends LearnerMaster {
             }
 
             // 3MileBeach starts
-            TMB_Helper.printf("[%s] let's commit and activate! request %s\n", quorumMeta.getName(), p.request.getTxn());
-            NullPointerResponse record = TMB_Utils.commitHelperBegins(quorumMeta, p.request, TMB_Utils.LEADER_COMMIT, this.getClass());
+            TMB_Helper.printf("[%s] let's commit and activate! request %s\n", procMeta.getQuorumName(), p.request.getTxn());
+            NullPointerResponse record = TMB_Utils.commitHelperBegins(procMeta, p.request, TMB_Utils.LEADER_COMMIT);
             commitAndActivate(zxid, designatedLeader, record);
             informAndActivate(p, designatedLeader);
-            TMB_Utils.commitHelperEnds(quorumMeta, record);
+            TMB_Utils.commitHelperEnds(procMeta, record);
             // 3MileBeach ends
 
             // // we're sending the designated leader, and if the leader is changing the followers are
@@ -957,11 +957,11 @@ public class Leader extends LearnerMaster {
             p.request.logLatency(ServerMetrics.getMetrics().QUORUM_ACK_LATENCY);
 
             // 3MileBeach starts
-            TMB_Helper.printf("[%s] let's commit! request %s\n", quorumMeta.getName(), p.request.getTxn());
-            NullPointerResponse record = TMB_Utils.commitHelperBegins(quorumMeta, p.request, TMB_Utils.LEADER_COMMIT, this.getClass());
+            TMB_Helper.printf("[%s] let's commit! request %s\n", procMeta.getQuorumName(), p.request.getTxn());
+            NullPointerResponse record = TMB_Utils.commitHelperBegins(procMeta, p.request, TMB_Utils.LEADER_COMMIT);
             commit(zxid, record);
             inform(p);
-            TMB_Utils.commitHelperEnds(quorumMeta, record);
+            TMB_Utils.commitHelperEnds(procMeta, record);
             // 3MileBeach ends
 
             // commit(zxid);
@@ -987,7 +987,7 @@ public class Leader extends LearnerMaster {
      */
     @Override
     public synchronized void processAck(long sid, long zxid, SocketAddress followerAddr) {
-        TMB_Helper.printf("[%s] Leader processAck starts\n", quorumMeta.getName()); // 3MileBeach
+        TMB_Helper.printf("[%s] Leader processAck starts\n", procMeta.getQuorumName()); // 3MileBeach
         if (!allowedToCommit) {
             // TMB_Helper.printf("[quorum-%d] Leader processAck returns (!allowedToCommit)\n", self.hashCode()); // 3MileBeach
             return; // last op committed was a leader change - from now on
@@ -1058,12 +1058,12 @@ public class Leader extends LearnerMaster {
                 curZxid++;
                 p = outstandingProposals.get(curZxid);
                 if (p != null) {
-                    TMB_Helper.printf("[%s] Leader processAck tries to commit\n", quorumMeta.getName()); // 3MileBeach
+                    TMB_Helper.printf("[%s] Leader processAck tries to commit\n", procMeta.getQuorumName()); // 3MileBeach
                     hasCommitted = tryToCommit(p, curZxid, null);
                 }
             }
         }
-        TMB_Helper.printf("[%s] Leader processAck ends\n", quorumMeta.getName()); // 3MileBeach
+        TMB_Helper.printf("[%s] Leader processAck ends\n", procMeta.getQuorumName()); // 3MileBeach
     }
 
     static class ToBeAppliedRequestProcessor implements RequestProcessor {
@@ -1073,7 +1073,7 @@ public class Leader extends LearnerMaster {
         private final Leader leader;
 
         // 3MileBeach starts
-        TMB_Store.QuorumMeta quorumMeta;
+        TMB_Store.ProcessorMeta procMeta;
 
         ToBeAppliedRequestProcessor(RequestProcessor next, Leader leader, QuorumPeer self) {
             if (!(next instanceof FinalRequestProcessor)) {
@@ -1085,7 +1085,7 @@ public class Leader extends LearnerMaster {
             }
             this.leader = leader;
             this.next = next;
-            this.quorumMeta = self.getQuorumMeta();
+            this.procMeta = new TMB_Store.ProcessorMeta(self.getQuorumMeta(), this.getClass());
         }
         // 3MileBeach ends
 
@@ -1108,7 +1108,7 @@ public class Leader extends LearnerMaster {
             }
             this.leader = leader;
             this.next = next;
-            this.quorumMeta = new TMB_Store.QuorumMeta(0, "quorum-standalone"); // 3MileBeach
+            this.procMeta = new TMB_Store.ProcessorMeta(new TMB_Store.QuorumMeta(0, "quorum-standalone"), this.getClass()); // 3MileBeach
         }
 
         /*
@@ -1117,7 +1117,7 @@ public class Leader extends LearnerMaster {
          * @see org.apache.zookeeper.server.RequestProcessor#processRequest(org.apache.zookeeper.server.Request)
          */
         public void processRequest(Request request) throws RequestProcessorException {
-            TMB_Utils.printRequestForProcessor("ToBeAppliedRequestProcessor", quorumMeta, next, request); // 3MileBeach
+            TMB_Utils.printRequestForProcessor("ToBeAppliedRequestProcessor", procMeta.getQuorumMeta(), next, request); // 3MileBeach
             next.processRequest(request);
 
             // The only requests that should be on toBeApplied are write
@@ -1131,11 +1131,11 @@ public class Leader extends LearnerMaster {
                     Proposal p = iter.next();
                     if (p.request != null && p.request.zxid == zxid) {
                         iter.remove();
-                        TMB_Utils.printRequestForProcessor("ToBeAppliedRequestProcessor", quorumMeta, next, p.request); // 3MileBeach
+                        TMB_Utils.printRequestForProcessor("ToBeAppliedRequestProcessor", procMeta.getQuorumMeta(), next, p.request); // 3MileBeach
                         return;
                     }
                 }
-                TMB_Helper.printf("[%s] ToBeAppliedRequestProcessor\n", quorumMeta.getName()); // 3MileBeach
+                TMB_Helper.printf("[%s] ToBeAppliedRequestProcessor\n", procMeta.getQuorumName()); // 3MileBeach
                 LOG.error("Committed request not found on toBeApplied: {}", request);
             }
         }
@@ -1166,10 +1166,10 @@ public class Leader extends LearnerMaster {
                     //    uuid = uuid.substring(0, TMB_Helper.UUID_LEN);
                     // }
 
-                    TMB_Event event = new TMB_Event(TMB_Event.LOGICAL_CMMT_READY, TMB_Helper.currentTimeNanos(), TMB_Utils.LEADER_COMMIT_READY, uuid, quorumMeta.getName(), this.getClass());
+                    TMB_Event event = new TMB_Event(TMB_Event.LOGICAL_CMMT_READY, TMB_Helper.currentTimeNanos(), TMB_Utils.LEADER_COMMIT_READY, uuid, procMeta);
                     trace.addEvent(event);
 
-                    TMB_Helper.printf("[%s] Leader commits to %d follower(s)\n", quorumMeta.getName(), forwardingFollowers.size());
+                    TMB_Helper.printf("[%s] Leader commits to %d follower(s)\n", procMeta.getQuorumName(), forwardingFollowers.size());
                     int i = 0;
 
                     for (LearnerHandler f : forwardingFollowers) {
@@ -1177,12 +1177,12 @@ public class Leader extends LearnerMaster {
                         try {
                             TMB_Helper.checkTFIs(trace, record.getRequestName());
                         } catch (FaultInjectedException e) {
-                            TMB_Helper.printf("[%s] Leader commits to follower-%d, fault injected\n", quorumMeta.getName(), i);
+                            TMB_Helper.printf("[%s] Leader commits to follower-%d, fault injected\n", procMeta.getQuorumName(), i);
                             injected = true;
                         }
 
                         String uuid_ = String.format("%s-%04d", uuid, i);
-                        events.add(new TMB_Event(TMB_Event.SERVICE_SEND, TMB_Helper.currentTimeNanos(), TMB_Utils.LEADER_COMMIT, uuid_, quorumMeta.getName(), this.getClass()));
+                        events.add(new TMB_Event(TMB_Event.SERVICE_SEND, TMB_Helper.currentTimeNanos(), TMB_Utils.LEADER_COMMIT, uuid_, procMeta));
                         trace.setEvents(events, 1);
 
                         if (injected) {
@@ -1208,7 +1208,7 @@ public class Leader extends LearnerMaster {
 
                         i++;
                     }
-                    TMB_Store.getInstance().quorumSetTrace(quorumMeta, trace);
+                    TMB_Store.getInstance().quorumSetTrace(procMeta.getQuorumMeta(), trace);
 
                     return;
                 }
@@ -1233,22 +1233,22 @@ public class Leader extends LearnerMaster {
                                 TMB_Event lastEvent = events.get(eventSize - 1);
                                 String uuid = TMB_Helper.UUID();
 
-                                TMB_Event event = new TMB_Event(TMB_Event.LOGICAL_PRPS_READY, TMB_Helper.currentTimeNanos(), TMB_Utils.LEADER_PRPS_READY, uuid, quorumMeta.getName(), this.getClass());
+                                TMB_Event event = new TMB_Event(TMB_Event.LOGICAL_PRPS_READY, TMB_Helper.currentTimeNanos(), TMB_Utils.LEADER_PRPS_READY, uuid, procMeta);
                                 trace.addEvent(event);
 
-                                TMB_Helper.printf("[%s] Leader proposals to %d follower(s)\n", quorumMeta.getName(), forwardingFollowers.size());
+                                TMB_Helper.printf("[%s] Leader proposals to %d follower(s)\n", procMeta.getQuorumName(), forwardingFollowers.size());
                                 int i = 0;
                                 for (LearnerHandler f : forwardingFollowers) {
                                     boolean injected = false;
                                     try {
                                         TMB_Helper.checkTFIs(trace, lastEvent.getMessage_name());
                                     } catch (FaultInjectedException e) {
-                                        TMB_Helper.printf("[%s] Leader proposals to follower-%d, fault injected\n", quorumMeta.getName(), i);
+                                        TMB_Helper.printf("[%s] Leader proposals to follower-%d, fault injected\n", procMeta.getQuorumName(), i);
                                         injected = true;
                                     }
 
                                     String uuid_ = String.format("%s-%04d", uuid, i);
-                                    events.add(new TMB_Event(TMB_Event.SERVICE_PRPS, TMB_Helper.currentTimeNanos(), lastEvent.getMessage_name(), uuid_, quorumMeta.getName(), this.getClass()));
+                                    events.add(new TMB_Event(TMB_Event.SERVICE_PRPS, TMB_Helper.currentTimeNanos(), lastEvent.getMessage_name(), uuid_, procMeta));
                                     trace.setEvents(events, 1);
 
                                     if (injected) {
@@ -1274,7 +1274,7 @@ public class Leader extends LearnerMaster {
 
                                     i++;
                                 }
-                                TMB_Store.getInstance().quorumSetTrace(quorumMeta, trace);
+                                TMB_Store.getInstance().quorumSetTrace(procMeta.getQuorumMeta(), trace);
 
                                 return;
                             }
@@ -1298,7 +1298,7 @@ public class Leader extends LearnerMaster {
      *                the packet to be sent
      */
     void sendPacket(QuorumPacket qp) {
-        TMB_Helper.printf("[%s] Leader uses default sendPacker()\n", quorumMeta.getName()); // 3MileBeach
+        TMB_Helper.printf("[%s] Leader uses default sendPacker()\n", procMeta.getQuorumName()); // 3MileBeach
         synchronized (forwardingFollowers) {
             for (LearnerHandler f : forwardingFollowers) {
                 f.queuePacket(qp);

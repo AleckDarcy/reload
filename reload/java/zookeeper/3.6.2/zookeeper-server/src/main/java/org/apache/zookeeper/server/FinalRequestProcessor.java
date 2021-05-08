@@ -80,20 +80,20 @@ public class FinalRequestProcessor implements RequestProcessor {
     ZooKeeperServer zks;
 
     // 3MileBeach begins
-    TMB_Store.QuorumMeta quorumMeta;
+    TMB_Store.ProcessorMeta procMeta;
 
     // for QuorumZookeeperServer
     public FinalRequestProcessor(ZooKeeperServer zks, QuorumPeer self) {
         this.zks = zks;
         this.requestPathMetricsCollector = zks.getRequestPathMetricsCollector();
-        this.quorumMeta = self.getQuorumMeta();
+        this.procMeta = new TMB_Store.ProcessorMeta(self.getQuorumMeta(), this.getClass());
     }
     // 3MileBeach ends
 
     public FinalRequestProcessor(ZooKeeperServer zks) {
         this.zks = zks;
         this.requestPathMetricsCollector = zks.getRequestPathMetricsCollector();
-        this.quorumMeta = new TMB_Store.QuorumMeta(0, "quorum-standalone"); // 3MileBeach
+        this.procMeta = new TMB_Store.ProcessorMeta(new TMB_Store.QuorumMeta(0, "quorum-standalone"), this.getClass()); // 3MileBeach
     }
 
     public void processRequest(Request request) {
@@ -105,11 +105,11 @@ public class FinalRequestProcessor implements RequestProcessor {
             if (TMB_Utils.ProcessorFlag.isReceived(request.getProcessorFlag())) {
                 eventType = TMB_Event.PROCESSOR_RECV;
             }
-            TMB_Store.calleeInbound(quorumMeta, request.getTxn(), eventType, this.getClass());
+            TMB_Store.calleeInbound(procMeta, request.getTxn(), eventType);
         } else {
-            TMB_Helper.printf("[%s] callee inbound component when request is deserialized, request type: %d\n", quorumMeta.getName(), request.type);
+            TMB_Helper.printf("[%s] callee inbound component when request is deserialized, request type: %d\n", procMeta.getQuorumName(), request.type);
         }
-        TMB_Utils.printRequestForProcessor("FinalRequestProcessor starts", quorumMeta, null, request); // 3MileBeach
+        TMB_Utils.printRequestForProcessor("FinalRequestProcessor starts", procMeta.getQuorumMeta(), null, request); // 3MileBeach
 
         // 3MileBeach ends
         LOG.debug("Processing request:: {}", request);
@@ -136,7 +136,7 @@ public class FinalRequestProcessor implements RequestProcessor {
             // we are just playing diffs from the leader.
             if (closeSession(zks.serverCnxnFactory, request.sessionId)
                 || closeSession(zks.secureServerCnxnFactory, request.sessionId)) {
-                TMB_Helper.printf("[%s] returned\n", quorumMeta.getName()); // 3MileBeach
+                TMB_Helper.printf("[%s] returned\n", procMeta.getQuorumName()); // 3MileBeach
                 return;
             }
         }
@@ -157,7 +157,7 @@ public class FinalRequestProcessor implements RequestProcessor {
         }
 
         if (request.cnxn == null) {
-            TMB_Helper.printf("[%s] returned\n", quorumMeta.getName()); // 3MileBeach
+            TMB_Helper.printf("[%s] returned\n", procMeta.getQuorumName()); // 3MileBeach
             return;
         }
         ServerCnxn cnxn = request.cnxn;
@@ -209,7 +209,7 @@ public class FinalRequestProcessor implements RequestProcessor {
                 updateStats(request, lastOp, lastZxid);
 
                 cnxn.sendResponse(new ReplyHeader(ClientCnxn.PING_XID, lastZxid, 0), null, "response");
-                TMB_Helper.printf("[%s] returned\n", quorumMeta.getName()); // 3MileBeach
+                TMB_Helper.printf("[%s] returned\n", procMeta.getQuorumName()); // 3MileBeach
                 return;
             }
             case OpCode.createSession: {
@@ -217,7 +217,7 @@ public class FinalRequestProcessor implements RequestProcessor {
                 updateStats(request, lastOp, lastZxid);
 
                 zks.finishSessionInit(request.cnxn, true);
-                TMB_Helper.printf("[%s] returned\n", quorumMeta.getName()); // 3MileBeach
+                TMB_Helper.printf("[%s] returned\n", procMeta.getQuorumName()); // 3MileBeach
                 return;
             }
             case OpCode.multi: {
@@ -356,7 +356,7 @@ public class FinalRequestProcessor implements RequestProcessor {
 
                 // 3MileBeach starts
                 requestName = "SyncRequest";
-                TMB_Helper.printf("[%s] sync request\n", quorumMeta.getName());
+                TMB_Helper.printf("[%s] sync request\n", procMeta.getQuorumName());
                 // 3MileBeach ends
 
                 rsp = new SyncResponse(syncRequest.getPath());
@@ -394,7 +394,7 @@ public class FinalRequestProcessor implements RequestProcessor {
 
                 // 3MileBeach
                 requestName = "GetDataRequest";
-                TMB_Store.calleeInbound(quorumMeta, request.getTxn(), eventType, this.getClass());
+                TMB_Store.calleeInbound(procMeta, request.getTxn(), eventType);
 
                 path = getDataRequest.getPath();
                 rsp = handleGetDataRequest(getDataRequest, cnxn, request.authInfo);
@@ -636,7 +636,7 @@ public class FinalRequestProcessor implements RequestProcessor {
             // the client and leader disagree on where the client is most
             // recently attached (and therefore invalid SESSION MOVED generated)
             cnxn.sendCloseSession();
-            TMB_Helper.printf("[%s] returned\n", quorumMeta.getName()); // 3MileBeach
+            TMB_Helper.printf("[%s] returned\n", procMeta.getQuorumName()); // 3MileBeach
             return;
         } catch (KeeperException e) {
             err = e.code();
@@ -659,14 +659,14 @@ public class FinalRequestProcessor implements RequestProcessor {
         updateStats(request, lastOp, lastZxid);
 
         try {
-            TMB_Helper.printf("[%s] request: %s(%s), response: %s(%s), lastOp: %s\n", quorumMeta.getName(), requestName, TMB_Helper.getString(request.getTxn()), TMB_Helper.getClassName(rsp), TMB_Helper.getString(rsp), lastOp);
+            TMB_Helper.printf("[%s] request: %s(%s), response: %s(%s), lastOp: %s\n", procMeta.getQuorumName(), requestName, TMB_Helper.getString(request.getTxn()), TMB_Helper.getClassName(rsp), TMB_Helper.getString(rsp), lastOp);
 
             if (path == null || rsp == null) {
                 if (rsp == null) {
                     rsp = new NullPointerResponse(requestName);
                 }
 
-                TMB_Store.calleeOutbound(quorumMeta, rsp, this.getClass()); // 3MileBeach
+                TMB_Store.calleeOutbound(procMeta, rsp); // 3MileBeach
 
                 cnxn.sendResponse(hdr, rsp, "response");
             } else {
@@ -676,7 +676,7 @@ public class FinalRequestProcessor implements RequestProcessor {
                 // object. Cache entries are identified by their path and last modified zxid,
                 // so these values are passed along with the response.
 
-                TMB_Store.calleeOutbound(quorumMeta, rsp, this.getClass()); // 3MileBeach
+                TMB_Store.calleeOutbound(procMeta, rsp); // 3MileBeach
 
                 switch (opCode) {
                     case OpCode.getData : {
@@ -702,7 +702,7 @@ public class FinalRequestProcessor implements RequestProcessor {
         } catch (IOException e) {
             LOG.error("FIXMSG", e);
         }
-        TMB_Utils.printRequestForProcessor("FinalRequestProcessor ends", quorumMeta, null, request); // 3MileBeach
+        TMB_Utils.printRequestForProcessor("FinalRequestProcessor ends", procMeta.getQuorumMeta(), null, request); // 3MileBeach
     }
 
     private Record handleGetChildrenRequest(Record request, ServerCnxn cnxn, List<Id> authInfo) throws KeeperException, IOException {
