@@ -22,9 +22,58 @@ public class TMB_Utils {
     public static final String LEADER_COMMIT = "LeaderCommit";
     public static final String LEADER_SYNC = "LeaderSync";
 
+    // an extension of org.apache.zookeeper.server.Request
+    // Request.request will be deserialized once a life time inside a particular quorum
+    public static class RequestExt {
+        private boolean traced;
+        private ProcessorFlag procFlag;
+        private Record message;
+
+        public RequestExt(Record message) {
+            TMB_Trace trace = message.getTrace();
+            if (trace != null && trace.getId() != 0) {
+                this.traced = true;
+                this.message = message;
+            } else {
+                this.traced = false;
+            }
+
+            this.procFlag = new ProcessorFlag();
+        }
+
+        public boolean isTraced() {
+            return traced;
+        }
+
+        public ProcessorFlag getProcessorFlag() {
+            return procFlag;
+        }
+
+        public Record getMessage() {
+            return message;
+        }
+    }
+
     public static class ProcessorFlag {
         public static final int RECV = 0x1;
 
+        private int flag;
+
+        public ProcessorFlag() {}
+
+        public ProcessorFlag(int flag) {
+            this.flag = flag;
+        }
+
+        public void update(int flag) {
+            this.flag |= flag;
+        }
+
+        public boolean isReceived() {
+            return (flag & RECV) != 0;
+        }
+
+        // TODO: a delete
         public static boolean isReceived(int flag) {
             return (flag & RECV) != 0;
         }

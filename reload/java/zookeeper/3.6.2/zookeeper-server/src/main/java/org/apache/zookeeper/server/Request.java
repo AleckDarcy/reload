@@ -78,6 +78,8 @@ public class Request {
     public ByteBuffer request; // 3MileBeach
 //    public final ByteBuffer request;
 
+    public TMB_Utils.RequestExt requestExt; // 3MileBeach
+
     public final ServerCnxn cnxn;
 
     private TxnHeader hdr;
