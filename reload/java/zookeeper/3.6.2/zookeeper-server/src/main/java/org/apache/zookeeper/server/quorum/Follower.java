@@ -59,7 +59,7 @@ public class Follower extends Learner {
         this.zk = zk;
         this.fzk = zk;
 
-        this.procMeta = new TMB_Store.ProcessorMeta(self.getQuorumMeta(), this.getClass()); // 3MileBeach
+        this.procMeta = new TMB_Store.ProcessorMeta(self.getQuorumMeta(), this); // 3MileBeach
     }
 
     @Override

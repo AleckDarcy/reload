@@ -80,13 +80,22 @@ public class TMB_Utils {
         public boolean isNull() { return flag == NULL.flag; }
 
         public boolean isReceived() { return (flag & RECV.flag) != 0; }
-
-        // TODO: a delete
-        public static boolean isReceived(int flag) { return (flag & RECV.flag) != 0; }
     }
 
-    // TODO: a ProcessorMeta
-    public static void printRequestForProcessor(String processorName, TMB_Store.QuorumMeta quorumMeta, Object next, Request request) {
+    public static void quorumPrintf(TMB_Store.QuorumMeta quorumMeta, String format, Object ... args) {
+        if (!TMB_Helper.printable) {
+            return;
+        }
+
+        format = String.format("[%s] %s", quorumMeta.getName(), format);
+        TMB_Helper.printf(3, format, args);
+    }
+
+    public static void processorPrintsRequest(TMB_Store.ProcessorMeta procMeta, String info, Object next, Request request) {
+        if (!TMB_Helper.printable) {
+            return;
+        }
+
         String nextName = "null";
         if (next != null) {
             nextName = next.getClass().getCanonicalName();
@@ -100,24 +109,14 @@ public class TMB_Utils {
                 Long.toHexString(request.cxid),
                 Long.toHexString(request.getHdr() == null ? -2 : request.getHdr().getZxid()),
                 request.getHdr() == null ? "unknown" : "" + request.getHdr().getType(),
-                request.request == null ? "null": "valued",
-                txn == null ? "null": String.format("%s(trace:%s)", txn.getClass().getCanonicalName(), txn.getTrace() == null ? null: txn.getTrace().getId() != 0));
+                request.request == null ? "null" : "valued",
+                txn == null ? "null" : String.format("%s(trace:%s)", txn.getClass().getCanonicalName(), txn.getTrace() == null ? null : txn.getTrace().getId() != 0));
 
-        TMB_Helper.printf(3, "[%s] %s, next %s, request-%d %s\n", quorumMeta.getName(), processorName, nextName, request.hashCode(), requestStr);
-    }
-
-    public static void printRequestForProcessorUnsafe(String processorName, String quorumName, Object next, Request request) {
-        String nextName = "null";
-        if (next != null) {
-            nextName = next.getClass().getCanonicalName();
+        if (info != null && info.length() != 0) {
+            TMB_Helper.printf(3, "[%s] %s %s, next %s, request-%d %s\n", procMeta.getQuorumName(), procMeta.getName(), info, nextName, request.hashCode(), requestStr);
+        } else {
+            TMB_Helper.printf(3, "[%s] %s, next %s, request-%d %s\n", procMeta.getQuorumName(), procMeta.getName(), nextName, request.hashCode(), requestStr);
         }
-        String requestStr = "null";
-        if (request.request != null) {
-            requestStr = Arrays.toString(request.request.array());
-            request.request.rewind();
-        }
-
-        TMB_Helper.printf(3, "[%s] %s, next %s, request-%d %s\n", quorumName, processorName, nextName, request.hashCode(), requestStr);
     }
 
     public static NullPointerResponse commitHelperBegins(TMB_Store.ProcessorMeta procMeta, Request request, String messageName) {
@@ -184,7 +183,7 @@ public class TMB_Utils {
             List<TMB_Event> events = trace.getEvents();
             if (events.size() != 0) {
                 TMB_Event lastEvent = events.get(events.size() - 1);
-                TMB_Event event = new TMB_Event(TMB_Event.SERVICE_RECV, TMB_Helper.currentTimeNanos(), lastEvent.getMessage_name(), lastEvent.getUuid(), procMeta);
+                TMB_Event event = new TMB_Event(TMB_Event.SERVICE_RECV, lastEvent.getMessage_name(), lastEvent.getUuid(), procMeta);
                 events.add(event);
                 trace.setEvents(events);
             }
@@ -209,7 +208,7 @@ public class TMB_Utils {
             if (messageName.equals("")) {
                 messageName = lastEvent.getMessage_name();
             }
-            events.add(new TMB_Event(type, TMB_Helper.currentTimeNanos(), messageName, uuid, procMeta));
+            events.add(new TMB_Event(type, messageName, uuid, procMeta));
 
             trace.setEvents(events, 1);
             record.setTrace(trace);
@@ -241,7 +240,7 @@ public class TMB_Utils {
             if (eventSize > 0) {
                 TMB_Event lastEvent = events.get(eventSize - 1);
                 for (int type: types) {
-                    events.add(new TMB_Event(type, TMB_Helper.currentTimeNanos(), lastEvent.getMessage_name(), lastEvent.getUuid(), procMeta));
+                    events.add(new TMB_Event(type, lastEvent.getMessage_name(), lastEvent.getUuid(), procMeta));
                 }
 
                 ByteArrayOutputStream baos = new ByteArrayOutputStream(data.capacity() + EVENT_SERIALIZE_SIZE * types.length);

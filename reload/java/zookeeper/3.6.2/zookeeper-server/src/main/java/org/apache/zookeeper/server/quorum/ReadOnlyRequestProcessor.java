@@ -47,13 +47,13 @@ public class ReadOnlyRequestProcessor extends ZooKeeperCriticalThread implements
     private final ZooKeeperServer zks;
 
     // 3MileBeach starts
-    TMB_Store.QuorumMeta quorumMeta;
+    TMB_Store.ProcessorMeta procMeta;
 
     public ReadOnlyRequestProcessor(ZooKeeperServer zks, RequestProcessor nextProcessor, QuorumPeer self) {
         super("ReadOnlyRequestProcessor:" + zks.getServerId(), zks.getZooKeeperServerListener());
         this.zks = zks;
         this.nextProcessor = nextProcessor;
-        this.quorumMeta = self.getQuorumMeta();
+        this.procMeta = new TMB_Store.ProcessorMeta(self.getQuorumMeta(), this);
     }
     // 3MileBeach ends
 
@@ -61,14 +61,14 @@ public class ReadOnlyRequestProcessor extends ZooKeeperCriticalThread implements
         super("ReadOnlyRequestProcessor:" + zks.getServerId(), zks.getZooKeeperServerListener());
         this.zks = zks;
         this.nextProcessor = nextProcessor;
-        this.quorumMeta = new TMB_Store.QuorumMeta(0, "quorum-standalone"); // 3MileBeach
+        this.procMeta = new TMB_Store.ProcessorMeta(new TMB_Store.QuorumMeta(0, "quorum-standalone"), this); // 3MileBeach
     }
 
     public void run() {
         try {
             while (!finished) {
                 Request request = queuedRequests.take();
-                TMB_Utils.printRequestForProcessor("ReadOnlyRequestProcessor", quorumMeta, nextProcessor, request); // 3MileBeach
+                TMB_Utils.processorPrintsRequest(procMeta, null, nextProcessor, request); // 3MileBeach
                 // log request
                 long traceMask = ZooTrace.CLIENT_REQUEST_TRACE_MASK;
                 if (request.type == OpCode.ping) {

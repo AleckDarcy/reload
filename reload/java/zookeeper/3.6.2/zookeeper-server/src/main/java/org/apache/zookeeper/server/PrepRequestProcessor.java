@@ -113,7 +113,7 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
         if (this.digestEnabled) {
             this.digestCalculator = new DigestCalculator();
         }
-        this.procMeta = new TMB_Store.ProcessorMeta(self.getQuorumMeta(), this.getClass());
+        this.procMeta = new TMB_Store.ProcessorMeta(self.getQuorumMeta(), this);
     }
     // 3MileBeach ends
 
@@ -128,7 +128,7 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
         if (this.digestEnabled) {
             this.digestCalculator = new DigestCalculator();
         }
-        this.procMeta = new TMB_Store.ProcessorMeta(new TMB_Store.QuorumMeta(0, "quorum-standalone"), this.getClass()); // 3MileBeach
+        this.procMeta = new TMB_Store.ProcessorMeta(new TMB_Store.QuorumMeta(0, "quorum-standalone"), this); // 3MileBeach
     }
 
     /**
@@ -776,7 +776,7 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
      * @param request
      */
     protected void pRequest(Request request) throws RequestProcessorException {
-        TMB_Utils.printRequestForProcessor("PreRequestProcessor", procMeta.getQuorumMeta(), nextProcessor, request); // 3MileBeach
+        TMB_Utils.processorPrintsRequest(procMeta, null, nextProcessor, request); // 3MileBeach
         // LOG.info("Prep>>> cxid = " + request.cxid + " type = " +
         // request.type + " id = 0x" + Long.toHexString(request.sessionId));
         request.setHdr(null);

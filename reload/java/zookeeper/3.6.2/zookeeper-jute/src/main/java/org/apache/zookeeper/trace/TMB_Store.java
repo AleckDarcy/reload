@@ -9,7 +9,7 @@ public class TMB_Store {
     private static TMB_Store instance = new TMB_Store();
 
     public static int REQUESTER = 1;
-    public static int RESPONSER = 2;
+    public static int RESPONDER = 2;
 
     private TMB_Store() {
         this.clientPluginTraces = new HashMap<>();
@@ -31,27 +31,23 @@ public class TMB_Store {
 
     public static class ProcessorMeta {
         private QuorumMeta quorumMeta;
-        private Class processor;
+        private String name;
 
-        public ProcessorMeta(QuorumMeta quorumMeta, Class processor) {
+        public ProcessorMeta(QuorumMeta quorumMeta, Object processor) {
             this.quorumMeta = quorumMeta;
-            this.processor = processor;
+            this.name = TMB_Helper.getClassNameFromClass(processor.getClass());
         }
 
         public QuorumMeta getQuorumMeta() {
             return quorumMeta;
         }
 
-        public long getQuorumId() {
-            return quorumMeta.getId();
-        }
-
         public String getQuorumName() {
             return quorumMeta.name;
         }
 
-        public Class getProcessor() {
-            return processor;
+        public String getName() {
+            return name;
         }
     }
 
@@ -91,7 +87,7 @@ public class TMB_Store {
             if (trace.getEvents().get(0).getService().equals(this.quorumIdStr)) {
                 this.recorder = REQUESTER;
             } else {
-                this.recorder = RESPONSER;
+                this.recorder = RESPONDER;
             }
         }
     }
@@ -154,7 +150,7 @@ public class TMB_Store {
         quorumLock.readLock().unlock();
 
         QuorumTrace quorumTrace = quorumTraces.getQuorumTrace(trace_.getId());
-        if (quorumTrace != null && quorumTrace.recorder == RESPONSER) {
+        if (quorumTrace != null && quorumTrace.recorder == RESPONDER) {
             quorumTraces.removeQuorumTrace(trace_.getId());
         }
     }
@@ -331,7 +327,7 @@ public class TMB_Store {
 
         long threadId = Thread.currentThread().getId();
         TMB_Event preEvent = events.get(0);
-        TMB_Event event = new TMB_Event(type, TMB_Helper.currentTimeNanos(), preEvent.getMessage_name(), preEvent.getUuid(), procMeta);
+        TMB_Event event = new TMB_Event(type, preEvent.getMessage_name(), preEvent.getUuid(), procMeta);
         events.add(event);
         trace.setEvents(events, 1);
 
@@ -360,7 +356,7 @@ public class TMB_Store {
         TMB_Trace trace_ = getInstance().quorumGetTrace(procMeta.getQuorumMeta(), trace.getId());
         mergeEvents(trace_, trace.getEvents()); // merge events of the current SRC to those of the current client request
 
-        TMB_Event event = new TMB_Event(TMB_Event.SERVICE_SEND, TMB_Helper.currentTimeNanos(), TMB_Helper.getClassName(response), preEvent.getUuid(), procMeta);
+        TMB_Event event = new TMB_Event(TMB_Event.SERVICE_SEND, TMB_Helper.getClassName(response), preEvent.getUuid(), procMeta);
         trace_.addEvent(event);
         response.setTrace(trace_);
 

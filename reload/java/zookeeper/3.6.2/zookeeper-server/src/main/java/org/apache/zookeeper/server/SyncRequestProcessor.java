@@ -88,14 +88,14 @@ public class SyncRequestProcessor extends ZooKeeperCriticalThread implements Req
     private long lastFlushTime;
 
     // 3MileBeach starts
-    TMB_Store.QuorumMeta quorumMeta;
+    TMB_Store.ProcessorMeta procMeta;
 
     public SyncRequestProcessor(ZooKeeperServer zks, RequestProcessor nextProcessor, QuorumPeer self) {
         super("SyncThread:" + zks.getServerId(), zks.getZooKeeperServerListener());
         this.zks = zks;
         this.nextProcessor = nextProcessor;
         this.toFlush = new ArrayDeque<>(zks.getMaxBatchSize());
-        this.quorumMeta = self.getQuorumMeta();
+        this.procMeta = new TMB_Store.ProcessorMeta(self.getQuorumMeta(), this);
     }
     // 3MileBeach ends
 
@@ -104,7 +104,7 @@ public class SyncRequestProcessor extends ZooKeeperCriticalThread implements Req
         this.zks = zks;
         this.nextProcessor = nextProcessor;
         this.toFlush = new ArrayDeque<>(zks.getMaxBatchSize());
-        this.quorumMeta = new TMB_Store.QuorumMeta(0, "quorum-standalone"); // 3MileBeach
+        this.procMeta = new TMB_Store.ProcessorMeta(new TMB_Store.QuorumMeta(0, "quorum-standalone"), this); // 3MileBeach
     }
 
     /**
@@ -218,7 +218,7 @@ public class SyncRequestProcessor extends ZooKeeperCriticalThread implements Req
                         }
                     }
                 } else if (toFlush.isEmpty()) {
-                    TMB_Utils.printRequestForProcessor("SyncRequestProcessor starts (read optimization)", quorumMeta, nextProcessor, si); // 3MileBeach
+                    TMB_Utils.processorPrintsRequest(procMeta, "starts (read optimization)", nextProcessor, si); // 3MileBeach
 
                     // optimization for read heavy workloads
                     // iff this is a read, and there are no pending

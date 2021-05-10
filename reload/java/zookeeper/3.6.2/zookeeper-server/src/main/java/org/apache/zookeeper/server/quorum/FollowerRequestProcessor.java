@@ -56,7 +56,7 @@ public class FollowerRequestProcessor extends ZooKeeperCriticalThread implements
         super("FollowerRequestProcessor:" + zks.getServerId(), zks.getZooKeeperServerListener());
         this.zks = zks;
         this.nextProcessor = nextProcessor;
-        this.procMeta = new TMB_Store.ProcessorMeta(self.getQuorumMeta(), this.getClass());
+        this.procMeta = new TMB_Store.ProcessorMeta(self.getQuorumMeta(), this);
     }
     // 3MileBeach ends
 
@@ -82,7 +82,7 @@ public class FollowerRequestProcessor extends ZooKeeperCriticalThread implements
                 if (!zks.authWriteRequest(request)) {
                     continue;
                 }
-                TMB_Utils.printRequestForProcessor("FollowerRequestProcessor starts", procMeta.getQuorumMeta(), nextProcessor, request); // 3MileBeach
+                TMB_Utils.processorPrintsRequest(procMeta, "starts", nextProcessor, request); // 3MileBeach
 
                 // We want to queue the request to be processed before we submit
                 // the request to the leader so that we are ready to receive
@@ -143,7 +143,7 @@ public class FollowerRequestProcessor extends ZooKeeperCriticalThread implements
                     zks.getFollower().request(request);
                 }
 
-                TMB_Utils.printRequestForProcessor("FollowerRequestProcessor ends", procMeta.getQuorumMeta(), nextProcessor, request);
+                TMB_Utils.processorPrintsRequest(procMeta, "ends", nextProcessor, request);
                 // 3MileBeach ends
             }
         } catch (Exception e) {

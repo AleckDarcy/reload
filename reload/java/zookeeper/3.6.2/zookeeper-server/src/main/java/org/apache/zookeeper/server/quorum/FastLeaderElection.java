@@ -389,7 +389,7 @@ public class FastLeaderElection implements Election {
                                             TMB_Event lastEvent = events.get(eventSize - 1);
                                             String name = lastEvent.getMessage_name();
                                             uuid = lastEvent.getUuid();
-                                            TMB_Event event = new TMB_Event(TMB_Event.SERVICE_RECV, TMB_Helper.currentTimeNanos(), name, uuid, procMeta);
+                                            TMB_Event event = new TMB_Event(TMB_Event.SERVICE_RECV, name, uuid, procMeta);
                                             // TMB_Helper.printf("[quorum-%d] new event: %s\n", quorumId, event.toJSON());
                                             events.add(event);
                                             trace.setEvents(events, 1);
@@ -652,7 +652,7 @@ public class FastLeaderElection implements Election {
                 byte[] bytes = new byte[0];
 
                 if (trace.getId() != 0) {
-                    TMB_Event event = new TMB_Event(TMB_Event.SERVICE_SEND, TMB_Helper.currentTimeNanos(), m.name, TMB_Helper.UUID(), procMeta);
+                    TMB_Event event = new TMB_Event(TMB_Event.SERVICE_SEND, m.name, TMB_Helper.UUID(), procMeta);
                     // TMB_Helper.printf("[quorum-%d] new event: %s\n", quorumId, event.toJSON());
 
                     List<TMB_Event> events = m.trace.getEvents();
@@ -832,7 +832,7 @@ public class FastLeaderElection implements Election {
         recvqueue = new LinkedBlockingQueue<Notification>();
         this.messenger = new Messenger(self, manager); // 3MileBeach
         // this.messenger = new Messenger(manager);
-        this.procMeta = new TMB_Store.ProcessorMeta(self.getQuorumMeta(), this.getClass()); // 3MileBeach
+        this.procMeta = new TMB_Store.ProcessorMeta(self.getQuorumMeta(), this); // 3MileBeach
     }
 
     /**

@@ -42,14 +42,14 @@ public class ProposalRequestProcessor implements RequestProcessor {
     SyncRequestProcessor syncProcessor;
 
     // 3MileBeach starts
-    TMB_Store.QuorumMeta quorumMeta;
+    TMB_Store.ProcessorMeta procMeta;
 
     public ProposalRequestProcessor(LeaderZooKeeperServer zks, RequestProcessor nextProcessor, QuorumPeer self) {
         this.zks = zks;
         this.nextProcessor = nextProcessor;
         AckRequestProcessor ackProcessor = new AckRequestProcessor(zks.getLeader(), self);
         syncProcessor = new SyncRequestProcessor(zks, ackProcessor, self);
-        this.quorumMeta = self.getQuorumMeta();
+        this.procMeta = new TMB_Store.ProcessorMeta(self.getQuorumMeta(), this);
     }
     // 3MileBeach ends
 
@@ -58,7 +58,7 @@ public class ProposalRequestProcessor implements RequestProcessor {
         this.nextProcessor = nextProcessor;
         AckRequestProcessor ackProcessor = new AckRequestProcessor(zks.getLeader());
         syncProcessor = new SyncRequestProcessor(zks, ackProcessor);
-        this.quorumMeta = new TMB_Store.QuorumMeta(0, "quorum-standalone"); // 3MileBeach
+        this.procMeta = new TMB_Store.ProcessorMeta(new TMB_Store.QuorumMeta(0, "quorum-standalone"), this); // 3MileBeach
     }
 
     /**
@@ -85,7 +85,7 @@ public class ProposalRequestProcessor implements RequestProcessor {
         if (request instanceof LearnerSyncRequest) {
             zks.getLeader().processSync((LearnerSyncRequest) request);
         } else {
-            TMB_Utils.printRequestForProcessor("ProposalRequestProcessor starts", quorumMeta, nextProcessor, request); // 3MileBeach
+            TMB_Utils.processorPrintsRequest(procMeta, "starts", nextProcessor, request); // 3MileBeach
             nextProcessor.processRequest(request);
             if (request.getHdr() != null) {
                 // We need to sync and get consensus on any transactions
@@ -96,7 +96,7 @@ public class ProposalRequestProcessor implements RequestProcessor {
                 }
                 syncProcessor.processRequest(request);
             }
-            TMB_Utils.printRequestForProcessor("ProposalRequestProcessor ends", quorumMeta, nextProcessor, request); // 3MileBeach
+            TMB_Utils.processorPrintsRequest(procMeta, "ends", nextProcessor, request); // 3MileBeach
         }
     }
 

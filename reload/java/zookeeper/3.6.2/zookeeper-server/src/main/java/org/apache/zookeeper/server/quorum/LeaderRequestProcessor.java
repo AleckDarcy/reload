@@ -43,19 +43,19 @@ public class LeaderRequestProcessor implements RequestProcessor {
     private final RequestProcessor nextProcessor;
 
     // 3MileBeach starts
-    TMB_Store.QuorumMeta quorumMeta;
+    TMB_Store.ProcessorMeta procMeta;
 
     public LeaderRequestProcessor(LeaderZooKeeperServer zks, RequestProcessor nextProcessor, QuorumPeer self) {
         this.lzks = zks;
         this.nextProcessor = nextProcessor;
-        this.quorumMeta = self.getQuorumMeta();
+        this.procMeta = new TMB_Store.ProcessorMeta(self.getQuorumMeta(), this);
     }
     // 3MileBeach ends
 
     public LeaderRequestProcessor(LeaderZooKeeperServer zks, RequestProcessor nextProcessor) {
         this.lzks = zks;
         this.nextProcessor = nextProcessor;
-        this.quorumMeta = new TMB_Store.QuorumMeta(0, "quorum-standalone"); // 3MileBeach
+        this.procMeta = new TMB_Store.ProcessorMeta(new TMB_Store.QuorumMeta(0, "quorum-standalone"), this); // 3MileBeach
     }
 
     @Override
@@ -82,11 +82,11 @@ public class LeaderRequestProcessor implements RequestProcessor {
             LOG.error("Unexpected error in upgrade", ie);
         }
         if (upgradeRequest != null) {
-            TMB_Utils.printRequestForProcessor("LeaderRequestProcessor", quorumMeta, nextProcessor, upgradeRequest); // 3MileBeach
+            TMB_Utils.processorPrintsRequest(procMeta, null, nextProcessor, upgradeRequest); // 3MileBeach
             nextProcessor.processRequest(upgradeRequest);
         }
 
-        TMB_Utils.printRequestForProcessor("LeaderRequestProcessor", quorumMeta, nextProcessor, request); // 3MileBeach
+        TMB_Utils.processorPrintsRequest(procMeta, null, nextProcessor, request); // 3MileBeach
         nextProcessor.processRequest(request);
     }
 

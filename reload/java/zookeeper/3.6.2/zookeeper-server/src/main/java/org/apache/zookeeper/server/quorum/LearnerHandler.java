@@ -283,7 +283,7 @@ public class LearnerHandler extends ZooKeeperThread {
         }
 
         this.messageTracker = new MessageTracker(MessageTracker.BUFFERED_MESSAGE_SIZE);
-        this.procMeta = new TMB_Store.ProcessorMeta(self.getQuorumMeta(), this.getClass());
+        this.procMeta = new TMB_Store.ProcessorMeta(self.getQuorumMeta(), this);
     }
     // 3MileBeach ends
 
@@ -314,7 +314,7 @@ public class LearnerHandler extends ZooKeeperThread {
         }
 
         this.messageTracker = new MessageTracker(MessageTracker.BUFFERED_MESSAGE_SIZE);
-        this.procMeta = new TMB_Store.ProcessorMeta(new TMB_Store.QuorumMeta(0, "quorum-standalone"), this.getClass()); // 3MileBeach
+        this.procMeta = new TMB_Store.ProcessorMeta(new TMB_Store.QuorumMeta(0, "quorum-standalone"), this); // 3MileBeach
     }
 
     @Override

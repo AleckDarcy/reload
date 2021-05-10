@@ -47,13 +47,13 @@ public class ObserverRequestProcessor extends ZooKeeperCriticalThread implements
     boolean finished = false;
 
     // 3MileBeach starts
-    TMB_Store.QuorumMeta quorumMeta;
+    TMB_Store.ProcessorMeta procMeta;
 
     public ObserverRequestProcessor(ObserverZooKeeperServer zks, RequestProcessor nextProcessor, QuorumPeer self) {
         super("ObserverRequestProcessor:" + zks.getServerId(), zks.getZooKeeperServerListener());
         this.zks = zks;
         this.nextProcessor = nextProcessor;
-        this.quorumMeta = self.getQuorumMeta();
+        this.procMeta = new TMB_Store.ProcessorMeta(self.getQuorumMeta(), this);
     }
     // 3MileBeach ends
 
@@ -67,7 +67,7 @@ public class ObserverRequestProcessor extends ZooKeeperCriticalThread implements
         super("ObserverRequestProcessor:" + zks.getServerId(), zks.getZooKeeperServerListener());
         this.zks = zks;
         this.nextProcessor = nextProcessor;
-        this.quorumMeta = new TMB_Store.QuorumMeta(0, "quorum-standalone"); // 3MileBeach
+        this.procMeta = new TMB_Store.ProcessorMeta(new TMB_Store.QuorumMeta(0, "quorum-standalone"), this); // 3MileBeach
     }
 
     @Override
@@ -87,7 +87,7 @@ public class ObserverRequestProcessor extends ZooKeeperCriticalThread implements
                     continue;
                 }
 
-                TMB_Utils.printRequestForProcessor("ObserverRequestProcessor", quorumMeta, nextProcessor, request); // 3MileBeach
+                TMB_Utils.processorPrintsRequest(procMeta, null, nextProcessor, request); // 3MileBeach
                 // We want to queue the request to be processed before we submit
                 // the request to the leader so that we are ready to receive
                 // the response

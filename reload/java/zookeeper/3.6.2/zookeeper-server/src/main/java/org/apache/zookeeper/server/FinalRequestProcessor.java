@@ -86,14 +86,14 @@ public class FinalRequestProcessor implements RequestProcessor {
     public FinalRequestProcessor(ZooKeeperServer zks, QuorumPeer self) {
         this.zks = zks;
         this.requestPathMetricsCollector = zks.getRequestPathMetricsCollector();
-        this.procMeta = new TMB_Store.ProcessorMeta(self.getQuorumMeta(), this.getClass());
+        this.procMeta = new TMB_Store.ProcessorMeta(self.getQuorumMeta(), this);
     }
     // 3MileBeach ends
 
     public FinalRequestProcessor(ZooKeeperServer zks) {
         this.zks = zks;
         this.requestPathMetricsCollector = zks.getRequestPathMetricsCollector();
-        this.procMeta = new TMB_Store.ProcessorMeta(new TMB_Store.QuorumMeta(0, "quorum-standalone"), this.getClass()); // 3MileBeach
+        this.procMeta = new TMB_Store.ProcessorMeta(new TMB_Store.QuorumMeta(0, "quorum-standalone"), this); // 3MileBeach
     }
 
     public void processRequest(Request request) {
@@ -115,7 +115,7 @@ public class FinalRequestProcessor implements RequestProcessor {
         } else {
             TMB_Helper.printf("[%s] callee inbound component when request is deserialized, request type: %d\n", procMeta.getQuorumName(), request.type);
         }
-        TMB_Utils.printRequestForProcessor("FinalRequestProcessor starts", procMeta.getQuorumMeta(), null, request); // 3MileBeach
+        TMB_Utils.processorPrintsRequest(procMeta, "starts", null, request); // 3MileBeach
         // 3MileBeach ends
         LOG.debug("Processing request:: {}", request);
 
@@ -707,7 +707,7 @@ public class FinalRequestProcessor implements RequestProcessor {
         } catch (IOException e) {
             LOG.error("FIXMSG", e);
         }
-        TMB_Utils.printRequestForProcessor("FinalRequestProcessor ends", procMeta.getQuorumMeta(), null, request); // 3MileBeach
+        TMB_Utils.processorPrintsRequest(procMeta, "ends", null, request); // 3MileBeach
     }
 
     private Record handleGetChildrenRequest(Record request, ServerCnxn cnxn, List<Id> authInfo) throws KeeperException, IOException {

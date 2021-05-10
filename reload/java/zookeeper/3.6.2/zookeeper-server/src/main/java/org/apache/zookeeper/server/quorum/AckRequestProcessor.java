@@ -36,17 +36,17 @@ class AckRequestProcessor implements RequestProcessor {
     Leader leader;
 
     // 3MileBeach starts
-    TMB_Store.QuorumMeta quorumMeta;
+    TMB_Store.ProcessorMeta procMeta;
 
     AckRequestProcessor(Leader leader, QuorumPeer self) {
         this.leader = leader;
-        this.quorumMeta = self.getQuorumMeta();
+        this.procMeta = new TMB_Store.ProcessorMeta(self.getQuorumMeta(), this);
     }
     // 3MileBeach ends
 
     AckRequestProcessor(Leader leader) {
         this.leader = leader;
-        this.quorumMeta = new TMB_Store.QuorumMeta(0, "quorum-standalone"); // 3MileBeach
+        this.procMeta = new TMB_Store.ProcessorMeta(new TMB_Store.QuorumMeta(0, "quorum-standalone"), this); // 3MileBeach
     }
 
     /**
@@ -54,14 +54,14 @@ class AckRequestProcessor implements RequestProcessor {
      */
     public void processRequest(Request request) {
         QuorumPeer self = leader.self;
-        TMB_Utils.printRequestForProcessor("AckRequestProcessor starts", quorumMeta, self, request); // 3MileBeach
+        TMB_Utils.processorPrintsRequest(procMeta, "starts", self, request); // 3MileBeach
         if (self != null) {
             request.logLatency(ServerMetrics.getMetrics().PROPOSAL_ACK_CREATION_LATENCY);
             leader.processAck(self.getId(), request.zxid, null);
         } else {
             LOG.error("Null QuorumPeer");
         }
-        TMB_Utils.printRequestForProcessor("AckRequestProcessor ends", quorumMeta, self, request); // 3MileBeach
+        TMB_Utils.processorPrintsRequest(procMeta, "ends", self, request); // 3MileBeach
     }
 
     public void shutdown() {

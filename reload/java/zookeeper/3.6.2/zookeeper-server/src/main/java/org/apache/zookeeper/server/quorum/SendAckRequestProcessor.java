@@ -39,7 +39,7 @@ public class SendAckRequestProcessor implements RequestProcessor, Flushable {
 
     SendAckRequestProcessor(Learner peer, QuorumPeer self) {
         this.learner = peer;
-        this.procMeta = new TMB_Store.ProcessorMeta(self.getQuorumMeta(), this.getClass());
+        this.procMeta = new TMB_Store.ProcessorMeta(self.getQuorumMeta(), this);
     }
     // 3MileBeach ends
 
@@ -50,7 +50,7 @@ public class SendAckRequestProcessor implements RequestProcessor, Flushable {
     public void processRequest(Request si) {
         if (si.type != OpCode.sync) {
             // 3MileBeach starts
-            TMB_Utils.printRequestForProcessor("SendAckRequestProcessor", procMeta.getQuorumMeta(), learner, si);
+            TMB_Utils.processorPrintsRequest(procMeta, null, learner, si);
             byte[] data;
             try {
                 TMB_Helper.printf("[%s] let's ack! request %s\n", procMeta.getQuorumName(), si.getTxn());
