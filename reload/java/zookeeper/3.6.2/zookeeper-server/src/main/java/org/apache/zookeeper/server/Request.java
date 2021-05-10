@@ -75,28 +75,41 @@ public class Request {
 
     public final int type;
 
-    public ByteBuffer request; // 3MileBeach
-//    public final ByteBuffer request;
+    // 3MileBeach starts
+    public ByteBuffer request;
 
-    public TMB_Utils.RequestExt requestExt; // 3MileBeach
+    public TMB_Utils.RequestExt requestExt;
+
+    public void setRequestExt(TMB_Utils.RequestExt requestExt) {
+        this.requestExt = requestExt;
+    }
+
+    public TMB_Utils.RequestExt getRequestExt() {
+        return requestExt;
+    }
+
+    public TMB_Utils.ProcessorFlag getProcessorFlag() {
+        if (requestExt != null) {
+            return requestExt.getProcessorFlag();
+        }
+
+        return null;
+    }
+
+    public void updateProcessorFlag(TMB_Utils.ProcessorFlag procFlag) {
+        if (requestExt != null) {
+            requestExt.getProcessorFlag().update(procFlag);
+        }
+    }
+    // 3MileBeach ends
+
+    // public final ByteBuffer request;
 
     public final ServerCnxn cnxn;
 
     private TxnHeader hdr;
 
     private Record txn;
-
-    // 3MileBeach starts
-    private int processorFlag;
-
-    public int getProcessorFlag() {
-        return processorFlag;
-    }
-
-    public void setProcessorFlag(int flag) {
-        this.processorFlag |= flag;
-    }
-    // 3MileBeach ends
 
     public long zxid = -1;
 

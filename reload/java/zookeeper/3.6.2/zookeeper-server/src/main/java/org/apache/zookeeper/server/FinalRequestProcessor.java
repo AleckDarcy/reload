@@ -102,15 +102,20 @@ public class FinalRequestProcessor implements RequestProcessor {
         int eventType = TMB_Event.SERVICE_RECV;
         if (request.getTxn() != null) {
             // TMB_Helper.printf("[%s] callee inbound component right now\n", quorumName);
-            if (TMB_Utils.ProcessorFlag.isReceived(request.getProcessorFlag())) {
-                eventType = TMB_Event.PROCESSOR_RECV;
+            TMB_Utils.RequestExt requestExt = request.getRequestExt();
+            if (requestExt != null) {
+                TMB_Utils.ProcessorFlag procFlag = request.getProcessorFlag();
+                if (procFlag.isReceived()) {
+                    eventType = TMB_Event.PROCESSOR_RECV;
+                } else {
+                    requestExt.updateProcessorFlag(TMB_Utils.ProcessorFlag.RECV);
+                }
             }
             TMB_Store.calleeInbound(procMeta, request.getTxn(), eventType);
         } else {
             TMB_Helper.printf("[%s] callee inbound component when request is deserialized, request type: %d\n", procMeta.getQuorumName(), request.type);
         }
         TMB_Utils.printRequestForProcessor("FinalRequestProcessor starts", procMeta.getQuorumMeta(), null, request); // 3MileBeach
-
         // 3MileBeach ends
         LOG.debug("Processing request:: {}", request);
 

@@ -24,12 +24,13 @@ public class TMB_Utils {
 
     // an extension of org.apache.zookeeper.server.Request
     // Request.request will be deserialized once a life time inside a particular quorum
+    // all field un-nullable
     public static class RequestExt {
         private boolean traced;
         private ProcessorFlag procFlag;
         private Record message;
 
-        public RequestExt(Record message) {
+        public RequestExt(Record message, ProcessorFlag procFlag) {
             TMB_Trace trace = message.getTrace();
             if (trace != null && trace.getId() != 0) {
                 this.traced = true;
@@ -38,45 +39,50 @@ public class TMB_Utils {
                 this.traced = false;
             }
 
-            this.procFlag = new ProcessorFlag();
+            this.procFlag = new ProcessorFlag(procFlag);
         }
 
         public boolean isTraced() {
-            return traced;
+            return this.traced;
         }
 
         public ProcessorFlag getProcessorFlag() {
-            return procFlag;
+            return this.procFlag;
+        }
+
+        public void updateProcessorFlag(ProcessorFlag procFlag) {
+            if (this.procFlag.isNull()) {
+                this.procFlag = new ProcessorFlag(procFlag);
+            } else {
+                this.procFlag.update(procFlag);
+            }
         }
 
         public Record getMessage() {
-            return message;
+            return this.message;
         }
     }
 
     public static class ProcessorFlag {
-        public static final int RECV = 0x1;
+        public static final ProcessorFlag NULL = new ProcessorFlag(0x0);
+        public static final ProcessorFlag RECV = new ProcessorFlag(0x1);
 
         private int flag;
 
-        public ProcessorFlag() {}
+        private ProcessorFlag(int flag) { this.flag = flag; }
 
-        public ProcessorFlag(int flag) {
-            this.flag = flag;
-        }
+        public ProcessorFlag() { this.flag = NULL.flag; }
 
-        public void update(int flag) {
-            this.flag |= flag;
-        }
+        public ProcessorFlag(ProcessorFlag flag) { this.flag = flag.flag; }
 
-        public boolean isReceived() {
-            return (flag & RECV) != 0;
-        }
+        public void update(ProcessorFlag flag) { this.flag |= flag.flag; }
+
+        public boolean isNull() { return flag == NULL.flag; }
+
+        public boolean isReceived() { return (flag & RECV.flag) != 0; }
 
         // TODO: a delete
-        public static boolean isReceived(int flag) {
-            return (flag & RECV) != 0;
-        }
+        public static boolean isReceived(int flag) { return (flag & RECV.flag) != 0; }
     }
 
     // TODO: a ProcessorMeta
@@ -216,16 +222,20 @@ public class TMB_Utils {
         return appendEvent(procMeta, record, type, "");
     }
 
-    public static ByteBuffer appendEvents(TMB_Store.ProcessorMeta procMeta, ByteBuffer data, Record request, int[] types) throws IOException {
+    // TODO: a need a proper name. FollowerForward?
+    // request.getTxn() is always null
+    public static void appendEvents(TMB_Store.ProcessorMeta procMeta, Request request, Record record, int[] types) throws IOException {
+        ByteBuffer data = request.request;
         try {
-            ByteBufferInputStream.byteBuffer2Record(data, request);
+            ByteBufferInputStream.byteBuffer2Record(data, record);
         } catch (IOException e) {
             data.rewind();
             throw e;
         }
 
-        TMB_Trace trace = request.getTrace();
+        TMB_Trace trace = record.getTrace();
         if (trace != null) {
+            request.setRequestExt(new RequestExt(record, ProcessorFlag.RECV));
             List<TMB_Event> events = trace.getEvents();
             int eventSize = events.size();
             if (eventSize > 0) {
@@ -236,15 +246,15 @@ public class TMB_Utils {
 
                 ByteArrayOutputStream baos = new ByteArrayOutputStream(data.capacity() + EVENT_SERIALIZE_SIZE * types.length);
                 BinaryOutputArchive boa = BinaryOutputArchive.getArchive(baos);
-                request.serialize(boa, "request");
+                record.serialize(boa, "request");
 
-                return ByteBuffer.wrap(baos.toByteArray());
+                request.request = ByteBuffer.wrap(baos.toByteArray());
+
+                return;
             }
         }
 
         data.rewind();
-
-        return data;
     }
 
     public static void quorumCollectTraceFromQuorumPacket(TMB_Store.ProcessorMeta procMeta, Record record, QuorumPacket qp) {
