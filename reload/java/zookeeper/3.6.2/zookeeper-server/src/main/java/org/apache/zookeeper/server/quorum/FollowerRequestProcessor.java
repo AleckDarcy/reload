@@ -137,9 +137,7 @@ public class FollowerRequestProcessor extends ZooKeeperCriticalThread implements
 
                 // 3MileBeach starts
                 if (empty != null) {
-                    // TODO: a move to appendEvents()
-                    request.updateProcessorFlag(TMB_Utils.ProcessorFlag.RECV);
-                    TMB_Utils.appendEvents(procMeta, request, empty, new int[]{TMB_Event.SERVICE_RECV, TMB_Event.SERVICE_FRWD});
+                    TMB_Utils.forwardHelper(procMeta, request, empty);
                     zks.getFollower().request(request);
                 }
 

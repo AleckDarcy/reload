@@ -211,9 +211,8 @@ public class TMB_Utils {
         return appendEvent(procMeta, record, type, "");
     }
 
-    // TODO: a need a proper name. FollowerForward?
-    // request.getTxn() is always null
-    public static void appendEvents(TMB_Store.ProcessorMeta procMeta, Request request, Record record, int[] types) throws IOException {
+    // TODO: a check request.getTxn() is always null
+    public static void forwardHelper(TMB_Store.ProcessorMeta procMeta, Request request, Record record) throws IOException {
         ByteBuffer data = request.request;
         try {
             ByteBufferInputStream.byteBuffer2Record(data, record);
@@ -229,11 +228,11 @@ public class TMB_Utils {
             int eventSize = events.size();
             if (eventSize > 0) {
                 TMB_Event lastEvent = events.get(eventSize - 1);
-                for (int type: types) {
-                    events.add(new TMB_Event(type, lastEvent.getMessage_name(), lastEvent.getUuid(), procMeta));
-                }
 
-                ByteArrayOutputStream baos = new ByteArrayOutputStream(data.capacity() + EVENT_SERIALIZE_SIZE * types.length);
+                events.add(new TMB_Event(TMB_Event.SERVICE_RECV, lastEvent.getMessage_name(), lastEvent.getUuid(), procMeta));
+                events.add(new TMB_Event(TMB_Event.SERVICE_FRWD, lastEvent.getMessage_name(), TMB_Helper.UUID(), procMeta));
+
+                ByteArrayOutputStream baos = new ByteArrayOutputStream(data.capacity() + EVENT_SERIALIZE_SIZE * 2);
                 BinaryOutputArchive boa = BinaryOutputArchive.getArchive(baos);
                 record.serialize(boa, "request");
 

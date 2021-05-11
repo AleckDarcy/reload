@@ -111,7 +111,7 @@ public class FinalRequestProcessor implements RequestProcessor {
                     requestExt.updateProcessorFlag(TMB_Utils.ProcessorFlag.RECV);
                 }
             }
-            TMB_Store.calleeInbound(procMeta, request.getTxn(), eventType);
+            TMB_Store.calleeInbound(procMeta, request.getTxn(), requestName, eventType);
         } else {
             TMB_Helper.printf(procMeta, "will call inbound component when request is deserialized, request type: %d\n", request.type);
         }
@@ -396,11 +396,10 @@ public class FinalRequestProcessor implements RequestProcessor {
                 lastOp = "GETD";
                 GetDataRequest getDataRequest = new GetDataRequest();
                 ByteBufferInputStream.byteBuffer2Record(request.request, getDataRequest);
-
-                // 3MileBeach
+                // 3MileBeach starts
                 requestName = "GetDataRequest";
-                TMB_Store.calleeInbound(procMeta, request.getTxn(), eventType);
-
+                TMB_Store.calleeInbound(procMeta, request.getTxn(), requestName, eventType);
+                // 3MileBeach ends
                 path = getDataRequest.getPath();
                 rsp = handleGetDataRequest(getDataRequest, cnxn, request.authInfo);
                 requestPathMetricsCollector.registerRequest(request.type, path);
@@ -664,14 +663,15 @@ public class FinalRequestProcessor implements RequestProcessor {
         updateStats(request, lastOp, lastZxid);
 
         try {
-            TMB_Helper.printf(procMeta, "request:%s(%s), response:%s(%s), lastOp:%s\n", requestName, TMB_Helper.getString(request.getTxn()), TMB_Helper.getClassNameFromObject(rsp), TMB_Helper.getString(rsp), lastOp);
+            TMB_Helper.printf(procMeta, "request:%s(%s), response:%s(%s), lastOp:%s\n", requestName, TMB_Helper.getString(request.getTxn()), TMB_Helper.getClassNameFromObject(rsp), TMB_Helper.getString(rsp), lastOp); // 3MileBeach
             if (path == null || rsp == null) {
+                // 3MileBeach starts
                 if (rsp == null) {
                     rsp = new NullPointerResponse(requestName);
                 }
 
                 TMB_Store.calleeOutbound(procMeta, rsp); // 3MileBeach
-
+                // 3MileBeach ends
                 cnxn.sendResponse(hdr, rsp, "response");
             } else {
                 int opCode = request.type;

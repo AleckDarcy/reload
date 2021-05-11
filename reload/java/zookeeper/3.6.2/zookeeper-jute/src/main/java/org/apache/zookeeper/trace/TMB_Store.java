@@ -316,19 +316,19 @@ public class TMB_Store {
      * RequestProcessor -> calleeInbound -> process request -> calleeOutbound -> send response
      */
     // to be called after ByteBufferInputStream.byteBuffer2Record(buffer, record)
-    public static void calleeInbound(ProcessorMeta procMeta, Record request, int type) {
+    public static void calleeInbound(ProcessorMeta procMeta, Record request, String requestName, int type) {
         TMB_Trace trace = request.getTrace();
         if (trace == null || trace.getId() == 0) {
-            TMB_Helper.printf(procMeta, 3, "callee inbound receives request with empty trace:%s(%s)\n", TMB_Helper.getClassNameFromObject(request), TMB_Helper.getString(request));
+            TMB_Helper.printf(procMeta, 3, "callee inbound receives request with empty trace:%s(%s)\n", requestName, TMB_Helper.getString(request));
             return;
         }
 
         List<TMB_Event> events = trace.getEvents();
-        TMB_Helper.printf(procMeta, 3, "callee inbound receives request:%s(%s)\n", TMB_Helper.getClassNameFromObject(request), TMB_Helper.getString(request));
+        TMB_Helper.printf(procMeta, 3, "callee inbound receives request:%s(%s)\n", requestName, TMB_Helper.getString(request));
 
         long threadId = Thread.currentThread().getId();
         TMB_Event preEvent = events.get(0);
-        TMB_Event event = new TMB_Event(type, preEvent.getMessage_name(), preEvent.getUuid(), procMeta);
+        TMB_Event event = new TMB_Event(type, requestName, preEvent.getUuid(), procMeta);
         events.add(event);
         trace.setEvents(events, 1);
 
