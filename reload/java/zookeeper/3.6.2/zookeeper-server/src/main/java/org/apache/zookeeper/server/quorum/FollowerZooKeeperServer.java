@@ -61,7 +61,7 @@ public class FollowerZooKeeperServer extends LearnerZooKeeperServer {
     FollowerZooKeeperServer(FileTxnSnapLog logFactory, QuorumPeer self, ZKDatabase zkDb) throws IOException {
         super(logFactory, self.tickTime, self.minSessionTimeout, self.maxSessionTimeout, self.clientPortListenBacklog, zkDb, self);
         this.pendingSyncs = new ConcurrentLinkedQueue<Request>();
-        TMB_Helper.printf("[%s] new FollowerZookeeperServer\n", self.getQuorumMeta().getName()); // 3MileBeach
+        TMB_Helper.printf(self.getQuorumMeta(), "new FollowerZookeeperServer\n"); // 3MileBeach
     }
 
     public Follower getFollower() {

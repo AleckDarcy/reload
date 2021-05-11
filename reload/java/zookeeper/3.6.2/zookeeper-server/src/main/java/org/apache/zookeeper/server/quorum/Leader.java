@@ -940,7 +940,7 @@ public class Leader extends LearnerMaster {
             }
 
             // 3MileBeach starts
-            TMB_Helper.printf("[%s] let's commit and activate! request %s\n", procMeta.getQuorumName(), p.request.getTxn());
+            TMB_Helper.printf(procMeta, "let's commit and activate! request %s\n", p.request.getTxn());
             NullPointerResponse record = TMB_Utils.commitHelperBegins(procMeta, p.request, TMB_Utils.LEADER_COMMIT);
             commitAndActivate(zxid, designatedLeader, record);
             informAndActivate(p, designatedLeader);
@@ -957,7 +957,7 @@ public class Leader extends LearnerMaster {
             p.request.logLatency(ServerMetrics.getMetrics().QUORUM_ACK_LATENCY);
 
             // 3MileBeach starts
-            TMB_Helper.printf("[%s] let's commit! request %s\n", procMeta.getQuorumName(), p.request.getTxn());
+            TMB_Helper.printf(procMeta, "let's commit! request %s\n", p.request.getTxn());
             NullPointerResponse record = TMB_Utils.commitHelperBegins(procMeta, p.request, TMB_Utils.LEADER_COMMIT);
             commit(zxid, record);
             inform(p);
@@ -987,7 +987,7 @@ public class Leader extends LearnerMaster {
      */
     @Override
     public synchronized void processAck(long sid, long zxid, SocketAddress followerAddr) {
-        TMB_Helper.printf("[%s] Leader processAck starts\n", procMeta.getQuorumName()); // 3MileBeach
+        TMB_Helper.printf(procMeta, "processAck starts\n"); // 3MileBeach
         if (!allowedToCommit) {
             // TMB_Helper.printf("[quorum-%d] Leader processAck returns (!allowedToCommit)\n", self.hashCode()); // 3MileBeach
             return; // last op committed was a leader change - from now on
@@ -1058,12 +1058,12 @@ public class Leader extends LearnerMaster {
                 curZxid++;
                 p = outstandingProposals.get(curZxid);
                 if (p != null) {
-                    TMB_Helper.printf("[%s] Leader processAck tries to commit\n", procMeta.getQuorumName()); // 3MileBeach
+                    TMB_Helper.printf(procMeta, "processAck tries to commit\n"); // 3MileBeach
                     hasCommitted = tryToCommit(p, curZxid, null);
                 }
             }
         }
-        TMB_Helper.printf("[%s] Leader processAck ends\n", procMeta.getQuorumName()); // 3MileBeach
+        TMB_Helper.printf(procMeta, "processAck ends\n"); // 3MileBeach
     }
 
     static class ToBeAppliedRequestProcessor implements RequestProcessor {
@@ -1135,7 +1135,7 @@ public class Leader extends LearnerMaster {
                         return;
                     }
                 }
-                TMB_Helper.printf("[%s] ToBeAppliedRequestProcessor\n", procMeta.getQuorumName()); // 3MileBeach
+                TMB_Helper.printf(procMeta, "nothing implemented\n"); // 3MileBeach
                 LOG.error("Committed request not found on toBeApplied: {}", request);
             }
         }
@@ -1169,7 +1169,7 @@ public class Leader extends LearnerMaster {
                     TMB_Event event = new TMB_Event(TMB_Event.LOGICAL_CMMT_READY, TMB_Utils.LEADER_COMMIT_READY, uuid, procMeta);
                     trace.addEvent(event);
 
-                    TMB_Helper.printf("[%s] Leader commits to %d follower(s)\n", procMeta.getQuorumName(), forwardingFollowers.size());
+                    TMB_Helper.printf(procMeta, "commits to %d follower(s)\n", forwardingFollowers.size());
                     int i = 0;
 
                     for (LearnerHandler f : forwardingFollowers) {
@@ -1177,7 +1177,7 @@ public class Leader extends LearnerMaster {
                         try {
                             TMB_Helper.checkTFIs(trace, record.getRequestName());
                         } catch (FaultInjectedException e) {
-                            TMB_Helper.printf("[%s] Leader commits to follower-%d, fault injected\n", procMeta.getQuorumName(), i);
+                            TMB_Helper.printf(procMeta, "commits to follower-%d, fault injected\n", i);
                             injected = true;
                         }
 
@@ -1236,14 +1236,14 @@ public class Leader extends LearnerMaster {
                                 TMB_Event event = new TMB_Event(TMB_Event.LOGICAL_PRPS_READY, TMB_Utils.LEADER_PRPS_READY, uuid, procMeta);
                                 trace.addEvent(event);
 
-                                TMB_Helper.printf("[%s] Leader proposals to %d follower(s)\n", procMeta.getQuorumName(), forwardingFollowers.size());
+                                TMB_Helper.printf(procMeta, "proposes to %d follower(s)\n", forwardingFollowers.size());
                                 int i = 0;
                                 for (LearnerHandler f : forwardingFollowers) {
                                     boolean injected = false;
                                     try {
                                         TMB_Helper.checkTFIs(trace, lastEvent.getMessage_name());
                                     } catch (FaultInjectedException e) {
-                                        TMB_Helper.printf("[%s] Leader proposals to follower-%d, fault injected\n", procMeta.getQuorumName(), i);
+                                        TMB_Helper.printf(procMeta, "proposes to follower-%d, fault injected\n", i);
                                         injected = true;
                                     }
 
@@ -1298,7 +1298,7 @@ public class Leader extends LearnerMaster {
      *                the packet to be sent
      */
     void sendPacket(QuorumPacket qp) {
-        TMB_Helper.printf("[%s] Leader uses default sendPacker()\n", procMeta.getQuorumName()); // 3MileBeach
+        TMB_Helper.printf(procMeta, "uses default sendPacker()\n"); // 3MileBeach
         synchronized (forwardingFollowers) {
             for (LearnerHandler f : forwardingFollowers) {
                 f.queuePacket(qp);

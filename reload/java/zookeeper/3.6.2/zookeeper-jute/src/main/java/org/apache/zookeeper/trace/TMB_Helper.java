@@ -69,7 +69,37 @@ public class TMB_Helper {
         }
     }
 
-    public static String getClassName(Object o) {
+    public static void printf(TMB_Store.QuorumMeta quorumMeta, String format, Object ... args) {
+        printf(quorumMeta, 3, format, args);
+    }
+
+    public static void printf(TMB_Store.QuorumMeta quorumMeta, int depth, String format, Object ... args) {
+        if (printable) {
+            StackTraceElement[] traces = Thread.currentThread().getStackTrace();
+            if (traces.length <= depth) { // protection
+                depth = traces.length - 1;
+            }
+            StackTraceElement trace = traces[depth];
+            System.out.printf("[3MileBeach] %s:%d [%d] [%s] %s", trace.getFileName(), trace.getLineNumber(), Thread.currentThread().getId(), quorumMeta.getName(), String.format(format, args));
+        }
+    }
+
+    public static void printf(TMB_Store.ProcessorMeta procMeta, String format, Object ... args) {
+        printf(procMeta, 3, format, args);
+    }
+
+    public static void printf(TMB_Store.ProcessorMeta procMeta, int depth, String format, Object ... args) {
+        if (printable) {
+            StackTraceElement[] traces = Thread.currentThread().getStackTrace();
+            if (traces.length <= depth) { // protection
+                depth = traces.length - 1;
+            }
+            StackTraceElement trace = traces[depth];
+            System.out.printf("[3MileBeach] %s:%d [%d] [%s:%s] %s", trace.getFileName(), trace.getLineNumber(), Thread.currentThread().getId(), procMeta.getQuorumName(), procMeta.getName(), String.format(format, args));
+        }
+    }
+
+    public static String getClassNameFromObject(Object o) {
         if (o == null) {
             return "NullPointer";
         }
@@ -83,7 +113,7 @@ public class TMB_Helper {
         return getClassNameFromName(o.getClass().getCanonicalName());
     }
 
-    public static String getClassNameFromClass(Class c) {
+    public static String getClassName(Class c) {
         return getClassNameFromName(c.getCanonicalName());
     }
 

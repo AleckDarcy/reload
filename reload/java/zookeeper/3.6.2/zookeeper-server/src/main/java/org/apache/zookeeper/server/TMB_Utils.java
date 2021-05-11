@@ -10,7 +10,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 import java.util.List;
 
 public class TMB_Utils {
@@ -82,15 +81,6 @@ public class TMB_Utils {
         public boolean isReceived() { return (flag & RECV.flag) != 0; }
     }
 
-    public static void quorumPrintf(TMB_Store.QuorumMeta quorumMeta, String format, Object ... args) {
-        if (!TMB_Helper.printable) {
-            return;
-        }
-
-        format = String.format("[%s] %s", quorumMeta.getName(), format);
-        TMB_Helper.printf(3, format, args);
-    }
-
     public static void processorPrintsRequest(TMB_Store.ProcessorMeta procMeta, String info, Object next, Request request) {
         if (!TMB_Helper.printable) {
             return;
@@ -98,24 +88,24 @@ public class TMB_Utils {
 
         String nextName = "null";
         if (next != null) {
-            nextName = next.getClass().getCanonicalName();
+            nextName = TMB_Helper.getClassNameFromObject(next);
         }
 
         Record txn = request.getTxn();
 
-        String requestStr = String.format("(sessionid:0x%s, type:%s, cxid:0x%s, zxid:0x%s, txntype:%s, request:%s, record:%s)",
+        String requestStr = String.format("(sessionid:0x%s,type:%s,cxid:0x%s,zxid:0x%s,txntype:%s,request:%s,record:%s)",
                 Long.toHexString(request.sessionId),
                 Request.op2String(request.type),
                 Long.toHexString(request.cxid),
                 Long.toHexString(request.getHdr() == null ? -2 : request.getHdr().getZxid()),
                 request.getHdr() == null ? "unknown" : "" + request.getHdr().getType(),
                 request.request == null ? "null" : "valued",
-                txn == null ? "null" : String.format("%s(trace:%s)", txn.getClass().getCanonicalName(), txn.getTrace() == null ? null : txn.getTrace().getId() != 0));
+                txn == null ? "null" : String.format("%s(trace:%s)", TMB_Helper.getClassNameFromObject(txn), txn.getTrace() == null ? null : txn.getTrace().getId() != 0));
 
         if (info != null && info.length() != 0) {
-            TMB_Helper.printf(3, "[%s] %s %s, next %s, request-%d %s\n", procMeta.getQuorumName(), procMeta.getName(), info, nextName, request.hashCode(), requestStr);
+            TMB_Helper.printf(procMeta, 3, "%s, next:%s, request-%d:%s\n", info, nextName, request.hashCode(), requestStr);
         } else {
-            TMB_Helper.printf(3, "[%s] %s, next %s, request-%d %s\n", procMeta.getQuorumName(), procMeta.getName(), nextName, request.hashCode(), requestStr);
+            TMB_Helper.printf(procMeta, 3, "next:%s, request-%d:%s\n", nextName, request.hashCode(), requestStr);
         }
     }
 

@@ -56,7 +56,7 @@ public class LeaderZooKeeperServer extends QuorumZooKeeperServer {
      */
     public LeaderZooKeeperServer(FileTxnSnapLog logFactory, QuorumPeer self, ZKDatabase zkDb) throws IOException {
         super(logFactory, self.tickTime, self.minSessionTimeout, self.maxSessionTimeout, self.clientPortListenBacklog, zkDb, self);
-        TMB_Helper.printf("[%s] new LeaderZookeeperServer\n", self.getQuorumMeta().getName()); // 3MileBeach
+        TMB_Helper.printf(self.getQuorumMeta(), "new LeaderZookeeperServer\n"); // 3MileBeach
     }
 
     public Leader getLeader() {

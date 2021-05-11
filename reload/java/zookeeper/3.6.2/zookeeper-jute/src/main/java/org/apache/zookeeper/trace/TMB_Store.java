@@ -35,7 +35,7 @@ public class TMB_Store {
 
         public ProcessorMeta(QuorumMeta quorumMeta, Object processor) {
             this.quorumMeta = quorumMeta;
-            this.name = TMB_Helper.getClassNameFromClass(processor.getClass());
+            this.name = TMB_Helper.getClassName(processor.getClass());
         }
 
         public QuorumMeta getQuorumMeta() {
@@ -106,6 +106,7 @@ public class TMB_Store {
         public void printAllJSON() {
             lock.readLock().lock();
             for (Long key: traces.keySet()) {
+                // TODO: a quorumId -> quorumName
                 TMB_Helper.printf("[TMB_Store] [quorum-%d] %d: %d, %s\n", quorumId, key, traces.get(key).recorder, traces.get(key).trace.toJSON());
             }
             lock.readLock().unlock();
@@ -225,7 +226,7 @@ public class TMB_Store {
 
         if (updated) {
             new Exception().printStackTrace();
-            TMB_Helper.printf("updated!!! %s, %s\n", tfis, event);
+            TMB_Helper.printf("[TMB_Store] updated!!! %s, %s\n", tfis, event);
         }
     }
 
@@ -260,7 +261,7 @@ public class TMB_Store {
         if (pluginTrace != null) {
 
         } else {
-            TMB_Helper.printf("unreachable code, trace: %s", trace.toJSON());
+            TMB_Helper.printf("[TMB_Store] unreachable code, trace: %s", trace.toJSON());
         }
 
         lock.writeLock().unlock();
@@ -318,12 +319,12 @@ public class TMB_Store {
     public static void calleeInbound(ProcessorMeta procMeta, Record request, int type) {
         TMB_Trace trace = request.getTrace();
         if (trace == null || trace.getId() == 0) {
-            TMB_Helper.printf(3, "[%s] callee inbound receives request with empty trace: %s, (%s)\n", procMeta.getQuorumName(), TMB_Helper.getClassName(request), TMB_Helper.getString(request));
+            TMB_Helper.printf(procMeta, 3, "callee inbound receives request with empty trace:%s(%s)\n", TMB_Helper.getClassNameFromObject(request), TMB_Helper.getString(request));
             return;
         }
 
         List<TMB_Event> events = trace.getEvents();
-        TMB_Helper.printf(3, "[%s] callee inbound receives request: %s, (%s)\n", procMeta.getQuorumName(), TMB_Helper.getClassName(request), TMB_Helper.getString(request));
+        TMB_Helper.printf(procMeta, 3, "callee inbound receives request:%s(%s)\n", TMB_Helper.getClassNameFromObject(request), TMB_Helper.getString(request));
 
         long threadId = Thread.currentThread().getId();
         TMB_Event preEvent = events.get(0);
@@ -347,7 +348,7 @@ public class TMB_Store {
         lock.writeLock().unlock();
 
         if (trace == null) {
-            TMB_Helper.printf(3, "[%s] callee outbound ejects response without trace: %s, (%s)\n", procMeta.getQuorumName(), TMB_Helper.getClassName(response), TMB_Helper.getString(response));
+            TMB_Helper.printf(procMeta, 3, "callee outbound ejects response without trace:%s(%s)\n", TMB_Helper.getClassNameFromObject(response), TMB_Helper.getString(response));
 
             return;
         }
@@ -356,10 +357,10 @@ public class TMB_Store {
         TMB_Trace trace_ = getInstance().quorumGetTrace(procMeta.getQuorumMeta(), trace.getId());
         mergeEvents(trace_, trace.getEvents()); // merge events of the current SRC to those of the current client request
 
-        TMB_Event event = new TMB_Event(TMB_Event.SERVICE_SEND, TMB_Helper.getClassName(response), preEvent.getUuid(), procMeta);
+        TMB_Event event = new TMB_Event(TMB_Event.SERVICE_SEND, TMB_Helper.getClassNameFromObject(response), preEvent.getUuid(), procMeta);
         trace_.addEvent(event);
         response.setTrace(trace_);
 
-        TMB_Helper.printf(3, "[%s] callee outbound ejects response: %s, (%s)\n", procMeta.getQuorumName(), TMB_Helper.getClassName(response), TMB_Helper.getString(response));
+        TMB_Helper.printf(procMeta, 3, "callee outbound ejects response:%s(%s)\n", TMB_Helper.getClassNameFromObject(response), TMB_Helper.getString(response));
     }
 }

@@ -50,7 +50,7 @@ public class TMB_ClientPlugin {
 
         if (trace.getId() != 0) {
             long threadId = Thread.currentThread().getId();
-            String requestName = TMB_Helper.getClassName(request);
+            String requestName = TMB_Helper.getClassNameFromObject(request);
             String uuid = TMB_Helper.UUID();
             TMB_Event event = new TMB_Event(TMB_Event.SERVICE_SEND, requestName, uuid, service, TMB_ClientPlugin.class);
 
@@ -61,7 +61,7 @@ public class TMB_ClientPlugin {
             TMB_Store.getInstance().callerAppendEventsByThreadIdUnsafe(threadId, trace);
         }
 
-        TMB_Helper.println("caller outbound ejects request: " + TMB_Helper.getClassName(request) + "(" + TMB_Helper.getString(request) + ")");
+        TMB_Helper.println("caller outbound ejects request: " + TMB_Helper.getClassNameFromObject(request) + "(" + TMB_Helper.getString(request) + ")");
     }
 
     public static void callerInbound(String service, Record response) {
@@ -70,7 +70,7 @@ public class TMB_ClientPlugin {
             return;
         }
 
-        String responseName = TMB_Helper.getClassName(response);
+        String responseName = TMB_Helper.getClassNameFromObject(response);
         List<TMB_Event> events = trace.getEvents();
         if (events.size() == 0) {
             TMB_Helper.println("caller inbound receives trace without events: " + responseName + "(" + TMB_Helper.getString(response) + ")");

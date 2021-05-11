@@ -3269,7 +3269,7 @@ public class ZooKeeper implements AutoCloseable {
         h.setType(opCode);
         Record request = getRemoveWatchesRequest(opCode, watcherType, serverPath);
 //        TODO 3MileBeach
-        Record response = new NullPointerResponse(TMB_Helper.getClassName(request));
+        Record response = new NullPointerResponse(TMB_Helper.getClassNameFromObject(request));
         ReplyHeader r = cnxn.submitRequest(h, request, response, null, wcb);
 
 //        ReplyHeader r = cnxn.submitRequest(h, request, null, null, wcb);

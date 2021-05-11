@@ -167,7 +167,7 @@ public class Follower extends Learner {
     protected void processPacket(QuorumPacket qp) throws Exception {
         switch (qp.getType()) {
         case Leader.PING:
-            TMB_Helper.printf("[%s] Follower processes ping\n", procMeta.getQuorumName()); // 3MileBeach
+            TMB_Helper.printf(procMeta, "processes ping\n"); // 3MileBeach
             ping(qp);
             break;
         case Leader.PROPOSAL:
@@ -175,7 +175,7 @@ public class Follower extends Learner {
             TxnLogEntry logEntry = SerializeUtils.deserializeTxn(qp.getData());
             TxnHeader hdr = logEntry.getHeader();
             Record txn = logEntry.getTxn();
-            TMB_Helper.printf("[%s] Follower processes proposal, request: %s\n", procMeta.getQuorumName(), txn); // 3MileBeach
+            TMB_Helper.printf(procMeta, "processes proposal, request: %s\n", txn); // 3MileBeach
             TMB_Utils.appendEvent(procMeta, txn, TMB_Event.SERVICE_RECV); // 3MileBeach
             TxnDigest digest = logEntry.getDigest();
             if (hdr.getZxid() != lastQueued + 1) {
@@ -212,7 +212,7 @@ public class Follower extends Learner {
             }
             break;
         case Leader.COMMIT:
-            // TMB_Helper.printf("[%s] Follower processes commit\n", quorumName); // 3MileBeach
+            // TMB_Helper.printf(procMeta, "processes commit\n"); // 3MileBeach
             TMB_Utils.quorumCollectTraceFromQuorumPacket(procMeta, new NullPointerResponse(), qp); // 3MileBeach
 
             ServerMetrics.getMetrics().LEARNER_COMMIT_RECEIVED_COUNT.add(1);
@@ -225,7 +225,7 @@ public class Follower extends Learner {
             break;
 
         case Leader.COMMITANDACTIVATE:
-            TMB_Helper.printf("[%s] Follower processes commit and activate\n", procMeta.getQuorumName()); // 3MileBeach
+            TMB_Helper.printf(procMeta, "processes commit and activate\n"); // 3MileBeach
             // get the new configuration from the request
             Request request = fzk.pendingTxns.element();
             SetDataTxn setDataTxn = (SetDataTxn) request.getTxn();
@@ -247,17 +247,17 @@ public class Follower extends Learner {
             }
             break;
         case Leader.UPTODATE:
-            TMB_Helper.printf("[%s] Follower processes update\n", procMeta.getQuorumName()); // 3MileBeach
+            TMB_Helper.printf(procMeta, "processes update\n"); // 3MileBeach
             LOG.error("Received an UPTODATE message after Follower started");
             break;
         case Leader.REVALIDATE:
-            TMB_Helper.printf("[%s] Follower processes revalidate\n", procMeta.getQuorumName()); // 3MileBeach
+            TMB_Helper.printf(procMeta, "processes revalidate\n"); // 3MileBeach
             if (om == null || !om.revalidateLearnerSession(qp)) {
                 revalidate(qp);
             }
             break;
         case Leader.SYNC:
-            TMB_Helper.printf("[%s] Follower processes sync\n", procMeta.getQuorumName()); // 3MileBeach
+            TMB_Helper.printf(procMeta, "processes sync\n"); // 3MileBeach
             fzk.sync();
             break;
         default:

@@ -719,7 +719,7 @@ public class LearnerHandler extends ZooKeeperThread {
                     learnerMaster.revalidateSession(qp, this);
                     break;
                 case Leader.REQUEST:
-                    TMB_Helper.printf("LearnerHandler receives request\n");
+                    TMB_Helper.printf(procMeta, "receives request\n");
                     bb = ByteBuffer.wrap(qp.getData());
                     sessionId = bb.getLong();
                     cxid = bb.getInt();

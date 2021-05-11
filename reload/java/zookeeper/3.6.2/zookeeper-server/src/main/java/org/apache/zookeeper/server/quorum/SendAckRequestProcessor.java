@@ -53,10 +53,10 @@ public class SendAckRequestProcessor implements RequestProcessor, Flushable {
             TMB_Utils.processorPrintsRequest(procMeta, null, learner, si);
             byte[] data;
             try {
-                TMB_Helper.printf("[%s] let's ack! request %s\n", procMeta.getQuorumName(), si.getTxn());
+                TMB_Helper.printf(procMeta, "let's ack! request:%s\n", si.getTxn());
                 data = TMB_Utils.ackHelper(procMeta, si, TMB_Utils.QUORUM_ACK);
             } catch (FaultInjectedException e) {
-                TMB_Helper.printf("[%s] Fault injected, won't send ACK to the leader\n", procMeta.getQuorumName());
+                TMB_Helper.printf(procMeta, "fault injected, won't send ACK to the leader\n");
                 return;
             }
             QuorumPacket qp = new QuorumPacket(Leader.ACK, si.getHdr().getZxid(), data, null);
@@ -79,7 +79,7 @@ public class SendAckRequestProcessor implements RequestProcessor, Flushable {
                 }
             }
         } else {
-            TMB_Helper.printf("[%s] SendAckRequestProcessor\n", procMeta.getQuorumName()); // 3MileBeach
+            TMB_Helper.printf(procMeta, "nothing implemented\n"); // 3MileBeach
         }
     }
 

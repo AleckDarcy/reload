@@ -72,7 +72,7 @@ public class TMB_Event implements Record {
     this.message_name=message_name;
     this.uuid=uuid;
     this.service=service;
-    this.processor=TMB_Helper.getClassNameFromClass(processor);
+    this.processor=TMB_Helper.getClassName(processor);
 
     // TMB_Helper.printf(3, "[%s] a new event: %s", service, this);
   }

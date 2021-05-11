@@ -1160,7 +1160,7 @@ public class QuorumPeer extends ZooKeeperThread implements QuorumStats.Provider 
         responder.interrupt();
     }
     public synchronized void startLeaderElection() {
-        TMB_Helper.printf("[quorum-%d] start leader election\n", this.hashCode()); // 3MileBeach
+        TMB_Helper.printf(quorumMeta, "start leader election\n"); // 3MileBeach
 
         try {
             if (getPeerState() == ServerState.LOOKING) {
