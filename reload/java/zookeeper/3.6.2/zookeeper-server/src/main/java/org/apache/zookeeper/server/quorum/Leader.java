@@ -986,10 +986,12 @@ public class Leader extends LearnerMaster {
      * @param followerAddr
      */
     @Override
-    public synchronized void processAck(long sid, long zxid, SocketAddress followerAddr) {
+    public synchronized void processAck(long sid, long zxid, Record record, SocketAddress followerAddr) { // 3MileBeach
+    // public synchronized void processAck(long sid, long zxid, SocketAddress followerAddr) {
         TMB_Helper.printf(procMeta, "processAck starts\n"); // 3MileBeach
+        TMB_Utils.quorumCollectTrace(procMeta, record, TMB_Event.PROCESSOR_RECV); // 3MileBeach
         if (!allowedToCommit) {
-            // TMB_Helper.printf("[quorum-%d] Leader processAck returns (!allowedToCommit)\n", self.hashCode()); // 3MileBeach
+            TMB_Helper.printf(procMeta, "processAck ends (!allowedToCommit)\n"); // 3MileBeach
             return; // last op committed was a leader change - from now on
         }
         // the new leader should commit
@@ -998,7 +1000,7 @@ public class Leader extends LearnerMaster {
             for (Proposal p : outstandingProposals.values()) {
                 long packetZxid = p.packet.getZxid();
                 LOG.trace("outstanding proposal: 0x{}", Long.toHexString(packetZxid));
-                // TMB_Helper.printf("[quorum-%d] Leader processAck outstanding proposal: 0x%s\n", self.hashCode(), Long.toHexString(packetZxid)); // 3MileBeach
+                TMB_Helper.printf(procMeta, "processAck outstanding proposal: 0x%s\n", Long.toHexString(packetZxid)); // 3MileBeach
             }
             LOG.trace("outstanding proposals all");
         }
@@ -1009,13 +1011,13 @@ public class Leader extends LearnerMaster {
              * the learner sends an ack back to the leader after it gets
              * UPTODATE, so we just ignore the message.
              */
-            // TMB_Helper.printf("[quorum-%d] Leader processAck returns ((zxid & 0xffffffffL) == 0)\n", self.hashCode()); // 3MileBeach
+            TMB_Helper.printf(procMeta, "processAck ends (zxid & 0xffffffffL) == 0)\n"); // 3MileBeach
             return;
         }
 
         if (outstandingProposals.size() == 0) {
             LOG.debug("outstanding is 0");
-            // TMB_Helper.printf("[quorum-%d] Leader processAck returns (outstanding is 0)\n", self.hashCode()); // 3MileBeach
+            TMB_Helper.printf(procMeta, "processAck ends (outstanding is 0)\n"); // 3MileBeach
             return;
         }
         if (lastCommitted >= zxid) {
@@ -1024,13 +1026,13 @@ public class Leader extends LearnerMaster {
                 Long.toHexString(lastCommitted),
                 Long.toHexString(zxid));
             // The proposal has already been committed
-            // TMB_Helper.printf("[quorum-%d] Leader processAck returns (already committed)\n", self.hashCode()); // 3MileBeach
+            TMB_Helper.printf(procMeta, "processAck ends (already committed)\n"); // 3MileBeach
             return;
         }
         Proposal p = outstandingProposals.get(zxid);
         if (p == null) {
             LOG.warn("Trying to commit future proposal: zxid 0x{} from {}", Long.toHexString(zxid), followerAddr);
-            // TMB_Helper.printf("[quorum-%d] Leader processAck returns (future proposal)\n", self.hashCode()); // 3MileBeach
+            TMB_Helper.printf(procMeta, "processAck ends (future proposal)\n"); // 3MileBeach
             return;
         }
 
@@ -1161,11 +1163,6 @@ public class Leader extends LearnerMaster {
                 int eventSize = (events == null ? 0: events.size());
                 if (eventSize > 0) {
                     String uuid = TMB_Helper.UUID();
-                    // String uuid = lastEvent.getUuid();
-                    // if (uuid.length() == TMB_Helper.UUID_LEN + TMB_Helper.UUID_SUF_LEN) {
-                    //    uuid = uuid.substring(0, TMB_Helper.UUID_LEN);
-                    // }
-
                     TMB_Event event = new TMB_Event(TMB_Event.LOGICAL_CMMT_READY, TMB_Utils.LEADER_COMMIT_READY, uuid, procMeta);
                     trace.addEvent(event);
 
@@ -1208,7 +1205,7 @@ public class Leader extends LearnerMaster {
 
                         i++;
                     }
-                    TMB_Store.getInstance().quorumSetTrace(procMeta.getQuorumMeta(), trace);
+                    TMB_Store.getInstance().quorumSetTrace(procMeta, trace);
 
                     return;
                 }
@@ -1218,7 +1215,7 @@ public class Leader extends LearnerMaster {
         sendPacket(qp);
     }
 
-    void sendProposalPacket(QuorumPacket qp) {
+    void sendProposalPacket(Request request, QuorumPacket qp) {
         synchronized (forwardingFollowers) {
             if (qp.getData() != null) {
                 try {
@@ -1233,9 +1230,13 @@ public class Leader extends LearnerMaster {
                                 TMB_Event lastEvent = events.get(eventSize - 1);
                                 String uuid = TMB_Helper.UUID();
 
+                                TMB_Utils.RequestExt requestExt = request.getRequestExt();
+                                if (requestExt != null) {
+                                    requestExt.setUUID(uuid);
+                                }
+
                                 TMB_Event event = new TMB_Event(TMB_Event.LOGICAL_PRPS_READY, TMB_Utils.LEADER_PRPS_READY, uuid, procMeta);
                                 trace.addEvent(event);
-
                                 TMB_Helper.printf(procMeta, "proposes to %d follower(s)\n", forwardingFollowers.size());
                                 int i = 0;
                                 for (LearnerHandler f : forwardingFollowers) {
@@ -1274,7 +1275,7 @@ public class Leader extends LearnerMaster {
 
                                     i++;
                                 }
-                                TMB_Store.getInstance().quorumSetTrace(procMeta.getQuorumMeta(), trace);
+                                TMB_Store.getInstance().quorumSetTrace(procMeta, trace);
 
                                 return;
                             }
@@ -1438,7 +1439,7 @@ public class Leader extends LearnerMaster {
 
             lastProposed = p.packet.getZxid();
             outstandingProposals.put(lastProposed, p);
-            sendProposalPacket(pp);
+            sendProposalPacket(request, pp);
             // sendPacket(pp);
         }
         ServerMetrics.getMetrics().PROPOSAL_COUNT.add(1);

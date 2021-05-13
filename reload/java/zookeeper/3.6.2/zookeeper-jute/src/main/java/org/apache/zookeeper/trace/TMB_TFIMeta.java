@@ -49,6 +49,21 @@ public class TMB_TFIMeta implements Record {
     this.event_type=event_type;
     this.times=times;
   }
+  // 3MileBeach starts
+  public String getEvent_typeString() {
+    return TMB_Event.getTypeString(this.event_type);
+  }
+  public String toJSON() {
+    StringBuffer buffer = new StringBuffer();
+    toJSON(buffer);
+    return buffer.toString();
+  }
+  public void toJSON(StringBuffer buffer) {
+    buffer.append(String.format("{\"name\":\"%s\",\"event_type\":\"%s\",\"times\":%d,\"already\":%d}",
+            this.getName(), this.getEvent_typeString(), this.getTimes(), this.getAlready()));
+  }
+  public TMB_TFIMeta copy() { return new TMB_TFIMeta(this.name, this.event_type, this.times, this.already); }
+  // 3MileBeach ends
   public String getName() {
     return name;
   }
@@ -73,9 +88,7 @@ public class TMB_TFIMeta implements Record {
   public void setAlready(long m_) {
     already=m_;
   }
-  public org.apache.zookeeper.trace.TMB_Trace getTrace() {
-    return null;
-  }
+  public org.apache.zookeeper.trace.TMB_Trace getTrace() { return null; }
   public void setTrace(org.apache.zookeeper.trace.TMB_Trace m_) {}
   public void serialize(OutputArchive a_, String tag) throws java.io.IOException {
     a_.startRecord(this,tag);

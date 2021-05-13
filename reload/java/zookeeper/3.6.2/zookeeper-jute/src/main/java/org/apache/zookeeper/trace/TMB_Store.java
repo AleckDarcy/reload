@@ -156,6 +156,10 @@ public class TMB_Store {
         }
     }
 
+    public void quorumSetTrace(ProcessorMeta procMeta, TMB_Trace trace_) {
+        quorumSetTrace(procMeta.getQuorumMeta(), trace_);
+    }
+
     public void quorumSetTrace(QuorumMeta quorumMeta, TMB_Trace trace_) {
         if (trace_.getId() == 0) {
             return;
@@ -327,7 +331,7 @@ public class TMB_Store {
         TMB_Helper.printf(procMeta, 3, "callee inbound receives request:%s(%s)\n", requestName, TMB_Helper.getString(request));
 
         long threadId = Thread.currentThread().getId();
-        TMB_Event preEvent = events.get(0);
+        TMB_Event preEvent = events.get(0); // TODO: a lastEvent?
         TMB_Event event = new TMB_Event(type, requestName, preEvent.getUuid(), procMeta);
         events.add(event);
         trace.setEvents(events, 1);
@@ -336,7 +340,7 @@ public class TMB_Store {
         thread_traces.put(threadId, trace);
         lock.writeLock().unlock();
 
-        getInstance().quorumSetTrace(procMeta.getQuorumMeta(), trace);
+        getInstance().quorumSetTrace(procMeta, trace);
     }
 
     public static void calleeOutbound(ProcessorMeta procMeta, Record response) {

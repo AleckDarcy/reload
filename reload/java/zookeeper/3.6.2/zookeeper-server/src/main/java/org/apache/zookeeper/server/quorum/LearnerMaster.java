@@ -21,6 +21,9 @@ package org.apache.zookeeper.server.quorum;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketAddress;
+
+import org.apache.jute.Record;
+import org.apache.zookeeper.proto.NullPointerResponse;
 import org.apache.zookeeper.server.Request;
 import org.apache.zookeeper.server.ZKDatabase;
 import org.apache.zookeeper.server.quorum.auth.QuorumAuthServer;
@@ -186,7 +189,8 @@ public abstract class LearnerMaster {
      * @param zxid packet zxid
      * @param localSocketAddress forwarder's address
      */
-    abstract void processAck(long sid, long zxid, SocketAddress localSocketAddress);
+    abstract void processAck(long sid, long zxid, Record record, SocketAddress localSocketAddress); // 3MileBeach
+    // abstract void processAck(long sid, long zxid, SocketAddress localSocketAddress);
 
     /**
      * mark session as alive

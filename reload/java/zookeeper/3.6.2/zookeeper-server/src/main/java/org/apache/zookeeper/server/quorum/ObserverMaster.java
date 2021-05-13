@@ -39,10 +39,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+
+import org.apache.jute.Record;
 import org.apache.zookeeper.jmx.MBeanRegistry;
+import org.apache.zookeeper.proto.NullPointerResponse;
 import org.apache.zookeeper.server.Request;
 import org.apache.zookeeper.server.ZKDatabase;
 import org.apache.zookeeper.server.quorum.auth.QuorumAuthServer;
+import org.apache.zookeeper.trace.TMB_Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -218,7 +222,8 @@ public class ObserverMaster extends LearnerMaster implements Runnable {
     }
 
     @Override
-    public void processAck(long sid, long zxid, SocketAddress localSocketAddress) {
+    public void processAck(long sid, long zxid, Record record, SocketAddress localSocketAddress) { // 3MileBeach
+    // public void processAck(long sid, long zxid, SocketAddress localSocketAddress) {
         if ((zxid & 0xffffffffL) == 0) {
             /*
              * We no longer process NEWLEADER ack by this method. However,

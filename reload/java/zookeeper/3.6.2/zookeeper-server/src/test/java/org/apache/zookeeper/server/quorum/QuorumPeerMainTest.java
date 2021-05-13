@@ -254,7 +254,7 @@ public class QuorumPeerMainTest extends QuorumPeerTestBase {
 //                add(new TMB_TFIMeta(TMB_Helper.getClassNameFromName(CreateRequest.class.getCanonicalName()), TMB_Event.RECORD_SEND, 1));
 //            }
 //        });
-        TMB_TFI tfi = new TMB_TFI(TMB_TFI.CRASH, TMB_Event.SERVICE_SEND, TMB_Utils.QUORUM_ACK, 0, new ArrayList<TMB_TFIMeta>(){
+        TMB_TFI tfi = new TMB_TFI(TMB_TFI.FAULT_CRASH, TMB_Event.SERVICE_SEND, TMB_Utils.QUORUM_ACK, 0, new ArrayList<TMB_TFIMeta>(){
             {
                 add(new TMB_TFIMeta(TMB_Helper.getClassNameFromName(CreateRequest.class.getCanonicalName()), TMB_Event.SERVICE_PRPS, 2));
             }

@@ -18,10 +18,13 @@
 
 package org.apache.zookeeper.server.quorum;
 
+import org.apache.jute.Record;
+import org.apache.zookeeper.proto.NullPointerResponse;
 import org.apache.zookeeper.server.Request;
 import org.apache.zookeeper.server.RequestProcessor;
 import org.apache.zookeeper.server.ServerMetrics;
 import org.apache.zookeeper.server.TMB_Utils;
+import org.apache.zookeeper.trace.TMB_Event;
 import org.apache.zookeeper.trace.TMB_Store;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +60,15 @@ class AckRequestProcessor implements RequestProcessor {
         TMB_Utils.processorPrintsRequest(procMeta, "starts", self, request); // 3MileBeach
         if (self != null) {
             request.logLatency(ServerMetrics.getMetrics().PROPOSAL_ACK_CREATION_LATENCY);
-            leader.processAck(self.getId(), request.zxid, null);
+
+            Record record = request.getTxn();
+            TMB_Utils.RequestExt requestExt = request.getRequestExt();
+            if (requestExt != null) {
+                TMB_Event event = new TMB_Event(TMB_Event.SERVICE_RECV, TMB_Utils.QUORUM_ACK, requestExt.getUUID() + "-FFFF", procMeta);
+                record.getTrace().addEvent(event);
+            }
+            leader.processAck(self.getId(), request.zxid, record, null);
+            // leader.processAck(self.getId(), request.zxid, null);
         } else {
             LOG.error("Null QuorumPeer");
         }

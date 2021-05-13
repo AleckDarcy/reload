@@ -194,7 +194,7 @@ public class SyncRequestProcessor extends ZooKeeperCriticalThread implements Req
 
                 // track the number of records written to the log
                 if (zks.getZKDatabase().append(si)) {
-                    // TMB_Utils.printRequestForProcessor("SyncRequestProcessor starts", quorumName, nextProcessor, si); // 3MileBeach
+                    TMB_Utils.processorPrintsRequest(procMeta, "starts", nextProcessor, si); // 3MileBeach
 
                     if (shouldSnapshot()) {
                         resetSnapshotStats();

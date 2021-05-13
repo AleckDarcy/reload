@@ -25,9 +25,9 @@ import org.apache.yetus.audience.InterfaceAudience;
 
 @InterfaceAudience.Public
 public class TMB_TFI implements Record {
-  public static final int CRASH = 1;
-  public static final int DELAY = 2;
-  public static final int DROP = 3;
+  public static final int FAULT_CRASH = 1;
+  public static final int FAULT_DELAY = 2;
+  public static final int FAULT_DROP = 3;
 
   private int type;
   private int event_type;
@@ -48,6 +48,48 @@ public class TMB_TFI implements Record {
     this.delay=delay;
     this.after=after;
   }
+  // 3MileBeach starts
+  public String getTypeString() {
+    switch (event_type) {
+      case FAULT_CRASH:
+        return "FAULT_CRASH";
+      case FAULT_DELAY:
+        return "FAULT_DELAY";
+      case FAULT_DROP:
+        return "FAULT_DROP";
+      default:
+        return "FAULT_UNKNOWN";
+    }
+  }
+  public String toJSON() {
+    StringBuffer buffer = new StringBuffer();
+    toJSON(buffer);
+    return buffer.toString();
+  }
+  public void toJSON(StringBuffer buffer) {
+    buffer.append(String.format("{\"type\":\"%s\",\"event_type\":\"%s\",\"name\":\"%s\",\"delay\":%d,\"after\":[",
+            this.getTypeString(), TMB_Event.getTypeString(this.event_type), this.getName(), this.getDelay()));
+    int iAfter = 0;
+    for (TMB_TFIMeta meta: after) {
+      if (iAfter != 0) {
+        buffer.append(",");
+      }
+      meta.toJSON(buffer);
+      iAfter++;
+    }
+    buffer.append("]}");
+  }
+  public TMB_TFI copy() {
+    java.util.List<TMB_TFIMeta> after = null;
+    if (this.after != null) {
+      after = new java.util.ArrayList<>(this.after.size());
+      for (TMB_TFIMeta tfiMeta_: this.after) {
+        after.add(tfiMeta_.copy());
+      }
+    }
+    return new TMB_TFI(this.type, this.event_type, this.name, this.delay, after);
+  }
+  // 3MileBeach ends
   public int getType() {
     return type;
   }

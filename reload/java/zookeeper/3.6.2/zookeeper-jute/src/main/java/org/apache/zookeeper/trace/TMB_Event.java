@@ -25,21 +25,22 @@ import org.apache.yetus.audience.InterfaceAudience;
 
 @InterfaceAudience.Public
 public class TMB_Event implements Record {
+  // special events
+  public static final int EVENT_NULL    = 0x00000000;
+  public static final int EVENT_UNKNOWN = 0x7fffffff;
   // service-level events, captured on service boundaries
-  public static final int SERVICE_PREFIX = 0x000;
-  public static final int SERVICE_SEND   = SERVICE_PREFIX | 0x1;
-  public static final int SERVICE_RECV   = SERVICE_PREFIX | 0x2;
-  public static final int SERVICE_FRWD   = SERVICE_PREFIX | 0x4; // follower forward
-  public static final int SERVICE_PRPS = SERVICE_PREFIX | 0x8;   // leader proposal
+  public static final int SERVICE_OFFSET = 0x00000010;
+  public static final int SERVICE_SEND   = SERVICE_OFFSET + 0x1;
+  public static final int SERVICE_RECV   = SERVICE_OFFSET + 0x2;
+  public static final int SERVICE_FRWD   = SERVICE_OFFSET + 0x3; // follower forward
+  public static final int SERVICE_PRPS   = SERVICE_OFFSET + 0x4; // leader proposal
   // processor-level events, captured on processor boundaries
-  public static final int PROCESSOR_PREFIX = 0x080;
-  public static final int PROCESSOR_RECV = PROCESSOR_PREFIX | 0x1; // processor received a message from other processors
+  public static final int PROCESSOR_OFFSET = 0x00000100;
+  public static final int PROCESSOR_RECV   = PROCESSOR_OFFSET + 0x1; // processor received a message from other processors
   // logical events, captured when logical pre-requisites are satisfied
-  public static final int LOGICAL_PREFIX     = 0x800;
-  public static final int LOGICAL_PRPS_READY = LOGICAL_PREFIX | 0x1; // leader starts to send proposals to followers
-  public static final int LOGICAL_CMMT_READY = LOGICAL_PREFIX | 0x2; // leader has received enough ACK's and starts to send commit to the followers
-  // mask
-  public static final int TYPE_MASK = 0xFFF;
+  public static final int LOGICAL_OFFSET     = 0x00001000;
+  public static final int LOGICAL_PRPS_READY = LOGICAL_OFFSET + 0x1; // leader starts to send proposals to followers
+  public static final int LOGICAL_CMMT_READY = LOGICAL_OFFSET + 0x2; // leader has received enough ACK's and starts to send commit to the followers
 
   private int type;
   private long timestamp;
@@ -76,10 +77,16 @@ public class TMB_Event implements Record {
 
     // TMB_Helper.printf(3, "[%s] a new event: %s", service, this);
   }
-
   // 3MileBeach starts
   public String getTypeString() {
+    return getTypeString(this.type);
+  }
+  public static String getTypeString(int type) {
     switch (type) {
+      case EVENT_NULL:
+        return "EVENT_NULL";
+      case EVENT_UNKNOWN:
+        return "EVENT_UNKNOWN";
       case SERVICE_SEND:
         return "SERVICE_SEND";
       case SERVICE_RECV:
@@ -95,16 +102,19 @@ public class TMB_Event implements Record {
       case LOGICAL_CMMT_READY:
         return "LOGICAL_CMMT_READY";
       default:
-        return "UNKNOWN";
+        return "EVENT_UNDEFINED";
     }
   }
-
   public String toJSON() {
-    return String.format("{\"service\":\"%s\",\"timestamp\":%d,\"type\":\"%s\",\"message_name\":\"%s\",\"uuid\":\"%s\",\"processor\":\"%s\"}",
-              this.getService(), this.getTimestamp(), this.getTypeString(), this.getMessage_name(), this.getUuid(), this.getProcessor());
+    StringBuffer buffer = new StringBuffer();
+    toJSON(buffer);
+    return buffer.toString();
+  }
+  public void toJSON(StringBuffer buffer) {
+    buffer.append(String.format("{\"service\":\"%s\",\"timestamp\":%d,\"type\":\"%s\",\"message_name\":\"%s\",\"uuid\":\"%s\",\"processor\":\"%s\"}",
+            this.getService(), this.getTimestamp(), this.getTypeString(), this.getMessage_name(), this.getUuid(), this.getProcessor()));
   }
   // 3MileBeach ends
-
   public int getType() {
     return type;
   }

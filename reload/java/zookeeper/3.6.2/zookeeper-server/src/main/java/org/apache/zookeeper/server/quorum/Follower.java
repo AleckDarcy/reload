@@ -177,6 +177,8 @@ public class Follower extends Learner {
             Record txn = logEntry.getTxn();
             TMB_Helper.printf(procMeta, "processes proposal, request: %s\n", txn); // 3MileBeach
             TMB_Utils.appendEvent(procMeta, txn, TMB_Event.SERVICE_RECV); // 3MileBeach
+            // TODO: a 1) trace = txn.getTrace().copy(), a appendEvent(procMeta, trace);
+            // TODO: a 2) print
             TxnDigest digest = logEntry.getDigest();
             if (hdr.getZxid() != lastQueued + 1) {
                 LOG.warn(
@@ -213,7 +215,7 @@ public class Follower extends Learner {
             break;
         case Leader.COMMIT:
             // TMB_Helper.printf(procMeta, "processes commit\n"); // 3MileBeach
-            TMB_Utils.quorumCollectTraceFromQuorumPacket(procMeta, new NullPointerResponse(), qp); // 3MileBeach
+            TMB_Utils.quorumCollectTrace(procMeta, new NullPointerResponse(), qp); // 3MileBeach
 
             ServerMetrics.getMetrics().LEARNER_COMMIT_RECEIVED_COUNT.add(1);
             fzk.commit(qp.getZxid());

@@ -17,6 +17,7 @@ public class TMB_Utils {
 
     public static final String QUORUM_ACK = "QuorumAck";
     public static final String LEADER_PRPS_READY = "LeaderProposeReady";
+    public static final String LEADER_ENOUGH_ACK = "LeaderEnoughACK";
     public static final String LEADER_COMMIT_READY = "LeaderCommitReady";
     public static final String LEADER_COMMIT = "LeaderCommit";
     public static final String LEADER_SYNC = "LeaderSync";
@@ -28,6 +29,7 @@ public class TMB_Utils {
         private boolean traced;
         private ProcessorFlag procFlag;
         private Record message;
+        private String uuid;
 
         public RequestExt(Record message, ProcessorFlag procFlag) {
             TMB_Trace trace = message.getTrace();
@@ -59,6 +61,14 @@ public class TMB_Utils {
 
         public Record getMessage() {
             return this.message;
+        }
+
+        public void setUUID(String uuid) {
+            this.uuid = uuid;
+        }
+
+        public String getUUID() {
+            return this.uuid;
         }
     }
 
@@ -100,13 +110,35 @@ public class TMB_Utils {
                 Long.toHexString(request.getHdr() == null ? -2 : request.getHdr().getZxid()),
                 request.getHdr() == null ? "unknown" : "" + request.getHdr().getType(),
                 request.request == null ? "null" : "valued",
-                txn == null ? "null" : String.format("%s(trace:%s)", TMB_Helper.getClassNameFromObject(txn), txn.getTrace() == null ? null : txn.getTrace().getId() != 0));
+                txn == null ? "null" : String.format("%s-%d(trace:%s)", TMB_Helper.getClassNameFromObject(txn), txn.hashCode(), txn.getTrace() == null ? null : txn.getTrace().getId() != 0));
 
         if (info != null && info.length() != 0) {
             TMB_Helper.printf(procMeta, 3, "%s, next:%s, request-%d:%s\n", info, nextName, request.hashCode(), requestStr);
         } else {
             TMB_Helper.printf(procMeta, 3, "next:%s, request-%d:%s\n", nextName, request.hashCode(), requestStr);
         }
+    }
+
+    public static NullPointerResponse processAckHelperBegins(TMB_Store.ProcessorMeta procMeta, byte[] data) {
+        NullPointerResponse record = new NullPointerResponse();
+        quorumCollectTrace(procMeta, record, data);
+
+        return record;
+    }
+
+    // leader processes request as an ACK
+    public static void processAckHelperBegins(TMB_Store.ProcessorMeta procMeta, Record record) {
+        if (record == null) {
+            return;
+        }
+
+        TMB_Trace trace = record.getTrace();
+        if (trace == null || trace.getId() == 0) {
+            return;
+        }
+
+        TMB_Event event = new TMB_Event();
+        quorumCollectTrace(procMeta, record, TMB_Event.SERVICE_RECV);
     }
 
     public static NullPointerResponse commitHelperBegins(TMB_Store.ProcessorMeta procMeta, Request request, String messageName) {
@@ -135,7 +167,7 @@ public class TMB_Utils {
         if (record != null) {
             TMB_Trace trace = record.getTrace();
             if (trace != null && trace.getId() != 0) {
-                TMB_Store.getInstance().quorumSetTrace(procMeta.getQuorumMeta(), trace);
+                TMB_Store.getInstance().quorumSetTrace(procMeta, trace);
             }
         }
     }
@@ -167,6 +199,7 @@ public class TMB_Utils {
         return data;
     }
 
+    // TODO: a delete
     public static Record pRequestHelper(TMB_Store.ProcessorMeta procMeta, Record record, Record txn) {
         TMB_Trace trace = record.getTrace();
         if (trace != null && trace.getId() != 0) {
@@ -183,9 +216,26 @@ public class TMB_Utils {
         return txn;
     }
 
+    public static void pRequestHelper(TMB_Store.ProcessorMeta procMeta, Request request, Record record, Record txn) {
+        TMB_Trace trace = record.getTrace();
+        if (trace != null && trace.getId() != 0) {
+            List<TMB_Event> events = trace.getEvents();
+            if (events.size() != 0) {
+                TMB_Event lastEvent = events.get(events.size() - 1);
+                TMB_Event event = new TMB_Event(TMB_Event.SERVICE_RECV, lastEvent.getMessage_name(), lastEvent.getUuid(), procMeta);
+                events.add(event);
+                trace.setEvents(events);
+            }
+            RequestExt requestExt = new RequestExt(record, ProcessorFlag.RECV);
+            request.setRequestExt(requestExt);
+        }
+        txn.setTrace(trace);
+        request.setTxn(txn);
+    }
+
     public static Record appendEvent(TMB_Store.ProcessorMeta procMeta, Record record, int type, String messageName) {
         TMB_Trace trace = record.getTrace();
-        if (trace == null) {
+        if (trace == null && trace.getId() == 0) {
             return record;
         }
 
@@ -245,16 +295,28 @@ public class TMB_Utils {
         data.rewind();
     }
 
-    public static void quorumCollectTraceFromQuorumPacket(TMB_Store.ProcessorMeta procMeta, Record record, QuorumPacket qp) {
-        byte[] data = qp.getData();
+    // default event: SERVICE_RECV
+    public static void quorumCollectTrace(TMB_Store.ProcessorMeta procMeta, Record record) {
+        TMB_Store.getInstance().quorumSetTrace(procMeta, record.getTrace());
+    }
+
+    public static void quorumCollectTrace(TMB_Store.ProcessorMeta procMeta, Record record, int eventType) {
+        record = TMB_Utils.appendEvent(procMeta, record, eventType);
+        quorumCollectTrace(procMeta, record);
+    }
+
+    public static void quorumCollectTrace(TMB_Store.ProcessorMeta procMeta, Record record, byte[] data) {
         if (data != null) {
             try {
                 TMB_Helper.deserialize(new ByteArrayInputStream(data), record);
-                record = TMB_Utils.appendEvent(procMeta, record, TMB_Event.SERVICE_RECV);
-                TMB_Store.getInstance().quorumSetTrace(procMeta.getQuorumMeta(), record.getTrace());
+                quorumCollectTrace(procMeta, record, TMB_Event.SERVICE_RECV);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    public static void quorumCollectTrace(TMB_Store.ProcessorMeta procMeta, Record record, QuorumPacket qp) {
+        quorumCollectTrace(procMeta, record, qp.getData());
     }
 }

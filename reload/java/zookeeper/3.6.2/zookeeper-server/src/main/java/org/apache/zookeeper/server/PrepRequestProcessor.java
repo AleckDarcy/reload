@@ -709,13 +709,13 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
         }
         int newCversion = parentRecord.stat.getCversion() + 1;
         if (type == OpCode.createContainer) {
-            request.setTxn(TMB_Utils.pRequestHelper(procMeta, record, new CreateContainerTxn(path, data, listACL, newCversion))); // 3MileBeach
+            TMB_Utils.pRequestHelper(procMeta, request, record, new CreateContainerTxn(path, data, listACL, newCversion)); // 3MileBeach
             // request.setTxn(new CreateContainerTxn(path, data, listACL, newCversion));
         } else if (type == OpCode.createTTL) {
-            request.setTxn(TMB_Utils.pRequestHelper(procMeta, record, new CreateTTLTxn(path, data, listACL, newCversion, ttl))); // 3MileBeach
+            TMB_Utils.pRequestHelper(procMeta, request, record, new CreateTTLTxn(path, data, listACL, newCversion, ttl)); // 3MileBeach
             // request.setTxn(new CreateTTLTxn(path, data, listACL, newCversion, ttl));
         } else {
-            request.setTxn(TMB_Utils.pRequestHelper(procMeta, record, new CreateTxn(path, data, listACL, createMode.isEphemeral(), newCversion))); // 3MileBeach
+            TMB_Utils.pRequestHelper(procMeta, request, record, new CreateTxn(path, data, listACL, createMode.isEphemeral(), newCversion)); // 3MileBeach
             // request.setTxn(new CreateTxn(path, data, listACL, createMode.isEphemeral(), newCversion));
         }
 

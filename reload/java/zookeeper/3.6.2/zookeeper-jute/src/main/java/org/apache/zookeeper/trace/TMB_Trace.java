@@ -29,7 +29,7 @@ import java.util.List;
 @InterfaceAudience.Public
 public class TMB_Trace implements Record {
   private long id;
-  private long req_event;
+  private long req_event; // TODO: a delete
   private java.util.List<TMB_Event> events;
   private java.util.List<TMB_TFI> tfis;
   public TMB_Trace() {
@@ -46,47 +46,51 @@ public class TMB_Trace implements Record {
     this.events=events;
     this.tfis=tfis;
   }
-
-  // 3MileBeach
   public String toJSON() {
-    StringBuffer buffer = new StringBuffer(String.format("{\"id\":%d,\"req_event\":%d,\"events\":[", id, req_event));
-    int i = 0;
-    for (TMB_Event event: events) {
-      if (i != 0) {
-        buffer.append(String.format(",%s", event.toJSON()));
-      } else {
-        buffer.append(String.format("%s", event.toJSON()));
-      }
-
-      i++;
-    }
-
-    buffer.append("],\"tfis\":[]}");
-
+    StringBuffer buffer = new StringBuffer();
+    toJSON(buffer);
     return buffer.toString();
   }
-
-  // 3MileBeach
+  public void toJSON(StringBuffer buffer) {
+    buffer.append(String.format("{\"id\":%d,\"req_event\":%d,\"events\":[", id, req_event));
+    int iEvents = 0;
+    for (TMB_Event event: events) {
+      if (iEvents != 0) {
+        buffer.append(",");
+      }
+      event.toJSON(buffer);
+      iEvents++;
+    }
+    buffer.append("],\"tfis\":[");
+    int iTFIs = 0;
+    for (TMB_TFI tfi: tfis) {
+      if (iTFIs != 0) {
+        buffer.append(",");
+      }
+      tfi.toJSON(buffer);
+      iTFIs++;
+    }
+    buffer.append("]}");
+  }
   public TMB_Trace copy() {
-    int eventSize = events.size();
-    if (eventSize != 0) {
-      List<TMB_Event> events_ = new ArrayList<>(eventSize);
-      events_.addAll(events);
+    List<TMB_Event> events_ = new ArrayList<>(events.size());
+    events_.addAll(events);
 
-      return new TMB_Trace(id, req_event, events_, tfis);
+    int tfiSize = tfis.size();
+    List<TMB_TFI> tfis_ = new ArrayList<>(tfiSize);
+    for (TMB_TFI tfi: tfis) {
+      tfis_.add(tfi.copy());
     }
 
-    return new TMB_Trace(id, req_event, new ArrayList<>(), tfis);
+    return new TMB_Trace(id, req_event, events_, tfis_);
   }
-
   public void addEvent(TMB_Event e) {
     if (events == null) {
       events = new ArrayList<>();
     }
-
     events.add(e);
   }
-
+  // 3MileBeach ends
   public long getReqEvent() {
     return req_event;
   }

@@ -34,6 +34,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 import javax.security.sasl.SaslException;
 import org.apache.jute.BinaryInputArchive;
 import org.apache.jute.BinaryOutputArchive;
+import org.apache.jute.Record;
 import org.apache.zookeeper.ZooDefs.OpCode;
 import org.apache.zookeeper.proto.NullPointerResponse;
 import org.apache.zookeeper.server.*;
@@ -42,8 +43,10 @@ import org.apache.zookeeper.server.quorum.QuorumPeer.LearnerType;
 import org.apache.zookeeper.server.quorum.auth.QuorumAuthServer;
 import org.apache.zookeeper.server.util.MessageTracker;
 import org.apache.zookeeper.server.util.ZxidUtils;
+import org.apache.zookeeper.trace.TMB_Event;
 import org.apache.zookeeper.trace.TMB_Helper;
 import org.apache.zookeeper.trace.TMB_Store;
+import org.apache.zookeeper.trace.TMB_Trace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -697,12 +700,18 @@ public class LearnerHandler extends ZooKeeperThread {
 
                 switch (qp.getType()) {
                 case Leader.ACK:
+                    TMB_Helper.printf(procMeta, "receives ACK\n"); // 3MileBeach
                     if (this.learnerType == LearnerType.OBSERVER) {
                         LOG.debug("Received ACK from Observer {}", this.sid);
                     }
-                    TMB_Utils.quorumCollectTraceFromQuorumPacket(procMeta, new NullPointerResponse(), qp); // 3MileBeach
+                    NullPointerResponse record = TMB_Utils.processAckHelperBegins(procMeta, qp.getData()); // 3MileBeach
                     syncLimitCheck.updateAck(qp.getZxid());
-                    learnerMaster.processAck(this.sid, qp.getZxid(), sock.getLocalSocketAddress());
+                    learnerMaster.processAck(this.sid, qp.getZxid(), record, sock.getLocalSocketAddress());
+                    // 3MileBeach starts
+                    // TODO: tried to add logical events when receiving additional ACK's
+                    // TODO: however, the leader has already sent the commit message in learnerMaster.processAck() :(
+                    // 3MileBeach ends
+                    // learnerMaster.processAck(this.sid, qp.getZxid(), sock.getLocalSocketAddress());
                     break;
                 case Leader.PING:
                     // Process the touches
@@ -719,7 +728,7 @@ public class LearnerHandler extends ZooKeeperThread {
                     learnerMaster.revalidateSession(qp, this);
                     break;
                 case Leader.REQUEST:
-                    TMB_Helper.printf(procMeta, "receives request\n");
+                    TMB_Helper.printf(procMeta, "receives request\n"); // 3MileBeach
                     bb = ByteBuffer.wrap(qp.getData());
                     sessionId = bb.getLong();
                     cxid = bb.getInt();
