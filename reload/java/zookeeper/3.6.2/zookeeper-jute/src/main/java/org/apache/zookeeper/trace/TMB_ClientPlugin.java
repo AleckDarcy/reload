@@ -8,6 +8,8 @@ import java.util.List;
 public class TMB_ClientPlugin {
     private final long threadID = Thread.currentThread().getId();
 
+    private final long quorumID = -Thread.currentThread().getId();
+
     private TMB_Trace trace;
     /**
      *

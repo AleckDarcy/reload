@@ -79,6 +79,8 @@ public class TMB_Store {
         public int recorder;
 
         private TMB_Trace trace;
+        private ReentrantReadWriteLock lock; // TODO: a
+
 
         QuorumTrace(long quorumId, TMB_Trace trace) { // make sure trace has events
             this.quorumIdStr = String.format("quorum-%d", quorumId);
@@ -93,12 +95,12 @@ public class TMB_Store {
     }
 
     public class QuorumTraces {
-        private long quorumId;
+        private QuorumMeta quorumMeta;
         private Map<Long, QuorumTrace> traces; // Map<traceId, Trace>
         private ReentrantReadWriteLock lock;
 
-        QuorumTraces(long quorumId) {
-            this.quorumId = quorumId;
+        QuorumTraces(QuorumMeta quorumMeta) {
+            this.quorumMeta = quorumMeta;
             this.traces = new HashMap<>();
             this.lock = new ReentrantReadWriteLock();
         }
@@ -106,8 +108,7 @@ public class TMB_Store {
         public void printAllJSON() {
             lock.readLock().lock();
             for (Long key: traces.keySet()) {
-                // TODO: a quorumId -> quorumName
-                TMB_Helper.printf("[TMB_Store] [quorum-%d] %d: %d, %s\n", quorumId, key, traces.get(key).recorder, traces.get(key).trace.toJSON());
+                TMB_Helper.printf("[TMB_Store] [%s] %d: %d, %s\n", quorumMeta.getName(), key, traces.get(key).recorder, traces.get(key).trace.toJSON());
             }
             lock.readLock().unlock();
         }
@@ -118,9 +119,15 @@ public class TMB_Store {
             if (quorumTrace != null) {
                 mergeEvents(quorumTrace.trace, trace_.getEvents());
             } else {
-                quorumTrace = new QuorumTrace(quorumId, trace_.copy());
+                quorumTrace = new QuorumTrace(quorumMeta.getId(), trace_.copy());
             }
             traces.put(trace_.getId(), quorumTrace);
+            lock.writeLock().unlock();
+        }
+
+        public void setTrace(TMB_Trace trace_, int newEvents) {
+            lock.writeLock().lock();
+
             lock.writeLock().unlock();
         }
 
@@ -178,6 +185,10 @@ public class TMB_Store {
         return quorumTrace.trace;
     }
 
+    public QuorumTraces getQuorumTraces(ProcessorMeta procMeta) {
+        return getQuorumTraces(procMeta.getQuorumMeta());
+    }
+
     public QuorumTraces getQuorumTraces(QuorumMeta quorumMeta) {
         long quorumId = quorumMeta.getId();
 
@@ -189,8 +200,8 @@ public class TMB_Store {
             quorumLock.writeLock().lock();
             quorumTraces = this.quorumTraces.get(quorumId);
             if (quorumTraces == null) {
-                quorumTraces = new QuorumTraces(quorumId);
-                this.quorumTraces.put(quorumId, quorumTraces);
+                quorumTraces = new QuorumTraces(quorumMeta);
+                this.quorumTraces.put(quorumMeta.getId(), quorumTraces);
             }
             quorumLock.writeLock().unlock();
         }
@@ -271,8 +282,8 @@ public class TMB_Store {
         lock.writeLock().unlock();
     }
 
-    private static Map<Long, TMB_Trace> thread_traces = new HashMap<>();
-    private static Map<Long, TMB_Trace> server_traces = new HashMap<>();
+    private static Map<Long, TMB_Trace> thread_traces = new HashMap<>(); // TODO: a delete
+    private static Map<Long, TMB_Trace> server_traces = new HashMap<>(); // TODO: a delete
     private static ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
     public static void clearServerTraces() {

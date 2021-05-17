@@ -85,10 +85,9 @@ public class TMB_Trace implements Record {
     return new TMB_Trace(id, req_event, events_, tfis_);
   }
   public void addEvent(TMB_Event e) {
-    if (events == null) {
-      events = new ArrayList<>();
+    if (events != null) {
+      events.add(e);
     }
-    events.add(e);
   }
   // 3MileBeach ends
   public long getReqEvent() {
@@ -108,10 +107,10 @@ public class TMB_Trace implements Record {
     events=m_;
   }
   // 3MileBeach starts
-  public void setEvents(java.util.List<TMB_Event> m_, int new_events) {
+  public void setEvents(java.util.List<TMB_Event> m_, int newEvents) {
     events=m_;
 
-    for (int i = m_.size() - new_events; i < m_.size(); i ++) {
+    for (int i = m_.size() - newEvents; i < m_.size(); i ++) {
       TMB_Store.updateTFIs(tfis, m_.get(i));
     }
   }

@@ -186,7 +186,7 @@ public class TMB_Utils {
                     TMB_Helper.checkTFIs(trace, messageName);
 
                     record.setTrace(trace);
-                    record = TMB_Utils.appendEvent(procMeta, record, TMB_Event.SERVICE_SEND, messageName);
+                    TMB_Utils.appendEvent(procMeta, record, TMB_Event.SERVICE_SEND, messageName);
 
                     try {
                         data = TMB_Helper.serialize(record);
@@ -197,23 +197,6 @@ public class TMB_Utils {
         }
 
         return data;
-    }
-
-    // TODO: a delete
-    public static Record pRequestHelper(TMB_Store.ProcessorMeta procMeta, Record record, Record txn) {
-        TMB_Trace trace = record.getTrace();
-        if (trace != null && trace.getId() != 0) {
-            List<TMB_Event> events = trace.getEvents();
-            if (events.size() != 0) {
-                TMB_Event lastEvent = events.get(events.size() - 1);
-                TMB_Event event = new TMB_Event(TMB_Event.SERVICE_RECV, lastEvent.getMessage_name(), lastEvent.getUuid(), procMeta);
-                events.add(event);
-                trace.setEvents(events);
-            }
-        }
-        txn.setTrace(record.getTrace());
-
-        return txn;
     }
 
     public static void pRequestHelper(TMB_Store.ProcessorMeta procMeta, Request request, Record record, Record txn) {
@@ -233,7 +216,15 @@ public class TMB_Utils {
         request.setTxn(txn);
     }
 
-    public static Record appendEvent(TMB_Store.ProcessorMeta procMeta, Record record, int type, String messageName) {
+    /**
+     * Appends new event with eventType and messageName.
+     * @param procMeta
+     * @param record
+     * @param eventType
+     * @param messageName
+     * @return
+     */
+    public static Record appendEvent(TMB_Store.ProcessorMeta procMeta, Record record, int eventType, String messageName) {
         TMB_Trace trace = record.getTrace();
         if (trace == null && trace.getId() == 0) {
             return record;
@@ -248,7 +239,7 @@ public class TMB_Utils {
             if (messageName.equals("")) {
                 messageName = lastEvent.getMessage_name();
             }
-            events.add(new TMB_Event(type, messageName, uuid, procMeta));
+            events.add(new TMB_Event(eventType, messageName, uuid, procMeta));
 
             trace.setEvents(events, 1);
             record.setTrace(trace);
@@ -257,8 +248,16 @@ public class TMB_Utils {
         return record;
     }
 
-    public static Record appendEvent(TMB_Store.ProcessorMeta procMeta, Record record, int type) {
-        return appendEvent(procMeta, record, type, "");
+    /**
+     * Appends new event with eventType.
+     * Other information (messageName, uuid) are derived from last event of the current trace from record.
+     * @param procMeta
+     * @param record
+     * @param eventType
+     * @return
+     */
+    public static Record appendEvent(TMB_Store.ProcessorMeta procMeta, Record record, int eventType) {
+        return appendEvent(procMeta, record, eventType, "");
     }
 
     // TODO: a check request.getTxn() is always null
@@ -281,7 +280,7 @@ public class TMB_Utils {
 
                 events.add(new TMB_Event(TMB_Event.SERVICE_RECV, lastEvent.getMessage_name(), lastEvent.getUuid(), procMeta));
                 events.add(new TMB_Event(TMB_Event.SERVICE_FRWD, lastEvent.getMessage_name(), TMB_Helper.UUID(), procMeta));
-
+                // TODO: a store
                 ByteArrayOutputStream baos = new ByteArrayOutputStream(data.capacity() + EVENT_SERIALIZE_SIZE * 2);
                 BinaryOutputArchive boa = BinaryOutputArchive.getArchive(baos);
                 record.serialize(boa, "request");
@@ -295,16 +294,34 @@ public class TMB_Utils {
         data.rewind();
     }
 
-    // default event: SERVICE_RECV
+    /**
+     * Stores a trace associated with procMeta.
+     * @param procMeta
+     * @param record
+     */
     public static void quorumCollectTrace(TMB_Store.ProcessorMeta procMeta, Record record) {
         TMB_Store.getInstance().quorumSetTrace(procMeta, record.getTrace());
     }
 
+    /**
+     * Called when quorum needs to capture events other than just TMB_EVENT.SERVICE_RECV.
+     * @param procMeta
+     * @param record
+     * @param eventType
+     */
     public static void quorumCollectTrace(TMB_Store.ProcessorMeta procMeta, Record record, int eventType) {
         record = TMB_Utils.appendEvent(procMeta, record, eventType);
         quorumCollectTrace(procMeta, record);
     }
 
+    // TODO: a all event are newly witnessed events
+    /**
+     * Called when quorum processes the incoming message.
+     * Uses TMB_Event.SERVICE_RECV as default value of eventType.
+     * @param procMeta
+     * @param record    destination of deserialization
+     * @param data      source of deserialization
+     */
     public static void quorumCollectTrace(TMB_Store.ProcessorMeta procMeta, Record record, byte[] data) {
         if (data != null) {
             try {
@@ -316,6 +333,12 @@ public class TMB_Utils {
         }
     }
 
+    /**
+     * Called when quorum processes the incoming message.
+     * @param procMeta
+     * @param record    destination of deserialization
+     * @param qp        source of deserialization
+     */
     public static void quorumCollectTrace(TMB_Store.ProcessorMeta procMeta, Record record, QuorumPacket qp) {
         quorumCollectTrace(procMeta, record, qp.getData());
     }
