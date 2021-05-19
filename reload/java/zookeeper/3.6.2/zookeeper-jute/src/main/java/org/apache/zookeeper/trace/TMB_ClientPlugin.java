@@ -6,42 +6,39 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TMB_ClientPlugin {
-    private final long threadID = Thread.currentThread().getId(); // TODO: a delete
-
     private TMB_Store.ProcessorMeta procMeta;
     private TMB_Trace trace;
 
-    /**
-     *
-     */
+    public TMB_ClientPlugin(int cnxnId) {
+        int quorumId = - (Math.abs(cnxnId) + 1); // quorumId < 0
+        this.procMeta = new TMB_Store.ProcessorMeta(new TMB_Store.QuorumMeta(quorumId, String.format("client%s", quorumId)), this);
+    }
+
     public void TMBInitialize(TMB_Trace trace_) {
-        trace = trace_;
-        long quorumID = -Thread.currentThread().getId();
-        procMeta = new TMB_Store.ProcessorMeta(new TMB_Store.QuorumMeta(quorumID, String.format("client%s", quorumID)), this);
+        this.trace = trace_;
     }
 
     /**
-     * Get and delete traces
+     * Gets and deletes traces
      */
     public TMB_Trace TMBFinalize() {
-        TMB_Trace trace = TMB_Store.getByThreadId(threadID);
-
+        TMB_Trace trace = TMB_Store.getInstance().getTrace(this.procMeta, this.trace.getId());
         if (trace != null) {
-            TMB_Helper.println("Trace for thread " + threadID + ": " + trace.toJSON());
-            TMB_Store.removeByThreadId(threadID);
+            TMB_Helper.printf(this.procMeta, "trace: %s\n", trace.toJSON());
+            TMB_Store.getInstance().removeTrace(this.procMeta, trace.getId());
         }
 
         return trace;
     }
 
     public TMB_Trace getTrace() {
-        return trace;
+        return this.trace;
     }
 
     /**
      * submitRequest -> generate request -> callerOutbound -> network -> callerInbound -> process response
      */
-    public static void callerOutbound(String service, Record request) {
+    public void callerOutbound(String service, Record request) {
         TMB_Trace trace = request.getTrace();
         // stub, should be called only once per client-level request
         // TODO: let client generate trace_id
@@ -53,7 +50,6 @@ public class TMB_ClientPlugin {
         }
 
         if (trace.getId() != 0) {
-            long threadId = Thread.currentThread().getId();
             String requestName = TMB_Helper.getClassNameFromObject(request);
             String uuid = TMB_Helper.UUID();
             TMB_Event event = new TMB_Event(TMB_Event.SERVICE_SEND, requestName, uuid, service, TMB_ClientPlugin.class);
@@ -62,13 +58,13 @@ public class TMB_ClientPlugin {
             events.add(event);
             trace.setEvents(events, 1);
 
-            TMB_Store.getInstance().callerAppendEventsByThreadIdUnsafe(threadId, trace);
+            TMB_Store.getInstance().setTrace(this.procMeta, trace);
         }
 
         TMB_Helper.println("caller outbound ejects request: " + TMB_Helper.getClassNameFromObject(request) + "(" + TMB_Helper.getString(request) + ")");
     }
 
-    public static void callerInbound(String service, Record response) {
+    public void callerInbound(String service, Record response) {
         TMB_Trace trace = response.getTrace();
         if (trace.getId() == 0) {
             return;
@@ -82,12 +78,11 @@ public class TMB_ClientPlugin {
             return;
         }
 
-        long threadId = Thread.currentThread().getId();
         String uuid = events.get(0).getUuid();
         TMB_Event event = new TMB_Event(TMB_Event.SERVICE_RECV, responseName, uuid, service, TMB_ClientPlugin.class);
         trace.addEvent(event);
 
-        TMB_Store.getInstance().callerAppendEventsByThreadIdUnsafe(threadId, trace);
+        TMB_Store.getInstance().setTrace(procMeta, trace);
 
         TMB_Helper.println("caller inbound receives response: " + responseName + "(" + TMB_Helper.getString(response) + ")");
     }

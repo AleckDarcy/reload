@@ -142,8 +142,6 @@ public class QuorumPeerMainTest extends QuorumPeerTestBase {
         // 3MileBeach
         zk2.TMBClientFinalize();
 
-        TMB_Helper.println("all traces:" + TMB_Store.getAllThreads().toString());
-
         q1.shutdown();
         q2.shutdown();
 
@@ -192,7 +190,6 @@ public class QuorumPeerMainTest extends QuorumPeerTestBase {
         }
 
         waitForAll(zk, States.CONNECTED);
-        TMB_Store.clearServerTraces();
 
         // we need to shutdown and start back up to make sure that the create session isn't the first transaction since
         // that is rather innocuous.

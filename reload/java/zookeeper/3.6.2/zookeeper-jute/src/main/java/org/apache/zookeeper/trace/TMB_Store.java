@@ -1,32 +1,22 @@
 package org.apache.zookeeper.trace;
 
-import org.apache.jute.Record;
-
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class TMB_Store {
     private static TMB_Store instance = new TMB_Store();
 
-    public static int REQUESTER = 1;
-    public static int RESPONDER = 2;
+    public static final int REQUESTER = 1;
+    public static final int RESPONDER = 2;
 
     private TMB_Store() {
-        this.clientPluginTraces = new HashMap<>();
-        this.quorumTraces = new HashMap<>();
-        this.quorumLock = new ReentrantReadWriteLock();
+        this.quorums = new HashMap<>();
+        this.lock = new ReentrantReadWriteLock();
     }
 
     public static TMB_Store getInstance() {
         return instance;
-    }
-
-    class ClientPluginTrace {
-        private TMB_Trace trace;
-
-        ClientPluginTrace(TMB_Trace trace) {
-            this.trace = trace;
-        }
     }
 
     public static class ProcessorMeta {
@@ -39,15 +29,15 @@ public class TMB_Store {
         }
 
         public QuorumMeta getQuorumMeta() {
-            return quorumMeta;
+            return this.quorumMeta;
         }
 
         public String getQuorumName() {
-            return quorumMeta.name;
+            return this.quorumMeta.name;
         }
 
         public String getName() {
-            return name;
+            return this.name;
         }
     }
 
@@ -66,31 +56,37 @@ public class TMB_Store {
         }
 
         public long getId() {
-            return id;
+            return this.id;
         }
 
         public String getName() {
-            return name;
+            return this.name;
         }
     }
 
     class QuorumTrace {
-        private String quorumIdStr;
+        private QuorumMeta quorumMeta;
         public int recorder;
-
         private TMB_Trace trace;
-        private ReentrantReadWriteLock lock; // TODO: a
 
-
-        QuorumTrace(long quorumId, TMB_Trace trace) { // make sure trace has events
-            this.quorumIdStr = String.format("quorum-%d", quorumId);
+        QuorumTrace(QuorumMeta quorumMeta, TMB_Trace trace) { // make sure trace has events
+            this.quorumMeta = quorumMeta;
             this.trace = trace;
 
-            if (trace.getEvents().get(0).getService().equals(this.quorumIdStr)) {
+            // TODO: a 1) get uuid of the last event; 2) find the first event of this uuid; 3) check this event
+            if (trace.getEvents().get(0).getService().equals(quorumMeta.name)) {
                 this.recorder = REQUESTER;
             } else {
                 this.recorder = RESPONDER;
             }
+        }
+
+        public TMB_Trace getTraceCopyUnsafe() {
+            if (this.trace == null) {
+                return null;
+            }
+
+            return this.trace.copy();
         }
     }
 
@@ -106,56 +102,64 @@ public class TMB_Store {
         }
 
         public void printAllJSON() {
-            lock.readLock().lock();
-            for (Long key: traces.keySet()) {
-                TMB_Helper.printf("[TMB_Store] [%s] %d: %d, %s\n", quorumMeta.getName(), key, traces.get(key).recorder, traces.get(key).trace.toJSON());
+            this.lock.readLock().lock();
+            for (Long key: this.traces.keySet()) {
+                TMB_Helper.printf("[TMB_Store] [%s] %d: %d, %s\n", this.quorumMeta.getName(), key, this.traces.get(key).recorder, this.traces.get(key).trace.toJSON());
             }
-            lock.readLock().unlock();
+            this.lock.readLock().unlock();
         }
 
         public void setTrace(TMB_Trace trace_) {
-            lock.writeLock().lock();
-            QuorumTrace quorumTrace = traces.get(trace_.getId());
+            this.lock.writeLock().lock();
+            QuorumTrace quorumTrace = this.traces.get(trace_.getId());
             if (quorumTrace != null) {
                 quorumTrace.trace.mergeEventsUnsafe(trace_.getEvents());
             } else {
-                quorumTrace = new QuorumTrace(quorumMeta.getId(), trace_.copy());
+                quorumTrace = new QuorumTrace(this.quorumMeta, trace_.copy());
             }
-            traces.put(trace_.getId(), quorumTrace);
-            lock.writeLock().unlock();
+            this.traces.put(trace_.getId(), quorumTrace);
+            this.lock.writeLock().unlock();
         }
 
+        // last newEvents events are new events
         public void setTrace(TMB_Trace trace_, int newEvents) {
-            lock.writeLock().lock();
+            this.lock.writeLock().lock();
 
-            lock.writeLock().unlock();
+            this.lock.writeLock().unlock();
         }
 
         public QuorumTrace getQuorumTrace(long traceId) {
-            lock.readLock().lock();
-            QuorumTrace quorumTrace = traces.get(traceId);
-            lock.readLock().unlock();
+            this.lock.readLock().lock();
+            QuorumTrace quorumTrace = this.traces.get(traceId);
+            this.lock.readLock().unlock();
 
             return quorumTrace;
+        }
+
+        public QuorumTrace getQuorumTraceUnsafe(long traceId) {
+            return this.traces.get(traceId);
         }
 
         public QuorumTrace removeQuorumTrace(long traceId) {
-            lock.readLock().lock();
-            QuorumTrace quorumTrace = traces.remove(traceId);
-            lock.readLock().unlock();
+            this.lock.readLock().lock();
+            QuorumTrace quorumTrace = this.traces.remove(traceId);
+            this.lock.readLock().unlock();
 
             return quorumTrace;
         }
+
+        public QuorumTrace removeQuorumTraceUnsafe(long traceId) {
+            return this.traces.remove(traceId);
+        }
     }
 
-    private Map<Long, ClientPluginTrace> clientPluginTraces; // Map<traceId, TMB_Trace>
-    private Map<Long, QuorumTraces> quorumTraces; // Map<quorumId, QuorumTrace>
-    private ReentrantReadWriteLock quorumLock;
+    private Map<Long, QuorumTraces> quorums; // Map<quorumId, QuorumTrace>
+    private ReentrantReadWriteLock lock;
 
-    public void quorumQuit(QuorumMeta quorumMeta, TMB_Trace trace_) {
-        quorumLock.readLock().lock();
+    public void quit(QuorumMeta quorumMeta, TMB_Trace trace_) {
+        this.lock.readLock().lock();
         QuorumTraces quorumTraces = getQuorumTraces(quorumMeta);
-        quorumLock.readLock().unlock();
+        this.lock.readLock().unlock();
 
         QuorumTrace quorumTrace = quorumTraces.getQuorumTrace(trace_.getId());
         if (quorumTrace != null && quorumTrace.recorder == RESPONDER) {
@@ -163,134 +167,66 @@ public class TMB_Store {
         }
     }
 
-    public void quorumSetTrace(ProcessorMeta procMeta, TMB_Trace trace_) {
-        quorumSetTrace(procMeta.getQuorumMeta(), trace_);
+    public void setTrace(ProcessorMeta procMeta, TMB_Trace trace_) {
+        setTrace(procMeta.getQuorumMeta(), trace_);
     }
 
-    public void quorumSetTrace(QuorumMeta quorumMeta, TMB_Trace trace_) {
-        if (trace_.getId() == 0) {
+    public void setTrace(QuorumMeta quorumMeta, TMB_Trace trace_) {
+        if (trace_ == null || trace_.getId() == 0) {
             return;
         }
         QuorumTraces quorumTraces = getQuorumTraces(quorumMeta);
         quorumTraces.setTrace(trace_);
     }
 
-    public TMB_Trace quorumGetTrace(QuorumMeta quorumMeta, long traceId) {
+    public TMB_Trace getTrace(ProcessorMeta procMeta, long traceId) {
+        return getTrace(procMeta.getQuorumMeta(), traceId);
+    }
+
+    public TMB_Trace getTrace(QuorumMeta quorumMeta, long traceId) {
         QuorumTraces quorumTraces = getQuorumTraces(quorumMeta);
 
         quorumTraces.lock.readLock().lock();
-        QuorumTrace quorumTrace = quorumTraces.getQuorumTrace(traceId);
-        TMB_Trace trace = quorumTrace.trace;
-        if (trace != null) {
-            trace = trace.copy();
-        }
+        QuorumTrace quorumTrace = quorumTraces.getQuorumTraceUnsafe(traceId);
+        TMB_Trace trace = quorumTrace.getTraceCopyUnsafe();
         quorumTraces.lock.readLock().unlock();
 
         return trace;
     }
 
-    public QuorumTraces getQuorumTraces(ProcessorMeta procMeta) {
-        return getQuorumTraces(procMeta.getQuorumMeta());
+    public void removeTrace(ProcessorMeta procMeta, long traceId) {
+        removeTrace(procMeta.getQuorumMeta(), traceId);
     }
 
-    public QuorumTraces getQuorumTraces(QuorumMeta quorumMeta) {
+    public void removeTrace(QuorumMeta quorumMeta, long traceId) {
+        QuorumTraces quorumTraces = getQuorumTraces(quorumMeta);
+
+        quorumTraces.lock.writeLock().lock();
+        quorumTraces.removeQuorumTraceUnsafe(traceId);
+        quorumTraces.lock.writeLock().unlock();
+    }
+
+    private QuorumTraces getQuorumTraces(QuorumMeta quorumMeta) {
         long quorumId = quorumMeta.getId();
 
-        quorumLock.readLock().lock();
-        QuorumTraces quorumTraces = this.quorumTraces.get(quorumId);
-        quorumLock.readLock().unlock();
+        this.lock.readLock().lock();
+        QuorumTraces quorum = this.quorums.get(quorumId);
+        this.lock.readLock().unlock();
 
-        if (quorumTraces == null) {
-            quorumLock.writeLock().lock();
-            quorumTraces = this.quorumTraces.get(quorumId);
-            if (quorumTraces == null) {
-                quorumTraces = new QuorumTraces(quorumMeta);
-                this.quorumTraces.put(quorumMeta.getId(), quorumTraces);
+        if (quorum == null) {
+            this.lock.writeLock().lock();
+            quorum = this.quorums.get(quorumId);
+            if (quorum == null) {
+                quorum = new QuorumTraces(quorumMeta);
+                this.quorums.put(quorumMeta.getId(), quorum);
             }
-            quorumLock.writeLock().unlock();
+            this.lock.writeLock().unlock();
         }
 
-        return quorumTraces;
+        return quorum;
     }
 
-    // called when initializing TMB_ClientPlugin
-    public void setClientPluginTrace(TMB_Trace trace) {
-        if (trace == null) {
-            return;
-        }
-        long traceId = trace.getId();
-        if (traceId == 0) {
-            return;
-        }
-
-        lock.writeLock().lock();
-        if (!clientPluginTraces.containsKey(traceId)) {
-            clientPluginTraces.put(traceId, new ClientPluginTrace(trace));
-        }
-        lock.writeLock().unlock();
-    }
-
-    public void updateClientPluginTrace(TMB_Trace trace) {
-        if (trace == null) {
-            return;
-        }
-        long traceId = trace.getId();
-        if (traceId == 0) {
-            return;
-        }
-
-        lock.writeLock().lock();
-        ClientPluginTrace pluginTrace = clientPluginTraces.get(traceId);
-        if (pluginTrace != null) {
-
-        } else {
-            TMB_Helper.printf("[TMB_Store] unreachable code, trace: %s", trace.toJSON());
-        }
-
-        lock.writeLock().unlock();
-    }
-
-    private static Map<Long, TMB_Trace> thread_traces = new HashMap<>(); // TODO: a delete
-    private static Map<Long, TMB_Trace> server_traces = new HashMap<>(); // TODO: a delete
-    private static ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-
-    public static void clearServerTraces() {
-        lock.writeLock().lock();
-        server_traces.clear();
-        lock.writeLock().unlock();
-    }
-
-    public static void callerAppendEventsByThreadIdUnsafe(long threadId, TMB_Trace trace) {
-        TMB_Trace trace_ = thread_traces.get(threadId);
-
-        if (trace_ == null) {
-            thread_traces.put(threadId, trace);
-        } else {
-            trace_.mergeEventsUnsafe(trace.getEvents());
-        }
-    }
-
-    public static TMB_Trace getByThreadId(long threadId) {
-        lock.readLock().lock();
-        TMB_Trace trace = thread_traces.get(threadId);
-        lock.readLock().unlock();
-
-        return trace;
-    }
-
-    // TODO: 3MileBeach temp function
-    public static Map<Long, TMB_Trace> getAllThreads() {
-        Map<Long, TMB_Trace> result = new HashMap<>();
-        lock.readLock().lock();
-        thread_traces.forEach(result::put);
-        lock.readLock().unlock();
-
-        return result;
-    }
-
-    public static void removeByThreadId(long threadId) {
-        lock.writeLock().lock();
-        thread_traces.remove(threadId);
-        lock.writeLock().unlock();
+    public void printQuorumTraces(QuorumMeta quorumMeta) {
+        getQuorumTraces(quorumMeta).printAllJSON();
     }
 }

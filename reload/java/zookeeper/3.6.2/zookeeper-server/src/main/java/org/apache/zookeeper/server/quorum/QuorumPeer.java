@@ -1447,7 +1447,7 @@ public class QuorumPeer extends ZooKeeperThread implements QuorumStats.Provider 
                     }
                     break;
                 case OBSERVING:
-                    TMB_Store.getInstance().getQuorumTraces(quorumMeta).printAllJSON(); // 3MileBeach
+                    TMB_Store.getInstance().printQuorumTraces(quorumMeta); // 3MileBeach
 
                     try {
                         LOG.info("OBSERVING");
@@ -1468,7 +1468,7 @@ public class QuorumPeer extends ZooKeeperThread implements QuorumStats.Provider 
                     }
                     break;
                 case FOLLOWING:
-                    TMB_Store.getInstance().getQuorumTraces(quorumMeta).printAllJSON(); // 3MileBeach
+                    TMB_Store.getInstance().printQuorumTraces(quorumMeta); // 3MileBeach
 
                     try {
                         LOG.info("FOLLOWING");
@@ -1483,7 +1483,7 @@ public class QuorumPeer extends ZooKeeperThread implements QuorumStats.Provider 
                     }
                     break;
                 case LEADING:
-                    TMB_Store.getInstance().getQuorumTraces(quorumMeta).printAllJSON(); // 3MileBeach
+                    TMB_Store.getInstance().printQuorumTraces(quorumMeta); // 3MileBeach
 
                     LOG.info("LEADING");
                     try {

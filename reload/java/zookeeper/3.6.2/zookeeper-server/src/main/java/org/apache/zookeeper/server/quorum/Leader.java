@@ -1205,7 +1205,7 @@ public class Leader extends LearnerMaster {
 
                         i++;
                     }
-                    TMB_Store.getInstance().quorumSetTrace(procMeta, trace);
+                    TMB_Store.getInstance().setTrace(procMeta, trace);
 
                     return;
                 }
@@ -1275,7 +1275,7 @@ public class Leader extends LearnerMaster {
 
                                     i++;
                                 }
-                                TMB_Store.getInstance().quorumSetTrace(procMeta, trace);
+                                TMB_Store.getInstance().setTrace(procMeta, trace);
 
                                 return;
                             }

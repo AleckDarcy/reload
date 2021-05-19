@@ -1003,9 +1003,6 @@ public class ZooKeeper implements AutoCloseable {
         ConnectStringParser connectStringParser = new ConnectStringParser(connectString);
         hostProvider = aHostProvider;
 
-        // 3MileBeach
-        this.tmbClientPlugin = new TMB_ClientPlugin();
-
         cnxn = createConnection(
             connectStringParser.getChrootPath(),
             hostProvider,
@@ -1015,6 +1012,8 @@ public class ZooKeeper implements AutoCloseable {
             getClientCnxnSocket(),
             canBeReadOnly);
         cnxn.start();
+
+        this.tmbClientPlugin = new TMB_ClientPlugin(cnxn.sendThread.getClientCnxnSocket().hashCode()); // 3MileBeach
     }
 
     // @VisibleForTesting
@@ -1406,9 +1405,6 @@ public class ZooKeeper implements AutoCloseable {
         ConnectStringParser connectStringParser = new ConnectStringParser(connectString);
         hostProvider = aHostProvider;
 
-        // 3MileBeach
-        this.tmbClientPlugin = new TMB_ClientPlugin();
-
         cnxn = new ClientCnxn(
             connectStringParser.getChrootPath(),
             hostProvider,
@@ -1421,6 +1417,8 @@ public class ZooKeeper implements AutoCloseable {
             canBeReadOnly);
         cnxn.seenRwServerBefore = true; // since user has provided sessionId
         cnxn.start();
+
+        this.tmbClientPlugin = new TMB_ClientPlugin(cnxn.sendThread.getClientCnxnSocket().hashCode()); // 3MileBeach
     }
 
     /**

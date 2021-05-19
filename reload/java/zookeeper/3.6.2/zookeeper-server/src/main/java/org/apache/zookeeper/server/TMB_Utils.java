@@ -86,9 +86,9 @@ public class TMB_Utils {
 
         public void update(ProcessorFlag flag) { this.flag |= flag.flag; }
 
-        public boolean isNull() { return flag == NULL.flag; }
+        public boolean isNull() { return this.flag == NULL.flag; }
 
-        public boolean isReceived() { return (flag & RECV.flag) != 0; }
+        public boolean isReceived() { return (this.flag & RECV.flag) != 0; }
     }
 
     public static void processorPrintsRequest(TMB_Store.ProcessorMeta procMeta, String info, Object next, Request request) {
@@ -161,7 +161,7 @@ public class TMB_Utils {
         events.add(event);
         trace.setEvents(events, 1);
 
-        TMB_Store.getInstance().quorumSetTrace(procMeta, trace);
+        TMB_Store.getInstance().setTrace(procMeta, trace);
     }
 
     /**
@@ -187,7 +187,7 @@ public class TMB_Utils {
         }
 
         TMB_Event preEvent = trace.getEvents().get(0);
-        TMB_Trace trace_ = TMB_Store.getInstance().quorumGetTrace(procMeta.getQuorumMeta(), trace.getId());
+        TMB_Trace trace_ = TMB_Store.getInstance().getTrace(procMeta.getQuorumMeta(), trace.getId());
         trace_.mergeEventsUnsafe(trace.getEvents()); // trace_ is a copy, safe here
 
         TMB_Event event = new TMB_Event(TMB_Event.SERVICE_SEND, TMB_Helper.getClassNameFromObject(response), preEvent.getUuid(), procMeta);
@@ -223,7 +223,7 @@ public class TMB_Utils {
             if (txn != null) {
                 TMB_Trace trace = txn.getTrace();
                 if (trace != null && trace.getId() != 0) {
-                    TMB_Trace trace_ = TMB_Store.getInstance().quorumGetTrace(procMeta.getQuorumMeta(), trace.getId());
+                    TMB_Trace trace_ = TMB_Store.getInstance().getTrace(procMeta.getQuorumMeta(), trace.getId());
 
                     if (trace_ != null) {
                         trace = trace_;
@@ -243,7 +243,7 @@ public class TMB_Utils {
         if (record != null) {
             TMB_Trace trace = record.getTrace();
             if (trace != null && trace.getId() != 0) {
-                TMB_Store.getInstance().quorumSetTrace(procMeta, trace);
+                TMB_Store.getInstance().setTrace(procMeta, trace);
             }
         }
     }
@@ -376,7 +376,7 @@ public class TMB_Utils {
      * @param record
      */
     public static void quorumCollectTrace(TMB_Store.ProcessorMeta procMeta, Record record) {
-        TMB_Store.getInstance().quorumSetTrace(procMeta, record.getTrace());
+        TMB_Store.getInstance().setTrace(procMeta, record.getTrace());
     }
 
     /**

@@ -394,7 +394,7 @@ public class FastLeaderElection implements Election {
                                             events.add(event);
                                             trace.setEvents(events, 1);
 
-                                            TMB_Store.getInstance().quorumSetTrace(procMeta, trace);
+                                            TMB_Store.getInstance().setTrace(procMeta, trace);
                                             n.trace = trace;
                                         }
 
@@ -598,7 +598,7 @@ public class FastLeaderElection implements Election {
                         LOG.warn("Interrupted Exception while waiting for new message", e);
                     } finally {
                         if (trace != null) {
-                            TMB_Store.getInstance().quorumQuit(procMeta.getQuorumMeta(), trace); // 3MileBeach
+                            TMB_Store.getInstance().quit(procMeta.getQuorumMeta(), trace); // 3MileBeach
                         }
                     }
                 }
@@ -662,7 +662,7 @@ public class FastLeaderElection implements Election {
                     events_.add(event);
                     m.trace.setEvents(events_, 1);
 
-                    TMB_Store.getInstance().quorumSetTrace(procMeta, m.trace); // todo
+                    TMB_Store.getInstance().setTrace(procMeta, m.trace); // todo
 
                     try {
                         bytes = TMB_Helper.serialize(m.trace);
