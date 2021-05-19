@@ -6,16 +6,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TMB_ClientPlugin {
-    private final long threadID = Thread.currentThread().getId();
+    private final long threadID = Thread.currentThread().getId(); // TODO: a delete
 
-    private final long quorumID = -Thread.currentThread().getId();
-
+    private TMB_Store.ProcessorMeta procMeta;
     private TMB_Trace trace;
+
     /**
      *
      */
     public void TMBInitialize(TMB_Trace trace_) {
         trace = trace_;
+        long quorumID = -Thread.currentThread().getId();
+        procMeta = new TMB_Store.ProcessorMeta(new TMB_Store.QuorumMeta(quorumID, String.format("client%s", quorumID)), this);
     }
 
     /**
