@@ -55,7 +55,6 @@ import org.apache.zookeeper.server.DataTree.ProcessTxnResult;
 import org.apache.zookeeper.server.quorum.QuorumPeer;
 import org.apache.zookeeper.server.quorum.QuorumZooKeeperServer;
 import org.apache.zookeeper.server.util.RequestPathMetricsCollector;
-import org.apache.zookeeper.trace.TMB_Event;
 import org.apache.zookeeper.trace.TMB_Helper;
 import org.apache.zookeeper.trace.TMB_Store;
 import org.apache.zookeeper.txn.ErrorTxn;
@@ -99,22 +98,7 @@ public class FinalRequestProcessor implements RequestProcessor {
     public void processRequest(Request request) {
         // 3MileBeach starts
         String requestName = TMB_Helper.getClassNameFromObject(request.getTxn());
-        int eventType = TMB_Event.SERVICE_RECV;
-        if (request.getTxn() != null) {
-            // TMB_Helper.printf("[%s] callee inbound component right now\n", quorumName);
-            TMB_Utils.RequestExt requestExt = request.getRequestExt();
-            if (requestExt != null) {
-                TMB_Utils.ProcessorFlag procFlag = request.getProcessorFlag();
-                if (procFlag.isReceived()) {
-                    eventType = TMB_Event.PROCESSOR_RECV;
-                } else {
-                    requestExt.updateProcessorFlag(TMB_Utils.ProcessorFlag.RECV);
-                }
-            }
-            TMB_Store.calleeInbound(procMeta, request.getTxn(), requestName, eventType);
-        } else {
-            TMB_Helper.printf(procMeta, "will call inbound component when request is deserialized, request type: %d\n", request.type);
-        }
+        TMB_Utils.processRequestHelperBegins(procMeta, request);
         TMB_Utils.processorPrintsRequest(procMeta, "starts", null, request); // 3MileBeach
         // 3MileBeach ends
         LOG.debug("Processing request:: {}", request);
@@ -398,7 +382,7 @@ public class FinalRequestProcessor implements RequestProcessor {
                 ByteBufferInputStream.byteBuffer2Record(request.request, getDataRequest);
                 // 3MileBeach starts
                 requestName = "GetDataRequest";
-                TMB_Store.calleeInbound(procMeta, request.getTxn(), requestName, eventType);
+                // TMB_Store.calleeInbound(procMeta, request.getTxn(), requestName, eventType);
                 // 3MileBeach ends
                 path = getDataRequest.getPath();
                 rsp = handleGetDataRequest(getDataRequest, cnxn, request.authInfo);
@@ -670,7 +654,7 @@ public class FinalRequestProcessor implements RequestProcessor {
                     rsp = new NullPointerResponse(requestName);
                 }
 
-                TMB_Store.calleeOutbound(procMeta, rsp); // 3MileBeach
+                TMB_Utils.processRequestHelperEnds(procMeta, request, rsp);
                 // 3MileBeach ends
                 cnxn.sendResponse(hdr, rsp, "response");
             } else {
@@ -680,7 +664,7 @@ public class FinalRequestProcessor implements RequestProcessor {
                 // object. Cache entries are identified by their path and last modified zxid,
                 // so these values are passed along with the response.
 
-                TMB_Store.calleeOutbound(procMeta, rsp); // 3MileBeach
+                TMB_Utils.processRequestHelperEnds(procMeta, request, rsp); // 3MileBeach
 
                 switch (opCode) {
                     case OpCode.getData : {

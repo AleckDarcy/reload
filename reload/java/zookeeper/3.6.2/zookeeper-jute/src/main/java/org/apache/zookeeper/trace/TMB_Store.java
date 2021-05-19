@@ -117,7 +117,7 @@ public class TMB_Store {
             lock.writeLock().lock();
             QuorumTrace quorumTrace = traces.get(trace_.getId());
             if (quorumTrace != null) {
-                mergeEvents(quorumTrace.trace, trace_.getEvents());
+                quorumTrace.trace.mergeEventsUnsafe(trace_.getEvents());
             } else {
                 quorumTrace = new QuorumTrace(quorumMeta.getId(), trace_.copy());
             }
@@ -175,14 +175,18 @@ public class TMB_Store {
         quorumTraces.setTrace(trace_);
     }
 
-    public TMB_Trace quorumGetTrace(QuorumMeta quorumMeta, long traceId) { // unsafe
+    public TMB_Trace quorumGetTrace(QuorumMeta quorumMeta, long traceId) {
         QuorumTraces quorumTraces = getQuorumTraces(quorumMeta);
 
         quorumTraces.lock.readLock().lock();
         QuorumTrace quorumTrace = quorumTraces.getQuorumTrace(traceId);
+        TMB_Trace trace = quorumTrace.trace;
+        if (trace != null) {
+            trace = trace.copy();
+        }
         quorumTraces.lock.readLock().unlock();
 
-        return quorumTrace.trace;
+        return trace;
     }
 
     public QuorumTraces getQuorumTraces(ProcessorMeta procMeta) {
@@ -207,42 +211,6 @@ public class TMB_Store {
         }
 
         return quorumTraces;
-    }
-
-    private static void mergeEvents(TMB_Trace trace, List<TMB_Event> events_) {
-        List<TMB_Event> events = trace.getEvents();
-        int new_events = 0;
-        for (TMB_Event event_: events_) {
-            boolean found = false;
-            for (TMB_Event event: events) {
-                found = event.equals(event_);
-                if (found) {
-                    break;
-                }
-            }
-            if (!found) {
-                events.add(event_);
-                new_events ++;
-            }
-        }
-        trace.setEvents(events, new_events);
-    }
-
-    public static void updateTFIs(List<TMB_TFI> tfis, TMB_Event event) {
-        boolean updated = false;
-        for (TMB_TFI tfi: tfis) {
-            for (TMB_TFIMeta meta: tfi.getAfter()) {
-                if (meta.getName().equals(event.getMessage_name()) && meta.getEvent_type() == event.getType()) {
-                    updated = true;
-                    meta.setAlready(meta.getAlready() + 1);
-                }
-            }
-        }
-
-        if (updated) {
-            new Exception().printStackTrace();
-            TMB_Helper.printf("[TMB_Store] updated!!! %s, %s\n", tfis, event);
-        }
     }
 
     // called when initializing TMB_ClientPlugin
@@ -298,7 +266,7 @@ public class TMB_Store {
         if (trace_ == null) {
             thread_traces.put(threadId, trace);
         } else {
-            mergeEvents(trace_, trace.getEvents());
+            trace_.mergeEventsUnsafe(trace.getEvents());
         }
     }
 
@@ -324,58 +292,5 @@ public class TMB_Store {
         lock.writeLock().lock();
         thread_traces.remove(threadId);
         lock.writeLock().unlock();
-    }
-
-    /**
-     * Server receives request from client or upstream server
-     * RequestProcessor -> calleeInbound -> process request -> calleeOutbound -> send response
-     */
-    // to be called after ByteBufferInputStream.byteBuffer2Record(buffer, record)
-    public static void calleeInbound(ProcessorMeta procMeta, Record request, String requestName, int type) {
-        TMB_Trace trace = request.getTrace();
-        if (trace == null || trace.getId() == 0) {
-            TMB_Helper.printf(procMeta, 3, "callee inbound receives request with empty trace:%s(%s)\n", requestName, TMB_Helper.getString(request));
-            return;
-        }
-
-        List<TMB_Event> events = trace.getEvents();
-        TMB_Helper.printf(procMeta, 3, "callee inbound receives request:%s(%s)\n", requestName, TMB_Helper.getString(request));
-
-        long threadId = Thread.currentThread().getId();
-        TMB_Event preEvent = events.get(0); // TODO: a lastEvent?
-        TMB_Event event = new TMB_Event(type, requestName, preEvent.getUuid(), procMeta);
-        events.add(event);
-        trace.setEvents(events, 1);
-
-        lock.writeLock().lock();
-        thread_traces.put(threadId, trace);
-        lock.writeLock().unlock();
-
-        getInstance().quorumSetTrace(procMeta, trace);
-    }
-
-    public static void calleeOutbound(ProcessorMeta procMeta, Record response) {
-        long threadId = Thread.currentThread().getId();
-
-        lock.writeLock().lock();
-        TMB_Trace trace = thread_traces.get(threadId);
-        thread_traces.remove(threadId);
-        lock.writeLock().unlock();
-
-        if (trace == null) {
-            TMB_Helper.printf(procMeta, 3, "callee outbound ejects response without trace:%s(%s)\n", TMB_Helper.getClassNameFromObject(response), TMB_Helper.getString(response));
-
-            return;
-        }
-
-        TMB_Event preEvent = trace.getEvents().get(0);
-        TMB_Trace trace_ = getInstance().quorumGetTrace(procMeta.getQuorumMeta(), trace.getId());
-        mergeEvents(trace_, trace.getEvents()); // merge events of the current SRC to those of the current client request
-
-        TMB_Event event = new TMB_Event(TMB_Event.SERVICE_SEND, TMB_Helper.getClassNameFromObject(response), preEvent.getUuid(), procMeta);
-        trace_.addEvent(event);
-        response.setTrace(trace_);
-
-        TMB_Helper.printf(procMeta, 3, "callee outbound ejects response:%s(%s)\n", TMB_Helper.getClassNameFromObject(response), TMB_Helper.getString(response));
     }
 }

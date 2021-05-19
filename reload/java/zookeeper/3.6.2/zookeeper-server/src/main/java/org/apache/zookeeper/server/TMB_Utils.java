@@ -119,6 +119,82 @@ public class TMB_Utils {
         }
     }
 
+    /**
+     * Captures events (SERVICE_RECV or PROCESSOR_RECV) to and stores records to RequestExt and Store
+     * @param procMeta
+     * @param request
+     */
+    public static void processRequestHelperBegins(TMB_Store.ProcessorMeta procMeta, Request request) {
+        Record txn = request.getTxn();
+        if (txn == null) {
+            return;
+        }
+
+        TMB_Utils.RequestExt requestExt = request.getRequestExt();
+        if (requestExt == null) {
+            return;
+        }
+
+        int eventType = TMB_Event.SERVICE_RECV;
+        TMB_Utils.ProcessorFlag procFlag = request.getProcessorFlag();
+        if (procFlag.isReceived()) {
+            eventType = TMB_Event.PROCESSOR_RECV;
+        } else {
+            requestExt.updateProcessorFlag(TMB_Utils.ProcessorFlag.RECV);
+        }
+
+        Record record = requestExt.getMessage();
+        if (record == null) {
+            return;
+        }
+
+        TMB_Trace trace = record.getTrace();
+        if (trace == null || trace.getId() == 0) {
+            return;
+        }
+
+        List<TMB_Event> events = trace.getEvents();
+
+        String requestName = TMB_Helper.getClassNameFromObject(txn);
+        TMB_Event preEvent = events.get(0); // TODO: a lastEvent?
+        TMB_Event event = new TMB_Event(eventType, requestName, preEvent.getUuid(), procMeta);
+        events.add(event);
+        trace.setEvents(events, 1);
+
+        TMB_Store.getInstance().quorumSetTrace(procMeta, trace);
+    }
+
+    /**
+     * Assigns events captured so far (from Request and a new SERVICE_SEND event) to the response
+     * @param procMeta
+     * @param request
+     * @param response
+     */
+    public static void processRequestHelperEnds(TMB_Store.ProcessorMeta procMeta, Request request, Record response) {
+        TMB_Utils.RequestExt requestExt = request.getRequestExt();
+        if (requestExt == null) {
+            return;
+        }
+
+        Record record = requestExt.getMessage();
+        if (record == null) {
+            return;
+        }
+
+        TMB_Trace trace = record.getTrace();
+        if (trace == null || trace.getId() == 0) {
+            return;
+        }
+
+        TMB_Event preEvent = trace.getEvents().get(0);
+        TMB_Trace trace_ = TMB_Store.getInstance().quorumGetTrace(procMeta.getQuorumMeta(), trace.getId());
+        trace_.mergeEventsUnsafe(trace.getEvents()); // trace_ is a copy, safe here
+
+        TMB_Event event = new TMB_Event(TMB_Event.SERVICE_SEND, TMB_Helper.getClassNameFromObject(response), preEvent.getUuid(), procMeta);
+        trace_.addEvent(event);
+        response.setTrace(trace_);
+    }
+
     public static NullPointerResponse processAckHelperBegins(TMB_Store.ProcessorMeta procMeta, byte[] data) {
         NullPointerResponse record = new NullPointerResponse();
         quorumCollectTrace(procMeta, record, data);

@@ -89,6 +89,31 @@ public class TMB_Trace implements Record {
       events.add(e);
     }
   }
+  // unsafe function, make sure instance is a copy from TMB_Store
+  public void mergeEventsUnsafe(List<TMB_Event> events_) {
+    for (TMB_Event event_: events_) {
+      boolean found = false;
+      for (TMB_Event event: events) {
+        found = event.equals(event_);
+        if (found) {
+          break;
+        }
+      }
+      if (!found) {
+        events.add(event_);
+        updateTFIs(event_);
+      }
+    }
+  }
+  // make sure newEvents events are really "new" events
+  public void mergeEvents(List<TMB_Event> events_, int newEvents) {
+    int eventSize = events.size();
+    if (eventSize < newEvents) {
+      // TODO: a report
+      newEvents = eventSize;
+    }
+    events.addAll(events_.subList(eventSize - newEvents, eventSize));
+  }
   // 3MileBeach ends
   public long getReqEvent() {
     return req_event;
@@ -111,7 +136,23 @@ public class TMB_Trace implements Record {
     events=m_;
 
     for (int i = m_.size() - newEvents; i < m_.size(); i ++) {
-      TMB_Store.updateTFIs(tfis, m_.get(i));
+      updateTFIs(m_.get(i));
+    }
+  }
+  public void updateTFIs(TMB_Event event) {
+    boolean updated = false;
+    for (TMB_TFI tfi: tfis) {
+      for (TMB_TFIMeta meta: tfi.getAfter()) {
+        if (meta.getName().equals(event.getMessage_name()) && meta.getEvent_type() == event.getType()) {
+          updated = true;
+          meta.setAlready(meta.getAlready() + 1);
+        }
+      }
+    }
+
+    if (updated) {
+      new Exception().printStackTrace();
+      TMB_Helper.printf("[TMB_Store] updated!!! %s, %s\n", tfis, event);
     }
   }
   // 3MileBeach ends
