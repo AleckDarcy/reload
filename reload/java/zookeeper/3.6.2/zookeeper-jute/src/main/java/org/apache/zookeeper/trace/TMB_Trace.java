@@ -26,6 +26,10 @@ import org.apache.yetus.audience.InterfaceAudience;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 3MileBeach Payload
+ * Do not append any events to an instance with id = 0!
+ */
 @InterfaceAudience.Public
 public class TMB_Trace implements Record {
   private long id;
@@ -33,8 +37,8 @@ public class TMB_Trace implements Record {
   private java.util.List<TMB_Event> events;
   private java.util.List<TMB_TFI> tfis;
   public TMB_Trace() {
-    this.events=new java.util.ArrayList<>();
-    this.tfis=new java.util.ArrayList<>();
+    this.events=TMB_Record.EMPTY_EVENTS;
+    this.tfis=TMB_Record.EMPTY_TFIS;
   }
   public TMB_Trace(
         long id,
@@ -43,8 +47,8 @@ public class TMB_Trace implements Record {
         java.util.List<TMB_TFI> tfis) {
     this.id=id;
     this.req_event=req_event;
-    this.events=events;
-    this.tfis=tfis;
+    this.events=events == null ? TMB_Record.EMPTY_EVENTS: events;
+    this.tfis=tfis == null ? TMB_Record.EMPTY_TFIS: tfis;
   }
   public String toJSON() {
     StringBuffer buffer = new StringBuffer();
@@ -87,6 +91,7 @@ public class TMB_Trace implements Record {
   public void addEvent(TMB_Event e) {
     if (events != null) {
       events.add(e);
+      updateTFIs(e);
     }
   }
   // unsafe function, make sure instance is a copy from TMB_Store
@@ -112,7 +117,12 @@ public class TMB_Trace implements Record {
       // TODO: a report
       newEvents = eventSize;
     }
-    events.addAll(events_.subList(eventSize - newEvents, eventSize));
+    List<TMB_Event> add = events_.subList(eventSize - newEvents, eventSize);
+    events.addAll(add);
+    updateTFIs(add);
+  }
+  public boolean enabled() {
+    return id > 0;
   }
   // 3MileBeach ends
   public long getReqEvent() {
@@ -153,6 +163,11 @@ public class TMB_Trace implements Record {
     if (updated) {
       new Exception().printStackTrace();
       TMB_Helper.printf("[TMB_Store] updated!!! %s, %s\n", tfis, event);
+    }
+  }
+  public void updateTFIs(List<TMB_Event> events) {
+    for (TMB_Event event: events) {
+      updateTFIs(event);
     }
   }
   // 3MileBeach ends

@@ -25,22 +25,58 @@ import org.apache.yetus.audience.InterfaceAudience;
 
 @InterfaceAudience.Public
 public class TMB_Event implements Record {
-  // special events
-  public static final int EVENT_NULL    = 0x00000000;
-  public static final int EVENT_UNKNOWN = 0x7fffffff;
-  // service-level events, captured on service boundaries
-  public static final int SERVICE_OFFSET = 0x00000010;
-  public static final int SERVICE_SEND   = SERVICE_OFFSET + 0x1;
-  public static final int SERVICE_RECV   = SERVICE_OFFSET + 0x2;
-  public static final int SERVICE_FRWD   = SERVICE_OFFSET + 0x3; // follower forward
-  public static final int SERVICE_PRPS   = SERVICE_OFFSET + 0x4; // leader proposal
-  // processor-level events, captured on processor boundaries
-  public static final int PROCESSOR_OFFSET = 0x00000100;
-  public static final int PROCESSOR_RECV   = PROCESSOR_OFFSET + 0x1; // processor received a message from other processors
-  // logical events, captured when logical pre-requisites are satisfied
-  public static final int LOGICAL_OFFSET     = 0x00001000;
-  public static final int LOGICAL_PRPS_READY = LOGICAL_OFFSET + 0x1; // leader starts to send proposals to followers
-  public static final int LOGICAL_CMMT_READY = LOGICAL_OFFSET + 0x2; // leader has received enough ACK's and starts to send commit to the followers
+  public static class Type {
+    // special events
+    public static final int EVENT_NULL    = 0x00000000;
+    public static final int EVENT_UNKNOWN = 0x7fffffff;
+    // service-level events, captured on service boundaries
+    public static final int SERVICE_OFFSET = 0x00000010;
+    public static final int SERVICE_SEND   = SERVICE_OFFSET + 0x1;
+    public static final int SERVICE_RECV   = SERVICE_OFFSET + 0x2;
+    public static final int SERVICE_FRWD   = SERVICE_OFFSET + 0x3; // follower forward
+    public static final int SERVICE_PRPS   = SERVICE_OFFSET + 0x4; // leader proposal
+    // processor-level events, captured on processor boundaries
+    public static final int PROCESSOR_OFFSET = 0x00000100;
+    public static final int PROCESSOR_RECV   = PROCESSOR_OFFSET + 0x1; // processor received a message from other processors
+    // logical events, captured when logical pre-requisites are satisfied
+    public static final int LOGICAL_OFFSET     = 0x00001000;
+    public static final int LOGICAL_PRPS_READY = LOGICAL_OFFSET + 0x1; // leader starts to send proposals to followers
+    public static final int LOGICAL_CMMT_READY = LOGICAL_OFFSET + 0x2; // leader has received enough ACK's and starts to send commit to the followers
+
+    public static String getString(int type) {
+      switch (type) {
+        case EVENT_NULL:
+          return "EVENT_NULL";
+        case EVENT_UNKNOWN:
+          return "EVENT_UNKNOWN";
+        case SERVICE_SEND:
+          return "SERVICE_SEND";
+        case SERVICE_RECV:
+          return "SERVICE_RECV";
+        case SERVICE_FRWD:
+          return "SERVICE_FRWD";
+        case SERVICE_PRPS:
+          return "SERVICE_PRPS";
+        case PROCESSOR_RECV:
+          return "PROCESSOR_RECV";
+        case LOGICAL_PRPS_READY:
+          return "LOGICAL_PRPS_READY";
+        case LOGICAL_CMMT_READY:
+          return "LOGICAL_CMMT_READY";
+        default:
+          return "EVENT_UNDEFINED";
+      }
+    }
+  }
+
+  public static class MessageName {
+    public static final String QUORUM_ACK = "QuorumAck";
+    public static final String LEADER_PRPS_READY = "LeaderProposeReady";
+    public static final String LEADER_ENOUGH_ACK = "LeaderEnoughACK";
+    public static final String LEADER_COMMIT_READY = "LeaderCommitReady";
+    public static final String LEADER_COMMIT = "LeaderCommit";
+    public static final String LEADER_SYNC = "LeaderSync";
+  }
 
   private int type;
   private long timestamp;
@@ -48,7 +84,7 @@ public class TMB_Event implements Record {
   private String uuid;
   private String service;
   private String processor; // Zookeeper specified field
-  public TMB_Event() {
+  protected TMB_Event() {
   }
   public TMB_Event(
           int type,
@@ -82,28 +118,7 @@ public class TMB_Event implements Record {
     return getTypeString(this.type);
   }
   public static String getTypeString(int type) {
-    switch (type) {
-      case EVENT_NULL:
-        return "EVENT_NULL";
-      case EVENT_UNKNOWN:
-        return "EVENT_UNKNOWN";
-      case SERVICE_SEND:
-        return "SERVICE_SEND";
-      case SERVICE_RECV:
-        return "SERVICE_RECV";
-      case SERVICE_FRWD:
-        return "SERVICE_FRWD";
-      case SERVICE_PRPS:
-        return "SERVICE_PRPS";
-      case PROCESSOR_RECV:
-        return "PROCESSOR_RECV";
-      case LOGICAL_PRPS_READY:
-        return "LOGICAL_PRPS_READY";
-      case LOGICAL_CMMT_READY:
-        return "LOGICAL_CMMT_READY";
-      default:
-        return "EVENT_UNDEFINED";
-    }
+    return Type.getString(type);
   }
   public String toJSON() {
     StringBuffer buffer = new StringBuffer();

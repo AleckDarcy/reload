@@ -389,7 +389,7 @@ public class FastLeaderElection implements Election {
                                             TMB_Event lastEvent = events.get(eventSize - 1);
                                             String name = lastEvent.getMessage_name();
                                             uuid = lastEvent.getUuid();
-                                            TMB_Event event = new TMB_Event(TMB_Event.SERVICE_RECV, name, uuid, procMeta);
+                                            TMB_Event event = new TMB_Event(TMB_Event.Type.SERVICE_RECV, name, uuid, procMeta);
                                             // TMB_Helper.printf("[quorum-%d] new event: %s\n", quorumId, event.toJSON());
                                             events.add(event);
                                             trace.setEvents(events, 1);
@@ -651,8 +651,8 @@ public class FastLeaderElection implements Election {
                 // TMB_Helper.printf("[quorum-%d] process ToSend: %s\n", quorumId, m.toJSON());
                 byte[] bytes = new byte[0];
 
-                if (trace.getId() != 0) {
-                    TMB_Event event = new TMB_Event(TMB_Event.SERVICE_SEND, m.name, TMB_Helper.UUID(), procMeta);
+                if (trace.enabled()) {
+                    TMB_Event event = new TMB_Event(TMB_Event.Type.SERVICE_SEND, m.name, TMB_Helper.UUID(), procMeta);
                     // TMB_Helper.printf("[quorum-%d] new event: %s\n", quorumId, event.toJSON());
 
                     List<TMB_Event> events = m.trace.getEvents();

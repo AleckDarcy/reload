@@ -36,6 +36,7 @@ import org.apache.zookeeper.server.util.SerializeUtils;
 import org.apache.zookeeper.server.util.ZxidUtils;
 import org.apache.zookeeper.trace.TMB_Event;
 import org.apache.zookeeper.trace.TMB_Helper;
+import org.apache.zookeeper.trace.TMB_Record;
 import org.apache.zookeeper.trace.TMB_Store;
 import org.apache.zookeeper.txn.SetDataTxn;
 import org.apache.zookeeper.txn.TxnDigest;
@@ -176,7 +177,7 @@ public class Follower extends Learner {
             TxnHeader hdr = logEntry.getHeader();
             Record txn = logEntry.getTxn();
             TMB_Helper.printf(procMeta, "processes proposal, request: %s\n", txn); // 3MileBeach
-            TMB_Utils.appendEvent(procMeta, txn, TMB_Event.SERVICE_RECV); // 3MileBeach
+            TMB_Record.appendEvent(procMeta, txn, TMB_Event.Type.SERVICE_RECV); // 3MileBeach
             // TODO: a 1) trace = txn.getTrace().copy(), a appendEvent(procMeta, trace);
             // TODO: a 2) print
             TxnDigest digest = logEntry.getDigest();
@@ -215,7 +216,7 @@ public class Follower extends Learner {
             break;
         case Leader.COMMIT:
             // TMB_Helper.printf(procMeta, "processes commit\n"); // 3MileBeach
-            TMB_Utils.quorumCollectTrace(procMeta, new NullPointerResponse(), qp); // 3MileBeach
+            TMB_Store.collectTrace(procMeta, new NullPointerResponse(), qp); // 3MileBeach
 
             ServerMetrics.getMetrics().LEARNER_COMMIT_RECEIVED_COUNT.add(1);
             fzk.commit(qp.getZxid());

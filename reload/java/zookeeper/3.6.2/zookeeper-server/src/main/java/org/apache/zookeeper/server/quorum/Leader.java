@@ -941,7 +941,7 @@ public class Leader extends LearnerMaster {
 
             // 3MileBeach starts
             TMB_Helper.printf(procMeta, "let's commit and activate! request %s\n", p.request.getTxn());
-            NullPointerResponse record = TMB_Utils.commitHelperBegins(procMeta, p.request, TMB_Utils.LEADER_COMMIT);
+            NullPointerResponse record = TMB_Utils.commitHelperBegins(procMeta, p.request, TMB_Event.MessageName.LEADER_COMMIT);
             commitAndActivate(zxid, designatedLeader, record);
             informAndActivate(p, designatedLeader);
             TMB_Utils.commitHelperEnds(procMeta, record);
@@ -958,7 +958,7 @@ public class Leader extends LearnerMaster {
 
             // 3MileBeach starts
             TMB_Helper.printf(procMeta, "let's commit! request %s\n", p.request.getTxn());
-            NullPointerResponse record = TMB_Utils.commitHelperBegins(procMeta, p.request, TMB_Utils.LEADER_COMMIT);
+            NullPointerResponse record = TMB_Utils.commitHelperBegins(procMeta, p.request, TMB_Event.MessageName.LEADER_COMMIT);
             commit(zxid, record);
             inform(p);
             TMB_Utils.commitHelperEnds(procMeta, record);
@@ -989,7 +989,7 @@ public class Leader extends LearnerMaster {
     public synchronized void processAck(long sid, long zxid, Record record, SocketAddress followerAddr) { // 3MileBeach
     // public synchronized void processAck(long sid, long zxid, SocketAddress followerAddr) {
         TMB_Helper.printf(procMeta, "processAck starts\n"); // 3MileBeach
-        TMB_Utils.quorumCollectTrace(procMeta, record, TMB_Event.PROCESSOR_RECV); // 3MileBeach
+        TMB_Store.collectTrace(procMeta, record, TMB_Event.Type.PROCESSOR_RECV); // 3MileBeach
         if (!allowedToCommit) {
             TMB_Helper.printf(procMeta, "processAck ends (!allowedToCommit)\n"); // 3MileBeach
             return; // last op committed was a leader change - from now on
@@ -1163,7 +1163,7 @@ public class Leader extends LearnerMaster {
                 int eventSize = (events == null ? 0: events.size());
                 if (eventSize > 0) {
                     String uuid = TMB_Helper.UUID();
-                    TMB_Event event = new TMB_Event(TMB_Event.LOGICAL_CMMT_READY, TMB_Utils.LEADER_COMMIT_READY, uuid, procMeta);
+                    TMB_Event event = new TMB_Event(TMB_Event.Type.LOGICAL_CMMT_READY, TMB_Event.MessageName.LEADER_COMMIT_READY, uuid, procMeta);
                     trace.addEvent(event);
 
                     TMB_Helper.printf(procMeta, "commits to %d follower(s)\n", forwardingFollowers.size());
@@ -1179,7 +1179,7 @@ public class Leader extends LearnerMaster {
                         }
 
                         String uuid_ = String.format("%s-%04d", uuid, i);
-                        events.add(new TMB_Event(TMB_Event.SERVICE_SEND, TMB_Utils.LEADER_COMMIT, uuid_, procMeta));
+                        events.add(new TMB_Event(TMB_Event.Type.SERVICE_SEND, TMB_Event.MessageName.LEADER_COMMIT, uuid_, procMeta));
                         trace.setEvents(events, 1);
 
                         if (injected) {
@@ -1235,7 +1235,7 @@ public class Leader extends LearnerMaster {
                                     requestExt.setUUID(uuid);
                                 }
 
-                                TMB_Event event = new TMB_Event(TMB_Event.LOGICAL_PRPS_READY, TMB_Utils.LEADER_PRPS_READY, uuid, procMeta);
+                                TMB_Event event = new TMB_Event(TMB_Event.Type.LOGICAL_PRPS_READY, TMB_Event.MessageName.LEADER_PRPS_READY, uuid, procMeta);
                                 trace.addEvent(event);
                                 TMB_Helper.printf(procMeta, "proposes to %d follower(s)\n", forwardingFollowers.size());
                                 int i = 0;
@@ -1249,7 +1249,7 @@ public class Leader extends LearnerMaster {
                                     }
 
                                     String uuid_ = String.format("%s-%04d", uuid, i);
-                                    events.add(new TMB_Event(TMB_Event.SERVICE_PRPS, lastEvent.getMessage_name(), uuid_, procMeta));
+                                    events.add(new TMB_Event(TMB_Event.Type.SERVICE_PRPS, lastEvent.getMessage_name(), uuid_, procMeta));
                                     trace.setEvents(events, 1);
 
                                     if (injected) {

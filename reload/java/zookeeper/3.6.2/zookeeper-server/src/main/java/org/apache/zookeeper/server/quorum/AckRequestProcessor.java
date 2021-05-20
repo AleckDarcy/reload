@@ -64,7 +64,7 @@ class AckRequestProcessor implements RequestProcessor {
             Record record = request.getTxn();
             TMB_Utils.RequestExt requestExt = request.getRequestExt();
             if (requestExt != null) {
-                TMB_Event event = new TMB_Event(TMB_Event.SERVICE_RECV, TMB_Utils.QUORUM_ACK, requestExt.getUUID() + "-FFFF", procMeta);
+                TMB_Event event = new TMB_Event(TMB_Event.Type.SERVICE_RECV, TMB_Event.MessageName.QUORUM_ACK, requestExt.getUUID() + "-FFFF", procMeta);
                 record.getTrace().addEvent(event);
             }
             leader.processAck(self.getId(), request.zxid, record, null);

@@ -1,5 +1,10 @@
 package org.apache.zookeeper.trace;
 
+import org.apache.jute.Record;
+import org.apache.zookeeper.server.quorum.QuorumPacket;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -172,11 +177,10 @@ public class TMB_Store {
     }
 
     public void setTrace(QuorumMeta quorumMeta, TMB_Trace trace_) {
-        if (trace_ == null || trace_.getId() == 0) {
-            return;
+        if (trace_.enabled()) {
+            QuorumTraces quorumTraces = getQuorumTraces(quorumMeta);
+            quorumTraces.setTrace(trace_);
         }
-        QuorumTraces quorumTraces = getQuorumTraces(quorumMeta);
-        quorumTraces.setTrace(trace_);
     }
 
     public TMB_Trace getTrace(ProcessorMeta procMeta, long traceId) {
@@ -228,5 +232,54 @@ public class TMB_Store {
 
     public void printQuorumTraces(QuorumMeta quorumMeta) {
         getQuorumTraces(quorumMeta).printAllJSON();
+    }
+
+    /**
+     * Stores a trace associated with procMeta.
+     * @param procMeta
+     * @param record
+     */
+    public static void collectTrace(TMB_Store.ProcessorMeta procMeta, Record record) {
+        TMB_Store.getInstance().setTrace(procMeta, record.getTrace());
+    }
+
+    /**
+     * Called when quorum needs to capture events other than just TMB_EVENT.SERVICE_RECV.
+     * @param procMeta
+     * @param record
+     * @param eventType
+     */
+    public static void collectTrace(TMB_Store.ProcessorMeta procMeta, Record record, int eventType) {
+        TMB_Record.appendEvent(procMeta, record, eventType);
+        collectTrace(procMeta, record);
+    }
+
+    // TODO: a all event are newly witnessed events
+    /**
+     * Called when quorum processes the incoming message.
+     * Uses TMB_Event.SERVICE_RECV as default value of eventType.
+     * @param procMeta
+     * @param record    destination of deserialization
+     * @param data      source of deserialization
+     */
+    public static void collectTrace(TMB_Store.ProcessorMeta procMeta, Record record, byte[] data) {
+        if (data != null) {
+            try {
+                TMB_Helper.deserialize(new ByteArrayInputStream(data), record);
+                collectTrace(procMeta, record, TMB_Event.Type.SERVICE_RECV);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Called when quorum processes the incoming message.
+     * @param procMeta
+     * @param record    destination of deserialization
+     * @param qp        source of deserialization
+     */
+    public static void collectTrace(TMB_Store.ProcessorMeta procMeta, Record record, QuorumPacket qp) {
+        collectTrace(procMeta, record, qp.getData());
     }
 }

@@ -24,6 +24,7 @@ import java.io.IOException;
 import org.apache.zookeeper.ZooDefs.OpCode;
 import org.apache.zookeeper.server.*;
 import org.apache.zookeeper.trace.FaultInjectedException;
+import org.apache.zookeeper.trace.TMB_Event;
 import org.apache.zookeeper.trace.TMB_Helper;
 import org.apache.zookeeper.trace.TMB_Store;
 import org.slf4j.Logger;
@@ -54,7 +55,7 @@ public class SendAckRequestProcessor implements RequestProcessor, Flushable {
             byte[] data;
             try {
                 TMB_Helper.printf(procMeta, "let's ack! request:%s\n", si.getTxn());
-                data = TMB_Utils.ackHelper(procMeta, si, TMB_Utils.QUORUM_ACK);
+                data = TMB_Utils.ackHelper(procMeta, si, TMB_Event.MessageName.QUORUM_ACK);
             } catch (FaultInjectedException e) {
                 TMB_Helper.printf(procMeta, "fault injected, won't send ACK to the leader\n");
                 return;
