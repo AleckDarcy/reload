@@ -61,7 +61,7 @@ public class TMB_ClientPlugin {
             TMB_Store.getInstance().setTrace(this.procMeta, trace);
         }
 
-        TMB_Helper.println("caller outbound ejects request: " + TMB_Helper.getClassNameFromObject(request) + "(" + TMB_Helper.getString(request) + ")");
+        TMB_Helper.println("caller outbound ejects request: " + TMB_Helper.getClassNameFromObject(request) + "(" + TMB_Record.getString(request) + ")");
     }
 
     public void callerInbound(String service, Record response) {
@@ -73,7 +73,7 @@ public class TMB_ClientPlugin {
         String responseName = TMB_Helper.getClassNameFromObject(response);
         List<TMB_Event> events = trace.getEvents();
         if (events.size() == 0) {
-            TMB_Helper.println("caller inbound receives trace without events: " + responseName + "(" + TMB_Helper.getString(response) + ")");
+            TMB_Helper.println("caller inbound receives trace without events: " + responseName + "(" + TMB_Record.getString(response) + ")");
             return;
         }
 
@@ -83,6 +83,6 @@ public class TMB_ClientPlugin {
 
         TMB_Store.getInstance().setTrace(procMeta, trace);
 
-        TMB_Helper.println("caller inbound receives response: " + responseName + "(" + TMB_Helper.getString(response) + ")");
+        TMB_Helper.println("caller inbound receives response: " + responseName + "(" + TMB_Record.getString(response) + ")");
     }
 }

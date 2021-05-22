@@ -35,6 +35,7 @@ import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.metrics.MetricsUtils;
 import org.apache.zookeeper.test.ClientBase;
+import org.apache.zookeeper.trace.FaultInjectedException;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -149,7 +150,8 @@ public class RequestThrottlerTest extends ZKTestCase {
         }
 
         @Override
-        protected void pRequest(Request request) throws RequestProcessorException {
+        protected void pRequest(Request request) throws RequestProcessorException { // 3MileBeach
+        // protected void pRequest(Request request) throws RequestProcessorException {
             // keep the request in the processor as long as we want
             if (resumeProcess != null) {
                 try {

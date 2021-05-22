@@ -36,10 +36,7 @@ import org.apache.zookeeper.server.quorum.QuorumPeer.ServerState;
 import org.apache.zookeeper.server.quorum.QuorumPeerConfig.ConfigException;
 import org.apache.zookeeper.server.quorum.flexible.QuorumVerifier;
 import org.apache.zookeeper.server.util.ZxidUtils;
-import org.apache.zookeeper.trace.TMB_Event;
-import org.apache.zookeeper.trace.TMB_Helper;
-import org.apache.zookeeper.trace.TMB_Store;
-import org.apache.zookeeper.trace.TMB_Trace;
+import org.apache.zookeeper.trace.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -377,7 +374,7 @@ public class FastLeaderElection implements Election {
                                         response.buffer.get(bytes);
 
                                         try {
-                                            TMB_Helper.deserialize(new ByteArrayInputStream(bytes), trace);
+                                            TMB_Record.deserialize(trace, new ByteArrayInputStream(bytes));
                                         } catch (IOException e) {
 
                                         }
@@ -665,7 +662,7 @@ public class FastLeaderElection implements Election {
                     TMB_Store.getInstance().setTrace(procMeta, m.trace); // todo
 
                     try {
-                        bytes = TMB_Helper.serialize(m.trace);
+                        bytes = TMB_Record.serialize(m.trace);
 
                         // TMB_Helper.printf("[quorum-%d] add send event: %s\n", quorumId, m.toJSON());
                         // TMB_Helper.printf("[quorum-%d] add send trace: %d, %s\n", quorumId, m.trace.getEvents().size(), m.trace.toJSON());

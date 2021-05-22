@@ -6,6 +6,7 @@ import org.apache.zookeeper.server.quorum.QuorumPacket;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -115,21 +116,27 @@ public class TMB_Store {
         }
 
         public void setTrace(TMB_Trace trace_) {
-            this.lock.writeLock().lock();
-            QuorumTrace quorumTrace = this.traces.get(trace_.getId());
-            if (quorumTrace != null) {
-                quorumTrace.trace.mergeEventsUnsafe(trace_.getEvents());
-            } else {
-                quorumTrace = new QuorumTrace(this.quorumMeta, trace_.copy());
-            }
-            this.traces.put(trace_.getId(), quorumTrace);
-            this.lock.writeLock().unlock();
+            setTrace(trace_, trace_.getEvents().size());
         }
 
         // last newEvents events are new events
         public void setTrace(TMB_Trace trace_, int newEvents) {
-            this.lock.writeLock().lock();
+            List<TMB_Event> events_ = trace_.getEvents();
+            int eventSize = events_.size();
+            newEvents = Math.min(eventSize, newEvents);
+            if (newEvents == 0) {
+                return;
+            }
+            List<TMB_Event> add = events_.subList(eventSize - newEvents, eventSize);
 
+            this.lock.writeLock().lock();
+            QuorumTrace quorumTrace = this.traces.get(trace_.getId());
+            if (quorumTrace != null) {
+                quorumTrace.trace.mergeEventsUnsafe(add);
+            } else {
+                quorumTrace = new QuorumTrace(this.quorumMeta, trace_.copy());
+                this.traces.put(trace_.getId(), quorumTrace);
+            }
             this.lock.writeLock().unlock();
         }
 
@@ -180,6 +187,17 @@ public class TMB_Store {
         if (trace_.enabled()) {
             QuorumTraces quorumTraces = getQuorumTraces(quorumMeta);
             quorumTraces.setTrace(trace_);
+        }
+    }
+
+    public void setTrace(ProcessorMeta procMeta, TMB_Trace trace_, int newEvents) {
+        setTrace(procMeta.getQuorumMeta(), trace_, newEvents);
+    }
+
+    public void setTrace(QuorumMeta quorumMeta, TMB_Trace trace_, int newEvents) {
+        if (trace_.enabled()) {
+            QuorumTraces quorumTraces = getQuorumTraces(quorumMeta);
+            quorumTraces.setTrace(trace_, newEvents);
         }
     }
 
@@ -265,7 +283,7 @@ public class TMB_Store {
     public static void collectTrace(TMB_Store.ProcessorMeta procMeta, Record record, byte[] data) {
         if (data != null) {
             try {
-                TMB_Helper.deserialize(new ByteArrayInputStream(data), record);
+                TMB_Record.deserialize(record, new ByteArrayInputStream(data));
                 collectTrace(procMeta, record, TMB_Event.Type.SERVICE_RECV);
             } catch (IOException e) {
                 e.printStackTrace();

@@ -56,6 +56,7 @@ import org.apache.zookeeper.server.quorum.QuorumPeer;
 import org.apache.zookeeper.server.quorum.QuorumZooKeeperServer;
 import org.apache.zookeeper.server.util.RequestPathMetricsCollector;
 import org.apache.zookeeper.trace.TMB_Helper;
+import org.apache.zookeeper.trace.TMB_Record;
 import org.apache.zookeeper.trace.TMB_Store;
 import org.apache.zookeeper.txn.ErrorTxn;
 import org.slf4j.Logger;
@@ -647,7 +648,7 @@ public class FinalRequestProcessor implements RequestProcessor {
         updateStats(request, lastOp, lastZxid);
 
         try {
-            TMB_Helper.printf(procMeta, "request:%s(%s), response:%s(%s), lastOp:%s\n", requestName, TMB_Helper.getString(request.getTxn()), TMB_Helper.getClassNameFromObject(rsp), TMB_Helper.getString(rsp), lastOp); // 3MileBeach
+            TMB_Helper.printf(procMeta, "request:%s(%s), response:%s(%s), lastOp:%s\n", requestName, TMB_Record.getString(request.getTxn()), TMB_Helper.getClassNameFromObject(rsp), TMB_Record.getString(rsp), lastOp); // 3MileBeach
             if (path == null || rsp == null) {
                 // 3MileBeach starts
                 if (rsp == null) {

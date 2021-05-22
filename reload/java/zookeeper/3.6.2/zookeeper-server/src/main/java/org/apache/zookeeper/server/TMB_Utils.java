@@ -178,13 +178,13 @@ public class TMB_Utils {
             return;
         }
 
-        TMB_Event preEvent = trace.getEvents().get(0);
-        TMB_Trace trace_ = TMB_Store.getInstance().getTrace(procMeta.getQuorumMeta(), trace.getId());
-        trace_.mergeEventsUnsafe(trace.getEvents()); // trace_ is a copy, safe here
+        TMB_Store.getInstance().setTrace(procMeta.getQuorumMeta(), trace);
 
-        TMB_Event event = new TMB_Event(TMB_Event.Type.SERVICE_SEND, TMB_Helper.getClassNameFromObject(response), preEvent.getUuid(), procMeta);
-        trace_.addEvent(event);
+        // TODO: a get uuid from RequestExt
+        TMB_Event preEvent = trace.getEvents().get(0);
+        TMB_Trace trace_ = TMB_Store.getInstance().getTrace(procMeta, trace.getId());
         response.setTrace(trace_);
+        TMB_Record.appendEvent(procMeta, response, TMB_Event.Type.SERVICE_SEND, TMB_Helper.getClassNameFromObject(response), preEvent.getUuid());
     }
 
     public static NullPointerResponse processAckHelperBegins(TMB_Store.ProcessorMeta procMeta, byte[] data) {
@@ -249,14 +249,12 @@ public class TMB_Utils {
                 TMB_Trace trace = txn.getTrace();
                 if (trace.enabled()) {
                     // DRC, the trace is carried by txn
-
-                    TMB_Helper.checkTFIs(trace, messageName);
-
+                    trace.checkTFIs(messageName);
                     record.setTrace(trace);
                     TMB_Record.appendEvent(procMeta, record, TMB_Event.Type.SERVICE_SEND, messageName);
 
                     try {
-                        data = TMB_Helper.serialize(record);
+                        data = TMB_Record.serialize(record);
                     } catch (IOException e) {
                     }
                 }
@@ -269,15 +267,8 @@ public class TMB_Utils {
     public static void pRequestHelper(TMB_Store.ProcessorMeta procMeta, Request request, Record record, Record txn) {
         TMB_Trace trace = record.getTrace();
         if (trace.enabled()) {
-            List<TMB_Event> events = trace.getEvents();
-            if (events.size() != 0) {
-                TMB_Event lastEvent = events.get(events.size() - 1);
-                TMB_Event event = new TMB_Event(TMB_Event.Type.SERVICE_RECV, lastEvent.getMessage_name(), lastEvent.getUuid(), procMeta);
-                events.add(event); // TODO: a trace.addEvent(event)
-                trace.setEvents(events, 1);
-            }
-            RequestExt requestExt = new RequestExt(record, ProcessorFlag.RECV);
-            request.setRequestExt(requestExt);
+            TMB_Record.appendEvent(procMeta, record, TMB_Event.Type.SERVICE_RECV);
+            request.setRequestExt(new RequestExt(record, ProcessorFlag.RECV));
         }
         txn.setTrace(trace);
         request.setTxn(txn);
@@ -289,31 +280,29 @@ public class TMB_Utils {
         try {
             ByteBufferInputStream.byteBuffer2Record(data, record);
         } catch (IOException e) {
-            data.rewind();
             throw e;
+        } finally {
+            data.rewind();
         }
 
         TMB_Trace trace = record.getTrace();
-        if (trace != null) {
+        if (trace.enabled()) {
             request.setRequestExt(new RequestExt(record, ProcessorFlag.RECV));
             List<TMB_Event> events = trace.getEvents();
             int eventSize = events.size();
             if (eventSize > 0) {
                 TMB_Event lastEvent = events.get(eventSize - 1);
-
+                // TODO: (a) find a better place (if could) to capture the SERVICE_RECV event.
                 events.add(new TMB_Event(TMB_Event.Type.SERVICE_RECV, lastEvent.getMessage_name(), lastEvent.getUuid(), procMeta));
                 events.add(new TMB_Event(TMB_Event.Type.SERVICE_FRWD, lastEvent.getMessage_name(), TMB_Helper.UUID(), procMeta));
-                // TODO: a store
+                TMB_Store.getInstance().setTrace(procMeta, trace, 2);
+
                 ByteArrayOutputStream baos = new ByteArrayOutputStream(data.capacity() + EVENT_SERIALIZE_SIZE * 2);
                 BinaryOutputArchive boa = BinaryOutputArchive.getArchive(baos);
                 record.serialize(boa, "request");
 
                 request.request = ByteBuffer.wrap(baos.toByteArray());
-
-                return;
             }
         }
-
-        data.rewind();
     }
 }

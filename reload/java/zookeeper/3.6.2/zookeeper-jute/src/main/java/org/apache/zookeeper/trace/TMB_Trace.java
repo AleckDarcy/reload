@@ -170,6 +170,26 @@ public class TMB_Trace implements Record {
       updateTFIs(event);
     }
   }
+  public void checkTFIs(String messageName) throws FaultInjectedException {
+    for (TMB_TFI tfi: this.tfis) {
+      if (tfi.getName().equals(messageName) && (tfi.getEvent_type() & TMB_Event.Type.SERVICE_SEND) != 0) {
+        List<TMB_TFIMeta> metas = tfi.getAfter();
+        boolean injected = true;
+        if (metas != null && metas.size() > 0) {
+          for (TMB_TFIMeta meta : tfi.getAfter()) {
+            if (meta.getAlready() < meta.getTimes()) {
+              injected = false;
+              break;
+            }
+          }
+        }
+
+        if (injected) {
+          throw new FaultInjectedException(tfi.getType(), tfi.getDelay());
+        }
+      }
+    }
+  }
   // 3MileBeach ends
   public java.util.List<TMB_TFI> getTfis() {
     return tfis;

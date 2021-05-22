@@ -1172,7 +1172,7 @@ public class Leader extends LearnerMaster {
                     for (LearnerHandler f : forwardingFollowers) {
                         boolean injected = false;
                         try {
-                            TMB_Helper.checkTFIs(trace, record.getRequestName());
+                            trace.checkTFIs(record.getRequestName());
                         } catch (FaultInjectedException e) {
                             TMB_Helper.printf(procMeta, "commits to follower-%d, fault injected\n", i);
                             injected = true;
@@ -1190,7 +1190,7 @@ public class Leader extends LearnerMaster {
                         record.setTrace(trace);
 
                         try {
-                            byte[] data = TMB_Helper.serialize(record, qp.getData(), null);
+                            byte[] data = TMB_Record.serialize(record, qp.getData(), null);
 
                             if (i == forwardingFollowers.size() - 1) {
                                 qp.setData(data);
@@ -1242,7 +1242,7 @@ public class Leader extends LearnerMaster {
                                 for (LearnerHandler f : forwardingFollowers) {
                                     boolean injected = false;
                                     try {
-                                        TMB_Helper.checkTFIs(trace, lastEvent.getMessage_name());
+                                        trace.checkTFIs(lastEvent.getMessage_name());
                                     } catch (FaultInjectedException e) {
                                         TMB_Helper.printf(procMeta, "proposes to follower-%d, fault injected\n", i);
                                         injected = true;
