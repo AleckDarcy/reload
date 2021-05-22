@@ -1160,7 +1160,7 @@ public class Leader extends LearnerMaster {
             if (record != null) {
                 TMB_Trace trace = record.getTrace();
                 List<TMB_Event> events = trace.getEvents();
-                int eventSize = (events == null ? 0: events.size());
+                int eventSize = events.size();
                 if (eventSize > 0) {
                     String uuid = TMB_Helper.UUID();
                     TMB_Event event = new TMB_Event(TMB_Event.Type.LOGICAL_CMMT_READY, TMB_Event.MessageName.LEADER_COMMIT_READY, uuid, procMeta);

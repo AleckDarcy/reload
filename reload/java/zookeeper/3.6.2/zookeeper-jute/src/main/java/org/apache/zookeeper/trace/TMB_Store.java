@@ -119,7 +119,11 @@ public class TMB_Store {
             setTrace(trace_, trace_.getEvents().size());
         }
 
-        // last newEvents events are new events
+        /**
+         *
+         * @param trace_
+         * @param newEvents 1) actual number of new events guaranteed by new events' recorder; 2) trace_.getTrace().size()
+         */
         public void setTrace(TMB_Trace trace_, int newEvents) {
             List<TMB_Event> events_ = trace_.getEvents();
             int eventSize = events_.size();
@@ -268,7 +272,7 @@ public class TMB_Store {
      * @param eventType
      */
     public static void collectTrace(TMB_Store.ProcessorMeta procMeta, Record record, int eventType) {
-        TMB_Record.appendEvent(procMeta, record, eventType);
+        TMB_Record.addEvent(procMeta, record, eventType);
         collectTrace(procMeta, record);
     }
 

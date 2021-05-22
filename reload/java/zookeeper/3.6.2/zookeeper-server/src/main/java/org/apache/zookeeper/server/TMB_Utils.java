@@ -3,10 +3,8 @@ package org.apache.zookeeper.server;
 import org.apache.jute.BinaryOutputArchive;
 import org.apache.jute.Record;
 import org.apache.zookeeper.proto.NullPointerResponse;
-import org.apache.zookeeper.server.quorum.QuorumPacket;
 import org.apache.zookeeper.trace.*;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -183,8 +181,8 @@ public class TMB_Utils {
         // TODO: a get uuid from RequestExt
         TMB_Event preEvent = trace.getEvents().get(0);
         TMB_Trace trace_ = TMB_Store.getInstance().getTrace(procMeta, trace.getId());
+        trace.addEvent(procMeta, TMB_Event.Type.SERVICE_SEND, TMB_Helper.getClassNameFromObject(response), preEvent.getUuid());
         response.setTrace(trace_);
-        TMB_Record.appendEvent(procMeta, response, TMB_Event.Type.SERVICE_SEND, TMB_Helper.getClassNameFromObject(response), preEvent.getUuid());
     }
 
     public static NullPointerResponse processAckHelperBegins(TMB_Store.ProcessorMeta procMeta, byte[] data) {
@@ -250,9 +248,10 @@ public class TMB_Utils {
                 if (trace.enabled()) {
                     // DRC, the trace is carried by txn
                     trace.checkTFIs(messageName);
+                    trace.addEvent(procMeta, TMB_Event.Type.SERVICE_SEND, messageName);
                     record.setTrace(trace);
-                    TMB_Record.appendEvent(procMeta, record, TMB_Event.Type.SERVICE_SEND, messageName);
 
+                    // TODO: check txn.getTrace() == record.getTrace()
                     try {
                         data = TMB_Record.serialize(record);
                     } catch (IOException e) {
@@ -267,7 +266,7 @@ public class TMB_Utils {
     public static void pRequestHelper(TMB_Store.ProcessorMeta procMeta, Request request, Record record, Record txn) {
         TMB_Trace trace = record.getTrace();
         if (trace.enabled()) {
-            TMB_Record.appendEvent(procMeta, record, TMB_Event.Type.SERVICE_RECV);
+            trace.addEvent(procMeta, TMB_Event.Type.SERVICE_RECV);
             request.setRequestExt(new RequestExt(record, ProcessorFlag.RECV));
         }
         txn.setTrace(trace);

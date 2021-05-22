@@ -28,7 +28,6 @@ import org.apache.zookeeper.common.Time;
 import org.apache.zookeeper.proto.NullPointerResponse;
 import org.apache.zookeeper.server.Request;
 import org.apache.zookeeper.server.ServerMetrics;
-import org.apache.zookeeper.server.TMB_Utils;
 import org.apache.zookeeper.server.TxnLogEntry;
 import org.apache.zookeeper.server.quorum.QuorumPeer.QuorumServer;
 import org.apache.zookeeper.server.quorum.flexible.QuorumVerifier;
@@ -177,9 +176,7 @@ public class Follower extends Learner {
             TxnHeader hdr = logEntry.getHeader();
             Record txn = logEntry.getTxn();
             TMB_Helper.printf(procMeta, "processes proposal, request: %s\n", txn); // 3MileBeach
-            TMB_Record.appendEvent(procMeta, txn, TMB_Event.Type.SERVICE_RECV); // 3MileBeach
-            // TODO: a 1) trace = txn.getTrace().copy(), a appendEvent(procMeta, trace);
-            // TODO: a 2) print
+            TMB_Record.addEvent(procMeta, txn, TMB_Event.Type.SERVICE_RECV); // 3MileBeach
             TxnDigest digest = logEntry.getDigest();
             if (hdr.getZxid() != lastQueued + 1) {
                 LOG.warn(

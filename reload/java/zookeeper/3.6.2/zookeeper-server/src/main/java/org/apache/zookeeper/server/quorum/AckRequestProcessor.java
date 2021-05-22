@@ -19,7 +19,6 @@
 package org.apache.zookeeper.server.quorum;
 
 import org.apache.jute.Record;
-import org.apache.zookeeper.proto.NullPointerResponse;
 import org.apache.zookeeper.server.Request;
 import org.apache.zookeeper.server.RequestProcessor;
 import org.apache.zookeeper.server.ServerMetrics;
@@ -53,7 +52,7 @@ class AckRequestProcessor implements RequestProcessor {
     }
 
     /**
-     * Forward the request as an ACK to the leader
+     * Forwards the request as an ACK to the leader. UUID uses "FFFF" as a special suffix
      */
     public void processRequest(Request request) {
         QuorumPeer self = leader.self;
@@ -64,8 +63,7 @@ class AckRequestProcessor implements RequestProcessor {
             Record record = request.getTxn();
             TMB_Utils.RequestExt requestExt = request.getRequestExt();
             if (requestExt != null) {
-                TMB_Event event = new TMB_Event(TMB_Event.Type.SERVICE_RECV, TMB_Event.MessageName.QUORUM_ACK, requestExt.getUUID() + "-FFFF", procMeta);
-                record.getTrace().addEvent(event);
+                record.getTrace().addEvent(procMeta, TMB_Event.Type.SERVICE_RECV, TMB_Event.MessageName.QUORUM_ACK, requestExt.getUUID() + "-FFFF");
             }
             leader.processAck(self.getId(), request.zxid, record, null);
             // leader.processAck(self.getId(), request.zxid, null);

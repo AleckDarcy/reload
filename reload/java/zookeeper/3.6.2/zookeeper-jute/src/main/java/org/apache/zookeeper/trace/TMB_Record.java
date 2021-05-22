@@ -63,85 +63,17 @@ public class TMB_Record {
         return record.getTrace().toJSON();
     }
 
-    // TODO: a return a boolean value or the number of new events
-    /**
-     * Appends an events with eventType, messange Name and uuid.
-     * More specifically, appends the first ever event associated with a uuid.
-     * Make sure: 1) trace is valid (id != 0); 2) TODO: a check events is not empty?
-     * @param procMeta
-     * @param record
-     * @param eventType
-     * @param messageName
-     * @param uuid
-     * @return
-     */
-    private static Record appendEventUnsafe(TMB_Store.ProcessorMeta procMeta, Record record, int eventType, String messageName, String uuid) {
-        TMB_Trace trace = record.getTrace();
-        trace.addEvent(new TMB_Event(eventType, messageName, uuid, procMeta));
-
-        return record;
+    public static void addEvent(TMB_Store.ProcessorMeta procMeta, Record record, int eventType, String messageName, String uuid) {
+        record.getTrace().addEvent(procMeta, eventType, messageName, uuid);
     }
 
-    /**
-     * Appends new event with eventType, messageName, uuid.
-     * @param procMeta
-     * @param record
-     * @param eventType
-     * @param messageName
-     * @param uuid
-     * @return
-     */
-    public static Record appendEvent(TMB_Store.ProcessorMeta procMeta, Record record, int eventType, String messageName, String uuid) {
-        List<TMB_Event> events = record.getTrace().getEvents();
-        int eventSize = events.size();
-        if (eventSize > 0) {
-            return appendEventUnsafe(procMeta, record, eventType, messageName, uuid);
-        }
+    public static void addEvent(TMB_Store.ProcessorMeta procMeta, Record record, int eventType, String messageName) {
+        record.getTrace().addEvent(procMeta, eventType, messageName);
 
-        return record;
     }
 
-    /**
-     * Appends new event with eventType and messageName.
-     * Other information (uuid) is derived from last event of the current trace from record.
-     * @param procMeta
-     * @param record
-     * @param eventType
-     * @param messageName
-     * @return
-     */
-    public static Record appendEvent(TMB_Store.ProcessorMeta procMeta, Record record, int eventType, String messageName) {
-        List<TMB_Event> events = record.getTrace().getEvents();
-        int eventSize = events.size();
-        if (eventSize > 0) {
-            TMB_Event lastEvent = events.get(eventSize - 1);
-            String uuid = lastEvent.getUuid();
+    public static void addEvent(TMB_Store.ProcessorMeta procMeta, Record record, int eventType) {
+        record.getTrace().addEvent(procMeta, eventType);
 
-            return appendEventUnsafe(procMeta, record, eventType, messageName, uuid);
-        }
-
-        return record;
-    }
-
-    /**
-     * Appends new event with eventType.
-     * Other information (messageName, uuid) are derived from last event of the current trace from record.
-     * @param procMeta
-     * @param record
-     * @param eventType
-     * @return
-     */
-    public static Record appendEvent(TMB_Store.ProcessorMeta procMeta, Record record, int eventType) {
-        List<TMB_Event> events = record.getTrace().getEvents();
-        int eventSize = events.size();
-        if (eventSize > 0) {
-            TMB_Event lastEvent = events.get(eventSize - 1);
-            String uuid = lastEvent.getUuid();
-            String messageName = lastEvent.getMessage_name();
-
-            return appendEventUnsafe(procMeta, record, eventType, uuid, messageName);
-        }
-
-        return record;
     }
 }

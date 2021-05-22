@@ -88,13 +88,77 @@ public class TMB_Trace implements Record {
 
     return new TMB_Trace(id, req_event, events_, tfis_);
   }
+
+  /**
+   * Make sure 1) called by all events growth functions (except assignments); 2) called after checking enable()
+   * @param e
+   */
+  public void addEventUnsafe(TMB_Event e) {
+    events.add(e);
+    updateTFIs(e);
+  }
+  /**
+   * @param e
+   */
   public void addEvent(TMB_Event e) {
-    if (events != null) {
-      events.add(e);
-      updateTFIs(e);
+    if (enabled()) {
+      addEventUnsafe(e);
     }
   }
-  // unsafe function, make sure instance is a copy from TMB_Store
+  /**
+   * Appends new event with all essential information (eventType, messageName, uuid).
+   * @param procMeta
+   * @param eventType
+   * @param messageName
+   * @param uuid
+   * @return
+   */
+  public void addEvent(TMB_Store.ProcessorMeta procMeta, int eventType, String messageName, String uuid) {
+    if (enabled()) {
+      addEventUnsafe(new TMB_Event(eventType, messageName, uuid, procMeta));
+    }
+  }
+  /**
+   * Appends new event with eventType and messageName.
+   * Other information (uuid) is derived from last event of the current trace from record.
+   * @param procMeta
+   * @param eventType
+   * @param messageName
+   * @return
+   */
+  public void addEvent(TMB_Store.ProcessorMeta procMeta, int eventType, String messageName) {
+    if (enabled()) {
+      int eventSize = events.size();
+      if (eventSize > 0) {
+        TMB_Event lastEvent = events.get(eventSize - 1);
+        String uuid = lastEvent.getUuid();
+        addEventUnsafe(new TMB_Event(eventType, messageName, uuid, procMeta));
+      }
+    }
+  }
+  /**
+   * Appends new event with eventType.
+   * Other information (messageName, uuid) are derived from last event of the current trace from record.
+   * @param procMeta
+   * @param eventType
+   * @return
+   */
+  public void addEvent(TMB_Store.ProcessorMeta procMeta, int eventType) {
+    if (enabled()) {
+      int eventSize = events.size();
+      if (eventSize > 0) {
+        TMB_Event lastEvent = events.get(eventSize - 1);
+        String uuid = lastEvent.getUuid();
+        String messageName = lastEvent.getMessage_name();
+
+        addEventUnsafe(new TMB_Event(eventType, messageName, uuid, procMeta));
+      }
+    }
+  }
+  /**
+   * Unsafe under race conditions, make sure instance is 1) a copy from TMB_Store; 2) operated by only one thread
+   * @param events_
+   */
   public void mergeEventsUnsafe(List<TMB_Event> events_) {
     for (TMB_Event event_: events_) {
       boolean found = false;
@@ -105,21 +169,9 @@ public class TMB_Trace implements Record {
         }
       }
       if (!found) {
-        events.add(event_);
-        updateTFIs(event_);
+        addEventUnsafe(event_);
       }
     }
-  }
-  // make sure newEvents events are really "new" events
-  public void mergeEvents(List<TMB_Event> events_, int newEvents) {
-    int eventSize = events.size();
-    if (eventSize < newEvents) {
-      // TODO: a report
-      newEvents = eventSize;
-    }
-    List<TMB_Event> add = events_.subList(eventSize - newEvents, eventSize);
-    events.addAll(add);
-    updateTFIs(add);
   }
   public boolean enabled() {
     return id > 0;
