@@ -127,13 +127,11 @@ public class TMB_Trace implements Record {
    * @return
    */
   public void addEvent(TMB_Store.ProcessorMeta procMeta, int eventType, String messageName) {
-    if (enabled()) {
+    if (hasEvents()) {
       int eventSize = events.size();
-      if (eventSize > 0) {
-        TMB_Event lastEvent = events.get(eventSize - 1);
-        String uuid = lastEvent.getUuid();
-        addEventUnsafe(new TMB_Event(eventType, messageName, uuid, procMeta));
-      }
+      TMB_Event lastEvent = events.get(eventSize - 1);
+      String uuid = lastEvent.getUuid();
+      addEventUnsafe(new TMB_Event(eventType, messageName, uuid, procMeta));
     }
   }
   /**
@@ -144,15 +142,12 @@ public class TMB_Trace implements Record {
    * @return
    */
   public void addEvent(TMB_Store.ProcessorMeta procMeta, int eventType) {
-    if (enabled()) {
+    if (hasEvents()) {
       int eventSize = events.size();
-      if (eventSize > 0) {
-        TMB_Event lastEvent = events.get(eventSize - 1);
-        String uuid = lastEvent.getUuid();
-        String messageName = lastEvent.getMessage_name();
-
-        addEventUnsafe(new TMB_Event(eventType, messageName, uuid, procMeta));
-      }
+      TMB_Event lastEvent = events.get(eventSize - 1);
+      String uuid = lastEvent.getUuid();
+      String messageName = lastEvent.getMessage_name();
+      addEventUnsafe(new TMB_Event(eventType, messageName, uuid, procMeta));
     }
   }
   /**
@@ -175,6 +170,9 @@ public class TMB_Trace implements Record {
   }
   public boolean enabled() {
     return id > 0;
+  }
+  public boolean hasEvents() {
+    return id > 0 && events.size() > 0;
   }
   // 3MileBeach ends
   public long getReqEvent() {

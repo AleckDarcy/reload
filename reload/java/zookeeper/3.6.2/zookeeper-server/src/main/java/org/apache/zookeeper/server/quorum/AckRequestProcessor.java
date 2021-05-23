@@ -59,13 +59,14 @@ class AckRequestProcessor implements RequestProcessor {
         TMB_Utils.processorPrintsRequest(procMeta, "starts", self, request); // 3MileBeach
         if (self != null) {
             request.logLatency(ServerMetrics.getMetrics().PROPOSAL_ACK_CREATION_LATENCY);
-
+            // 3MileBeach starts
             Record record = request.getTxn();
             TMB_Utils.RequestExt requestExt = request.getRequestExt();
             if (requestExt != null) {
                 record.getTrace().addEvent(procMeta, TMB_Event.Type.SERVICE_RECV, TMB_Event.MessageName.QUORUM_ACK, requestExt.getUUID() + "-FFFF");
             }
             leader.processAck(self.getId(), request.zxid, record, null);
+            // 3MileBeach ends
             // leader.processAck(self.getId(), request.zxid, null);
         } else {
             LOG.error("Null QuorumPeer");

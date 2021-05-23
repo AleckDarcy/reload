@@ -24,9 +24,15 @@ public class TMB_Utils {
 
         public RequestExt(Record message, ProcessorFlag procFlag) {
             TMB_Trace trace = message.getTrace();
-            if (trace.enabled()) {
+            if (trace.hasEvents()) {
                 this.traced = true;
                 this.message = message;
+
+                if (procFlag == ProcessorFlag.RECV) {
+                    List<TMB_Event> events = trace.getEvents();
+                    int eventSize = events.size();
+                    this.uuid = events.get(eventSize - 1).getUuid();
+                }
             } else {
                 this.traced = false;
             }
@@ -52,6 +58,16 @@ public class TMB_Utils {
 
         public Record getMessage() {
             return this.message;
+        }
+
+        private final TMB_Trace disabledTrace = new TMB_Trace();
+
+        public TMB_Trace getTrace() {
+            if (this.message == null) {
+                return disabledTrace;
+            }
+
+            return this.message.getTrace();
         }
 
         public void setUUID(String uuid) {
@@ -101,7 +117,7 @@ public class TMB_Utils {
                 Long.toHexString(request.getHdr() == null ? -2 : request.getHdr().getZxid()),
                 request.getHdr() == null ? "unknown" : "" + request.getHdr().getType(),
                 request.request == null ? "null" : "valued",
-                txn == null ? "null" : String.format("%s-%d(trace:%s)", TMB_Helper.getClassNameFromObject(txn), txn.hashCode(), txn.getTrace().enabled()));
+                txn == null ? "null" : String.format("%s-%d(trace:%s)", TMB_Helper.getClassNameFromObject(txn), txn.hashCode(), txn.getTrace().hasEvents()));
 
         if (info != null && info.length() != 0) {
             TMB_Helper.printf(procMeta, 3, "%s, next:%s, request-%d:%s\n", info, nextName, request.hashCode(), requestStr);
@@ -126,7 +142,13 @@ public class TMB_Utils {
             return;
         }
 
+        TMB_Trace trace = requestExt.getTrace();
+        if (!trace.hasEvents()) {
+            return;
+        }
+
         int eventType = TMB_Event.Type.SERVICE_RECV;
+        String uuid;
         TMB_Utils.ProcessorFlag procFlag = request.getProcessorFlag();
         if (procFlag.isReceived()) {
             eventType = TMB_Event.Type.PROCESSOR_RECV;
@@ -134,22 +156,10 @@ public class TMB_Utils {
             requestExt.updateProcessorFlag(TMB_Utils.ProcessorFlag.RECV);
         }
 
-        Record record = requestExt.getMessage();
-        if (record == null) {
-            return;
-        }
-
-        TMB_Trace trace = record.getTrace();
-        if (!trace.enabled()) {
-            return;
-        }
-
         List<TMB_Event> events = trace.getEvents();
         String requestName = TMB_Helper.getClassNameFromObject(txn);
         TMB_Event preEvent = events.get(0); // TODO: a lastEvent?
-        TMB_Event event = new TMB_Event(eventType, requestName, preEvent.getUuid(), procMeta);
-        events.add(event);
-        trace.setEvents(events, 1);
+        trace.addEvent(procMeta, eventType, requestName, preEvent.getUuid());
 
         TMB_Store.getInstance().setTrace(procMeta, trace);
     }
@@ -161,18 +171,8 @@ public class TMB_Utils {
      * @param response
      */
     public static void processRequestHelperEnds(TMB_Store.ProcessorMeta procMeta, Request request, Record response) {
-        TMB_Utils.RequestExt requestExt = request.getRequestExt();
-        if (requestExt == null) {
-            return;
-        }
-
-        Record record = requestExt.getMessage();
-        if (record == null) {
-            return;
-        }
-
-        TMB_Trace trace = record.getTrace();
-        if (!trace.enabled()) {
+        TMB_Trace trace = request.getTraceFromExt();
+        if (!trace.hasEvents()) {
             return;
         }
 
@@ -199,7 +199,7 @@ public class TMB_Utils {
         }
 
         TMB_Trace trace = record.getTrace();
-        if (!trace.enabled()) {
+        if (!trace.hasEvents()) {
             return;
         }
 
@@ -232,7 +232,7 @@ public class TMB_Utils {
     public static void commitHelperEnds(TMB_Store.ProcessorMeta procMeta, Record record) {
         if (record != null) {
             TMB_Trace trace = record.getTrace();
-            if (trace.enabled()) {
+            if (trace.hasEvents()) {
                 TMB_Store.getInstance().setTrace(procMeta, trace);
             }
         }
@@ -245,7 +245,7 @@ public class TMB_Utils {
             if (txn != null) {
                 Record record = new NullPointerResponse(messageName);
                 TMB_Trace trace = txn.getTrace();
-                if (trace.enabled()) {
+                if (trace.hasEvents()) {
                     // DRC, the trace is carried by txn
                     trace.checkTFIs(messageName);
                     trace.addEvent(procMeta, TMB_Event.Type.SERVICE_SEND, messageName);
@@ -265,11 +265,11 @@ public class TMB_Utils {
 
     public static void pRequestHelper(TMB_Store.ProcessorMeta procMeta, Request request, Record record, Record txn) {
         TMB_Trace trace = record.getTrace();
-        if (trace.enabled()) {
+        if (trace.hasEvents()) {
             trace.addEvent(procMeta, TMB_Event.Type.SERVICE_RECV);
             request.setRequestExt(new RequestExt(record, ProcessorFlag.RECV));
+            txn.setTrace(trace);
         }
-        txn.setTrace(trace);
         request.setTxn(txn);
     }
 
@@ -285,23 +285,22 @@ public class TMB_Utils {
         }
 
         TMB_Trace trace = record.getTrace();
-        if (trace.enabled()) {
-            request.setRequestExt(new RequestExt(record, ProcessorFlag.RECV));
+        if (trace.hasEvents()) {
             List<TMB_Event> events = trace.getEvents();
             int eventSize = events.size();
-            if (eventSize > 0) {
-                TMB_Event lastEvent = events.get(eventSize - 1);
-                // TODO: (a) find a better place (if could) to capture the SERVICE_RECV event.
-                events.add(new TMB_Event(TMB_Event.Type.SERVICE_RECV, lastEvent.getMessage_name(), lastEvent.getUuid(), procMeta));
-                events.add(new TMB_Event(TMB_Event.Type.SERVICE_FRWD, lastEvent.getMessage_name(), TMB_Helper.UUID(), procMeta));
-                TMB_Store.getInstance().setTrace(procMeta, trace, 2);
+            request.setRequestExt(new RequestExt(record, ProcessorFlag.RECV));
 
-                ByteArrayOutputStream baos = new ByteArrayOutputStream(data.capacity() + EVENT_SERIALIZE_SIZE * 2);
-                BinaryOutputArchive boa = BinaryOutputArchive.getArchive(baos);
-                record.serialize(boa, "request");
+            TMB_Event lastEvent = events.get(eventSize - 1);
+            // TODO: (a) find a better place (if could) to capture the SERVICE_RECV event.
+            events.add(new TMB_Event(TMB_Event.Type.SERVICE_RECV, lastEvent.getMessage_name(), lastEvent.getUuid(), procMeta));
+            events.add(new TMB_Event(TMB_Event.Type.SERVICE_FRWD, lastEvent.getMessage_name(), TMB_Helper.UUID(), procMeta));
+            TMB_Store.getInstance().setTrace(procMeta, trace, 2);
 
-                request.request = ByteBuffer.wrap(baos.toByteArray());
-            }
+            ByteArrayOutputStream baos = new ByteArrayOutputStream(data.capacity() + EVENT_SERIALIZE_SIZE * 2);
+            BinaryOutputArchive boa = BinaryOutputArchive.getArchive(baos);
+            record.serialize(boa, "request");
+
+            request.request = ByteBuffer.wrap(baos.toByteArray());
         }
     }
 }

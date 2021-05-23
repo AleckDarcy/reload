@@ -188,7 +188,7 @@ public class TMB_Store {
     }
 
     public void setTrace(QuorumMeta quorumMeta, TMB_Trace trace_) {
-        if (trace_.enabled()) {
+        if (trace_.hasEvents()) {
             QuorumTraces quorumTraces = getQuorumTraces(quorumMeta);
             quorumTraces.setTrace(trace_);
         }
@@ -199,7 +199,7 @@ public class TMB_Store {
     }
 
     public void setTrace(QuorumMeta quorumMeta, TMB_Trace trace_, int newEvents) {
-        if (trace_.enabled()) {
+        if (trace_.hasEvents()) {
             QuorumTraces quorumTraces = getQuorumTraces(quorumMeta);
             quorumTraces.setTrace(trace_, newEvents);
         }

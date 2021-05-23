@@ -29,6 +29,7 @@ import org.apache.zookeeper.metrics.Summary;
 import org.apache.zookeeper.metrics.SummarySet;
 import org.apache.zookeeper.server.quorum.flexible.QuorumVerifier;
 import org.apache.zookeeper.server.util.AuthUtil;
+import org.apache.zookeeper.trace.TMB_Trace;
 import org.apache.zookeeper.txn.TxnDigest;
 import org.apache.zookeeper.txn.TxnHeader;
 
@@ -80,12 +81,28 @@ public class Request {
 
     public TMB_Utils.RequestExt requestExt;
 
+    public void setRequestExt(String uuid) {
+        if (this.requestExt != null) {
+            this.requestExt.setUUID(uuid);
+        }
+    }
+
     public void setRequestExt(TMB_Utils.RequestExt requestExt) {
         this.requestExt = requestExt;
     }
 
     public TMB_Utils.RequestExt getRequestExt() {
         return requestExt;
+    }
+
+    private final TMB_Trace disabledTrace = new TMB_Trace();
+
+    public TMB_Trace getTraceFromExt() {
+        if (this.requestExt == null) {
+            return disabledTrace;
+        }
+
+        return this.requestExt.getTrace();
     }
 
     public TMB_Utils.ProcessorFlag getProcessorFlag() {

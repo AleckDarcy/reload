@@ -1159,12 +1159,9 @@ public class Leader extends LearnerMaster {
         synchronized (forwardingFollowers) {
             if (record != null) {
                 TMB_Trace trace = record.getTrace();
-                List<TMB_Event> events = trace.getEvents();
-                int eventSize = events.size();
-                if (eventSize > 0) {
+                if (trace.hasEvents()) {
                     String uuid = TMB_Helper.UUID();
-                    TMB_Event event = new TMB_Event(TMB_Event.Type.LOGICAL_CMMT_READY, TMB_Event.MessageName.LEADER_COMMIT_READY, uuid, procMeta);
-                    trace.addEvent(event);
+                    trace.addEvent(procMeta, TMB_Event.Type.LOGICAL_CMMT_READY, TMB_Event.MessageName.LEADER_COMMIT_READY, uuid);
 
                     TMB_Helper.printf(procMeta, "commits to %d follower(s)\n", forwardingFollowers.size());
                     int i = 0;
@@ -1178,33 +1175,27 @@ public class Leader extends LearnerMaster {
                             injected = true;
                         }
 
-                        String uuid_ = String.format("%s-%04d", uuid, i);
-                        events.add(new TMB_Event(TMB_Event.Type.SERVICE_SEND, TMB_Event.MessageName.LEADER_COMMIT, uuid_, procMeta));
-                        trace.setEvents(events, 1);
+                        trace.addEvent(procMeta, TMB_Event.Type.SERVICE_SEND, TMB_Event.MessageName.LEADER_COMMIT, String.format("%s-%04d", uuid, i));
 
-                        if (injected) {
-                            i++;
-                            continue;
-                        }
+                        if (!injected) {
+                            try {
+                                byte[] data = TMB_Record.serialize(record, qp.getData(), null);
 
-                        record.setTrace(trace);
-
-                        try {
-                            byte[] data = TMB_Record.serialize(record, qp.getData(), null);
-
-                            if (i == forwardingFollowers.size() - 1) {
-                                qp.setData(data);
-                                f.queuePacket(qp);
-                            } else {
-                                QuorumPacket qp_ = new QuorumPacket(qp.getType(), qp.getZxid(), data, qp.getAuthinfo());
-                                f.queuePacket(qp_);
+                                if (i == forwardingFollowers.size() - 1) {
+                                    qp.setData(data);
+                                    f.queuePacket(qp);
+                                } else {
+                                    QuorumPacket qp_ = new QuorumPacket(qp.getType(), qp.getZxid(), data, qp.getAuthinfo());
+                                    f.queuePacket(qp_);
+                                }
+                            } catch (IOException e) { // shouldn't reach here
+                                e.printStackTrace();
                             }
-                        } catch (IOException e) { // shouldn't reach here
-                            e.printStackTrace();
                         }
 
                         i++;
                     }
+
                     TMB_Store.getInstance().setTrace(procMeta, trace);
 
                     return;
@@ -1223,42 +1214,28 @@ public class Leader extends LearnerMaster {
                     Record record = logEntry.getTxn();
                     if (record != null) {
                         TMB_Trace trace = record.getTrace();
-                        if (trace != null) {
+                        if (trace.hasEvents()) {
                             List<TMB_Event> events = trace.getEvents();
                             int eventSize = events.size();
-                            if (eventSize > 0) {
-                                TMB_Event lastEvent = events.get(eventSize - 1);
-                                String uuid = TMB_Helper.UUID();
+                            TMB_Event lastEvent = events.get(eventSize - 1);
+                            String uuid = TMB_Helper.UUID();
+                            request.setRequestExt(uuid);
+                            trace.addEvent(procMeta, TMB_Event.Type.LOGICAL_PRPS_READY, TMB_Event.MessageName.LEADER_PRPS_READY, uuid);
 
-                                TMB_Utils.RequestExt requestExt = request.getRequestExt();
-                                if (requestExt != null) {
-                                    requestExt.setUUID(uuid);
+                            TMB_Helper.printf(procMeta, "proposes to %d follower(s)\n", forwardingFollowers.size());
+                            int i = 0;
+                            for (LearnerHandler f : forwardingFollowers) {
+                                boolean injected = false;
+                                try { // TODO: (a) what kind of message(s) should we check here?
+                                    trace.checkTFIs(lastEvent.getMessage_name());
+                                } catch (FaultInjectedException e) {
+                                    TMB_Helper.printf(procMeta, "proposes to follower-%d, fault injected\n", i);
+                                    injected = true;
                                 }
 
-                                TMB_Event event = new TMB_Event(TMB_Event.Type.LOGICAL_PRPS_READY, TMB_Event.MessageName.LEADER_PRPS_READY, uuid, procMeta);
-                                trace.addEvent(event);
-                                TMB_Helper.printf(procMeta, "proposes to %d follower(s)\n", forwardingFollowers.size());
-                                int i = 0;
-                                for (LearnerHandler f : forwardingFollowers) {
-                                    boolean injected = false;
-                                    try {
-                                        trace.checkTFIs(lastEvent.getMessage_name());
-                                    } catch (FaultInjectedException e) {
-                                        TMB_Helper.printf(procMeta, "proposes to follower-%d, fault injected\n", i);
-                                        injected = true;
-                                    }
+                                trace.addEvent(procMeta, TMB_Event.Type.SERVICE_PRPS, lastEvent.getMessage_name(), String.format("%s-%04d", uuid, i));
 
-                                    String uuid_ = String.format("%s-%04d", uuid, i);
-                                    events.add(new TMB_Event(TMB_Event.Type.SERVICE_PRPS, lastEvent.getMessage_name(), uuid_, procMeta));
-                                    trace.setEvents(events, 1);
-
-                                    if (injected) {
-                                        i++;
-                                        continue;
-                                    }
-
-                                    record.setTrace(trace);
-
+                                if (!injected) {
                                     try {
                                         byte[] data = Util.marshallTxnEntry(logEntry.getHeader(), record, logEntry.getDigest());
 
@@ -1269,16 +1246,16 @@ public class Leader extends LearnerMaster {
                                             QuorumPacket qp_ = new QuorumPacket(qp.getType(), qp.getZxid(), data, qp.getAuthinfo());
                                             f.queuePacket(qp_);
                                         }
-                                    } catch (IOException e) { // shouldn't reach here
+                                    } catch (IOException e) { // TODO: (a) shouldn't reach here
                                         e.printStackTrace();
                                     }
-
-                                    i++;
                                 }
-                                TMB_Store.getInstance().setTrace(procMeta, trace);
 
-                                return;
+                                i++;
                             }
+                            TMB_Store.getInstance().setTrace(procMeta, trace);
+
+                            return;
                         }
                     }
 
