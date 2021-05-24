@@ -66,7 +66,6 @@ import org.apache.zookeeper.data.Stat;
 import org.apache.zookeeper.metrics.BaseTestMetricsProvider;
 import org.apache.zookeeper.metrics.impl.NullMetricsProvider;
 import org.apache.zookeeper.proto.CreateRequest;
-import org.apache.zookeeper.server.TMB_Utils;
 import org.apache.zookeeper.server.persistence.FileTxnSnapLog;
 import org.apache.zookeeper.server.quorum.Leader.Proposal;
 import org.apache.zookeeper.test.ClientBase;
@@ -118,8 +117,7 @@ public class QuorumPeerMainTest extends QuorumPeerTestBase {
 
         ZooKeeper zk1 = new ZooKeeper(addr + ":" + CLIENT_PORT_QP1, ClientBase.CONNECTION_TIMEOUT, this);
 
-        // 3MileBeach
-        zk1.TMBClientInitialize(null); // TODO: 3MileBeach
+        zk1.TMB_ClientInitialize(null); // 3MileBeach
 
         waitForOne(zk1, States.CONNECTED);
         zk1.create("/foo_q1", "foobar1".getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
@@ -127,20 +125,19 @@ public class QuorumPeerMainTest extends QuorumPeerTestBase {
         zk1.close();
 
         // 3MileBeach
-        zk1.TMBClientFinalize();
+        zk1.TMB_ClientFinalize();
 
         ZooKeeper zk2 = new ZooKeeper(addr + ":" + CLIENT_PORT_QP2, ClientBase.CONNECTION_TIMEOUT, this);
         waitForOne(zk2, States.CONNECTED);
 
-        // 3MileBeach
-        zk2.TMBClientInitialize(null); // TODO: 3MileBeach
+        zk2.TMB_ClientInitialize(null); // 3MileBeach
 
         zk2.create("/foo_q2", "foobar2".getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
         assertEquals(new String(zk2.getData("/foo_q2", null, null)), "foobar2");
         zk2.close();
 
         // 3MileBeach
-        zk2.TMBClientFinalize();
+        zk2.TMB_ClientFinalize();
 
         q1.shutdown();
         q2.shutdown();
@@ -203,7 +200,7 @@ public class QuorumPeerMainTest extends QuorumPeerTestBase {
             mt[i].start();
             // Recreate a client session since the previous session was not persisted.
             zk[i] = new ZooKeeper("127.0.0.1:" + clientPorts[i], ClientBase.CONNECTION_TIMEOUT, this);
-            zk[i].TMBClientInitialize(new TMB_Trace(TMB_Helper.newTraceId(), 0, new ArrayList<>(), new ArrayList<>()));
+            zk[i].TMB_ClientInitialize(new TMB_Trace(TMB_Helper.newTraceId(), 0, new ArrayList<>(), new ArrayList<>()));
         }
 
         waitForAll(zk, States.CONNECTED);
@@ -256,14 +253,14 @@ public class QuorumPeerMainTest extends QuorumPeerTestBase {
                 add(new TMB_TFIMeta(TMB_Helper.getClassNameFromName(CreateRequest.class.getCanonicalName()), TMB_Event.Type.SERVICE_PRPS, 2));
             }
         });
-        client.TMBClientInitialize(new TMB_Trace(TMB_Helper.newTraceId(), 0, new ArrayList<>(), new ArrayList<TMB_TFI>(){
+        client.TMB_ClientInitialize(new TMB_Trace(TMB_Helper.newTraceId(), 0, new ArrayList<>(), new ArrayList<TMB_TFI>(){
             {
 //                add(tfi);
             }
         }));
 
         client.create("/zk_follower", "zk".getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-        trace = client.TMBClientFinalize();
+        trace = client.TMB_ClientFinalize();
         TMB_Helper.printf("client-%d capture trace: %s\n", client.hashCode(), trace.toJSON());
 
 //                client.TMBClientInitialize(new TMB_Trace(TMB_Helper.newTraceId(), 0, new ArrayList<>(), new ArrayList<>()));

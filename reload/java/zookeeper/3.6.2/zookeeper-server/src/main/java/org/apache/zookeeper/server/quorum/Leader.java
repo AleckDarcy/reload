@@ -1215,9 +1215,7 @@ public class Leader extends LearnerMaster {
                     if (record != null) {
                         TMB_Trace trace = record.getTrace();
                         if (trace.hasEvents()) {
-                            List<TMB_Event> events = trace.getEvents();
-                            int eventSize = events.size();
-                            TMB_Event lastEvent = events.get(eventSize - 1);
+                            TMB_Event lastEvent = trace.getLastEvent();
                             String uuid = TMB_Helper.UUID();
                             request.setRequestExt(uuid);
                             trace.addEvent(procMeta, TMB_Event.Type.LOGICAL_PRPS_READY, TMB_Event.MessageName.LEADER_PRPS_READY, uuid);
@@ -1246,7 +1244,7 @@ public class Leader extends LearnerMaster {
                                             QuorumPacket qp_ = new QuorumPacket(qp.getType(), qp.getZxid(), data, qp.getAuthinfo());
                                             f.queuePacket(qp_);
                                         }
-                                    } catch (IOException e) { // TODO: (a) shouldn't reach here
+                                    } catch (IOException e) { // 3MileBeach: shouldn't reach here
                                         e.printStackTrace();
                                     }
                                 }

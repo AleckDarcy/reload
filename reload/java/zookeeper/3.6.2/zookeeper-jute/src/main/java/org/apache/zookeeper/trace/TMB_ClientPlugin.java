@@ -14,14 +14,14 @@ public class TMB_ClientPlugin {
         this.procMeta = new TMB_Store.ProcessorMeta(new TMB_Store.QuorumMeta(quorumId, String.format("client%s", quorumId)), this);
     }
 
-    public void TMBInitialize(TMB_Trace trace_) {
+    public void TMB_Initialize(TMB_Trace trace_) {
         this.trace = trace_;
     }
 
     /**
      * Gets and deletes traces
      */
-    public TMB_Trace TMBFinalize() {
+    public TMB_Trace TMB_Finalize() {
         TMB_Trace trace = TMB_Store.getInstance().getTrace(this.procMeta, this.trace.getId());
         if (trace != null) {
             TMB_Helper.printf(this.procMeta, "trace: %s\n", trace.toJSON());
@@ -38,7 +38,7 @@ public class TMB_ClientPlugin {
     /**
      * submitRequest -> generate request -> callerOutbound -> network -> callerInbound -> process response
      */
-    public void callerOutbound(String service, Record request) {
+    public void outbound(Record request) {
         TMB_Trace trace = request.getTrace();
         // stub, should be called only once per client-level request
         // TODO: let client generate trace_id
@@ -48,13 +48,7 @@ public class TMB_ClientPlugin {
             trace.setEvents(new ArrayList<>(), 0);
             TMB_Helper.println("stub trace with id:" + id);
 
-            String requestName = TMB_Helper.getClassNameFromObject(request);
-            String uuid = TMB_Helper.UUID();
-            TMB_Event event = new TMB_Event(TMB_Event.Type.SERVICE_SEND, requestName, uuid, service, TMB_ClientPlugin.class);
-
-            List<TMB_Event> events = trace.getEvents();
-            events.add(event);
-            trace.setEvents(events, 1);
+            trace.addEvent(this.procMeta, TMB_Event.Type.SERVICE_SEND, TMB_Helper.getClassNameFromObject(request), TMB_Helper.UUID());
 
             TMB_Store.getInstance().setTrace(this.procMeta, trace);
         }
@@ -62,14 +56,14 @@ public class TMB_ClientPlugin {
         TMB_Helper.println("caller outbound ejects request: " + TMB_Helper.getClassNameFromObject(request) + "(" + TMB_Record.getString(request) + ")");
     }
 
-    public void callerInbound(String service, Record response) {
+    public void inbound(Record response) {
         TMB_Trace trace = response.getTrace();
         if (!trace.hasEvents()) {
             return;
         }
 
         String responseName = TMB_Helper.getClassNameFromObject(response);
-        trace.addEvent(this.procMeta, TMB_Event.Type.SERVICE_RECV, responseName, trace.getEvents().get(0).getUuid());
+        trace.addEvent(this.procMeta, TMB_Event.Type.SERVICE_RECV, responseName, trace.getEventUnsafe(0).getUuid());
         TMB_Store.getInstance().setTrace(procMeta, trace);
 
         TMB_Helper.println("caller inbound receives response: " + responseName + "(" + TMB_Record.getString(response) + ")");

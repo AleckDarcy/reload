@@ -895,7 +895,7 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
             case OpCode.createSession:
             case OpCode.closeSession:
                 if (!request.isLocalSession()) {
-                    // 3MileBeach begins TODO: not implemented
+                    // 3MileBeach begins TODO: (a) not implemented
                     Record closeRequest = new NullPointerRequest("CloseRequest");
                     pRequest2Txn(request.type, zks.getNextZxid(), request, closeRequest, true);
                     // 3MileBeach ends

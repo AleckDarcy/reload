@@ -122,14 +122,14 @@ import org.slf4j.LoggerFactory;
 @InterfaceAudience.Public
 public class ZooKeeper implements AutoCloseable {
     // 3MileBeach begins
-    public TMB_ClientPlugin tmbClientPlugin;
+    public TMB_ClientPlugin tmb_ClientPlugin;
 
-    public void TMBClientInitialize(TMB_Trace trace) {
-        tmbClientPlugin.TMBInitialize(trace);
+    public void TMB_ClientInitialize(TMB_Trace trace) {
+        tmb_ClientPlugin.TMB_Initialize(trace);
     }
 
-    public TMB_Trace TMBClientFinalize() {
-        return tmbClientPlugin.TMBFinalize();
+    public TMB_Trace TMB_ClientFinalize() {
+        return tmb_ClientPlugin.TMB_Finalize();
     }
     // 3MileBeach ends
 
@@ -1013,7 +1013,7 @@ public class ZooKeeper implements AutoCloseable {
             canBeReadOnly);
         cnxn.start();
 
-        this.tmbClientPlugin = new TMB_ClientPlugin(cnxn.sendThread.getClientCnxnSocket().hashCode()); // 3MileBeach
+        this.tmb_ClientPlugin = new TMB_ClientPlugin(cnxn.sendThread.getClientCnxnSocket().hashCode()); // 3MileBeach
     }
 
     // @VisibleForTesting
@@ -1418,7 +1418,7 @@ public class ZooKeeper implements AutoCloseable {
         cnxn.seenRwServerBefore = true; // since user has provided sessionId
         cnxn.start();
 
-        this.tmbClientPlugin = new TMB_ClientPlugin(cnxn.sendThread.getClientCnxnSocket().hashCode()); // 3MileBeach
+        this.tmb_ClientPlugin = new TMB_ClientPlugin(cnxn.sendThread.getClientCnxnSocket().hashCode()); // 3MileBeach
     }
 
     /**
@@ -1714,7 +1714,7 @@ public class ZooKeeper implements AutoCloseable {
         RequestHeader h = new RequestHeader();
         h.setType(createMode.isContainer() ? ZooDefs.OpCode.createContainer : ZooDefs.OpCode.create);
         CreateRequest request = new CreateRequest();
-        request.setTrace(tmbClientPlugin.getTrace()); // 3MileBeach
+        request.setTrace(tmb_ClientPlugin.getTrace()); // 3MileBeach
         CreateResponse response = new CreateResponse();
         request.setData(data);
         request.setFlags(createMode.toFlag());
@@ -1989,11 +1989,11 @@ public class ZooKeeper implements AutoCloseable {
         DeleteRequest request = new DeleteRequest();
         request.setPath(serverPath);
         request.setVersion(version);
-//        TODO 3MileBeach
+        // 3MileBeach starts
         NullPointerResponse response = new NullPointerResponse();
         ReplyHeader r = cnxn.submitRequest(h, request, response, null);
-
-//        ReplyHeader r = cnxn.submitRequest(h, request, null, null);
+        // 3MileBeach ends
+        // ReplyHeader r = cnxn.submitRequest(h, request, null, null);
         if (r.getErr() != 0) {
             throw KeeperException.create(KeeperException.Code.get(r.getErr()), clientPath);
         }
@@ -3266,11 +3266,11 @@ public class ZooKeeper implements AutoCloseable {
         RequestHeader h = new RequestHeader();
         h.setType(opCode);
         Record request = getRemoveWatchesRequest(opCode, watcherType, serverPath);
-//        TODO 3MileBeach
+        // 3MileBeach starts
         Record response = new NullPointerResponse(TMB_Helper.getClassNameFromObject(request));
         ReplyHeader r = cnxn.submitRequest(h, request, response, null, wcb);
-
-//        ReplyHeader r = cnxn.submitRequest(h, request, null, null, wcb);
+        // 3MileBeach ends
+        // ReplyHeader r = cnxn.submitRequest(h, request, null, null, wcb);
         if (r.getErr() != 0) {
             throw KeeperException.create(KeeperException.Code.get(r.getErr()), clientPath);
         }

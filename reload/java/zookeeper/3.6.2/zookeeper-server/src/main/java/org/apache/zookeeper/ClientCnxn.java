@@ -1483,8 +1483,7 @@ public class ClientCnxn {
         try {
             RequestHeader h = new RequestHeader();
             h.setType(ZooDefs.OpCode.closeSession);
-            // 3MileBeach
-            submitRequest(h, new NullPointerRequest("CloseRequest"), new NullPointerResponse(), null);
+            submitRequest(h, new NullPointerRequest("CloseRequest"), new NullPointerResponse(), null); // 3MileBeach
             // submitRequest(h, null, null, null);
         } catch (InterruptedException e) {
             // ignore, close the send/event threads
@@ -1530,14 +1529,10 @@ public class ClientCnxn {
         ReplyHeader r = new ReplyHeader();
 
         // 3MileBeach begins
-        long idx = Time.currentElapsedTime();
-        String client = "client-" + sendThread.getClientCnxnSocket().hashCode();
-        // TMB_Helper.println("in submitRequest, idx: " + idx);
         if (request != null) {
-            this.zooKeeper.tmbClientPlugin.callerOutbound(client, request);
+            this.zooKeeper.tmb_ClientPlugin.outbound(request);
         } else {
             TMB_Helper.println("submit request, request is null, should be fixed by 3MileBeach");
-            new Exception().printStackTrace();
         }
         // 3MileBeach ends
 
@@ -1567,10 +1562,8 @@ public class ClientCnxn {
             sendThread.cleanAndNotifyState();
         }
 
-        // 3MileBeach
-        this.zooKeeper.tmbClientPlugin.callerInbound(client, response);
-
-        // TMB_Helper.println("out submitRequest, idx: " + idx);
+        this.zooKeeper.tmb_ClientPlugin.inbound(response); // 3MileBeach
+        // TMB_Helper.println("out submitRequest, idx: " + idx); // 3MileBeach
 
         return r;
     }

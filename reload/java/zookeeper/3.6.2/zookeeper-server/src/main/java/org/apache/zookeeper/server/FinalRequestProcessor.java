@@ -328,14 +328,12 @@ public class FinalRequestProcessor implements RequestProcessor {
             }
             case OpCode.closeSession: {
                 lastOp = "CLOS";
-
                 // 3MileBeach begins
                 NullPointerRequest closeRequest = new NullPointerRequest();
                 ByteBufferInputStream.byteBuffer2Record(request.request, closeRequest);
                 requestName = "CloseRequest";
                 rsp = new NullPointerResponse(requestName);
                 // 3MileBeach ends
-
                 err = Code.get(rc.err);
                 break;
             }
@@ -343,12 +341,10 @@ public class FinalRequestProcessor implements RequestProcessor {
                 lastOp = "SYNC";
                 SyncRequest syncRequest = new SyncRequest();
                 ByteBufferInputStream.byteBuffer2Record(request.request, syncRequest);
-
                 // 3MileBeach starts
                 requestName = "SyncRequest";
                 TMB_Helper.printf(procMeta, "sync request\n");
                 // 3MileBeach ends
-
                 rsp = new SyncResponse(syncRequest.getPath());
                 requestPathMetricsCollector.registerRequest(request.type, syncRequest.getPath());
                 break;
@@ -364,10 +360,9 @@ public class FinalRequestProcessor implements RequestProcessor {
                 // TODO we need to figure out the security requirement for this!
                 ExistsRequest existsRequest = new ExistsRequest();
                 ByteBufferInputStream.byteBuffer2Record(request.request, existsRequest);
-
-                // 3MileBeach
+                // 3MileBeach starts
                 requestName = "ExistsRequest";
-
+                // 3MileBeach ends
                 path = existsRequest.getPath();
                 if (path.indexOf('\0') != -1) {
                     throw new KeeperException.BadArgumentsException();
@@ -396,10 +391,9 @@ public class FinalRequestProcessor implements RequestProcessor {
                 // TODO we really should not need this
                 request.request.rewind();
                 ByteBufferInputStream.byteBuffer2Record(request.request, setWatches);
-
-                // 3MileBeach
+                // 3MileBeach starts
                 requestName = "SetWatches";
-
+                // 3MileBeach ends
                 long relativeZxid = setWatches.getRelativeZxid();
                 zks.getZKDatabase()
                    .setWatches(
@@ -418,10 +412,9 @@ public class FinalRequestProcessor implements RequestProcessor {
                 // TODO we really should not need this
                 request.request.rewind();
                 ByteBufferInputStream.byteBuffer2Record(request.request, setWatches);
-
-                // 3MileBeach
+                // 3MileBeach starts
                 requestName = "SetWatches2";
-
+                // 3MileBeach ends
                 long relativeZxid = setWatches.getRelativeZxid();
                 zks.getZKDatabase().setWatches(relativeZxid,
                         setWatches.getDataWatches(),
@@ -437,10 +430,9 @@ public class FinalRequestProcessor implements RequestProcessor {
                 AddWatchRequest addWatcherRequest = new AddWatchRequest();
                 ByteBufferInputStream.byteBuffer2Record(request.request,
                         addWatcherRequest);
-
-                // 3MileBeach
+                // 3MileBeach starts
                 requestName = "AddWatchRequest";
-
+                // 3MileBeach ends
                 zks.getZKDatabase().addWatch(addWatcherRequest.getPath(), cnxn, addWatcherRequest.getMode());
                 rsp = new ErrorResponse(0);
                 break;
@@ -449,10 +441,9 @@ public class FinalRequestProcessor implements RequestProcessor {
                 lastOp = "GETA";
                 GetACLRequest getACLRequest = new GetACLRequest();
                 ByteBufferInputStream.byteBuffer2Record(request.request, getACLRequest);
-
-                // 3MileBeach
+                // 3MileBeach starts
                 requestName = "GetACLRequest";
-
+                // 3MileBeach ends
                 path = getACLRequest.getPath();
                 DataNode n = zks.getZKDatabase().getNode(path);
                 if (n == null) {
@@ -496,10 +487,9 @@ public class FinalRequestProcessor implements RequestProcessor {
                 lastOp = "GETC";
                 GetChildrenRequest getChildrenRequest = new GetChildrenRequest();
                 ByteBufferInputStream.byteBuffer2Record(request.request, getChildrenRequest);
-
-                // 3MileBeach
+                // 3MileBeach starts
                 requestName = "GetChildrenRequest";
-
+                // 3MileBeach ends
                 path = getChildrenRequest.getPath();
                 rsp = handleGetChildrenRequest(getChildrenRequest, cnxn, request.authInfo);
                 requestPathMetricsCollector.registerRequest(request.type, path);
@@ -509,10 +499,9 @@ public class FinalRequestProcessor implements RequestProcessor {
                 lastOp = "GETACN";
                 GetAllChildrenNumberRequest getAllChildrenNumberRequest = new GetAllChildrenNumberRequest();
                 ByteBufferInputStream.byteBuffer2Record(request.request, getAllChildrenNumberRequest);
-
-                // 3MileBeach
+                // 3MileBeach starts
                 requestName = "GetAllChildrenNumberRequest";
-
+                // 3MileBeach ends
                 path = getAllChildrenNumberRequest.getPath();
                 DataNode n = zks.getZKDatabase().getNode(path);
                 if (n == null) {
@@ -533,10 +522,9 @@ public class FinalRequestProcessor implements RequestProcessor {
                 lastOp = "GETC";
                 GetChildren2Request getChildren2Request = new GetChildren2Request();
                 ByteBufferInputStream.byteBuffer2Record(request.request, getChildren2Request);
-
-                // 3MileBeach
+                // 3MileBeach starts
                 requestName = "GetChildren2Request";
-
+                // 3MileBeach ends
                 Stat stat = new Stat();
                 path = getChildren2Request.getPath();
                 DataNode n = zks.getZKDatabase().getNode(path);
@@ -559,10 +547,9 @@ public class FinalRequestProcessor implements RequestProcessor {
                 lastOp = "CHKW";
                 CheckWatchesRequest checkWatches = new CheckWatchesRequest();
                 ByteBufferInputStream.byteBuffer2Record(request.request, checkWatches);
-
-                // 3MileBeach
+                // 3MileBeach starts
                 requestName = "CheckWatchesRequest";
-
+                // 3MileBeach ends
                 WatcherType type = WatcherType.fromInt(checkWatches.getType());
                 path = checkWatches.getPath();
                 boolean containsWatcher = zks.getZKDatabase().containsWatcher(path, type, cnxn);
@@ -577,10 +564,9 @@ public class FinalRequestProcessor implements RequestProcessor {
                 lastOp = "REMW";
                 RemoveWatchesRequest removeWatches = new RemoveWatchesRequest();
                 ByteBufferInputStream.byteBuffer2Record(request.request, removeWatches);
-
-                // 3MileBeach
+                // 3MileBeach starts
                 requestName = "RemoveWatchesRequest";
-
+                // 3MileBeach ends
                 WatcherType type = WatcherType.fromInt(removeWatches.getType());
                 path = removeWatches.getPath();
                 boolean removed = zks.getZKDatabase().removeWatch(path, type, cnxn);
@@ -595,10 +581,9 @@ public class FinalRequestProcessor implements RequestProcessor {
                 lastOp = "GETE";
                 GetEphemeralsRequest getEphemerals = new GetEphemeralsRequest();
                 ByteBufferInputStream.byteBuffer2Record(request.request, getEphemerals);
-
-                // 3MileBeach
+                // 3MileBeach starts
                 requestName = "GetEphemeralsRequest";
-
+                // 3MileBeach ends
                 String prefixPath = getEphemerals.getPrefixPath();
                 Set<String> allEphems = zks.getZKDatabase().getDataTree().getEphemerals(request.sessionId);
                 List<String> ephemerals = new ArrayList<>();

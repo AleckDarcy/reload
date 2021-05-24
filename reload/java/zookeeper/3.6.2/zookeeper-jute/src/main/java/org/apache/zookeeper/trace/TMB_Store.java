@@ -75,12 +75,27 @@ public class TMB_Store {
         public int recorder;
         private TMB_Trace trace;
 
-        QuorumTrace(QuorumMeta quorumMeta, TMB_Trace trace) { // make sure trace has events
+        /**
+         * make sure trace has events
+         * @param quorumMeta
+         * @param trace
+         */
+        QuorumTrace(QuorumMeta quorumMeta, TMB_Trace trace) {
             this.quorumMeta = quorumMeta;
             this.trace = trace;
 
-            // TODO: a 1) get uuid of the last event; 2) find the first event of this uuid; 3) check this event
-            if (trace.getEvents().get(0).getService().equals(quorumMeta.name)) {
+            TMB_Event lastEvent = trace.getLastEvent();
+            String uuid = lastEvent.getUuid();
+
+            TMB_Event firstEvent = null;
+            for (TMB_Event event: trace.getEvents()) {
+                if (event.getUuid().equals(uuid)) {
+                    firstEvent = event;
+                    break;
+                }
+            }
+
+            if (firstEvent.getService().equals(quorumMeta.name)) {
                 this.recorder = REQUESTER;
             } else {
                 this.recorder = RESPONDER;
@@ -116,7 +131,7 @@ public class TMB_Store {
         }
 
         public void setTrace(TMB_Trace trace_) {
-            setTrace(trace_, trace_.getEvents().size());
+            setTrace(trace_, trace_.getEventSize());
         }
 
         /**
@@ -125,13 +140,12 @@ public class TMB_Store {
          * @param newEvents 1) actual number of new events guaranteed by new events' recorder; 2) trace_.getTrace().size()
          */
         public void setTrace(TMB_Trace trace_, int newEvents) {
-            List<TMB_Event> events_ = trace_.getEvents();
-            int eventSize = events_.size();
+            int eventSize = trace_.getEventSize();
             newEvents = Math.min(eventSize, newEvents);
             if (newEvents == 0) {
                 return;
             }
-            List<TMB_Event> add = events_.subList(eventSize - newEvents, eventSize);
+            List<TMB_Event> add = trace_.getEventsUnsafe(eventSize - newEvents, eventSize);
 
             this.lock.writeLock().lock();
             QuorumTrace quorumTrace = this.traces.get(trace_.getId());
@@ -176,6 +190,10 @@ public class TMB_Store {
         this.lock.readLock().lock();
         QuorumTraces quorumTraces = getQuorumTraces(quorumMeta);
         this.lock.readLock().unlock();
+
+        if (quorumTraces == null) {
+            return;
+        }
 
         QuorumTrace quorumTrace = quorumTraces.getQuorumTrace(trace_.getId());
         if (quorumTrace != null && quorumTrace.recorder == RESPONDER) {
@@ -276,19 +294,20 @@ public class TMB_Store {
         collectTrace(procMeta, record);
     }
 
-    // TODO: a all event are newly witnessed events
     /**
      * Called when quorum processes the incoming message.
      * Uses TMB_Event.SERVICE_RECV as default value of eventType.
      * @param procMeta
-     * @param record    destination of deserialization
-     * @param data      source of deserialization
+     * @param record   destination of deserialization
+     * @param data     source of deserialization
      */
     public static void collectTrace(TMB_Store.ProcessorMeta procMeta, Record record, byte[] data) {
         if (data != null) {
             try {
                 TMB_Record.deserialize(record, new ByteArrayInputStream(data));
-                collectTrace(procMeta, record, TMB_Event.Type.SERVICE_RECV);
+                if (record.getTrace().hasEvents()) {
+                    collectTrace(procMeta, record, TMB_Event.Type.SERVICE_RECV);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }

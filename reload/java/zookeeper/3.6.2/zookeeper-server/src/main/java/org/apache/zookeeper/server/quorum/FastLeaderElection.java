@@ -379,11 +379,9 @@ public class FastLeaderElection implements Election {
 
                                         }
 
-                                        List<TMB_Event> events = trace.getEvents();
-                                        int eventSize = events.size();
-                                        if (eventSize != 0) {
+                                        TMB_Event lastEvent = trace.getLastEvent();
+                                        if (lastEvent != null) {
                                             // TMB_Helper.printf("[quorum-%d] event size: %d\n", quorumId, eventSize);
-                                            TMB_Event lastEvent = events.get(eventSize - 1);
                                             uuid = lastEvent.getUuid();
                                             trace.addEvent(procMeta, TMB_Event.Type.SERVICE_RECV, lastEvent.getMessage_name(), uuid);
                                             TMB_Store.getInstance().setTrace(procMeta, trace);
@@ -589,9 +587,11 @@ public class FastLeaderElection implements Election {
                     } catch (InterruptedException e) {
                         LOG.warn("Interrupted Exception while waiting for new message", e);
                     } finally {
+                        // 3MileBeach starts
                         if (trace.enabled()) {
-                            TMB_Store.getInstance().quit(procMeta.getQuorumMeta(), trace); // 3MileBeach
+                            TMB_Store.getInstance().quit(procMeta.getQuorumMeta(), trace);
                         }
+                        // 3MileBeach ends
                     }
                 }
                 LOG.info("WorkerReceiver is down");
@@ -631,7 +631,6 @@ public class FastLeaderElection implements Election {
                 LOG.info("WorkerSender is down");
             }
 
-            // TODO: 3MileBeach
             /**
              * Called by run() once there is a new message to send.
              *

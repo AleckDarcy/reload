@@ -92,7 +92,7 @@ public class Request {
     }
 
     public TMB_Utils.RequestExt getRequestExt() {
-        return requestExt;
+        return this.requestExt;
     }
 
     private final TMB_Trace disabledTrace = new TMB_Trace();

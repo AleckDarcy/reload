@@ -22,6 +22,7 @@ package org.apache.zookeeper.trace;
 import org.apache.jute.*;
 import org.apache.jute.Record;
 import org.apache.yetus.audience.InterfaceAudience;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +34,7 @@ import java.util.List;
 @InterfaceAudience.Public
 public class TMB_Trace implements Record {
   private long id;
-  private long req_event; // TODO: a delete
+  private long req_event; // TODO: (a) delete
   private java.util.List<TMB_Event> events;
   private java.util.List<TMB_TFI> tfis;
   public TMB_Trace() {
@@ -174,6 +175,9 @@ public class TMB_Trace implements Record {
   public boolean hasEvents() {
     return id > 0 && events.size() > 0;
   }
+  public int getEventSize() {
+    return events.size();
+  }
   // 3MileBeach ends
   public long getReqEvent() {
     return req_event;
@@ -199,6 +203,33 @@ public class TMB_Trace implements Record {
       updateTFIs(m_.get(i));
     }
   }
+  /**
+   *
+   * @param id make sure id is valid: 1) 0 <= id < events.size(); 2) id = -1
+   * @return
+   */
+  public TMB_Event getEventUnsafe(int id) {
+    if (id == -1) {
+      return getLastEvent();
+    }
+    return events.get(id);
+  }
+  public TMB_Event getLastEvent() {
+    int eventSize = events.size();
+    if (eventSize > 0) {
+      return events.get(eventSize - 1);
+    }
+    return null;
+  }
+  /**
+   * make sure 0 <= fromIndex <= toIndex <= events.size()
+   * @param fromIndex
+   * @param toIndex
+   * @return
+   */
+  public List<TMB_Event> getEventsUnsafe(int fromIndex, int toIndex) {
+    return events.subList(fromIndex, toIndex);
+  }
   public void updateTFIs(TMB_Event event) {
     boolean updated = false;
     for (TMB_TFI tfi: tfis) {
@@ -211,7 +242,6 @@ public class TMB_Trace implements Record {
     }
 
     if (updated) {
-      new Exception().printStackTrace();
       TMB_Helper.printf("[TMB_Store] updated!!! %s, %s\n", tfis, event);
     }
   }
