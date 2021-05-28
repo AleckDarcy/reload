@@ -23,7 +23,6 @@ import java.net.Socket;
 import java.net.SocketAddress;
 
 import org.apache.jute.Record;
-import org.apache.zookeeper.proto.NullPointerResponse;
 import org.apache.zookeeper.server.Request;
 import org.apache.zookeeper.server.ZKDatabase;
 import org.apache.zookeeper.server.quorum.auth.QuorumAuthServer;

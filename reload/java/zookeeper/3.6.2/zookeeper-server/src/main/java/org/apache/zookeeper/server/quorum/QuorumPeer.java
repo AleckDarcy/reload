@@ -82,7 +82,6 @@ import org.apache.zookeeper.server.util.JvmPauseMonitor;
 import org.apache.zookeeper.server.util.ZxidUtils;
 import org.apache.zookeeper.trace.TMB_Helper;
 import org.apache.zookeeper.trace.TMB_Store;
-import org.apache.zookeeper.trace.TMB_Trace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

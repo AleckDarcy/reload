@@ -22,7 +22,6 @@ package org.apache.zookeeper.trace;
 import org.apache.jute.*;
 import org.apache.jute.Record;
 import org.apache.yetus.audience.InterfaceAudience;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,7 +88,6 @@ public class TMB_Trace implements Record {
 
     return new TMB_Trace(id, req_event, events_, tfis_);
   }
-
   /**
    * Make sure 1) called by all events growth functions (except assignments); 2) called after checking enable()
    * @param e

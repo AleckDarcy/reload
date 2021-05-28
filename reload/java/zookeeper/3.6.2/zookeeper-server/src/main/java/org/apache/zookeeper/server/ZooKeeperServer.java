@@ -1610,7 +1610,6 @@ public class ZooKeeperServer implements SessionExpirer, ServerStats.Provider {
             processSasl(incomingBuffer, cnxn, h);
         } else {
             if (shouldRequireClientSaslAuth() && !hasCnxSASLAuthenticated(cnxn)) {
-                TMB_Helper.println("process packet, sends direct response");
                 ReplyHeader replyHeader = new ReplyHeader(h.getXid(), 0, Code.SESSIONCLOSEDREQUIRESASLAUTH.intValue());
                 cnxn.sendResponse(replyHeader, null, "response");
                 cnxn.sendCloseSession();

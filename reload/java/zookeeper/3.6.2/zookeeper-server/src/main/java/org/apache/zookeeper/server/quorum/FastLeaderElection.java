@@ -142,26 +142,15 @@ public class FastLeaderElection implements Election {
          * epoch of the proposed leader
          */ long peerEpoch;
 
-        /*
-         * 3MileBeach trace
-         */ TMB_Trace trace;
-
         // 3MileBeach begins
+        TMB_Trace trace;
+
         public Notification() {
             this.trace = new TMB_Trace();
         }
 
         public String toJSON() {
-            return String.format("{" +
-                            "\"version\":%d," +
-                            "\"leader\":%d," +
-                            "\"zxid\":%d," +
-                            "\"electionEpoch\":%d," +
-                            "\"state\":\"%s\"," +
-                            "\"sid\":%d," +
-                            "\"peerEpoch\":%d," +
-                            "\"trace\":%s" +
-                            "}",
+            return String.format("{\"version\":%d,\"leader\":%d,\"zxid\":%d,\"electionEpoch\":%d,\"state\":\"%s\",\"sid\":%d,\"peerEpoch\":%d,\"trace\":%s}",
                     this.version, this.leader, this.zxid, this.electionEpoch, this.state, this.sid, this.peerEpoch, this.trace.toJSON());
         }
         // 3MileBeach ends
@@ -204,17 +193,7 @@ public class FastLeaderElection implements Election {
 
         // 3MileBeach
         public String toJSON() {
-            return String.format("{" +
-                    "\"leader\":%d," +
-                    "\"zxid\":%d," +
-                    "\"electionEpoch\":%d," +
-                    "\"state\":\"%s\"," +
-                    "\"sid\":%d," +
-                    "\"peerEpoch\":%d," +
-                    "\"trace\":%s," +
-                    "\"name\":\"%s\"," +
-                    "\"uuid\":\"%s\"" +
-                    "}",
+            return String.format("{\"leader\":%d,\"zxid\":%d,\"electionEpoch\":%d,\"state\":\"%s\",\"sid\":%d,\"peerEpoch\":%d,\"trace\":%s,\"name\":\"%s\",\"uuid\":\"%s\"}",
                     this.leader, this.zxid, this.electionEpoch, this.state, this.sid, this.peerEpoch, this.trace.toJSON(), this.name, this.uuid);
         }
 
@@ -247,17 +226,11 @@ public class FastLeaderElection implements Election {
          */ long peerEpoch;
 
         // 3MileBeach starts
-        /*
-         * 3MileBeach trace
-         */ TMB_Trace trace;
+        TMB_Trace trace;
 
-        /*
-         * Name
-         */ String name;
+        String name;
 
-        /*
-         * UUID
-         */ String uuid;
+        String uuid;
         // 3MileBeach ends
     }
 
@@ -375,9 +348,7 @@ public class FastLeaderElection implements Election {
 
                                         try {
                                             TMB_Record.deserialize(trace, new ByteArrayInputStream(bytes));
-                                        } catch (IOException e) {
-
-                                        }
+                                        } catch (IOException e) {}
 
                                         TMB_Event lastEvent = trace.getLastEvent();
                                         if (lastEvent != null) {
@@ -651,9 +622,7 @@ public class FastLeaderElection implements Election {
                         bytes = TMB_Record.serialize(trace);
                         // TMB_Helper.printf("[quorum-%d] add send event: %s\n", quorumId, m.toJSON());
                         // TMB_Helper.printf("[quorum-%d] add send trace: %d, %s\n", quorumId, m.trace.getEvents().size(), m.trace.toJSON());
-                    } catch (IOException e) {
-
-                    }
+                    } catch (IOException e) {}
                 }
                 ByteBuffer requestBuffer = buildMsg(m.state.ordinal(), m.leader, m.zxid, m.electionEpoch, m.peerEpoch, m.configData, bytes);
                 // 3MileBeach ends

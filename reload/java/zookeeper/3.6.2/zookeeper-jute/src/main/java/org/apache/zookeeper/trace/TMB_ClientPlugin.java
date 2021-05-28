@@ -3,7 +3,6 @@ package org.apache.zookeeper.trace;
 import org.apache.jute.Record;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class TMB_ClientPlugin {
     private TMB_Store.ProcessorMeta procMeta;

@@ -938,7 +938,6 @@ public class Leader extends LearnerMaster {
                         + "leader anymore, setting allowedToCommit=false", self.isReconfigEnabled()));
                 allowedToCommit = false;
             }
-
             // 3MileBeach starts
             TMB_Helper.printf(procMeta, "let's commit and activate! request %s\n", p.request.getTxn());
             NullPointerResponse record = TMB_Utils.commitHelperBegins(procMeta, p.request, TMB_Event.MessageName.LEADER_COMMIT);
@@ -946,7 +945,6 @@ public class Leader extends LearnerMaster {
             informAndActivate(p, designatedLeader);
             TMB_Utils.commitHelperEnds(procMeta, record);
             // 3MileBeach ends
-
             // // we're sending the designated leader, and if the leader is changing the followers are
             // // responsible for closing the connection - this way we are sure that at least a majority of them
             // // receive the commit message.
@@ -955,7 +953,6 @@ public class Leader extends LearnerMaster {
             // //turnOffFollowers();
         } else {
             p.request.logLatency(ServerMetrics.getMetrics().QUORUM_ACK_LATENCY);
-
             // 3MileBeach starts
             TMB_Helper.printf(procMeta, "let's commit! request %s\n", p.request.getTxn());
             NullPointerResponse record = TMB_Utils.commitHelperBegins(procMeta, p.request, TMB_Event.MessageName.LEADER_COMMIT);
@@ -963,7 +960,6 @@ public class Leader extends LearnerMaster {
             inform(p);
             TMB_Utils.commitHelperEnds(procMeta, record);
             // 3MileBeach ends
-
             // commit(zxid);
             // inform(p);
         }

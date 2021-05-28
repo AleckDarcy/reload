@@ -95,15 +95,15 @@ public class Request {
         return this.requestExt;
     }
 
-    private final TMB_Trace disabledTrace = new TMB_Trace();
-
-    public TMB_Trace getTraceFromExt() {
-        if (this.requestExt == null) {
-            return disabledTrace;
-        }
-
-        return this.requestExt.getTrace();
-    }
+//    private final TMB_Trace disabledTrace = new TMB_Trace();
+//
+//    public TMB_Trace getTraceFromExt() {
+//        if (this.requestExt == null) {
+//            return disabledTrace;
+//        }
+//
+//        return this.requestExt.getTrace();
+//    }
 
     public TMB_Utils.ProcessorFlag getProcessorFlag() {
         if (requestExt != null) {
@@ -113,11 +113,11 @@ public class Request {
         return null;
     }
 
-    public void updateProcessorFlag(TMB_Utils.ProcessorFlag procFlag) {
-        if (requestExt != null) {
-            requestExt.getProcessorFlag().update(procFlag);
-        }
-    }
+//    public void updateProcessorFlag(TMB_Utils.ProcessorFlag procFlag) {
+//        if (requestExt != null) {
+//            requestExt.getProcessorFlag().update(procFlag);
+//        }
+//    }
     // 3MileBeach ends
 
     // public final ByteBuffer request;

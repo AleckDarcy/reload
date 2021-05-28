@@ -87,19 +87,13 @@ public class MultiOperationRecord implements Record, Iterable<Op> {
         }
     }
 
-    /**
-     * 3MileBeach
-     * @return trace
-     */
+    // 3MileBeach starts
     public org.apache.zookeeper.trace.TMB_Trace getTrace() {
         return null;
     }
 
-    /**
-     * 3MileBeach
-     * @param trace
-     */
     public void setTrace(org.apache.zookeeper.trace.TMB_Trace trace) {}
+    // 3MileBeach ends
 
     @Override
     public void serialize(OutputArchive archive, String tag) throws IOException {

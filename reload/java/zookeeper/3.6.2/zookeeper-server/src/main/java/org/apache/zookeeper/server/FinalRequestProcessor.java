@@ -100,7 +100,7 @@ public class FinalRequestProcessor implements RequestProcessor {
         // 3MileBeach starts
         String requestName = TMB_Helper.getClassNameFromObject(request.getTxn());
         TMB_Utils.processRequestHelperBegins(procMeta, request);
-        TMB_Utils.processorPrintsRequest(procMeta, "starts", null, request); // 3MileBeach
+        TMB_Utils.processorPrintsRequest(procMeta, "starts", null, request);
         // 3MileBeach ends
         LOG.debug("Processing request:: {}", request);
 

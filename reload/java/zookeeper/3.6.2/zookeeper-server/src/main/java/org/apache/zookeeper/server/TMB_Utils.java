@@ -8,7 +8,6 @@ import org.apache.zookeeper.trace.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.List;
 
 public class TMB_Utils {
     public static final int EVENT_SERIALIZE_SIZE = 100;

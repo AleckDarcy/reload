@@ -1720,8 +1720,6 @@ public class ZooKeeper implements AutoCloseable {
         request.setFlags(createMode.toFlag());
         request.setPath(serverPath);
         request.setAcl(acl);
-
-
         ReplyHeader r = cnxn.submitRequest(h, request, response, null);
         if (r.getErr() != 0) {
             throw KeeperException.create(KeeperException.Code.get(r.getErr()), clientPath);
@@ -1989,10 +1987,7 @@ public class ZooKeeper implements AutoCloseable {
         DeleteRequest request = new DeleteRequest();
         request.setPath(serverPath);
         request.setVersion(version);
-        // 3MileBeach starts
-        NullPointerResponse response = new NullPointerResponse();
-        ReplyHeader r = cnxn.submitRequest(h, request, response, null);
-        // 3MileBeach ends
+        ReplyHeader r = cnxn.submitRequest(h, request, new NullPointerResponse(), null); // 3MileBeach
         // ReplyHeader r = cnxn.submitRequest(h, request, null, null);
         if (r.getErr() != 0) {
             throw KeeperException.create(KeeperException.Code.get(r.getErr()), clientPath);
@@ -3266,10 +3261,7 @@ public class ZooKeeper implements AutoCloseable {
         RequestHeader h = new RequestHeader();
         h.setType(opCode);
         Record request = getRemoveWatchesRequest(opCode, watcherType, serverPath);
-        // 3MileBeach starts
-        Record response = new NullPointerResponse(TMB_Helper.getClassNameFromObject(request));
-        ReplyHeader r = cnxn.submitRequest(h, request, response, null, wcb);
-        // 3MileBeach ends
+        ReplyHeader r = cnxn.submitRequest(h, request, new NullPointerResponse(TMB_Helper.getClassNameFromObject(request)), null, wcb); // 3MileBeach
         // ReplyHeader r = cnxn.submitRequest(h, request, null, null, wcb);
         if (r.getErr() != 0) {
             throw KeeperException.create(KeeperException.Code.get(r.getErr()), clientPath);

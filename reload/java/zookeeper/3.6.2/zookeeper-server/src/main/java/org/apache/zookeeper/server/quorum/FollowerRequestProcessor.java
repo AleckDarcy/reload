@@ -27,7 +27,6 @@ import org.apache.zookeeper.MultiOperationRecord;
 import org.apache.zookeeper.ZooDefs.OpCode;
 import org.apache.zookeeper.proto.*;
 import org.apache.zookeeper.server.*;
-import org.apache.zookeeper.trace.TMB_Event;
 import org.apache.zookeeper.trace.TMB_Store;
 import org.apache.zookeeper.txn.*;
 import org.slf4j.Logger;
