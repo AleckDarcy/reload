@@ -3,6 +3,7 @@ package leasepb;
 
 import "gogoproto/gogo.proto";
 import "etcd/etcdserver/etcdserverpb/rpc.proto";
+import "tracer/message.proto";
 
 option (gogoproto.marshaler_all) = true;
 option (gogoproto.sizer_all) = true;
@@ -14,12 +15,18 @@ message Lease {
   int64 ID = 1;
   int64 TTL = 2;
   int64 RemainingTTL = 3;
+
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message LeaseInternalRequest {
   etcdserverpb.LeaseTimeToLiveRequest LeaseTimeToLiveRequest = 1;
+
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message LeaseInternalResponse {
   etcdserverpb.LeaseTimeToLiveResponse LeaseTimeToLiveResponse = 1;
+
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }

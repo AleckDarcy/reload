@@ -16,6 +16,8 @@ import (
 
 	authpb "go.etcd.io/etcd/auth/authpb"
 
+	tracer "github.com/AleckDarcy/reload/core/tracer"
+
 	context "golang.org/x/net/context"
 
 	grpc "google.golang.org/grpc"
@@ -225,7 +227,8 @@ type ResponseHeader struct {
 	// header.revision number.
 	Revision int64 `protobuf:"varint,3,opt,name=revision,proto3" json:"revision,omitempty"`
 	// raft_term is the raft term when the request was applied.
-	RaftTerm uint64 `protobuf:"varint,4,opt,name=raft_term,json=raftTerm,proto3" json:"raft_term,omitempty"`
+	RaftTerm uint64        `protobuf:"varint,4,opt,name=raft_term,json=raftTerm,proto3" json:"raft_term,omitempty"`
+	Trace    *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *ResponseHeader) Reset()                    { *m = ResponseHeader{} }
@@ -259,6 +262,13 @@ func (m *ResponseHeader) GetRaftTerm() uint64 {
 		return m.RaftTerm
 	}
 	return 0
+}
+
+func (m *ResponseHeader) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
 }
 
 type RangeRequest struct {
@@ -303,7 +313,8 @@ type RangeRequest struct {
 	MinCreateRevision int64 `protobuf:"varint,12,opt,name=min_create_revision,json=minCreateRevision,proto3" json:"min_create_revision,omitempty"`
 	// max_create_revision is the upper bound for returned key create revisions; all keys with
 	// greater create revisions will be filtered away.
-	MaxCreateRevision int64 `protobuf:"varint,13,opt,name=max_create_revision,json=maxCreateRevision,proto3" json:"max_create_revision,omitempty"`
+	MaxCreateRevision int64         `protobuf:"varint,13,opt,name=max_create_revision,json=maxCreateRevision,proto3" json:"max_create_revision,omitempty"`
+	Trace             *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *RangeRequest) Reset()                    { *m = RangeRequest{} }
@@ -402,6 +413,13 @@ func (m *RangeRequest) GetMaxCreateRevision() int64 {
 	return 0
 }
 
+func (m *RangeRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type RangeResponse struct {
 	Header *ResponseHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
 	// kvs is the list of key-value pairs matched by the range request.
@@ -410,7 +428,8 @@ type RangeResponse struct {
 	// more indicates if there are more keys to return in the requested range.
 	More bool `protobuf:"varint,3,opt,name=more,proto3" json:"more,omitempty"`
 	// count is set to the number of keys within the range when requested.
-	Count int64 `protobuf:"varint,4,opt,name=count,proto3" json:"count,omitempty"`
+	Count int64         `protobuf:"varint,4,opt,name=count,proto3" json:"count,omitempty"`
+	Trace *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *RangeResponse) Reset()                    { *m = RangeResponse{} }
@@ -446,6 +465,13 @@ func (m *RangeResponse) GetCount() int64 {
 	return 0
 }
 
+func (m *RangeResponse) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type PutRequest struct {
 	// key is the key, in bytes, to put into the key-value store.
 	Key []byte `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
@@ -462,7 +488,8 @@ type PutRequest struct {
 	IgnoreValue bool `protobuf:"varint,5,opt,name=ignore_value,json=ignoreValue,proto3" json:"ignore_value,omitempty"`
 	// If ignore_lease is set, etcd updates the key using its current lease.
 	// Returns an error if the key does not exist.
-	IgnoreLease bool `protobuf:"varint,6,opt,name=ignore_lease,json=ignoreLease,proto3" json:"ignore_lease,omitempty"`
+	IgnoreLease bool          `protobuf:"varint,6,opt,name=ignore_lease,json=ignoreLease,proto3" json:"ignore_lease,omitempty"`
+	Trace       *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *PutRequest) Reset()                    { *m = PutRequest{} }
@@ -512,10 +539,18 @@ func (m *PutRequest) GetIgnoreLease() bool {
 	return false
 }
 
+func (m *PutRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type PutResponse struct {
 	Header *ResponseHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
 	// if prev_kv is set in the request, the previous key-value pair will be returned.
 	PrevKv *mvccpb.KeyValue `protobuf:"bytes,2,opt,name=prev_kv,json=prevKv" json:"prev_kv,omitempty"`
+	Trace  *tracer.Trace    `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *PutResponse) Reset()                    { *m = PutResponse{} }
@@ -537,6 +572,13 @@ func (m *PutResponse) GetPrevKv() *mvccpb.KeyValue {
 	return nil
 }
 
+func (m *PutResponse) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type DeleteRangeRequest struct {
 	// key is the first key to delete in the range.
 	Key []byte `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
@@ -548,7 +590,8 @@ type DeleteRangeRequest struct {
 	RangeEnd []byte `protobuf:"bytes,2,opt,name=range_end,json=rangeEnd,proto3" json:"range_end,omitempty"`
 	// If prev_kv is set, etcd gets the previous key-value pairs before deleting it.
 	// The previous key-value pairs will be returned in the delete response.
-	PrevKv bool `protobuf:"varint,3,opt,name=prev_kv,json=prevKv,proto3" json:"prev_kv,omitempty"`
+	PrevKv bool          `protobuf:"varint,3,opt,name=prev_kv,json=prevKv,proto3" json:"prev_kv,omitempty"`
+	Trace  *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *DeleteRangeRequest) Reset()                    { *m = DeleteRangeRequest{} }
@@ -577,12 +620,20 @@ func (m *DeleteRangeRequest) GetPrevKv() bool {
 	return false
 }
 
+func (m *DeleteRangeRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type DeleteRangeResponse struct {
 	Header *ResponseHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
 	// deleted is the number of keys deleted by the delete range request.
 	Deleted int64 `protobuf:"varint,2,opt,name=deleted,proto3" json:"deleted,omitempty"`
 	// if prev_kv is set in the request, the previous key-value pairs will be returned.
 	PrevKvs []*mvccpb.KeyValue `protobuf:"bytes,3,rep,name=prev_kvs,json=prevKvs" json:"prev_kvs,omitempty"`
+	Trace   *tracer.Trace      `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *DeleteRangeResponse) Reset()                    { *m = DeleteRangeResponse{} }
@@ -607,6 +658,13 @@ func (m *DeleteRangeResponse) GetDeleted() int64 {
 func (m *DeleteRangeResponse) GetPrevKvs() []*mvccpb.KeyValue {
 	if m != nil {
 		return m.PrevKvs
+	}
+	return nil
+}
+
+func (m *DeleteRangeResponse) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
 	}
 	return nil
 }
@@ -1001,7 +1059,8 @@ type Compare struct {
 	TargetUnion isCompare_TargetUnion `protobuf_oneof:"target_union"`
 	// range_end compares the given target to all keys in the range [key, range_end).
 	// See RangeRequest for more details on key ranges.
-	RangeEnd []byte `protobuf:"bytes,64,opt,name=range_end,json=rangeEnd,proto3" json:"range_end,omitempty"`
+	RangeEnd []byte        `protobuf:"bytes,64,opt,name=range_end,json=rangeEnd,proto3" json:"range_end,omitempty"`
+	Trace    *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *Compare) Reset()                    { *m = Compare{} }
@@ -1103,6 +1162,13 @@ func (m *Compare) GetLease() int64 {
 func (m *Compare) GetRangeEnd() []byte {
 	if m != nil {
 		return m.RangeEnd
+	}
+	return nil
+}
+
+func (m *Compare) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
 	}
 	return nil
 }
@@ -1239,7 +1305,8 @@ type TxnRequest struct {
 	// success is a list of requests which will be applied when compare evaluates to true.
 	Success []*RequestOp `protobuf:"bytes,2,rep,name=success" json:"success,omitempty"`
 	// failure is a list of requests which will be applied when compare evaluates to false.
-	Failure []*RequestOp `protobuf:"bytes,3,rep,name=failure" json:"failure,omitempty"`
+	Failure []*RequestOp  `protobuf:"bytes,3,rep,name=failure" json:"failure,omitempty"`
+	Trace   *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *TxnRequest) Reset()                    { *m = TxnRequest{} }
@@ -1268,6 +1335,13 @@ func (m *TxnRequest) GetFailure() []*RequestOp {
 	return nil
 }
 
+func (m *TxnRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type TxnResponse struct {
 	Header *ResponseHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
 	// succeeded is set to true if the compare evaluated to true or false otherwise.
@@ -1275,6 +1349,7 @@ type TxnResponse struct {
 	// responses is a list of responses corresponding to the results from applying
 	// success if succeeded is true or failure if succeeded is false.
 	Responses []*ResponseOp `protobuf:"bytes,3,rep,name=responses" json:"responses,omitempty"`
+	Trace     *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *TxnResponse) Reset()                    { *m = TxnResponse{} }
@@ -1303,6 +1378,13 @@ func (m *TxnResponse) GetResponses() []*ResponseOp {
 	return nil
 }
 
+func (m *TxnResponse) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 // CompactionRequest compacts the key-value store up to a given revision. All superseded keys
 // with a revision less than the compaction revision will be removed.
 type CompactionRequest struct {
@@ -1311,7 +1393,8 @@ type CompactionRequest struct {
 	// physical is set so the RPC will wait until the compaction is physically
 	// applied to the local database such that compacted entries are totally
 	// removed from the backend database.
-	Physical bool `protobuf:"varint,2,opt,name=physical,proto3" json:"physical,omitempty"`
+	Physical bool          `protobuf:"varint,2,opt,name=physical,proto3" json:"physical,omitempty"`
+	Trace    *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *CompactionRequest) Reset()                    { *m = CompactionRequest{} }
@@ -1333,8 +1416,16 @@ func (m *CompactionRequest) GetPhysical() bool {
 	return false
 }
 
+func (m *CompactionRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type CompactionResponse struct {
 	Header *ResponseHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
+	Trace  *tracer.Trace   `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *CompactionResponse) Reset()                    { *m = CompactionResponse{} }
@@ -1349,7 +1440,15 @@ func (m *CompactionResponse) GetHeader() *ResponseHeader {
 	return nil
 }
 
+func (m *CompactionResponse) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type HashRequest struct {
+	Trace *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *HashRequest) Reset()                    { *m = HashRequest{} }
@@ -1357,9 +1456,17 @@ func (m *HashRequest) String() string            { return proto.CompactTextStrin
 func (*HashRequest) ProtoMessage()               {}
 func (*HashRequest) Descriptor() ([]byte, []int) { return fileDescriptorRpc, []int{14} }
 
+func (m *HashRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type HashKVRequest struct {
 	// revision is the key-value store revision for the hash operation.
-	Revision int64 `protobuf:"varint,1,opt,name=revision,proto3" json:"revision,omitempty"`
+	Revision int64         `protobuf:"varint,1,opt,name=revision,proto3" json:"revision,omitempty"`
+	Trace    *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *HashKVRequest) Reset()                    { *m = HashKVRequest{} }
@@ -1374,12 +1481,20 @@ func (m *HashKVRequest) GetRevision() int64 {
 	return 0
 }
 
+func (m *HashKVRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type HashKVResponse struct {
 	Header *ResponseHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
 	// hash is the hash value computed from the responding member's MVCC keys up to a given revision.
 	Hash uint32 `protobuf:"varint,2,opt,name=hash,proto3" json:"hash,omitempty"`
 	// compact_revision is the compacted revision of key-value store when hash begins.
-	CompactRevision int64 `protobuf:"varint,3,opt,name=compact_revision,json=compactRevision,proto3" json:"compact_revision,omitempty"`
+	CompactRevision int64         `protobuf:"varint,3,opt,name=compact_revision,json=compactRevision,proto3" json:"compact_revision,omitempty"`
+	Trace           *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *HashKVResponse) Reset()                    { *m = HashKVResponse{} }
@@ -1408,10 +1523,18 @@ func (m *HashKVResponse) GetCompactRevision() int64 {
 	return 0
 }
 
+func (m *HashKVResponse) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type HashResponse struct {
 	Header *ResponseHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
 	// hash is the hash value computed from the responding member's KV's backend.
-	Hash uint32 `protobuf:"varint,2,opt,name=hash,proto3" json:"hash,omitempty"`
+	Hash  uint32        `protobuf:"varint,2,opt,name=hash,proto3" json:"hash,omitempty"`
+	Trace *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *HashResponse) Reset()                    { *m = HashResponse{} }
@@ -1433,13 +1556,28 @@ func (m *HashResponse) GetHash() uint32 {
 	return 0
 }
 
+func (m *HashResponse) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type SnapshotRequest struct {
+	Trace *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *SnapshotRequest) Reset()                    { *m = SnapshotRequest{} }
 func (m *SnapshotRequest) String() string            { return proto.CompactTextString(m) }
 func (*SnapshotRequest) ProtoMessage()               {}
 func (*SnapshotRequest) Descriptor() ([]byte, []int) { return fileDescriptorRpc, []int{18} }
+
+func (m *SnapshotRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
 
 type SnapshotResponse struct {
 	// header has the current key-value store information. The first header in the snapshot
@@ -1448,7 +1586,8 @@ type SnapshotResponse struct {
 	// remaining_bytes is the number of blob bytes to be sent after this message
 	RemainingBytes uint64 `protobuf:"varint,2,opt,name=remaining_bytes,json=remainingBytes,proto3" json:"remaining_bytes,omitempty"`
 	// blob contains the next chunk of the snapshot in the snapshot stream.
-	Blob []byte `protobuf:"bytes,3,opt,name=blob,proto3" json:"blob,omitempty"`
+	Blob  []byte        `protobuf:"bytes,3,opt,name=blob,proto3" json:"blob,omitempty"`
+	Trace *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *SnapshotResponse) Reset()                    { *m = SnapshotResponse{} }
@@ -1473,6 +1612,13 @@ func (m *SnapshotResponse) GetRemainingBytes() uint64 {
 func (m *SnapshotResponse) GetBlob() []byte {
 	if m != nil {
 		return m.Blob
+	}
+	return nil
+}
+
+func (m *SnapshotResponse) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
 	}
 	return nil
 }
@@ -1661,7 +1807,8 @@ type WatchCreateRequest struct {
 	// use on the stream will cause an error to be returned.
 	WatchId int64 `protobuf:"varint,7,opt,name=watch_id,json=watchId,proto3" json:"watch_id,omitempty"`
 	// fragment enables splitting large revisions into multiple watch responses.
-	Fragment bool `protobuf:"varint,8,opt,name=fragment,proto3" json:"fragment,omitempty"`
+	Fragment bool          `protobuf:"varint,8,opt,name=fragment,proto3" json:"fragment,omitempty"`
+	Trace    *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *WatchCreateRequest) Reset()                    { *m = WatchCreateRequest{} }
@@ -1725,9 +1872,17 @@ func (m *WatchCreateRequest) GetFragment() bool {
 	return false
 }
 
+func (m *WatchCreateRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type WatchCancelRequest struct {
 	// watch_id is the watcher id to cancel so that no more events are transmitted.
-	WatchId int64 `protobuf:"varint,1,opt,name=watch_id,json=watchId,proto3" json:"watch_id,omitempty"`
+	WatchId int64         `protobuf:"varint,1,opt,name=watch_id,json=watchId,proto3" json:"watch_id,omitempty"`
+	Trace   *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *WatchCancelRequest) Reset()                    { *m = WatchCancelRequest{} }
@@ -1742,15 +1897,30 @@ func (m *WatchCancelRequest) GetWatchId() int64 {
 	return 0
 }
 
+func (m *WatchCancelRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 // Requests the a watch stream progress status be sent in the watch response stream as soon as
 // possible.
 type WatchProgressRequest struct {
+	Trace *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *WatchProgressRequest) Reset()                    { *m = WatchProgressRequest{} }
 func (m *WatchProgressRequest) String() string            { return proto.CompactTextString(m) }
 func (*WatchProgressRequest) ProtoMessage()               {}
 func (*WatchProgressRequest) Descriptor() ([]byte, []int) { return fileDescriptorRpc, []int{23} }
+
+func (m *WatchProgressRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
 
 type WatchResponse struct {
 	Header *ResponseHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
@@ -1778,6 +1948,7 @@ type WatchResponse struct {
 	// framgment is true if large watch response was split over multiple responses.
 	Fragment bool            `protobuf:"varint,7,opt,name=fragment,proto3" json:"fragment,omitempty"`
 	Events   []*mvccpb.Event `protobuf:"bytes,11,rep,name=events" json:"events,omitempty"`
+	Trace    *tracer.Trace   `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *WatchResponse) Reset()                    { *m = WatchResponse{} }
@@ -1841,11 +2012,19 @@ func (m *WatchResponse) GetEvents() []*mvccpb.Event {
 	return nil
 }
 
+func (m *WatchResponse) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type LeaseGrantRequest struct {
 	// TTL is the advisory time-to-live in seconds. Expired lease will return -1.
 	TTL int64 `protobuf:"varint,1,opt,name=TTL,proto3" json:"TTL,omitempty"`
 	// ID is the requested ID for the lease. If ID is set to 0, the lessor chooses an ID.
-	ID int64 `protobuf:"varint,2,opt,name=ID,proto3" json:"ID,omitempty"`
+	ID    int64         `protobuf:"varint,2,opt,name=ID,proto3" json:"ID,omitempty"`
+	Trace *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *LeaseGrantRequest) Reset()                    { *m = LeaseGrantRequest{} }
@@ -1867,13 +2046,21 @@ func (m *LeaseGrantRequest) GetID() int64 {
 	return 0
 }
 
+func (m *LeaseGrantRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type LeaseGrantResponse struct {
 	Header *ResponseHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
 	// ID is the lease ID for the granted lease.
 	ID int64 `protobuf:"varint,2,opt,name=ID,proto3" json:"ID,omitempty"`
 	// TTL is the server chosen lease time-to-live in seconds.
-	TTL   int64  `protobuf:"varint,3,opt,name=TTL,proto3" json:"TTL,omitempty"`
-	Error string `protobuf:"bytes,4,opt,name=error,proto3" json:"error,omitempty"`
+	TTL   int64         `protobuf:"varint,3,opt,name=TTL,proto3" json:"TTL,omitempty"`
+	Error string        `protobuf:"bytes,4,opt,name=error,proto3" json:"error,omitempty"`
+	Trace *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *LeaseGrantResponse) Reset()                    { *m = LeaseGrantResponse{} }
@@ -1909,9 +2096,17 @@ func (m *LeaseGrantResponse) GetError() string {
 	return ""
 }
 
+func (m *LeaseGrantResponse) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type LeaseRevokeRequest struct {
 	// ID is the lease ID to revoke. When the ID is revoked, all associated keys will be deleted.
-	ID int64 `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
+	ID    int64         `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
+	Trace *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *LeaseRevokeRequest) Reset()                    { *m = LeaseRevokeRequest{} }
@@ -1926,8 +2121,16 @@ func (m *LeaseRevokeRequest) GetID() int64 {
 	return 0
 }
 
+func (m *LeaseRevokeRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type LeaseRevokeResponse struct {
 	Header *ResponseHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
+	Trace  *tracer.Trace   `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *LeaseRevokeResponse) Reset()                    { *m = LeaseRevokeResponse{} }
@@ -1942,11 +2145,19 @@ func (m *LeaseRevokeResponse) GetHeader() *ResponseHeader {
 	return nil
 }
 
+func (m *LeaseRevokeResponse) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type LeaseCheckpoint struct {
 	// ID is the lease ID to checkpoint.
 	ID int64 `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
 	// Remaining_TTL is the remaining time until expiry of the lease.
-	Remaining_TTL int64 `protobuf:"varint,2,opt,name=remaining_TTL,json=remainingTTL,proto3" json:"remaining_TTL,omitempty"`
+	Remaining_TTL int64         `protobuf:"varint,2,opt,name=remaining_TTL,json=remainingTTL,proto3" json:"remaining_TTL,omitempty"`
+	Trace         *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *LeaseCheckpoint) Reset()                    { *m = LeaseCheckpoint{} }
@@ -1968,8 +2179,16 @@ func (m *LeaseCheckpoint) GetRemaining_TTL() int64 {
 	return 0
 }
 
+func (m *LeaseCheckpoint) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type LeaseCheckpointRequest struct {
 	Checkpoints []*LeaseCheckpoint `protobuf:"bytes,1,rep,name=checkpoints" json:"checkpoints,omitempty"`
+	Trace       *tracer.Trace      `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *LeaseCheckpointRequest) Reset()                    { *m = LeaseCheckpointRequest{} }
@@ -1984,8 +2203,16 @@ func (m *LeaseCheckpointRequest) GetCheckpoints() []*LeaseCheckpoint {
 	return nil
 }
 
+func (m *LeaseCheckpointRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type LeaseCheckpointResponse struct {
 	Header *ResponseHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
+	Trace  *tracer.Trace   `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *LeaseCheckpointResponse) Reset()                    { *m = LeaseCheckpointResponse{} }
@@ -2000,9 +2227,17 @@ func (m *LeaseCheckpointResponse) GetHeader() *ResponseHeader {
 	return nil
 }
 
+func (m *LeaseCheckpointResponse) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type LeaseKeepAliveRequest struct {
 	// ID is the lease ID for the lease to keep alive.
-	ID int64 `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
+	ID    int64         `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
+	Trace *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *LeaseKeepAliveRequest) Reset()                    { *m = LeaseKeepAliveRequest{} }
@@ -2017,12 +2252,20 @@ func (m *LeaseKeepAliveRequest) GetID() int64 {
 	return 0
 }
 
+func (m *LeaseKeepAliveRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type LeaseKeepAliveResponse struct {
 	Header *ResponseHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
 	// ID is the lease ID from the keep alive request.
 	ID int64 `protobuf:"varint,2,opt,name=ID,proto3" json:"ID,omitempty"`
 	// TTL is the new time-to-live for the lease.
-	TTL int64 `protobuf:"varint,3,opt,name=TTL,proto3" json:"TTL,omitempty"`
+	TTL   int64         `protobuf:"varint,3,opt,name=TTL,proto3" json:"TTL,omitempty"`
+	Trace *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *LeaseKeepAliveResponse) Reset()                    { *m = LeaseKeepAliveResponse{} }
@@ -2051,11 +2294,19 @@ func (m *LeaseKeepAliveResponse) GetTTL() int64 {
 	return 0
 }
 
+func (m *LeaseKeepAliveResponse) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type LeaseTimeToLiveRequest struct {
 	// ID is the lease ID for the lease.
 	ID int64 `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
 	// keys is true to query all the keys attached to this lease.
-	Keys bool `protobuf:"varint,2,opt,name=keys,proto3" json:"keys,omitempty"`
+	Keys  bool          `protobuf:"varint,2,opt,name=keys,proto3" json:"keys,omitempty"`
+	Trace *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *LeaseTimeToLiveRequest) Reset()                    { *m = LeaseTimeToLiveRequest{} }
@@ -2077,6 +2328,13 @@ func (m *LeaseTimeToLiveRequest) GetKeys() bool {
 	return false
 }
 
+func (m *LeaseTimeToLiveRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type LeaseTimeToLiveResponse struct {
 	Header *ResponseHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
 	// ID is the lease ID from the keep alive request.
@@ -2086,7 +2344,8 @@ type LeaseTimeToLiveResponse struct {
 	// GrantedTTL is the initial granted time in seconds upon lease creation/renewal.
 	GrantedTTL int64 `protobuf:"varint,4,opt,name=grantedTTL,proto3" json:"grantedTTL,omitempty"`
 	// Keys is the list of keys attached to this lease.
-	Keys [][]byte `protobuf:"bytes,5,rep,name=keys" json:"keys,omitempty"`
+	Keys  [][]byte      `protobuf:"bytes,5,rep,name=keys" json:"keys,omitempty"`
+	Trace *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *LeaseTimeToLiveResponse) Reset()                    { *m = LeaseTimeToLiveResponse{} }
@@ -2129,7 +2388,15 @@ func (m *LeaseTimeToLiveResponse) GetKeys() [][]byte {
 	return nil
 }
 
+func (m *LeaseTimeToLiveResponse) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type LeaseLeasesRequest struct {
+	Trace *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *LeaseLeasesRequest) Reset()                    { *m = LeaseLeasesRequest{} }
@@ -2137,8 +2404,16 @@ func (m *LeaseLeasesRequest) String() string            { return proto.CompactTe
 func (*LeaseLeasesRequest) ProtoMessage()               {}
 func (*LeaseLeasesRequest) Descriptor() ([]byte, []int) { return fileDescriptorRpc, []int{36} }
 
+func (m *LeaseLeasesRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type LeaseStatus struct {
-	ID int64 `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
+	ID    int64         `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
+	Trace *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *LeaseStatus) Reset()                    { *m = LeaseStatus{} }
@@ -2153,9 +2428,17 @@ func (m *LeaseStatus) GetID() int64 {
 	return 0
 }
 
+func (m *LeaseStatus) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type LeaseLeasesResponse struct {
 	Header *ResponseHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
 	Leases []*LeaseStatus  `protobuf:"bytes,2,rep,name=leases" json:"leases,omitempty"`
+	Trace  *tracer.Trace   `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *LeaseLeasesResponse) Reset()                    { *m = LeaseLeasesResponse{} }
@@ -2177,6 +2460,13 @@ func (m *LeaseLeasesResponse) GetLeases() []*LeaseStatus {
 	return nil
 }
 
+func (m *LeaseLeasesResponse) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type Member struct {
 	// ID is the member ID for this member.
 	ID uint64 `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
@@ -2187,7 +2477,8 @@ type Member struct {
 	// clientURLs is the list of URLs the member exposes to clients for communication. If the member is not started, clientURLs will be empty.
 	ClientURLs []string `protobuf:"bytes,4,rep,name=clientURLs" json:"clientURLs,omitempty"`
 	// isLearner indicates if the member is raft learner.
-	IsLearner bool `protobuf:"varint,5,opt,name=isLearner,proto3" json:"isLearner,omitempty"`
+	IsLearner bool          `protobuf:"varint,5,opt,name=isLearner,proto3" json:"isLearner,omitempty"`
+	Trace     *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *Member) Reset()                    { *m = Member{} }
@@ -2230,11 +2521,19 @@ func (m *Member) GetIsLearner() bool {
 	return false
 }
 
+func (m *Member) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type MemberAddRequest struct {
 	// peerURLs is the list of URLs the added member will use to communicate with the cluster.
 	PeerURLs []string `protobuf:"bytes,1,rep,name=peerURLs" json:"peerURLs,omitempty"`
 	// isLearner indicates if the added member is raft learner.
-	IsLearner bool `protobuf:"varint,2,opt,name=isLearner,proto3" json:"isLearner,omitempty"`
+	IsLearner bool          `protobuf:"varint,2,opt,name=isLearner,proto3" json:"isLearner,omitempty"`
+	Trace     *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *MemberAddRequest) Reset()                    { *m = MemberAddRequest{} }
@@ -2256,12 +2555,20 @@ func (m *MemberAddRequest) GetIsLearner() bool {
 	return false
 }
 
+func (m *MemberAddRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type MemberAddResponse struct {
 	Header *ResponseHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
 	// member is the member information for the added member.
 	Member *Member `protobuf:"bytes,2,opt,name=member" json:"member,omitempty"`
 	// members is a list of all members after adding the new member.
-	Members []*Member `protobuf:"bytes,3,rep,name=members" json:"members,omitempty"`
+	Members []*Member     `protobuf:"bytes,3,rep,name=members" json:"members,omitempty"`
+	Trace   *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *MemberAddResponse) Reset()                    { *m = MemberAddResponse{} }
@@ -2290,9 +2597,17 @@ func (m *MemberAddResponse) GetMembers() []*Member {
 	return nil
 }
 
+func (m *MemberAddResponse) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type MemberRemoveRequest struct {
 	// ID is the member ID of the member to remove.
-	ID uint64 `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
+	ID    uint64        `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
+	Trace *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *MemberRemoveRequest) Reset()                    { *m = MemberRemoveRequest{} }
@@ -2307,10 +2622,18 @@ func (m *MemberRemoveRequest) GetID() uint64 {
 	return 0
 }
 
+func (m *MemberRemoveRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type MemberRemoveResponse struct {
 	Header *ResponseHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
 	// members is a list of all members after removing the member.
-	Members []*Member `protobuf:"bytes,2,rep,name=members" json:"members,omitempty"`
+	Members []*Member     `protobuf:"bytes,2,rep,name=members" json:"members,omitempty"`
+	Trace   *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *MemberRemoveResponse) Reset()                    { *m = MemberRemoveResponse{} }
@@ -2332,11 +2655,19 @@ func (m *MemberRemoveResponse) GetMembers() []*Member {
 	return nil
 }
 
+func (m *MemberRemoveResponse) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type MemberUpdateRequest struct {
 	// ID is the member ID of the member to update.
 	ID uint64 `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
 	// peerURLs is the new list of URLs the member will use to communicate with the cluster.
-	PeerURLs []string `protobuf:"bytes,2,rep,name=peerURLs" json:"peerURLs,omitempty"`
+	PeerURLs []string      `protobuf:"bytes,2,rep,name=peerURLs" json:"peerURLs,omitempty"`
+	Trace    *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *MemberUpdateRequest) Reset()                    { *m = MemberUpdateRequest{} }
@@ -2358,10 +2689,18 @@ func (m *MemberUpdateRequest) GetPeerURLs() []string {
 	return nil
 }
 
+func (m *MemberUpdateRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type MemberUpdateResponse struct {
 	Header *ResponseHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
 	// members is a list of all members after updating the member.
-	Members []*Member `protobuf:"bytes,2,rep,name=members" json:"members,omitempty"`
+	Members []*Member     `protobuf:"bytes,2,rep,name=members" json:"members,omitempty"`
+	Trace   *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *MemberUpdateResponse) Reset()                    { *m = MemberUpdateResponse{} }
@@ -2383,7 +2722,15 @@ func (m *MemberUpdateResponse) GetMembers() []*Member {
 	return nil
 }
 
+func (m *MemberUpdateResponse) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type MemberListRequest struct {
+	Trace *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *MemberListRequest) Reset()                    { *m = MemberListRequest{} }
@@ -2391,10 +2738,18 @@ func (m *MemberListRequest) String() string            { return proto.CompactTex
 func (*MemberListRequest) ProtoMessage()               {}
 func (*MemberListRequest) Descriptor() ([]byte, []int) { return fileDescriptorRpc, []int{46} }
 
+func (m *MemberListRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type MemberListResponse struct {
 	Header *ResponseHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
 	// members is a list of all members associated with the cluster.
-	Members []*Member `protobuf:"bytes,2,rep,name=members" json:"members,omitempty"`
+	Members []*Member     `protobuf:"bytes,2,rep,name=members" json:"members,omitempty"`
+	Trace   *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *MemberListResponse) Reset()                    { *m = MemberListResponse{} }
@@ -2416,9 +2771,17 @@ func (m *MemberListResponse) GetMembers() []*Member {
 	return nil
 }
 
+func (m *MemberListResponse) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type MemberPromoteRequest struct {
 	// ID is the member ID of the member to promote.
-	ID uint64 `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
+	ID    uint64        `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
+	Trace *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *MemberPromoteRequest) Reset()                    { *m = MemberPromoteRequest{} }
@@ -2433,10 +2796,18 @@ func (m *MemberPromoteRequest) GetID() uint64 {
 	return 0
 }
 
+func (m *MemberPromoteRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type MemberPromoteResponse struct {
 	Header *ResponseHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
 	// members is a list of all members after promoting the member.
-	Members []*Member `protobuf:"bytes,2,rep,name=members" json:"members,omitempty"`
+	Members []*Member     `protobuf:"bytes,2,rep,name=members" json:"members,omitempty"`
+	Trace   *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *MemberPromoteResponse) Reset()                    { *m = MemberPromoteResponse{} }
@@ -2458,7 +2829,15 @@ func (m *MemberPromoteResponse) GetMembers() []*Member {
 	return nil
 }
 
+func (m *MemberPromoteResponse) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type DefragmentRequest struct {
+	Trace *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *DefragmentRequest) Reset()                    { *m = DefragmentRequest{} }
@@ -2466,8 +2845,16 @@ func (m *DefragmentRequest) String() string            { return proto.CompactTex
 func (*DefragmentRequest) ProtoMessage()               {}
 func (*DefragmentRequest) Descriptor() ([]byte, []int) { return fileDescriptorRpc, []int{50} }
 
+func (m *DefragmentRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type DefragmentResponse struct {
 	Header *ResponseHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
+	Trace  *tracer.Trace   `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *DefragmentResponse) Reset()                    { *m = DefragmentResponse{} }
@@ -2482,9 +2869,17 @@ func (m *DefragmentResponse) GetHeader() *ResponseHeader {
 	return nil
 }
 
+func (m *DefragmentResponse) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type MoveLeaderRequest struct {
 	// targetID is the node ID for the new leader.
-	TargetID uint64 `protobuf:"varint,1,opt,name=targetID,proto3" json:"targetID,omitempty"`
+	TargetID uint64        `protobuf:"varint,1,opt,name=targetID,proto3" json:"targetID,omitempty"`
+	Trace    *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *MoveLeaderRequest) Reset()                    { *m = MoveLeaderRequest{} }
@@ -2499,8 +2894,16 @@ func (m *MoveLeaderRequest) GetTargetID() uint64 {
 	return 0
 }
 
+func (m *MoveLeaderRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type MoveLeaderResponse struct {
 	Header *ResponseHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
+	Trace  *tracer.Trace   `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *MoveLeaderResponse) Reset()                    { *m = MoveLeaderResponse{} }
@@ -2515,6 +2918,13 @@ func (m *MoveLeaderResponse) GetHeader() *ResponseHeader {
 	return nil
 }
 
+func (m *MoveLeaderResponse) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type AlarmRequest struct {
 	// action is the kind of alarm request to issue. The action
 	// may GET alarm statuses, ACTIVATE an alarm, or DEACTIVATE a
@@ -2524,7 +2934,8 @@ type AlarmRequest struct {
 	// alarm request covers all members.
 	MemberID uint64 `protobuf:"varint,2,opt,name=memberID,proto3" json:"memberID,omitempty"`
 	// alarm is the type of alarm to consider for this request.
-	Alarm AlarmType `protobuf:"varint,3,opt,name=alarm,proto3,enum=etcdserverpb.AlarmType" json:"alarm,omitempty"`
+	Alarm AlarmType     `protobuf:"varint,3,opt,name=alarm,proto3,enum=etcdserverpb.AlarmType" json:"alarm,omitempty"`
+	Trace *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *AlarmRequest) Reset()                    { *m = AlarmRequest{} }
@@ -2553,11 +2964,19 @@ func (m *AlarmRequest) GetAlarm() AlarmType {
 	return AlarmType_NONE
 }
 
+func (m *AlarmRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type AlarmMember struct {
 	// memberID is the ID of the member associated with the raised alarm.
 	MemberID uint64 `protobuf:"varint,1,opt,name=memberID,proto3" json:"memberID,omitempty"`
 	// alarm is the type of alarm which has been raised.
-	Alarm AlarmType `protobuf:"varint,2,opt,name=alarm,proto3,enum=etcdserverpb.AlarmType" json:"alarm,omitempty"`
+	Alarm AlarmType     `protobuf:"varint,2,opt,name=alarm,proto3,enum=etcdserverpb.AlarmType" json:"alarm,omitempty"`
+	Trace *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *AlarmMember) Reset()                    { *m = AlarmMember{} }
@@ -2579,10 +2998,18 @@ func (m *AlarmMember) GetAlarm() AlarmType {
 	return AlarmType_NONE
 }
 
+func (m *AlarmMember) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type AlarmResponse struct {
 	Header *ResponseHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
 	// alarms is a list of alarms associated with the alarm request.
 	Alarms []*AlarmMember `protobuf:"bytes,2,rep,name=alarms" json:"alarms,omitempty"`
+	Trace  *tracer.Trace  `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *AlarmResponse) Reset()                    { *m = AlarmResponse{} }
@@ -2604,13 +3031,28 @@ func (m *AlarmResponse) GetAlarms() []*AlarmMember {
 	return nil
 }
 
+func (m *AlarmResponse) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type StatusRequest struct {
+	Trace *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *StatusRequest) Reset()                    { *m = StatusRequest{} }
 func (m *StatusRequest) String() string            { return proto.CompactTextString(m) }
 func (*StatusRequest) ProtoMessage()               {}
 func (*StatusRequest) Descriptor() ([]byte, []int) { return fileDescriptorRpc, []int{57} }
+
+func (m *StatusRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
 
 type StatusResponse struct {
 	Header *ResponseHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
@@ -2631,7 +3073,8 @@ type StatusResponse struct {
 	// dbSizeInUse is the size of the backend database logically in use, in bytes, of the responding member.
 	DbSizeInUse int64 `protobuf:"varint,9,opt,name=dbSizeInUse,proto3" json:"dbSizeInUse,omitempty"`
 	// isLearner indicates if the member is raft learner.
-	IsLearner bool `protobuf:"varint,10,opt,name=isLearner,proto3" json:"isLearner,omitempty"`
+	IsLearner bool          `protobuf:"varint,10,opt,name=isLearner,proto3" json:"isLearner,omitempty"`
+	Trace     *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *StatusResponse) Reset()                    { *m = StatusResponse{} }
@@ -2709,7 +3152,15 @@ func (m *StatusResponse) GetIsLearner() bool {
 	return false
 }
 
+func (m *StatusResponse) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type AuthEnableRequest struct {
+	Trace *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *AuthEnableRequest) Reset()                    { *m = AuthEnableRequest{} }
@@ -2717,7 +3168,15 @@ func (m *AuthEnableRequest) String() string            { return proto.CompactTex
 func (*AuthEnableRequest) ProtoMessage()               {}
 func (*AuthEnableRequest) Descriptor() ([]byte, []int) { return fileDescriptorRpc, []int{59} }
 
+func (m *AuthEnableRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type AuthDisableRequest struct {
+	Trace *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *AuthDisableRequest) Reset()                    { *m = AuthDisableRequest{} }
@@ -2725,9 +3184,17 @@ func (m *AuthDisableRequest) String() string            { return proto.CompactTe
 func (*AuthDisableRequest) ProtoMessage()               {}
 func (*AuthDisableRequest) Descriptor() ([]byte, []int) { return fileDescriptorRpc, []int{60} }
 
+func (m *AuthDisableRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type AuthenticateRequest struct {
-	Name     string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Password string `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
+	Name     string        `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Password string        `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
+	Trace    *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *AuthenticateRequest) Reset()                    { *m = AuthenticateRequest{} }
@@ -2749,10 +3216,18 @@ func (m *AuthenticateRequest) GetPassword() string {
 	return ""
 }
 
+func (m *AuthenticateRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type AuthUserAddRequest struct {
 	Name     string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	Password string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
 	Options  *authpb.UserAddOptions `protobuf:"bytes,3,opt,name=options" json:"options,omitempty"`
+	Trace    *tracer.Trace          `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *AuthUserAddRequest) Reset()                    { *m = AuthUserAddRequest{} }
@@ -2781,8 +3256,16 @@ func (m *AuthUserAddRequest) GetOptions() *authpb.UserAddOptions {
 	return nil
 }
 
+func (m *AuthUserAddRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type AuthUserGetRequest struct {
-	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Name  string        `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Trace *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *AuthUserGetRequest) Reset()                    { *m = AuthUserGetRequest{} }
@@ -2797,9 +3280,17 @@ func (m *AuthUserGetRequest) GetName() string {
 	return ""
 }
 
+func (m *AuthUserGetRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type AuthUserDeleteRequest struct {
 	// name is the name of the user to delete.
-	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Name  string        `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Trace *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *AuthUserDeleteRequest) Reset()                    { *m = AuthUserDeleteRequest{} }
@@ -2814,11 +3305,19 @@ func (m *AuthUserDeleteRequest) GetName() string {
 	return ""
 }
 
+func (m *AuthUserDeleteRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type AuthUserChangePasswordRequest struct {
 	// name is the name of the user whose password is being changed.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// password is the new password for the user.
-	Password string `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
+	Password string        `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
+	Trace    *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *AuthUserChangePasswordRequest) Reset()         { *m = AuthUserChangePasswordRequest{} }
@@ -2842,11 +3341,19 @@ func (m *AuthUserChangePasswordRequest) GetPassword() string {
 	return ""
 }
 
+func (m *AuthUserChangePasswordRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type AuthUserGrantRoleRequest struct {
 	// user is the name of the user which should be granted a given role.
 	User string `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
 	// role is the name of the role to grant to the user.
-	Role string `protobuf:"bytes,2,opt,name=role,proto3" json:"role,omitempty"`
+	Role  string        `protobuf:"bytes,2,opt,name=role,proto3" json:"role,omitempty"`
+	Trace *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *AuthUserGrantRoleRequest) Reset()                    { *m = AuthUserGrantRoleRequest{} }
@@ -2868,9 +3375,17 @@ func (m *AuthUserGrantRoleRequest) GetRole() string {
 	return ""
 }
 
+func (m *AuthUserGrantRoleRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type AuthUserRevokeRoleRequest struct {
-	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Role string `protobuf:"bytes,2,opt,name=role,proto3" json:"role,omitempty"`
+	Name  string        `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Role  string        `protobuf:"bytes,2,opt,name=role,proto3" json:"role,omitempty"`
+	Trace *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *AuthUserRevokeRoleRequest) Reset()                    { *m = AuthUserRevokeRoleRequest{} }
@@ -2892,9 +3407,17 @@ func (m *AuthUserRevokeRoleRequest) GetRole() string {
 	return ""
 }
 
+func (m *AuthUserRevokeRoleRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type AuthRoleAddRequest struct {
 	// name is the name of the role to add to the authentication system.
-	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Name  string        `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Trace *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *AuthRoleAddRequest) Reset()                    { *m = AuthRoleAddRequest{} }
@@ -2909,8 +3432,16 @@ func (m *AuthRoleAddRequest) GetName() string {
 	return ""
 }
 
+func (m *AuthRoleAddRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type AuthRoleGetRequest struct {
-	Role string `protobuf:"bytes,1,opt,name=role,proto3" json:"role,omitempty"`
+	Role  string        `protobuf:"bytes,1,opt,name=role,proto3" json:"role,omitempty"`
+	Trace *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *AuthRoleGetRequest) Reset()                    { *m = AuthRoleGetRequest{} }
@@ -2925,7 +3456,15 @@ func (m *AuthRoleGetRequest) GetRole() string {
 	return ""
 }
 
+func (m *AuthRoleGetRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type AuthUserListRequest struct {
+	Trace *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *AuthUserListRequest) Reset()                    { *m = AuthUserListRequest{} }
@@ -2933,7 +3472,15 @@ func (m *AuthUserListRequest) String() string            { return proto.CompactT
 func (*AuthUserListRequest) ProtoMessage()               {}
 func (*AuthUserListRequest) Descriptor() ([]byte, []int) { return fileDescriptorRpc, []int{70} }
 
+func (m *AuthUserListRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type AuthRoleListRequest struct {
+	Trace *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *AuthRoleListRequest) Reset()                    { *m = AuthRoleListRequest{} }
@@ -2941,8 +3488,16 @@ func (m *AuthRoleListRequest) String() string            { return proto.CompactT
 func (*AuthRoleListRequest) ProtoMessage()               {}
 func (*AuthRoleListRequest) Descriptor() ([]byte, []int) { return fileDescriptorRpc, []int{71} }
 
+func (m *AuthRoleListRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type AuthRoleDeleteRequest struct {
-	Role string `protobuf:"bytes,1,opt,name=role,proto3" json:"role,omitempty"`
+	Role  string        `protobuf:"bytes,1,opt,name=role,proto3" json:"role,omitempty"`
+	Trace *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *AuthRoleDeleteRequest) Reset()                    { *m = AuthRoleDeleteRequest{} }
@@ -2957,11 +3512,19 @@ func (m *AuthRoleDeleteRequest) GetRole() string {
 	return ""
 }
 
+func (m *AuthRoleDeleteRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type AuthRoleGrantPermissionRequest struct {
 	// name is the name of the role which will be granted the permission.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// perm is the permission to grant to the role.
-	Perm *authpb.Permission `protobuf:"bytes,2,opt,name=perm" json:"perm,omitempty"`
+	Perm  *authpb.Permission `protobuf:"bytes,2,opt,name=perm" json:"perm,omitempty"`
+	Trace *tracer.Trace      `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *AuthRoleGrantPermissionRequest) Reset()         { *m = AuthRoleGrantPermissionRequest{} }
@@ -2985,10 +3548,18 @@ func (m *AuthRoleGrantPermissionRequest) GetPerm() *authpb.Permission {
 	return nil
 }
 
+func (m *AuthRoleGrantPermissionRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type AuthRoleRevokePermissionRequest struct {
-	Role     string `protobuf:"bytes,1,opt,name=role,proto3" json:"role,omitempty"`
-	Key      []byte `protobuf:"bytes,2,opt,name=key,proto3" json:"key,omitempty"`
-	RangeEnd []byte `protobuf:"bytes,3,opt,name=range_end,json=rangeEnd,proto3" json:"range_end,omitempty"`
+	Role     string        `protobuf:"bytes,1,opt,name=role,proto3" json:"role,omitempty"`
+	Key      []byte        `protobuf:"bytes,2,opt,name=key,proto3" json:"key,omitempty"`
+	RangeEnd []byte        `protobuf:"bytes,3,opt,name=range_end,json=rangeEnd,proto3" json:"range_end,omitempty"`
+	Trace    *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *AuthRoleRevokePermissionRequest) Reset()         { *m = AuthRoleRevokePermissionRequest{} }
@@ -3019,8 +3590,16 @@ func (m *AuthRoleRevokePermissionRequest) GetRangeEnd() []byte {
 	return nil
 }
 
+func (m *AuthRoleRevokePermissionRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type AuthEnableResponse struct {
 	Header *ResponseHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
+	Trace  *tracer.Trace   `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *AuthEnableResponse) Reset()                    { *m = AuthEnableResponse{} }
@@ -3035,8 +3614,16 @@ func (m *AuthEnableResponse) GetHeader() *ResponseHeader {
 	return nil
 }
 
+func (m *AuthEnableResponse) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type AuthDisableResponse struct {
 	Header *ResponseHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
+	Trace  *tracer.Trace   `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *AuthDisableResponse) Reset()                    { *m = AuthDisableResponse{} }
@@ -3051,10 +3638,18 @@ func (m *AuthDisableResponse) GetHeader() *ResponseHeader {
 	return nil
 }
 
+func (m *AuthDisableResponse) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type AuthenticateResponse struct {
 	Header *ResponseHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
 	// token is an authorized token that can be used in succeeding RPCs
-	Token string `protobuf:"bytes,2,opt,name=token,proto3" json:"token,omitempty"`
+	Token string        `protobuf:"bytes,2,opt,name=token,proto3" json:"token,omitempty"`
+	Trace *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *AuthenticateResponse) Reset()                    { *m = AuthenticateResponse{} }
@@ -3076,8 +3671,16 @@ func (m *AuthenticateResponse) GetToken() string {
 	return ""
 }
 
+func (m *AuthenticateResponse) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type AuthUserAddResponse struct {
 	Header *ResponseHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
+	Trace  *tracer.Trace   `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *AuthUserAddResponse) Reset()                    { *m = AuthUserAddResponse{} }
@@ -3092,9 +3695,17 @@ func (m *AuthUserAddResponse) GetHeader() *ResponseHeader {
 	return nil
 }
 
+func (m *AuthUserAddResponse) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type AuthUserGetResponse struct {
 	Header *ResponseHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
 	Roles  []string        `protobuf:"bytes,2,rep,name=roles" json:"roles,omitempty"`
+	Trace  *tracer.Trace   `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *AuthUserGetResponse) Reset()                    { *m = AuthUserGetResponse{} }
@@ -3116,8 +3727,16 @@ func (m *AuthUserGetResponse) GetRoles() []string {
 	return nil
 }
 
+func (m *AuthUserGetResponse) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type AuthUserDeleteResponse struct {
 	Header *ResponseHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
+	Trace  *tracer.Trace   `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *AuthUserDeleteResponse) Reset()                    { *m = AuthUserDeleteResponse{} }
@@ -3132,8 +3751,16 @@ func (m *AuthUserDeleteResponse) GetHeader() *ResponseHeader {
 	return nil
 }
 
+func (m *AuthUserDeleteResponse) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type AuthUserChangePasswordResponse struct {
 	Header *ResponseHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
+	Trace  *tracer.Trace   `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *AuthUserChangePasswordResponse) Reset()         { *m = AuthUserChangePasswordResponse{} }
@@ -3150,8 +3777,16 @@ func (m *AuthUserChangePasswordResponse) GetHeader() *ResponseHeader {
 	return nil
 }
 
+func (m *AuthUserChangePasswordResponse) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type AuthUserGrantRoleResponse struct {
 	Header *ResponseHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
+	Trace  *tracer.Trace   `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *AuthUserGrantRoleResponse) Reset()                    { *m = AuthUserGrantRoleResponse{} }
@@ -3166,8 +3801,16 @@ func (m *AuthUserGrantRoleResponse) GetHeader() *ResponseHeader {
 	return nil
 }
 
+func (m *AuthUserGrantRoleResponse) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type AuthUserRevokeRoleResponse struct {
 	Header *ResponseHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
+	Trace  *tracer.Trace   `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *AuthUserRevokeRoleResponse) Reset()                    { *m = AuthUserRevokeRoleResponse{} }
@@ -3182,8 +3825,16 @@ func (m *AuthUserRevokeRoleResponse) GetHeader() *ResponseHeader {
 	return nil
 }
 
+func (m *AuthUserRevokeRoleResponse) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type AuthRoleAddResponse struct {
 	Header *ResponseHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
+	Trace  *tracer.Trace   `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *AuthRoleAddResponse) Reset()                    { *m = AuthRoleAddResponse{} }
@@ -3198,9 +3849,17 @@ func (m *AuthRoleAddResponse) GetHeader() *ResponseHeader {
 	return nil
 }
 
+func (m *AuthRoleAddResponse) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type AuthRoleGetResponse struct {
 	Header *ResponseHeader      `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
 	Perm   []*authpb.Permission `protobuf:"bytes,2,rep,name=perm" json:"perm,omitempty"`
+	Trace  *tracer.Trace        `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *AuthRoleGetResponse) Reset()                    { *m = AuthRoleGetResponse{} }
@@ -3222,9 +3881,17 @@ func (m *AuthRoleGetResponse) GetPerm() []*authpb.Permission {
 	return nil
 }
 
+func (m *AuthRoleGetResponse) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type AuthRoleListResponse struct {
 	Header *ResponseHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
 	Roles  []string        `protobuf:"bytes,2,rep,name=roles" json:"roles,omitempty"`
+	Trace  *tracer.Trace   `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *AuthRoleListResponse) Reset()                    { *m = AuthRoleListResponse{} }
@@ -3246,9 +3913,17 @@ func (m *AuthRoleListResponse) GetRoles() []string {
 	return nil
 }
 
+func (m *AuthRoleListResponse) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type AuthUserListResponse struct {
 	Header *ResponseHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
 	Users  []string        `protobuf:"bytes,2,rep,name=users" json:"users,omitempty"`
+	Trace  *tracer.Trace   `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *AuthUserListResponse) Reset()                    { *m = AuthUserListResponse{} }
@@ -3270,8 +3945,16 @@ func (m *AuthUserListResponse) GetUsers() []string {
 	return nil
 }
 
+func (m *AuthUserListResponse) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type AuthRoleDeleteResponse struct {
 	Header *ResponseHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
+	Trace  *tracer.Trace   `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *AuthRoleDeleteResponse) Reset()                    { *m = AuthRoleDeleteResponse{} }
@@ -3286,8 +3969,16 @@ func (m *AuthRoleDeleteResponse) GetHeader() *ResponseHeader {
 	return nil
 }
 
+func (m *AuthRoleDeleteResponse) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type AuthRoleGrantPermissionResponse struct {
 	Header *ResponseHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
+	Trace  *tracer.Trace   `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *AuthRoleGrantPermissionResponse) Reset()         { *m = AuthRoleGrantPermissionResponse{} }
@@ -3304,8 +3995,16 @@ func (m *AuthRoleGrantPermissionResponse) GetHeader() *ResponseHeader {
 	return nil
 }
 
+func (m *AuthRoleGrantPermissionResponse) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type AuthRoleRevokePermissionResponse struct {
 	Header *ResponseHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
+	Trace  *tracer.Trace   `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *AuthRoleRevokePermissionResponse) Reset()         { *m = AuthRoleRevokePermissionResponse{} }
@@ -3318,6 +4017,13 @@ func (*AuthRoleRevokePermissionResponse) Descriptor() ([]byte, []int) {
 func (m *AuthRoleRevokePermissionResponse) GetHeader() *ResponseHeader {
 	if m != nil {
 		return m.Header
+	}
+	return nil
+}
+
+func (m *AuthRoleRevokePermissionResponse) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
 	}
 	return nil
 }
@@ -5154,6 +5860,18 @@ func (m *ResponseHeader) MarshalTo(dAtA []byte) (int, error) {
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.RaftTerm))
 	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n1, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n1
+	}
 	return i, nil
 }
 
@@ -5254,6 +5972,18 @@ func (m *RangeRequest) MarshalTo(dAtA []byte) (int, error) {
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.MaxCreateRevision))
 	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n2, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n2
+	}
 	return i, nil
 }
 
@@ -5276,11 +6006,11 @@ func (m *RangeResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Header.Size()))
-		n1, err := m.Header.MarshalTo(dAtA[i:])
+		n3, err := m.Header.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n1
+		i += n3
 	}
 	if len(m.Kvs) > 0 {
 		for _, msg := range m.Kvs {
@@ -5308,6 +6038,18 @@ func (m *RangeResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0x20
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Count))
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n4, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n4
 	}
 	return i, nil
 }
@@ -5374,6 +6116,18 @@ func (m *PutRequest) MarshalTo(dAtA []byte) (int, error) {
 		}
 		i++
 	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n5, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n5
+	}
 	return i, nil
 }
 
@@ -5396,21 +6150,33 @@ func (m *PutResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Header.Size()))
-		n2, err := m.Header.MarshalTo(dAtA[i:])
+		n6, err := m.Header.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n2
+		i += n6
 	}
 	if m.PrevKv != nil {
 		dAtA[i] = 0x12
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.PrevKv.Size()))
-		n3, err := m.PrevKv.MarshalTo(dAtA[i:])
+		n7, err := m.PrevKv.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n3
+		i += n7
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n8, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n8
 	}
 	return i, nil
 }
@@ -5452,6 +6218,18 @@ func (m *DeleteRangeRequest) MarshalTo(dAtA []byte) (int, error) {
 		}
 		i++
 	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n9, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n9
+	}
 	return i, nil
 }
 
@@ -5474,11 +6252,11 @@ func (m *DeleteRangeResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Header.Size()))
-		n4, err := m.Header.MarshalTo(dAtA[i:])
+		n10, err := m.Header.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n4
+		i += n10
 	}
 	if m.Deleted != 0 {
 		dAtA[i] = 0x10
@@ -5496,6 +6274,18 @@ func (m *DeleteRangeResponse) MarshalTo(dAtA []byte) (int, error) {
 			}
 			i += n
 		}
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n11, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n11
 	}
 	return i, nil
 }
@@ -5516,11 +6306,11 @@ func (m *RequestOp) MarshalTo(dAtA []byte) (int, error) {
 	var l int
 	_ = l
 	if m.Request != nil {
-		nn5, err := m.Request.MarshalTo(dAtA[i:])
+		nn12, err := m.Request.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += nn5
+		i += nn12
 	}
 	return i, nil
 }
@@ -5531,11 +6321,11 @@ func (m *RequestOp_RequestRange) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.RequestRange.Size()))
-		n6, err := m.RequestRange.MarshalTo(dAtA[i:])
+		n13, err := m.RequestRange.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n6
+		i += n13
 	}
 	return i, nil
 }
@@ -5545,11 +6335,11 @@ func (m *RequestOp_RequestPut) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0x12
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.RequestPut.Size()))
-		n7, err := m.RequestPut.MarshalTo(dAtA[i:])
+		n14, err := m.RequestPut.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n7
+		i += n14
 	}
 	return i, nil
 }
@@ -5559,11 +6349,11 @@ func (m *RequestOp_RequestDeleteRange) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0x1a
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.RequestDeleteRange.Size()))
-		n8, err := m.RequestDeleteRange.MarshalTo(dAtA[i:])
+		n15, err := m.RequestDeleteRange.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n8
+		i += n15
 	}
 	return i, nil
 }
@@ -5573,11 +6363,11 @@ func (m *RequestOp_RequestTxn) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0x22
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.RequestTxn.Size()))
-		n9, err := m.RequestTxn.MarshalTo(dAtA[i:])
+		n16, err := m.RequestTxn.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n9
+		i += n16
 	}
 	return i, nil
 }
@@ -5597,11 +6387,11 @@ func (m *ResponseOp) MarshalTo(dAtA []byte) (int, error) {
 	var l int
 	_ = l
 	if m.Response != nil {
-		nn10, err := m.Response.MarshalTo(dAtA[i:])
+		nn17, err := m.Response.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += nn10
+		i += nn17
 	}
 	return i, nil
 }
@@ -5612,11 +6402,11 @@ func (m *ResponseOp_ResponseRange) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.ResponseRange.Size()))
-		n11, err := m.ResponseRange.MarshalTo(dAtA[i:])
+		n18, err := m.ResponseRange.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n11
+		i += n18
 	}
 	return i, nil
 }
@@ -5626,11 +6416,11 @@ func (m *ResponseOp_ResponsePut) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0x12
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.ResponsePut.Size()))
-		n12, err := m.ResponsePut.MarshalTo(dAtA[i:])
+		n19, err := m.ResponsePut.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n12
+		i += n19
 	}
 	return i, nil
 }
@@ -5640,11 +6430,11 @@ func (m *ResponseOp_ResponseDeleteRange) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0x1a
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.ResponseDeleteRange.Size()))
-		n13, err := m.ResponseDeleteRange.MarshalTo(dAtA[i:])
+		n20, err := m.ResponseDeleteRange.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n13
+		i += n20
 	}
 	return i, nil
 }
@@ -5654,11 +6444,11 @@ func (m *ResponseOp_ResponseTxn) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0x22
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.ResponseTxn.Size()))
-		n14, err := m.ResponseTxn.MarshalTo(dAtA[i:])
+		n21, err := m.ResponseTxn.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n14
+		i += n21
 	}
 	return i, nil
 }
@@ -5694,11 +6484,11 @@ func (m *Compare) MarshalTo(dAtA []byte) (int, error) {
 		i += copy(dAtA[i:], m.Key)
 	}
 	if m.TargetUnion != nil {
-		nn15, err := m.TargetUnion.MarshalTo(dAtA[i:])
+		nn22, err := m.TargetUnion.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += nn15
+		i += nn22
 	}
 	if len(m.RangeEnd) > 0 {
 		dAtA[i] = 0x82
@@ -5707,6 +6497,18 @@ func (m *Compare) MarshalTo(dAtA []byte) (int, error) {
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(len(m.RangeEnd)))
 		i += copy(dAtA[i:], m.RangeEnd)
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n23, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n23
 	}
 	return i, nil
 }
@@ -5800,6 +6602,18 @@ func (m *TxnRequest) MarshalTo(dAtA []byte) (int, error) {
 			i += n
 		}
 	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n24, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n24
+	}
 	return i, nil
 }
 
@@ -5822,11 +6636,11 @@ func (m *TxnResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Header.Size()))
-		n16, err := m.Header.MarshalTo(dAtA[i:])
+		n25, err := m.Header.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n16
+		i += n25
 	}
 	if m.Succeeded {
 		dAtA[i] = 0x10
@@ -5849,6 +6663,18 @@ func (m *TxnResponse) MarshalTo(dAtA []byte) (int, error) {
 			}
 			i += n
 		}
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n26, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n26
 	}
 	return i, nil
 }
@@ -5883,6 +6709,18 @@ func (m *CompactionRequest) MarshalTo(dAtA []byte) (int, error) {
 		}
 		i++
 	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n27, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n27
+	}
 	return i, nil
 }
 
@@ -5905,11 +6743,23 @@ func (m *CompactionResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Header.Size()))
-		n17, err := m.Header.MarshalTo(dAtA[i:])
+		n28, err := m.Header.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n17
+		i += n28
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n29, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n29
 	}
 	return i, nil
 }
@@ -5929,6 +6779,18 @@ func (m *HashRequest) MarshalTo(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n30, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n30
+	}
 	return i, nil
 }
 
@@ -5952,6 +6814,18 @@ func (m *HashKVRequest) MarshalTo(dAtA []byte) (int, error) {
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Revision))
 	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n31, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n31
+	}
 	return i, nil
 }
 
@@ -5974,11 +6848,11 @@ func (m *HashKVResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Header.Size()))
-		n18, err := m.Header.MarshalTo(dAtA[i:])
+		n32, err := m.Header.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n18
+		i += n32
 	}
 	if m.Hash != 0 {
 		dAtA[i] = 0x10
@@ -5989,6 +6863,18 @@ func (m *HashKVResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0x18
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.CompactRevision))
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n33, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n33
 	}
 	return i, nil
 }
@@ -6012,16 +6898,28 @@ func (m *HashResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Header.Size()))
-		n19, err := m.Header.MarshalTo(dAtA[i:])
+		n34, err := m.Header.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n19
+		i += n34
 	}
 	if m.Hash != 0 {
 		dAtA[i] = 0x10
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Hash))
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n35, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n35
 	}
 	return i, nil
 }
@@ -6041,6 +6939,18 @@ func (m *SnapshotRequest) MarshalTo(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n36, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n36
+	}
 	return i, nil
 }
 
@@ -6063,11 +6973,11 @@ func (m *SnapshotResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Header.Size()))
-		n20, err := m.Header.MarshalTo(dAtA[i:])
+		n37, err := m.Header.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n20
+		i += n37
 	}
 	if m.RemainingBytes != 0 {
 		dAtA[i] = 0x10
@@ -6079,6 +6989,18 @@ func (m *SnapshotResponse) MarshalTo(dAtA []byte) (int, error) {
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(len(m.Blob)))
 		i += copy(dAtA[i:], m.Blob)
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n38, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n38
 	}
 	return i, nil
 }
@@ -6099,11 +7021,11 @@ func (m *WatchRequest) MarshalTo(dAtA []byte) (int, error) {
 	var l int
 	_ = l
 	if m.RequestUnion != nil {
-		nn21, err := m.RequestUnion.MarshalTo(dAtA[i:])
+		nn39, err := m.RequestUnion.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += nn21
+		i += nn39
 	}
 	return i, nil
 }
@@ -6114,11 +7036,11 @@ func (m *WatchRequest_CreateRequest) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.CreateRequest.Size()))
-		n22, err := m.CreateRequest.MarshalTo(dAtA[i:])
+		n40, err := m.CreateRequest.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n22
+		i += n40
 	}
 	return i, nil
 }
@@ -6128,11 +7050,11 @@ func (m *WatchRequest_CancelRequest) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0x12
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.CancelRequest.Size()))
-		n23, err := m.CancelRequest.MarshalTo(dAtA[i:])
+		n41, err := m.CancelRequest.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n23
+		i += n41
 	}
 	return i, nil
 }
@@ -6142,11 +7064,11 @@ func (m *WatchRequest_ProgressRequest) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0x1a
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.ProgressRequest.Size()))
-		n24, err := m.ProgressRequest.MarshalTo(dAtA[i:])
+		n42, err := m.ProgressRequest.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n24
+		i += n42
 	}
 	return i, nil
 }
@@ -6193,21 +7115,21 @@ func (m *WatchCreateRequest) MarshalTo(dAtA []byte) (int, error) {
 		i++
 	}
 	if len(m.Filters) > 0 {
-		dAtA26 := make([]byte, len(m.Filters)*10)
-		var j25 int
+		dAtA44 := make([]byte, len(m.Filters)*10)
+		var j43 int
 		for _, num := range m.Filters {
 			for num >= 1<<7 {
-				dAtA26[j25] = uint8(uint64(num)&0x7f | 0x80)
+				dAtA44[j43] = uint8(uint64(num)&0x7f | 0x80)
 				num >>= 7
-				j25++
+				j43++
 			}
-			dAtA26[j25] = uint8(num)
-			j25++
+			dAtA44[j43] = uint8(num)
+			j43++
 		}
 		dAtA[i] = 0x2a
 		i++
-		i = encodeVarintRpc(dAtA, i, uint64(j25))
-		i += copy(dAtA[i:], dAtA26[:j25])
+		i = encodeVarintRpc(dAtA, i, uint64(j43))
+		i += copy(dAtA[i:], dAtA44[:j43])
 	}
 	if m.PrevKv {
 		dAtA[i] = 0x30
@@ -6234,6 +7156,18 @@ func (m *WatchCreateRequest) MarshalTo(dAtA []byte) (int, error) {
 		}
 		i++
 	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n45, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n45
+	}
 	return i, nil
 }
 
@@ -6257,6 +7191,18 @@ func (m *WatchCancelRequest) MarshalTo(dAtA []byte) (int, error) {
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.WatchId))
 	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n46, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n46
+	}
 	return i, nil
 }
 
@@ -6275,6 +7221,18 @@ func (m *WatchProgressRequest) MarshalTo(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n47, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n47
+	}
 	return i, nil
 }
 
@@ -6297,11 +7255,11 @@ func (m *WatchResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Header.Size()))
-		n27, err := m.Header.MarshalTo(dAtA[i:])
+		n48, err := m.Header.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n27
+		i += n48
 	}
 	if m.WatchId != 0 {
 		dAtA[i] = 0x10
@@ -6361,6 +7319,18 @@ func (m *WatchResponse) MarshalTo(dAtA []byte) (int, error) {
 			i += n
 		}
 	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n49, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n49
+	}
 	return i, nil
 }
 
@@ -6389,6 +7359,18 @@ func (m *LeaseGrantRequest) MarshalTo(dAtA []byte) (int, error) {
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.ID))
 	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n50, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n50
+	}
 	return i, nil
 }
 
@@ -6411,11 +7393,11 @@ func (m *LeaseGrantResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Header.Size()))
-		n28, err := m.Header.MarshalTo(dAtA[i:])
+		n51, err := m.Header.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n28
+		i += n51
 	}
 	if m.ID != 0 {
 		dAtA[i] = 0x10
@@ -6432,6 +7414,18 @@ func (m *LeaseGrantResponse) MarshalTo(dAtA []byte) (int, error) {
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(len(m.Error)))
 		i += copy(dAtA[i:], m.Error)
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n52, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n52
 	}
 	return i, nil
 }
@@ -6456,6 +7450,18 @@ func (m *LeaseRevokeRequest) MarshalTo(dAtA []byte) (int, error) {
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.ID))
 	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n53, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n53
+	}
 	return i, nil
 }
 
@@ -6478,11 +7484,23 @@ func (m *LeaseRevokeResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Header.Size()))
-		n29, err := m.Header.MarshalTo(dAtA[i:])
+		n54, err := m.Header.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n29
+		i += n54
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n55, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n55
 	}
 	return i, nil
 }
@@ -6511,6 +7529,18 @@ func (m *LeaseCheckpoint) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0x10
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Remaining_TTL))
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n56, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n56
 	}
 	return i, nil
 }
@@ -6542,6 +7572,18 @@ func (m *LeaseCheckpointRequest) MarshalTo(dAtA []byte) (int, error) {
 			i += n
 		}
 	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n57, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n57
+	}
 	return i, nil
 }
 
@@ -6564,11 +7606,23 @@ func (m *LeaseCheckpointResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Header.Size()))
-		n30, err := m.Header.MarshalTo(dAtA[i:])
+		n58, err := m.Header.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n30
+		i += n58
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n59, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n59
 	}
 	return i, nil
 }
@@ -6593,6 +7647,18 @@ func (m *LeaseKeepAliveRequest) MarshalTo(dAtA []byte) (int, error) {
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.ID))
 	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n60, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n60
+	}
 	return i, nil
 }
 
@@ -6615,11 +7681,11 @@ func (m *LeaseKeepAliveResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Header.Size()))
-		n31, err := m.Header.MarshalTo(dAtA[i:])
+		n61, err := m.Header.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n31
+		i += n61
 	}
 	if m.ID != 0 {
 		dAtA[i] = 0x10
@@ -6630,6 +7696,18 @@ func (m *LeaseKeepAliveResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0x18
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.TTL))
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n62, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n62
 	}
 	return i, nil
 }
@@ -6664,6 +7742,18 @@ func (m *LeaseTimeToLiveRequest) MarshalTo(dAtA []byte) (int, error) {
 		}
 		i++
 	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n63, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n63
+	}
 	return i, nil
 }
 
@@ -6686,11 +7776,11 @@ func (m *LeaseTimeToLiveResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Header.Size()))
-		n32, err := m.Header.MarshalTo(dAtA[i:])
+		n64, err := m.Header.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n32
+		i += n64
 	}
 	if m.ID != 0 {
 		dAtA[i] = 0x10
@@ -6715,6 +7805,18 @@ func (m *LeaseTimeToLiveResponse) MarshalTo(dAtA []byte) (int, error) {
 			i += copy(dAtA[i:], b)
 		}
 	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n65, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n65
+	}
 	return i, nil
 }
 
@@ -6733,6 +7835,18 @@ func (m *LeaseLeasesRequest) MarshalTo(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n66, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n66
+	}
 	return i, nil
 }
 
@@ -6756,6 +7870,18 @@ func (m *LeaseStatus) MarshalTo(dAtA []byte) (int, error) {
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.ID))
 	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n67, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n67
+	}
 	return i, nil
 }
 
@@ -6778,11 +7904,11 @@ func (m *LeaseLeasesResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Header.Size()))
-		n33, err := m.Header.MarshalTo(dAtA[i:])
+		n68, err := m.Header.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n33
+		i += n68
 	}
 	if len(m.Leases) > 0 {
 		for _, msg := range m.Leases {
@@ -6795,6 +7921,18 @@ func (m *LeaseLeasesResponse) MarshalTo(dAtA []byte) (int, error) {
 			}
 			i += n
 		}
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n69, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n69
 	}
 	return i, nil
 }
@@ -6865,6 +8003,18 @@ func (m *Member) MarshalTo(dAtA []byte) (int, error) {
 		}
 		i++
 	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n70, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n70
+	}
 	return i, nil
 }
 
@@ -6908,6 +8058,18 @@ func (m *MemberAddRequest) MarshalTo(dAtA []byte) (int, error) {
 		}
 		i++
 	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n71, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n71
+	}
 	return i, nil
 }
 
@@ -6930,21 +8092,21 @@ func (m *MemberAddResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Header.Size()))
-		n34, err := m.Header.MarshalTo(dAtA[i:])
+		n72, err := m.Header.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n34
+		i += n72
 	}
 	if m.Member != nil {
 		dAtA[i] = 0x12
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Member.Size()))
-		n35, err := m.Member.MarshalTo(dAtA[i:])
+		n73, err := m.Member.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n35
+		i += n73
 	}
 	if len(m.Members) > 0 {
 		for _, msg := range m.Members {
@@ -6957,6 +8119,18 @@ func (m *MemberAddResponse) MarshalTo(dAtA []byte) (int, error) {
 			}
 			i += n
 		}
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n74, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n74
 	}
 	return i, nil
 }
@@ -6981,6 +8155,18 @@ func (m *MemberRemoveRequest) MarshalTo(dAtA []byte) (int, error) {
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.ID))
 	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n75, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n75
+	}
 	return i, nil
 }
 
@@ -7003,11 +8189,11 @@ func (m *MemberRemoveResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Header.Size()))
-		n36, err := m.Header.MarshalTo(dAtA[i:])
+		n76, err := m.Header.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n36
+		i += n76
 	}
 	if len(m.Members) > 0 {
 		for _, msg := range m.Members {
@@ -7020,6 +8206,18 @@ func (m *MemberRemoveResponse) MarshalTo(dAtA []byte) (int, error) {
 			}
 			i += n
 		}
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n77, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n77
 	}
 	return i, nil
 }
@@ -7059,6 +8257,18 @@ func (m *MemberUpdateRequest) MarshalTo(dAtA []byte) (int, error) {
 			i += copy(dAtA[i:], s)
 		}
 	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n78, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n78
+	}
 	return i, nil
 }
 
@@ -7081,11 +8291,11 @@ func (m *MemberUpdateResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Header.Size()))
-		n37, err := m.Header.MarshalTo(dAtA[i:])
+		n79, err := m.Header.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n37
+		i += n79
 	}
 	if len(m.Members) > 0 {
 		for _, msg := range m.Members {
@@ -7098,6 +8308,18 @@ func (m *MemberUpdateResponse) MarshalTo(dAtA []byte) (int, error) {
 			}
 			i += n
 		}
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n80, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n80
 	}
 	return i, nil
 }
@@ -7117,6 +8339,18 @@ func (m *MemberListRequest) MarshalTo(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n81, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n81
+	}
 	return i, nil
 }
 
@@ -7139,11 +8373,11 @@ func (m *MemberListResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Header.Size()))
-		n38, err := m.Header.MarshalTo(dAtA[i:])
+		n82, err := m.Header.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n38
+		i += n82
 	}
 	if len(m.Members) > 0 {
 		for _, msg := range m.Members {
@@ -7156,6 +8390,18 @@ func (m *MemberListResponse) MarshalTo(dAtA []byte) (int, error) {
 			}
 			i += n
 		}
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n83, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n83
 	}
 	return i, nil
 }
@@ -7180,6 +8426,18 @@ func (m *MemberPromoteRequest) MarshalTo(dAtA []byte) (int, error) {
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.ID))
 	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n84, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n84
+	}
 	return i, nil
 }
 
@@ -7202,11 +8460,11 @@ func (m *MemberPromoteResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Header.Size()))
-		n39, err := m.Header.MarshalTo(dAtA[i:])
+		n85, err := m.Header.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n39
+		i += n85
 	}
 	if len(m.Members) > 0 {
 		for _, msg := range m.Members {
@@ -7219,6 +8477,18 @@ func (m *MemberPromoteResponse) MarshalTo(dAtA []byte) (int, error) {
 			}
 			i += n
 		}
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n86, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n86
 	}
 	return i, nil
 }
@@ -7238,6 +8508,18 @@ func (m *DefragmentRequest) MarshalTo(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n87, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n87
+	}
 	return i, nil
 }
 
@@ -7260,11 +8542,23 @@ func (m *DefragmentResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Header.Size()))
-		n40, err := m.Header.MarshalTo(dAtA[i:])
+		n88, err := m.Header.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n40
+		i += n88
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n89, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n89
 	}
 	return i, nil
 }
@@ -7289,6 +8583,18 @@ func (m *MoveLeaderRequest) MarshalTo(dAtA []byte) (int, error) {
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.TargetID))
 	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n90, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n90
+	}
 	return i, nil
 }
 
@@ -7311,11 +8617,23 @@ func (m *MoveLeaderResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Header.Size()))
-		n41, err := m.Header.MarshalTo(dAtA[i:])
+		n91, err := m.Header.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n41
+		i += n91
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n92, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n92
 	}
 	return i, nil
 }
@@ -7350,6 +8668,18 @@ func (m *AlarmRequest) MarshalTo(dAtA []byte) (int, error) {
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Alarm))
 	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n93, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n93
+	}
 	return i, nil
 }
 
@@ -7378,6 +8708,18 @@ func (m *AlarmMember) MarshalTo(dAtA []byte) (int, error) {
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Alarm))
 	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n94, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n94
+	}
 	return i, nil
 }
 
@@ -7400,11 +8742,11 @@ func (m *AlarmResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Header.Size()))
-		n42, err := m.Header.MarshalTo(dAtA[i:])
+		n95, err := m.Header.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n42
+		i += n95
 	}
 	if len(m.Alarms) > 0 {
 		for _, msg := range m.Alarms {
@@ -7417,6 +8759,18 @@ func (m *AlarmResponse) MarshalTo(dAtA []byte) (int, error) {
 			}
 			i += n
 		}
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n96, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n96
 	}
 	return i, nil
 }
@@ -7436,6 +8790,18 @@ func (m *StatusRequest) MarshalTo(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n97, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n97
+	}
 	return i, nil
 }
 
@@ -7458,11 +8824,11 @@ func (m *StatusResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Header.Size()))
-		n43, err := m.Header.MarshalTo(dAtA[i:])
+		n98, err := m.Header.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n43
+		i += n98
 	}
 	if len(m.Version) > 0 {
 		dAtA[i] = 0x12
@@ -7525,6 +8891,18 @@ func (m *StatusResponse) MarshalTo(dAtA []byte) (int, error) {
 		}
 		i++
 	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n99, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n99
+	}
 	return i, nil
 }
 
@@ -7543,6 +8921,18 @@ func (m *AuthEnableRequest) MarshalTo(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n100, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n100
+	}
 	return i, nil
 }
 
@@ -7561,6 +8951,18 @@ func (m *AuthDisableRequest) MarshalTo(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n101, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n101
+	}
 	return i, nil
 }
 
@@ -7590,6 +8992,18 @@ func (m *AuthenticateRequest) MarshalTo(dAtA []byte) (int, error) {
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(len(m.Password)))
 		i += copy(dAtA[i:], m.Password)
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n102, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n102
 	}
 	return i, nil
 }
@@ -7625,11 +9039,23 @@ func (m *AuthUserAddRequest) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0x1a
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Options.Size()))
-		n44, err := m.Options.MarshalTo(dAtA[i:])
+		n103, err := m.Options.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n44
+		i += n103
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n104, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n104
 	}
 	return i, nil
 }
@@ -7655,6 +9081,18 @@ func (m *AuthUserGetRequest) MarshalTo(dAtA []byte) (int, error) {
 		i = encodeVarintRpc(dAtA, i, uint64(len(m.Name)))
 		i += copy(dAtA[i:], m.Name)
 	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n105, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n105
+	}
 	return i, nil
 }
 
@@ -7678,6 +9116,18 @@ func (m *AuthUserDeleteRequest) MarshalTo(dAtA []byte) (int, error) {
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(len(m.Name)))
 		i += copy(dAtA[i:], m.Name)
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n106, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n106
 	}
 	return i, nil
 }
@@ -7709,6 +9159,18 @@ func (m *AuthUserChangePasswordRequest) MarshalTo(dAtA []byte) (int, error) {
 		i = encodeVarintRpc(dAtA, i, uint64(len(m.Password)))
 		i += copy(dAtA[i:], m.Password)
 	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n107, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n107
+	}
 	return i, nil
 }
 
@@ -7738,6 +9200,18 @@ func (m *AuthUserGrantRoleRequest) MarshalTo(dAtA []byte) (int, error) {
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(len(m.Role)))
 		i += copy(dAtA[i:], m.Role)
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n108, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n108
 	}
 	return i, nil
 }
@@ -7769,6 +9243,18 @@ func (m *AuthUserRevokeRoleRequest) MarshalTo(dAtA []byte) (int, error) {
 		i = encodeVarintRpc(dAtA, i, uint64(len(m.Role)))
 		i += copy(dAtA[i:], m.Role)
 	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n109, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n109
+	}
 	return i, nil
 }
 
@@ -7792,6 +9278,18 @@ func (m *AuthRoleAddRequest) MarshalTo(dAtA []byte) (int, error) {
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(len(m.Name)))
 		i += copy(dAtA[i:], m.Name)
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n110, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n110
 	}
 	return i, nil
 }
@@ -7817,6 +9315,18 @@ func (m *AuthRoleGetRequest) MarshalTo(dAtA []byte) (int, error) {
 		i = encodeVarintRpc(dAtA, i, uint64(len(m.Role)))
 		i += copy(dAtA[i:], m.Role)
 	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n111, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n111
+	}
 	return i, nil
 }
 
@@ -7835,6 +9345,18 @@ func (m *AuthUserListRequest) MarshalTo(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n112, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n112
+	}
 	return i, nil
 }
 
@@ -7853,6 +9375,18 @@ func (m *AuthRoleListRequest) MarshalTo(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n113, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n113
+	}
 	return i, nil
 }
 
@@ -7876,6 +9410,18 @@ func (m *AuthRoleDeleteRequest) MarshalTo(dAtA []byte) (int, error) {
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(len(m.Role)))
 		i += copy(dAtA[i:], m.Role)
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n114, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n114
 	}
 	return i, nil
 }
@@ -7905,11 +9451,23 @@ func (m *AuthRoleGrantPermissionRequest) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0x12
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Perm.Size()))
-		n45, err := m.Perm.MarshalTo(dAtA[i:])
+		n115, err := m.Perm.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n45
+		i += n115
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n116, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n116
 	}
 	return i, nil
 }
@@ -7947,6 +9505,18 @@ func (m *AuthRoleRevokePermissionRequest) MarshalTo(dAtA []byte) (int, error) {
 		i = encodeVarintRpc(dAtA, i, uint64(len(m.RangeEnd)))
 		i += copy(dAtA[i:], m.RangeEnd)
 	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n117, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n117
+	}
 	return i, nil
 }
 
@@ -7969,11 +9539,23 @@ func (m *AuthEnableResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Header.Size()))
-		n46, err := m.Header.MarshalTo(dAtA[i:])
+		n118, err := m.Header.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n46
+		i += n118
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n119, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n119
 	}
 	return i, nil
 }
@@ -7997,11 +9579,23 @@ func (m *AuthDisableResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Header.Size()))
-		n47, err := m.Header.MarshalTo(dAtA[i:])
+		n120, err := m.Header.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n47
+		i += n120
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n121, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n121
 	}
 	return i, nil
 }
@@ -8025,17 +9619,29 @@ func (m *AuthenticateResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Header.Size()))
-		n48, err := m.Header.MarshalTo(dAtA[i:])
+		n122, err := m.Header.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n48
+		i += n122
 	}
 	if len(m.Token) > 0 {
 		dAtA[i] = 0x12
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(len(m.Token)))
 		i += copy(dAtA[i:], m.Token)
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n123, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n123
 	}
 	return i, nil
 }
@@ -8059,11 +9665,23 @@ func (m *AuthUserAddResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Header.Size()))
-		n49, err := m.Header.MarshalTo(dAtA[i:])
+		n124, err := m.Header.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n49
+		i += n124
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n125, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n125
 	}
 	return i, nil
 }
@@ -8087,11 +9705,11 @@ func (m *AuthUserGetResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Header.Size()))
-		n50, err := m.Header.MarshalTo(dAtA[i:])
+		n126, err := m.Header.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n50
+		i += n126
 	}
 	if len(m.Roles) > 0 {
 		for _, s := range m.Roles {
@@ -8107,6 +9725,18 @@ func (m *AuthUserGetResponse) MarshalTo(dAtA []byte) (int, error) {
 			i++
 			i += copy(dAtA[i:], s)
 		}
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n127, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n127
 	}
 	return i, nil
 }
@@ -8130,11 +9760,23 @@ func (m *AuthUserDeleteResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Header.Size()))
-		n51, err := m.Header.MarshalTo(dAtA[i:])
+		n128, err := m.Header.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n51
+		i += n128
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n129, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n129
 	}
 	return i, nil
 }
@@ -8158,11 +9800,23 @@ func (m *AuthUserChangePasswordResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Header.Size()))
-		n52, err := m.Header.MarshalTo(dAtA[i:])
+		n130, err := m.Header.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n52
+		i += n130
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n131, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n131
 	}
 	return i, nil
 }
@@ -8186,11 +9840,23 @@ func (m *AuthUserGrantRoleResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Header.Size()))
-		n53, err := m.Header.MarshalTo(dAtA[i:])
+		n132, err := m.Header.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n53
+		i += n132
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n133, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n133
 	}
 	return i, nil
 }
@@ -8214,11 +9880,23 @@ func (m *AuthUserRevokeRoleResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Header.Size()))
-		n54, err := m.Header.MarshalTo(dAtA[i:])
+		n134, err := m.Header.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n54
+		i += n134
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n135, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n135
 	}
 	return i, nil
 }
@@ -8242,11 +9920,23 @@ func (m *AuthRoleAddResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Header.Size()))
-		n55, err := m.Header.MarshalTo(dAtA[i:])
+		n136, err := m.Header.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n55
+		i += n136
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n137, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n137
 	}
 	return i, nil
 }
@@ -8270,11 +9960,11 @@ func (m *AuthRoleGetResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Header.Size()))
-		n56, err := m.Header.MarshalTo(dAtA[i:])
+		n138, err := m.Header.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n56
+		i += n138
 	}
 	if len(m.Perm) > 0 {
 		for _, msg := range m.Perm {
@@ -8287,6 +9977,18 @@ func (m *AuthRoleGetResponse) MarshalTo(dAtA []byte) (int, error) {
 			}
 			i += n
 		}
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n139, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n139
 	}
 	return i, nil
 }
@@ -8310,11 +10012,11 @@ func (m *AuthRoleListResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Header.Size()))
-		n57, err := m.Header.MarshalTo(dAtA[i:])
+		n140, err := m.Header.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n57
+		i += n140
 	}
 	if len(m.Roles) > 0 {
 		for _, s := range m.Roles {
@@ -8330,6 +10032,18 @@ func (m *AuthRoleListResponse) MarshalTo(dAtA []byte) (int, error) {
 			i++
 			i += copy(dAtA[i:], s)
 		}
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n141, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n141
 	}
 	return i, nil
 }
@@ -8353,11 +10067,11 @@ func (m *AuthUserListResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Header.Size()))
-		n58, err := m.Header.MarshalTo(dAtA[i:])
+		n142, err := m.Header.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n58
+		i += n142
 	}
 	if len(m.Users) > 0 {
 		for _, s := range m.Users {
@@ -8373,6 +10087,18 @@ func (m *AuthUserListResponse) MarshalTo(dAtA []byte) (int, error) {
 			i++
 			i += copy(dAtA[i:], s)
 		}
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n143, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n143
 	}
 	return i, nil
 }
@@ -8396,11 +10122,23 @@ func (m *AuthRoleDeleteResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Header.Size()))
-		n59, err := m.Header.MarshalTo(dAtA[i:])
+		n144, err := m.Header.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n59
+		i += n144
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n145, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n145
 	}
 	return i, nil
 }
@@ -8424,11 +10162,23 @@ func (m *AuthRoleGrantPermissionResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Header.Size()))
-		n60, err := m.Header.MarshalTo(dAtA[i:])
+		n146, err := m.Header.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n60
+		i += n146
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n147, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n147
 	}
 	return i, nil
 }
@@ -8452,11 +10202,23 @@ func (m *AuthRoleRevokePermissionResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintRpc(dAtA, i, uint64(m.Header.Size()))
-		n61, err := m.Header.MarshalTo(dAtA[i:])
+		n148, err := m.Header.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n61
+		i += n148
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintRpc(dAtA, i, uint64(m.Trace.Size()))
+		n149, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n149
 	}
 	return i, nil
 }
@@ -8484,6 +10246,10 @@ func (m *ResponseHeader) Size() (n int) {
 	}
 	if m.RaftTerm != 0 {
 		n += 1 + sovRpc(uint64(m.RaftTerm))
+	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
 	}
 	return n
 }
@@ -8532,6 +10298,10 @@ func (m *RangeRequest) Size() (n int) {
 	if m.MaxCreateRevision != 0 {
 		n += 1 + sovRpc(uint64(m.MaxCreateRevision))
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
@@ -8553,6 +10323,10 @@ func (m *RangeResponse) Size() (n int) {
 	}
 	if m.Count != 0 {
 		n += 1 + sovRpc(uint64(m.Count))
+	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
 	}
 	return n
 }
@@ -8580,6 +10354,10 @@ func (m *PutRequest) Size() (n int) {
 	if m.IgnoreLease {
 		n += 2
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
@@ -8593,6 +10371,10 @@ func (m *PutResponse) Size() (n int) {
 	if m.PrevKv != nil {
 		l = m.PrevKv.Size()
 		n += 1 + l + sovRpc(uint64(l))
+	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
 	}
 	return n
 }
@@ -8610,6 +10392,10 @@ func (m *DeleteRangeRequest) Size() (n int) {
 	}
 	if m.PrevKv {
 		n += 2
+	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
 	}
 	return n
 }
@@ -8629,6 +10415,10 @@ func (m *DeleteRangeResponse) Size() (n int) {
 			l = e.Size()
 			n += 1 + l + sovRpc(uint64(l))
 		}
+	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
 	}
 	return n
 }
@@ -8743,6 +10533,10 @@ func (m *Compare) Size() (n int) {
 	if l > 0 {
 		n += 2 + l + sovRpc(uint64(l))
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
@@ -8800,6 +10594,10 @@ func (m *TxnRequest) Size() (n int) {
 			n += 1 + l + sovRpc(uint64(l))
 		}
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
@@ -8819,6 +10617,10 @@ func (m *TxnResponse) Size() (n int) {
 			n += 1 + l + sovRpc(uint64(l))
 		}
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
@@ -8831,6 +10633,10 @@ func (m *CompactionRequest) Size() (n int) {
 	if m.Physical {
 		n += 2
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
@@ -8841,12 +10647,20 @@ func (m *CompactionResponse) Size() (n int) {
 		l = m.Header.Size()
 		n += 1 + l + sovRpc(uint64(l))
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
 func (m *HashRequest) Size() (n int) {
 	var l int
 	_ = l
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
@@ -8855,6 +10669,10 @@ func (m *HashKVRequest) Size() (n int) {
 	_ = l
 	if m.Revision != 0 {
 		n += 1 + sovRpc(uint64(m.Revision))
+	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
 	}
 	return n
 }
@@ -8872,6 +10690,10 @@ func (m *HashKVResponse) Size() (n int) {
 	if m.CompactRevision != 0 {
 		n += 1 + sovRpc(uint64(m.CompactRevision))
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
@@ -8885,12 +10707,20 @@ func (m *HashResponse) Size() (n int) {
 	if m.Hash != 0 {
 		n += 1 + sovRpc(uint64(m.Hash))
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
 func (m *SnapshotRequest) Size() (n int) {
 	var l int
 	_ = l
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
@@ -8907,6 +10737,10 @@ func (m *SnapshotResponse) Size() (n int) {
 	l = len(m.Blob)
 	if l > 0 {
 		n += 1 + l + sovRpc(uint64(l))
+	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
 	}
 	return n
 }
@@ -8980,6 +10814,10 @@ func (m *WatchCreateRequest) Size() (n int) {
 	if m.Fragment {
 		n += 2
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
@@ -8989,12 +10827,20 @@ func (m *WatchCancelRequest) Size() (n int) {
 	if m.WatchId != 0 {
 		n += 1 + sovRpc(uint64(m.WatchId))
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
 func (m *WatchProgressRequest) Size() (n int) {
 	var l int
 	_ = l
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
@@ -9030,6 +10876,10 @@ func (m *WatchResponse) Size() (n int) {
 			n += 1 + l + sovRpc(uint64(l))
 		}
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
@@ -9041,6 +10891,10 @@ func (m *LeaseGrantRequest) Size() (n int) {
 	}
 	if m.ID != 0 {
 		n += 1 + sovRpc(uint64(m.ID))
+	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
 	}
 	return n
 }
@@ -9062,6 +10916,10 @@ func (m *LeaseGrantResponse) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovRpc(uint64(l))
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
@@ -9070,6 +10928,10 @@ func (m *LeaseRevokeRequest) Size() (n int) {
 	_ = l
 	if m.ID != 0 {
 		n += 1 + sovRpc(uint64(m.ID))
+	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
 	}
 	return n
 }
@@ -9080,6 +10942,10 @@ func (m *LeaseRevokeResponse) Size() (n int) {
 	if m.Header != nil {
 		l = m.Header.Size()
 		n += 1 + l + sovRpc(uint64(l))
+	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
 	}
 	return n
 }
@@ -9093,6 +10959,10 @@ func (m *LeaseCheckpoint) Size() (n int) {
 	if m.Remaining_TTL != 0 {
 		n += 1 + sovRpc(uint64(m.Remaining_TTL))
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
@@ -9105,6 +10975,10 @@ func (m *LeaseCheckpointRequest) Size() (n int) {
 			n += 1 + l + sovRpc(uint64(l))
 		}
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
@@ -9115,6 +10989,10 @@ func (m *LeaseCheckpointResponse) Size() (n int) {
 		l = m.Header.Size()
 		n += 1 + l + sovRpc(uint64(l))
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
@@ -9123,6 +11001,10 @@ func (m *LeaseKeepAliveRequest) Size() (n int) {
 	_ = l
 	if m.ID != 0 {
 		n += 1 + sovRpc(uint64(m.ID))
+	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
 	}
 	return n
 }
@@ -9140,6 +11022,10 @@ func (m *LeaseKeepAliveResponse) Size() (n int) {
 	if m.TTL != 0 {
 		n += 1 + sovRpc(uint64(m.TTL))
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
@@ -9151,6 +11037,10 @@ func (m *LeaseTimeToLiveRequest) Size() (n int) {
 	}
 	if m.Keys {
 		n += 2
+	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
 	}
 	return n
 }
@@ -9177,12 +11067,20 @@ func (m *LeaseTimeToLiveResponse) Size() (n int) {
 			n += 1 + l + sovRpc(uint64(l))
 		}
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
 func (m *LeaseLeasesRequest) Size() (n int) {
 	var l int
 	_ = l
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
@@ -9191,6 +11089,10 @@ func (m *LeaseStatus) Size() (n int) {
 	_ = l
 	if m.ID != 0 {
 		n += 1 + sovRpc(uint64(m.ID))
+	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
 	}
 	return n
 }
@@ -9207,6 +11109,10 @@ func (m *LeaseLeasesResponse) Size() (n int) {
 			l = e.Size()
 			n += 1 + l + sovRpc(uint64(l))
 		}
+	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
 	}
 	return n
 }
@@ -9236,6 +11142,10 @@ func (m *Member) Size() (n int) {
 	if m.IsLearner {
 		n += 2
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
@@ -9250,6 +11160,10 @@ func (m *MemberAddRequest) Size() (n int) {
 	}
 	if m.IsLearner {
 		n += 2
+	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
 	}
 	return n
 }
@@ -9271,6 +11185,10 @@ func (m *MemberAddResponse) Size() (n int) {
 			n += 1 + l + sovRpc(uint64(l))
 		}
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
@@ -9279,6 +11197,10 @@ func (m *MemberRemoveRequest) Size() (n int) {
 	_ = l
 	if m.ID != 0 {
 		n += 1 + sovRpc(uint64(m.ID))
+	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
 	}
 	return n
 }
@@ -9296,6 +11218,10 @@ func (m *MemberRemoveResponse) Size() (n int) {
 			n += 1 + l + sovRpc(uint64(l))
 		}
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
@@ -9310,6 +11236,10 @@ func (m *MemberUpdateRequest) Size() (n int) {
 			l = len(s)
 			n += 1 + l + sovRpc(uint64(l))
 		}
+	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
 	}
 	return n
 }
@@ -9327,12 +11257,20 @@ func (m *MemberUpdateResponse) Size() (n int) {
 			n += 1 + l + sovRpc(uint64(l))
 		}
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
 func (m *MemberListRequest) Size() (n int) {
 	var l int
 	_ = l
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
@@ -9349,6 +11287,10 @@ func (m *MemberListResponse) Size() (n int) {
 			n += 1 + l + sovRpc(uint64(l))
 		}
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
@@ -9357,6 +11299,10 @@ func (m *MemberPromoteRequest) Size() (n int) {
 	_ = l
 	if m.ID != 0 {
 		n += 1 + sovRpc(uint64(m.ID))
+	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
 	}
 	return n
 }
@@ -9374,12 +11320,20 @@ func (m *MemberPromoteResponse) Size() (n int) {
 			n += 1 + l + sovRpc(uint64(l))
 		}
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
 func (m *DefragmentRequest) Size() (n int) {
 	var l int
 	_ = l
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
@@ -9390,6 +11344,10 @@ func (m *DefragmentResponse) Size() (n int) {
 		l = m.Header.Size()
 		n += 1 + l + sovRpc(uint64(l))
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
@@ -9398,6 +11356,10 @@ func (m *MoveLeaderRequest) Size() (n int) {
 	_ = l
 	if m.TargetID != 0 {
 		n += 1 + sovRpc(uint64(m.TargetID))
+	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
 	}
 	return n
 }
@@ -9408,6 +11370,10 @@ func (m *MoveLeaderResponse) Size() (n int) {
 	if m.Header != nil {
 		l = m.Header.Size()
 		n += 1 + l + sovRpc(uint64(l))
+	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
 	}
 	return n
 }
@@ -9424,6 +11390,10 @@ func (m *AlarmRequest) Size() (n int) {
 	if m.Alarm != 0 {
 		n += 1 + sovRpc(uint64(m.Alarm))
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
@@ -9435,6 +11405,10 @@ func (m *AlarmMember) Size() (n int) {
 	}
 	if m.Alarm != 0 {
 		n += 1 + sovRpc(uint64(m.Alarm))
+	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
 	}
 	return n
 }
@@ -9452,12 +11426,20 @@ func (m *AlarmResponse) Size() (n int) {
 			n += 1 + l + sovRpc(uint64(l))
 		}
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
 func (m *StatusRequest) Size() (n int) {
 	var l int
 	_ = l
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
@@ -9499,18 +11481,30 @@ func (m *StatusResponse) Size() (n int) {
 	if m.IsLearner {
 		n += 2
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
 func (m *AuthEnableRequest) Size() (n int) {
 	var l int
 	_ = l
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
 func (m *AuthDisableRequest) Size() (n int) {
 	var l int
 	_ = l
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
@@ -9524,6 +11518,10 @@ func (m *AuthenticateRequest) Size() (n int) {
 	l = len(m.Password)
 	if l > 0 {
 		n += 1 + l + sovRpc(uint64(l))
+	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
 	}
 	return n
 }
@@ -9543,6 +11541,10 @@ func (m *AuthUserAddRequest) Size() (n int) {
 		l = m.Options.Size()
 		n += 1 + l + sovRpc(uint64(l))
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
@@ -9553,6 +11555,10 @@ func (m *AuthUserGetRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovRpc(uint64(l))
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
@@ -9562,6 +11568,10 @@ func (m *AuthUserDeleteRequest) Size() (n int) {
 	l = len(m.Name)
 	if l > 0 {
 		n += 1 + l + sovRpc(uint64(l))
+	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
 	}
 	return n
 }
@@ -9577,6 +11587,10 @@ func (m *AuthUserChangePasswordRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovRpc(uint64(l))
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
@@ -9590,6 +11604,10 @@ func (m *AuthUserGrantRoleRequest) Size() (n int) {
 	l = len(m.Role)
 	if l > 0 {
 		n += 1 + l + sovRpc(uint64(l))
+	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
 	}
 	return n
 }
@@ -9605,6 +11623,10 @@ func (m *AuthUserRevokeRoleRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovRpc(uint64(l))
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
@@ -9614,6 +11636,10 @@ func (m *AuthRoleAddRequest) Size() (n int) {
 	l = len(m.Name)
 	if l > 0 {
 		n += 1 + l + sovRpc(uint64(l))
+	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
 	}
 	return n
 }
@@ -9625,18 +11651,30 @@ func (m *AuthRoleGetRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovRpc(uint64(l))
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
 func (m *AuthUserListRequest) Size() (n int) {
 	var l int
 	_ = l
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
 func (m *AuthRoleListRequest) Size() (n int) {
 	var l int
 	_ = l
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
@@ -9646,6 +11684,10 @@ func (m *AuthRoleDeleteRequest) Size() (n int) {
 	l = len(m.Role)
 	if l > 0 {
 		n += 1 + l + sovRpc(uint64(l))
+	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
 	}
 	return n
 }
@@ -9660,6 +11702,10 @@ func (m *AuthRoleGrantPermissionRequest) Size() (n int) {
 	if m.Perm != nil {
 		l = m.Perm.Size()
 		n += 1 + l + sovRpc(uint64(l))
+	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
 	}
 	return n
 }
@@ -9679,6 +11725,10 @@ func (m *AuthRoleRevokePermissionRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovRpc(uint64(l))
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
@@ -9689,6 +11739,10 @@ func (m *AuthEnableResponse) Size() (n int) {
 		l = m.Header.Size()
 		n += 1 + l + sovRpc(uint64(l))
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
@@ -9698,6 +11752,10 @@ func (m *AuthDisableResponse) Size() (n int) {
 	if m.Header != nil {
 		l = m.Header.Size()
 		n += 1 + l + sovRpc(uint64(l))
+	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
 	}
 	return n
 }
@@ -9713,6 +11771,10 @@ func (m *AuthenticateResponse) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovRpc(uint64(l))
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
@@ -9722,6 +11784,10 @@ func (m *AuthUserAddResponse) Size() (n int) {
 	if m.Header != nil {
 		l = m.Header.Size()
 		n += 1 + l + sovRpc(uint64(l))
+	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
 	}
 	return n
 }
@@ -9739,6 +11805,10 @@ func (m *AuthUserGetResponse) Size() (n int) {
 			n += 1 + l + sovRpc(uint64(l))
 		}
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
@@ -9748,6 +11818,10 @@ func (m *AuthUserDeleteResponse) Size() (n int) {
 	if m.Header != nil {
 		l = m.Header.Size()
 		n += 1 + l + sovRpc(uint64(l))
+	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
 	}
 	return n
 }
@@ -9759,6 +11833,10 @@ func (m *AuthUserChangePasswordResponse) Size() (n int) {
 		l = m.Header.Size()
 		n += 1 + l + sovRpc(uint64(l))
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
@@ -9768,6 +11846,10 @@ func (m *AuthUserGrantRoleResponse) Size() (n int) {
 	if m.Header != nil {
 		l = m.Header.Size()
 		n += 1 + l + sovRpc(uint64(l))
+	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
 	}
 	return n
 }
@@ -9779,6 +11861,10 @@ func (m *AuthUserRevokeRoleResponse) Size() (n int) {
 		l = m.Header.Size()
 		n += 1 + l + sovRpc(uint64(l))
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
@@ -9788,6 +11874,10 @@ func (m *AuthRoleAddResponse) Size() (n int) {
 	if m.Header != nil {
 		l = m.Header.Size()
 		n += 1 + l + sovRpc(uint64(l))
+	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
 	}
 	return n
 }
@@ -9805,6 +11895,10 @@ func (m *AuthRoleGetResponse) Size() (n int) {
 			n += 1 + l + sovRpc(uint64(l))
 		}
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
@@ -9820,6 +11914,10 @@ func (m *AuthRoleListResponse) Size() (n int) {
 			l = len(s)
 			n += 1 + l + sovRpc(uint64(l))
 		}
+	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
 	}
 	return n
 }
@@ -9837,6 +11935,10 @@ func (m *AuthUserListResponse) Size() (n int) {
 			n += 1 + l + sovRpc(uint64(l))
 		}
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
@@ -9846,6 +11948,10 @@ func (m *AuthRoleDeleteResponse) Size() (n int) {
 	if m.Header != nil {
 		l = m.Header.Size()
 		n += 1 + l + sovRpc(uint64(l))
+	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
 	}
 	return n
 }
@@ -9857,6 +11963,10 @@ func (m *AuthRoleGrantPermissionResponse) Size() (n int) {
 		l = m.Header.Size()
 		n += 1 + l + sovRpc(uint64(l))
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
+	}
 	return n
 }
 
@@ -9866,6 +11976,10 @@ func (m *AuthRoleRevokePermissionResponse) Size() (n int) {
 	if m.Header != nil {
 		l = m.Header.Size()
 		n += 1 + l + sovRpc(uint64(l))
+	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovRpc(uint64(l))
 	}
 	return n
 }
@@ -9988,6 +12102,39 @@ func (m *ResponseHeader) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -10312,6 +12459,39 @@ func (m *RangeRequest) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -10465,6 +12645,39 @@ func (m *RangeResponse) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -10656,6 +12869,39 @@ func (m *PutRequest) Unmarshal(dAtA []byte) error {
 				}
 			}
 			m.IgnoreLease = bool(v != 0)
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -10769,6 +13015,39 @@ func (m *PutResponse) Unmarshal(dAtA []byte) error {
 				m.PrevKv = &mvccpb.KeyValue{}
 			}
 			if err := m.PrevKv.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -10904,6 +13183,39 @@ func (m *DeleteRangeRequest) Unmarshal(dAtA []byte) error {
 				}
 			}
 			m.PrevKv = bool(v != 0)
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -11034,6 +13346,39 @@ func (m *DeleteRangeResponse) Unmarshal(dAtA []byte) error {
 			}
 			m.PrevKvs = append(m.PrevKvs, &mvccpb.KeyValue{})
 			if err := m.PrevKvs[len(m.PrevKvs)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -11653,6 +13998,39 @@ func (m *Compare) Unmarshal(dAtA []byte) error {
 				m.RangeEnd = []byte{}
 			}
 			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -11796,6 +14174,39 @@ func (m *TxnRequest) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -11930,6 +14341,39 @@ func (m *TxnResponse) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -12019,6 +14463,39 @@ func (m *CompactionRequest) Unmarshal(dAtA []byte) error {
 				}
 			}
 			m.Physical = bool(v != 0)
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -12102,6 +14579,39 @@ func (m *CompactionResponse) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -12152,6 +14662,39 @@ func (m *HashRequest) Unmarshal(dAtA []byte) error {
 			return fmt.Errorf("proto: HashRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -12221,6 +14764,39 @@ func (m *HashKVRequest) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -12342,6 +14918,39 @@ func (m *HashKVResponse) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -12444,6 +15053,39 @@ func (m *HashResponse) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -12494,6 +15136,39 @@ func (m *SnapshotRequest) Unmarshal(dAtA []byte) error {
 			return fmt.Errorf("proto: SnapshotRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -12625,6 +15300,39 @@ func (m *SnapshotResponse) Unmarshal(dAtA []byte) error {
 			m.Blob = append(m.Blob[:0], dAtA[iNdEx:postIndex]...)
 			if m.Blob == nil {
 				m.Blob = []byte{}
+			}
+			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
 			}
 			iNdEx = postIndex
 		default:
@@ -13045,6 +15753,39 @@ func (m *WatchCreateRequest) Unmarshal(dAtA []byte) error {
 				}
 			}
 			m.Fragment = bool(v != 0)
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -13114,6 +15855,39 @@ func (m *WatchCancelRequest) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -13164,6 +15938,39 @@ func (m *WatchProgressRequest) Unmarshal(dAtA []byte) error {
 			return fmt.Errorf("proto: WatchProgressRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -13405,6 +16212,39 @@ func (m *WatchResponse) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -13493,6 +16333,39 @@ func (m *LeaseGrantRequest) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -13643,6 +16516,39 @@ func (m *LeaseGrantResponse) Unmarshal(dAtA []byte) error {
 			}
 			m.Error = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -13712,6 +16618,39 @@ func (m *LeaseRevokeRequest) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -13792,6 +16731,39 @@ func (m *LeaseRevokeResponse) Unmarshal(dAtA []byte) error {
 				m.Header = &ResponseHeader{}
 			}
 			if err := m.Header.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -13883,6 +16855,39 @@ func (m *LeaseCheckpoint) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -13961,6 +16966,39 @@ func (m *LeaseCheckpointRequest) Unmarshal(dAtA []byte) error {
 			}
 			m.Checkpoints = append(m.Checkpoints, &LeaseCheckpoint{})
 			if err := m.Checkpoints[len(m.Checkpoints)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -14047,6 +17085,39 @@ func (m *LeaseCheckpointResponse) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -14116,6 +17187,39 @@ func (m *LeaseKeepAliveRequest) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -14237,6 +17341,39 @@ func (m *LeaseKeepAliveResponse) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -14326,6 +17463,39 @@ func (m *LeaseTimeToLiveRequest) Unmarshal(dAtA []byte) error {
 				}
 			}
 			m.Keys = bool(v != 0)
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -14495,6 +17665,39 @@ func (m *LeaseTimeToLiveResponse) Unmarshal(dAtA []byte) error {
 			m.Keys = append(m.Keys, make([]byte, postIndex-iNdEx))
 			copy(m.Keys[len(m.Keys)-1], dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -14545,6 +17748,39 @@ func (m *LeaseLeasesRequest) Unmarshal(dAtA []byte) error {
 			return fmt.Errorf("proto: LeaseLeasesRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -14614,6 +17850,39 @@ func (m *LeaseStatus) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -14725,6 +17994,39 @@ func (m *LeaseLeasesResponse) Unmarshal(dAtA []byte) error {
 			}
 			m.Leases = append(m.Leases, &LeaseStatus{})
 			if err := m.Leases[len(m.Leases)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -14904,6 +18206,39 @@ func (m *Member) Unmarshal(dAtA []byte) error {
 				}
 			}
 			m.IsLearner = bool(v != 0)
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -15003,6 +18338,39 @@ func (m *MemberAddRequest) Unmarshal(dAtA []byte) error {
 				}
 			}
 			m.IsLearner = bool(v != 0)
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -15150,6 +18518,39 @@ func (m *MemberAddResponse) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -15219,6 +18620,39 @@ func (m *MemberRemoveRequest) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -15333,6 +18767,39 @@ func (m *MemberRemoveResponse) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -15430,6 +18897,39 @@ func (m *MemberUpdateRequest) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.PeerURLs = append(m.PeerURLs, string(dAtA[iNdEx:postIndex]))
+			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -15545,6 +19045,39 @@ func (m *MemberUpdateResponse) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -15595,6 +19128,39 @@ func (m *MemberListRequest) Unmarshal(dAtA []byte) error {
 			return fmt.Errorf("proto: MemberListRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -15709,6 +19275,39 @@ func (m *MemberListResponse) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -15778,6 +19377,39 @@ func (m *MemberPromoteRequest) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -15892,6 +19524,39 @@ func (m *MemberPromoteResponse) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -15942,6 +19607,39 @@ func (m *DefragmentRequest) Unmarshal(dAtA []byte) error {
 			return fmt.Errorf("proto: DefragmentRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -16025,6 +19723,39 @@ func (m *DefragmentResponse) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -16094,6 +19825,39 @@ func (m *MoveLeaderRequest) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -16174,6 +19938,39 @@ func (m *MoveLeaderResponse) Unmarshal(dAtA []byte) error {
 				m.Header = &ResponseHeader{}
 			}
 			if err := m.Header.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -16284,6 +20081,39 @@ func (m *AlarmRequest) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -16372,6 +20202,39 @@ func (m *AlarmMember) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -16486,6 +20349,39 @@ func (m *AlarmResponse) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -16536,6 +20432,39 @@ func (m *StatusRequest) Unmarshal(dAtA []byte) error {
 			return fmt.Errorf("proto: StatusRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -16811,6 +20740,39 @@ func (m *StatusResponse) Unmarshal(dAtA []byte) error {
 				}
 			}
 			m.IsLearner = bool(v != 0)
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -16861,6 +20823,39 @@ func (m *AuthEnableRequest) Unmarshal(dAtA []byte) error {
 			return fmt.Errorf("proto: AuthEnableRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -16911,6 +20906,39 @@ func (m *AuthDisableRequest) Unmarshal(dAtA []byte) error {
 			return fmt.Errorf("proto: AuthDisableRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -17018,6 +21046,39 @@ func (m *AuthenticateRequest) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Password = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -17160,6 +21221,39 @@ func (m *AuthUserAddRequest) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -17239,6 +21333,39 @@ func (m *AuthUserGetRequest) Unmarshal(dAtA []byte) error {
 			}
 			m.Name = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -17317,6 +21444,39 @@ func (m *AuthUserDeleteRequest) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Name = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -17426,6 +21586,39 @@ func (m *AuthUserChangePasswordRequest) Unmarshal(dAtA []byte) error {
 			}
 			m.Password = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -17533,6 +21726,39 @@ func (m *AuthUserGrantRoleRequest) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Role = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -17642,6 +21868,39 @@ func (m *AuthUserRevokeRoleRequest) Unmarshal(dAtA []byte) error {
 			}
 			m.Role = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -17720,6 +21979,39 @@ func (m *AuthRoleAddRequest) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Name = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -17800,6 +22092,39 @@ func (m *AuthRoleGetRequest) Unmarshal(dAtA []byte) error {
 			}
 			m.Role = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -17850,6 +22175,39 @@ func (m *AuthUserListRequest) Unmarshal(dAtA []byte) error {
 			return fmt.Errorf("proto: AuthUserListRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -17900,6 +22258,39 @@ func (m *AuthRoleListRequest) Unmarshal(dAtA []byte) error {
 			return fmt.Errorf("proto: AuthRoleListRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -17978,6 +22369,39 @@ func (m *AuthRoleDeleteRequest) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Role = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -18088,6 +22512,39 @@ func (m *AuthRoleGrantPermissionRequest) Unmarshal(dAtA []byte) error {
 				m.Perm = &authpb.Permission{}
 			}
 			if err := m.Perm.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -18232,6 +22689,39 @@ func (m *AuthRoleRevokePermissionRequest) Unmarshal(dAtA []byte) error {
 				m.RangeEnd = []byte{}
 			}
 			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -18315,6 +22805,39 @@ func (m *AuthEnableResponse) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -18395,6 +22918,39 @@ func (m *AuthDisableResponse) Unmarshal(dAtA []byte) error {
 				m.Header = &ResponseHeader{}
 			}
 			if err := m.Header.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -18510,6 +23066,39 @@ func (m *AuthenticateResponse) Unmarshal(dAtA []byte) error {
 			}
 			m.Token = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -18590,6 +23179,39 @@ func (m *AuthUserAddResponse) Unmarshal(dAtA []byte) error {
 				m.Header = &ResponseHeader{}
 			}
 			if err := m.Header.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -18705,6 +23327,39 @@ func (m *AuthUserGetResponse) Unmarshal(dAtA []byte) error {
 			}
 			m.Roles = append(m.Roles, string(dAtA[iNdEx:postIndex]))
 			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -18785,6 +23440,39 @@ func (m *AuthUserDeleteResponse) Unmarshal(dAtA []byte) error {
 				m.Header = &ResponseHeader{}
 			}
 			if err := m.Header.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -18871,6 +23559,39 @@ func (m *AuthUserChangePasswordResponse) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -18951,6 +23672,39 @@ func (m *AuthUserGrantRoleResponse) Unmarshal(dAtA []byte) error {
 				m.Header = &ResponseHeader{}
 			}
 			if err := m.Header.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -19037,6 +23791,39 @@ func (m *AuthUserRevokeRoleResponse) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -19117,6 +23904,39 @@ func (m *AuthRoleAddResponse) Unmarshal(dAtA []byte) error {
 				m.Header = &ResponseHeader{}
 			}
 			if err := m.Header.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -19234,6 +24054,39 @@ func (m *AuthRoleGetResponse) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -19345,6 +24198,39 @@ func (m *AuthRoleListResponse) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Roles = append(m.Roles, string(dAtA[iNdEx:postIndex]))
+			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -19458,6 +24344,39 @@ func (m *AuthUserListResponse) Unmarshal(dAtA []byte) error {
 			}
 			m.Users = append(m.Users, string(dAtA[iNdEx:postIndex]))
 			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -19538,6 +24457,39 @@ func (m *AuthRoleDeleteResponse) Unmarshal(dAtA []byte) error {
 				m.Header = &ResponseHeader{}
 			}
 			if err := m.Header.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -19624,6 +24576,39 @@ func (m *AuthRoleGrantPermissionResponse) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRpc(dAtA[iNdEx:])
@@ -19704,6 +24689,39 @@ func (m *AuthRoleRevokePermissionResponse) Unmarshal(dAtA []byte) error {
 				m.Header = &ResponseHeader{}
 			}
 			if err := m.Header.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRpc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRpc
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -19836,251 +24854,262 @@ var (
 func init() { proto.RegisterFile("rpc.proto", fileDescriptorRpc) }
 
 var fileDescriptorRpc = []byte{
-	// 3928 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x5b, 0x5b, 0x6f, 0x23, 0xc9,
-	0x75, 0x56, 0x93, 0xe2, 0xed, 0xf0, 0x22, 0xaa, 0x74, 0x19, 0x0e, 0x67, 0x46, 0xa3, 0xad, 0xd9,
-	0xd9, 0xd5, 0xce, 0xec, 0x8a, 0x6b, 0xd9, 0x4e, 0x80, 0x49, 0xe2, 0x58, 0x23, 0x71, 0x67, 0xb4,
-	0xd2, 0x88, 0xda, 0x16, 0x67, 0xf6, 0x02, 0x23, 0x42, 0x8b, 0x2c, 0x49, 0x1d, 0x91, 0xdd, 0x74,
-	0x77, 0x93, 0x23, 0x6d, 0x2e, 0x0e, 0x0c, 0xc7, 0x40, 0xf2, 0x68, 0x03, 0x41, 0xf2, 0x90, 0xa7,
-	0x20, 0x08, 0xfc, 0x90, 0xe7, 0x00, 0xf9, 0x05, 0x79, 0xca, 0x05, 0xf9, 0x03, 0xc1, 0xc6, 0x2f,
-	0xc9, 0xaf, 0x30, 0xea, 0xd6, 0x5d, 0x7d, 0xa3, 0xc6, 0xa6, 0x77, 0x5f, 0xa4, 0xae, 0x53, 0xa7,
-	0xce, 0x39, 0x75, 0xaa, 0xea, 0x9c, 0xd3, 0x5f, 0x17, 0xa1, 0xe4, 0x8c, 0x7a, 0x9b, 0x23, 0xc7,
-	0xf6, 0x6c, 0x54, 0x21, 0x5e, 0xaf, 0xef, 0x12, 0x67, 0x42, 0x9c, 0xd1, 0x69, 0x73, 0xf9, 0xdc,
-	0x3e, 0xb7, 0x59, 0x47, 0x8b, 0x3e, 0x71, 0x9e, 0xe6, 0x6d, 0xca, 0xd3, 0x1a, 0x4e, 0x7a, 0x3d,
-	0xf6, 0x67, 0x74, 0xda, 0xba, 0x9c, 0x88, 0xae, 0x3b, 0xac, 0xcb, 0x18, 0x7b, 0x17, 0xec, 0xcf,
-	0xe8, 0x94, 0xfd, 0x13, 0x9d, 0x77, 0xcf, 0x6d, 0xfb, 0x7c, 0x40, 0x5a, 0xc6, 0xc8, 0x6c, 0x19,
-	0x96, 0x65, 0x7b, 0x86, 0x67, 0xda, 0x96, 0xcb, 0x7b, 0xf1, 0x5f, 0x6a, 0x50, 0xd3, 0x89, 0x3b,
-	0xb2, 0x2d, 0x97, 0x3c, 0x27, 0x46, 0x9f, 0x38, 0xe8, 0x1e, 0x40, 0x6f, 0x30, 0x76, 0x3d, 0xe2,
-	0x9c, 0x98, 0xfd, 0x86, 0xb6, 0xae, 0x6d, 0xcc, 0xeb, 0x25, 0x41, 0xd9, 0xeb, 0xa3, 0x3b, 0x50,
-	0x1a, 0x92, 0xe1, 0x29, 0xef, 0xcd, 0xb0, 0xde, 0x22, 0x27, 0xec, 0xf5, 0x51, 0x13, 0x8a, 0x0e,
-	0x99, 0x98, 0xae, 0x69, 0x5b, 0x8d, 0xec, 0xba, 0xb6, 0x91, 0xd5, 0xfd, 0x36, 0x1d, 0xe8, 0x18,
-	0x67, 0xde, 0x89, 0x47, 0x9c, 0x61, 0x63, 0x9e, 0x0f, 0xa4, 0x84, 0x2e, 0x71, 0x86, 0xf8, 0x27,
-	0x39, 0xa8, 0xe8, 0x86, 0x75, 0x4e, 0x74, 0xf2, 0xc3, 0x31, 0x71, 0x3d, 0x54, 0x87, 0xec, 0x25,
-	0xb9, 0x66, 0xea, 0x2b, 0x3a, 0x7d, 0xe4, 0xe3, 0xad, 0x73, 0x72, 0x42, 0x2c, 0xae, 0xb8, 0x42,
-	0xc7, 0x5b, 0xe7, 0xa4, 0x6d, 0xf5, 0xd1, 0x32, 0xe4, 0x06, 0xe6, 0xd0, 0xf4, 0x84, 0x56, 0xde,
-	0x08, 0x99, 0x33, 0x1f, 0x31, 0x67, 0x07, 0xc0, 0xb5, 0x1d, 0xef, 0xc4, 0x76, 0xfa, 0xc4, 0x69,
-	0xe4, 0xd6, 0xb5, 0x8d, 0xda, 0xd6, 0xdb, 0x9b, 0xea, 0x42, 0x6c, 0xaa, 0x06, 0x6d, 0x1e, 0xdb,
-	0x8e, 0xd7, 0xa1, 0xbc, 0x7a, 0xc9, 0x95, 0x8f, 0xe8, 0x23, 0x28, 0x33, 0x21, 0x9e, 0xe1, 0x9c,
-	0x13, 0xaf, 0x91, 0x67, 0x52, 0x1e, 0xde, 0x20, 0xa5, 0xcb, 0x98, 0x75, 0xa6, 0x9e, 0x3f, 0x23,
-	0x0c, 0x15, 0x97, 0x38, 0xa6, 0x31, 0x30, 0xbf, 0x34, 0x4e, 0x07, 0xa4, 0x51, 0x58, 0xd7, 0x36,
-	0x8a, 0x7a, 0x88, 0x46, 0xe7, 0x7f, 0x49, 0xae, 0xdd, 0x13, 0xdb, 0x1a, 0x5c, 0x37, 0x8a, 0x8c,
-	0xa1, 0x48, 0x09, 0x1d, 0x6b, 0x70, 0xcd, 0x16, 0xcd, 0x1e, 0x5b, 0x1e, 0xef, 0x2d, 0xb1, 0xde,
-	0x12, 0xa3, 0xb0, 0xee, 0x0d, 0xa8, 0x0f, 0x4d, 0xeb, 0x64, 0x68, 0xf7, 0x4f, 0x7c, 0x87, 0x00,
-	0x73, 0x48, 0x6d, 0x68, 0x5a, 0x2f, 0xec, 0xbe, 0x2e, 0xdd, 0x42, 0x39, 0x8d, 0xab, 0x30, 0x67,
-	0x59, 0x70, 0x1a, 0x57, 0x2a, 0xe7, 0x26, 0x2c, 0x51, 0x99, 0x3d, 0x87, 0x18, 0x1e, 0x09, 0x98,
-	0x2b, 0x8c, 0x79, 0x71, 0x68, 0x5a, 0x3b, 0xac, 0x27, 0xc4, 0x6f, 0x5c, 0xc5, 0xf8, 0xab, 0x82,
-	0xdf, 0xb8, 0x0a, 0xf3, 0xe3, 0x4d, 0x28, 0xf9, 0x3e, 0x47, 0x45, 0x98, 0x3f, 0xec, 0x1c, 0xb6,
-	0xeb, 0x73, 0x08, 0x20, 0xbf, 0x7d, 0xbc, 0xd3, 0x3e, 0xdc, 0xad, 0x6b, 0xa8, 0x0c, 0x85, 0xdd,
-	0x36, 0x6f, 0x64, 0xf0, 0x53, 0x80, 0xc0, 0xbb, 0xa8, 0x00, 0xd9, 0xfd, 0xf6, 0xe7, 0xf5, 0x39,
-	0xca, 0xf3, 0xaa, 0xad, 0x1f, 0xef, 0x75, 0x0e, 0xeb, 0x1a, 0x1d, 0xbc, 0xa3, 0xb7, 0xb7, 0xbb,
-	0xed, 0x7a, 0x86, 0x72, 0xbc, 0xe8, 0xec, 0xd6, 0xb3, 0xa8, 0x04, 0xb9, 0x57, 0xdb, 0x07, 0x2f,
-	0xdb, 0xf5, 0x79, 0xfc, 0x73, 0x0d, 0xaa, 0x62, 0xbd, 0xf8, 0x99, 0x40, 0xdf, 0x81, 0xfc, 0x05,
-	0x3b, 0x17, 0x6c, 0x2b, 0x96, 0xb7, 0xee, 0x46, 0x16, 0x37, 0x74, 0x76, 0x74, 0xc1, 0x8b, 0x30,
-	0x64, 0x2f, 0x27, 0x6e, 0x23, 0xb3, 0x9e, 0xdd, 0x28, 0x6f, 0xd5, 0x37, 0xf9, 0x81, 0xdd, 0xdc,
-	0x27, 0xd7, 0xaf, 0x8c, 0xc1, 0x98, 0xe8, 0xb4, 0x13, 0x21, 0x98, 0x1f, 0xda, 0x0e, 0x61, 0x3b,
-	0xb6, 0xa8, 0xb3, 0x67, 0xba, 0x8d, 0xd9, 0xa2, 0x89, 0xdd, 0xca, 0x1b, 0xf8, 0x17, 0x1a, 0xc0,
-	0xd1, 0xd8, 0x4b, 0x3f, 0x1a, 0xcb, 0x90, 0x9b, 0x50, 0xc1, 0xe2, 0x58, 0xf0, 0x06, 0x3b, 0x13,
-	0xc4, 0x70, 0x89, 0x7f, 0x26, 0x68, 0x03, 0xdd, 0x82, 0xc2, 0xc8, 0x21, 0x93, 0x93, 0xcb, 0x09,
-	0x53, 0x52, 0xd4, 0xf3, 0xb4, 0xb9, 0x3f, 0x41, 0x6f, 0x41, 0xc5, 0x3c, 0xb7, 0x6c, 0x87, 0x9c,
-	0x70, 0x59, 0x39, 0xd6, 0x5b, 0xe6, 0x34, 0x66, 0xb7, 0xc2, 0xc2, 0x05, 0xe7, 0x55, 0x96, 0x03,
-	0x4a, 0xc2, 0x16, 0x94, 0x99, 0xa9, 0x33, 0xb9, 0xef, 0xbd, 0xc0, 0xc6, 0x0c, 0x1b, 0x16, 0x77,
-	0xa1, 0xb0, 0x1a, 0xff, 0x00, 0xd0, 0x2e, 0x19, 0x10, 0x8f, 0xcc, 0x12, 0x3d, 0x14, 0x9f, 0x64,
-	0x55, 0x9f, 0xe0, 0x9f, 0x69, 0xb0, 0x14, 0x12, 0x3f, 0xd3, 0xb4, 0x1a, 0x50, 0xe8, 0x33, 0x61,
-	0xdc, 0x82, 0xac, 0x2e, 0x9b, 0xe8, 0x31, 0x14, 0x85, 0x01, 0x6e, 0x23, 0x9b, 0xb2, 0x69, 0x0a,
-	0xdc, 0x26, 0x17, 0xff, 0x22, 0x03, 0x25, 0x31, 0xd1, 0xce, 0x08, 0x6d, 0x43, 0xd5, 0xe1, 0x8d,
-	0x13, 0x36, 0x1f, 0x61, 0x51, 0x33, 0x3d, 0x08, 0x3d, 0x9f, 0xd3, 0x2b, 0x62, 0x08, 0x23, 0xa3,
-	0xdf, 0x83, 0xb2, 0x14, 0x31, 0x1a, 0x7b, 0xc2, 0xe5, 0x8d, 0xb0, 0x80, 0x60, 0xff, 0x3d, 0x9f,
-	0xd3, 0x41, 0xb0, 0x1f, 0x8d, 0x3d, 0xd4, 0x85, 0x65, 0x39, 0x98, 0xcf, 0x46, 0x98, 0x91, 0x65,
-	0x52, 0xd6, 0xc3, 0x52, 0xe2, 0x4b, 0xf5, 0x7c, 0x4e, 0x47, 0x62, 0xbc, 0xd2, 0xa9, 0x9a, 0xe4,
-	0x5d, 0xf1, 0xe0, 0x1d, 0x33, 0xa9, 0x7b, 0x65, 0xc5, 0x4d, 0xea, 0x5e, 0x59, 0x4f, 0x4b, 0x50,
-	0x10, 0x2d, 0xfc, 0x2f, 0x19, 0x00, 0xb9, 0x1a, 0x9d, 0x11, 0xda, 0x85, 0x9a, 0x23, 0x5a, 0x21,
-	0x6f, 0xdd, 0x49, 0xf4, 0x96, 0x58, 0xc4, 0x39, 0xbd, 0x2a, 0x07, 0x71, 0xe3, 0xbe, 0x07, 0x15,
-	0x5f, 0x4a, 0xe0, 0xb0, 0xdb, 0x09, 0x0e, 0xf3, 0x25, 0x94, 0xe5, 0x00, 0xea, 0xb2, 0x4f, 0x61,
-	0xc5, 0x1f, 0x9f, 0xe0, 0xb3, 0xb7, 0xa6, 0xf8, 0xcc, 0x17, 0xb8, 0x24, 0x25, 0xa8, 0x5e, 0x53,
-	0x0d, 0x0b, 0xdc, 0x76, 0x3b, 0xc1, 0x6d, 0x71, 0xc3, 0xa8, 0xe3, 0x80, 0xe6, 0x4b, 0xde, 0xc4,
-	0xff, 0x97, 0x85, 0xc2, 0x8e, 0x3d, 0x1c, 0x19, 0x0e, 0x5d, 0x8d, 0xbc, 0x43, 0xdc, 0xf1, 0xc0,
-	0x63, 0xee, 0xaa, 0x6d, 0x3d, 0x08, 0x4b, 0x14, 0x6c, 0xf2, 0xbf, 0xce, 0x58, 0x75, 0x31, 0x84,
-	0x0e, 0x16, 0xe9, 0x31, 0xf3, 0x06, 0x83, 0x45, 0x72, 0x14, 0x43, 0xe4, 0x41, 0xce, 0x06, 0x07,
-	0xb9, 0x09, 0x85, 0x09, 0x71, 0x82, 0x94, 0xfe, 0x7c, 0x4e, 0x97, 0x04, 0xf4, 0x1e, 0x2c, 0x44,
-	0xd3, 0x4b, 0x4e, 0xf0, 0xd4, 0x7a, 0xe1, 0x6c, 0xf4, 0x00, 0x2a, 0xa1, 0x1c, 0x97, 0x17, 0x7c,
-	0xe5, 0xa1, 0x92, 0xe2, 0x56, 0x65, 0x5c, 0xa5, 0xf9, 0xb8, 0xf2, 0x7c, 0x4e, 0x46, 0xd6, 0x55,
-	0x19, 0x59, 0x8b, 0x62, 0x94, 0x88, 0xad, 0xa1, 0x20, 0xf3, 0xfd, 0x70, 0x90, 0xc1, 0xdf, 0x87,
-	0x6a, 0xc8, 0x41, 0x34, 0xef, 0xb4, 0x3f, 0x79, 0xb9, 0x7d, 0xc0, 0x93, 0xd4, 0x33, 0x96, 0x97,
-	0xf4, 0xba, 0x46, 0x73, 0xdd, 0x41, 0xfb, 0xf8, 0xb8, 0x9e, 0x41, 0x55, 0x28, 0x1d, 0x76, 0xba,
-	0x27, 0x9c, 0x2b, 0x8b, 0x9f, 0xf9, 0x12, 0x44, 0x92, 0x53, 0x72, 0xdb, 0x9c, 0x92, 0xdb, 0x34,
-	0x99, 0xdb, 0x32, 0x41, 0x6e, 0x63, 0x69, 0xee, 0xa0, 0xbd, 0x7d, 0xdc, 0xae, 0xcf, 0x3f, 0xad,
-	0x41, 0x85, 0xfb, 0xf7, 0x64, 0x6c, 0xd1, 0x54, 0xfb, 0x0f, 0x1a, 0x40, 0x70, 0x9a, 0x50, 0x0b,
-	0x0a, 0x3d, 0xae, 0xa7, 0xa1, 0xb1, 0x60, 0xb4, 0x92, 0xb8, 0x64, 0xba, 0xe4, 0x42, 0xdf, 0x82,
-	0x82, 0x3b, 0xee, 0xf5, 0x88, 0x2b, 0x53, 0xde, 0xad, 0x68, 0x3c, 0x14, 0xd1, 0x4a, 0x97, 0x7c,
-	0x74, 0xc8, 0x99, 0x61, 0x0e, 0xc6, 0x2c, 0x01, 0x4e, 0x1f, 0x22, 0xf8, 0xf0, 0xdf, 0x69, 0x50,
-	0x56, 0x36, 0xef, 0x6f, 0x18, 0x84, 0xef, 0x42, 0x89, 0xd9, 0x40, 0xfa, 0x22, 0x0c, 0x17, 0xf5,
-	0x80, 0x80, 0x7e, 0x07, 0x4a, 0xf2, 0x04, 0xc8, 0x48, 0xdc, 0x48, 0x16, 0xdb, 0x19, 0xe9, 0x01,
-	0x2b, 0xde, 0x87, 0x45, 0xe6, 0x95, 0x1e, 0x2d, 0xae, 0xa5, 0x1f, 0xd5, 0xf2, 0x53, 0x8b, 0x94,
-	0x9f, 0x4d, 0x28, 0x8e, 0x2e, 0xae, 0x5d, 0xb3, 0x67, 0x0c, 0x84, 0x15, 0x7e, 0x1b, 0x7f, 0x0c,
-	0x48, 0x15, 0x36, 0xcb, 0x74, 0x71, 0x15, 0xca, 0xcf, 0x0d, 0xf7, 0x42, 0x98, 0x84, 0x1f, 0x43,
-	0x95, 0x36, 0xf7, 0x5f, 0xbd, 0x81, 0x8d, 0xec, 0xe5, 0x40, 0x72, 0xcf, 0xe4, 0x73, 0x04, 0xf3,
-	0x17, 0x86, 0x7b, 0xc1, 0x26, 0x5a, 0xd5, 0xd9, 0x33, 0x7a, 0x0f, 0xea, 0x3d, 0x3e, 0xc9, 0x93,
-	0xc8, 0x2b, 0xc3, 0x82, 0xa0, 0xfb, 0x95, 0xe0, 0x67, 0x50, 0xe1, 0x73, 0xf8, 0x6d, 0x1b, 0x81,
-	0x17, 0x61, 0xe1, 0xd8, 0x32, 0x46, 0xee, 0x85, 0x2d, 0xb3, 0x1b, 0x9d, 0x74, 0x3d, 0xa0, 0xcd,
-	0xa4, 0xf1, 0x5d, 0x58, 0x70, 0xc8, 0xd0, 0x30, 0x2d, 0xd3, 0x3a, 0x3f, 0x39, 0xbd, 0xf6, 0x88,
-	0x2b, 0x5e, 0x98, 0x6a, 0x3e, 0xf9, 0x29, 0xa5, 0x52, 0xd3, 0x4e, 0x07, 0xf6, 0xa9, 0x08, 0x73,
-	0xec, 0x19, 0xff, 0x34, 0x03, 0x95, 0x4f, 0x0d, 0xaf, 0x27, 0x97, 0x0e, 0xed, 0x41, 0xcd, 0x0f,
-	0x6e, 0x8c, 0x22, 0x6c, 0x89, 0xa4, 0x58, 0x36, 0x46, 0x96, 0xd2, 0x32, 0x3b, 0x56, 0x7b, 0x2a,
-	0x81, 0x89, 0x32, 0xac, 0x1e, 0x19, 0xf8, 0xa2, 0x32, 0xe9, 0xa2, 0x18, 0xa3, 0x2a, 0x4a, 0x25,
-	0xa0, 0x0e, 0xd4, 0x47, 0x8e, 0x7d, 0xee, 0x10, 0xd7, 0xf5, 0x85, 0xf1, 0x34, 0x86, 0x13, 0x84,
-	0x1d, 0x09, 0xd6, 0x40, 0xdc, 0xc2, 0x28, 0x4c, 0x7a, 0xba, 0x10, 0xd4, 0x33, 0x3c, 0x38, 0xfd,
-	0x57, 0x06, 0x50, 0x7c, 0x52, 0xbf, 0x6e, 0x89, 0xf7, 0x10, 0x6a, 0xae, 0x67, 0x38, 0xb1, 0xcd,
-	0x56, 0x65, 0x54, 0x3f, 0xe2, 0xbf, 0x0b, 0xbe, 0x41, 0x27, 0x96, 0xed, 0x99, 0x67, 0xd7, 0xa2,
-	0x4a, 0xae, 0x49, 0xf2, 0x21, 0xa3, 0xa2, 0x36, 0x14, 0xce, 0xcc, 0x81, 0x47, 0x1c, 0xb7, 0x91,
-	0x5b, 0xcf, 0x6e, 0xd4, 0xb6, 0x1e, 0xdf, 0xb4, 0x0c, 0x9b, 0x1f, 0x31, 0xfe, 0xee, 0xf5, 0x88,
-	0xe8, 0x72, 0xac, 0x5a, 0x79, 0xe6, 0x43, 0xd5, 0xf8, 0x6d, 0x28, 0xbe, 0xa6, 0x22, 0xe8, 0x5b,
-	0x76, 0x81, 0x17, 0x8b, 0xac, 0xcd, 0x5f, 0xb2, 0xcf, 0x1c, 0xe3, 0x7c, 0x48, 0x2c, 0x4f, 0xbe,
-	0x07, 0xca, 0x36, 0x7e, 0x08, 0x10, 0xa8, 0xa1, 0x21, 0xff, 0xb0, 0x73, 0xf4, 0xb2, 0x5b, 0x9f,
-	0x43, 0x15, 0x28, 0x1e, 0x76, 0x76, 0xdb, 0x07, 0x6d, 0x9a, 0x1f, 0x70, 0x4b, 0xba, 0x34, 0xb4,
-	0x96, 0xaa, 0x4e, 0x2d, 0xa4, 0x13, 0xaf, 0xc2, 0x72, 0xd2, 0x02, 0xd2, 0x5a, 0xb4, 0x2a, 0x76,
-	0xe9, 0x4c, 0x47, 0x45, 0x55, 0x9d, 0x09, 0x4f, 0xb7, 0x01, 0x05, 0xbe, 0x7b, 0xfb, 0xa2, 0x38,
-	0x97, 0x4d, 0xea, 0x08, 0xbe, 0x19, 0x49, 0x5f, 0xac, 0x92, 0xdf, 0x4e, 0x0c, 0x2f, 0xb9, 0xc4,
-	0xf0, 0x82, 0x1e, 0x40, 0xd5, 0x3f, 0x0d, 0x86, 0x2b, 0x6a, 0x81, 0x92, 0x5e, 0x91, 0x1b, 0x9d,
-	0xd2, 0x42, 0x4e, 0x2f, 0x84, 0x9d, 0x8e, 0x1e, 0x42, 0x9e, 0x4c, 0x88, 0xe5, 0xb9, 0x8d, 0x32,
-	0xcb, 0x18, 0x55, 0x59, 0xbb, 0xb7, 0x29, 0x55, 0x17, 0x9d, 0xf8, 0xbb, 0xb0, 0xc8, 0xde, 0x91,
-	0x9e, 0x39, 0x86, 0xa5, 0xbe, 0xcc, 0x75, 0xbb, 0x07, 0xc2, 0xdd, 0xf4, 0x11, 0xd5, 0x20, 0xb3,
-	0xb7, 0x2b, 0x9c, 0x90, 0xd9, 0xdb, 0xc5, 0x3f, 0xd6, 0x00, 0xa9, 0xe3, 0x66, 0xf2, 0x73, 0x44,
-	0xb8, 0x54, 0x9f, 0x0d, 0xd4, 0x2f, 0x43, 0x8e, 0x38, 0x8e, 0xed, 0x30, 0x8f, 0x96, 0x74, 0xde,
-	0xc0, 0x6f, 0x0b, 0x1b, 0x74, 0x32, 0xb1, 0x2f, 0xfd, 0x33, 0xc8, 0xa5, 0x69, 0xbe, 0xa9, 0xfb,
-	0xb0, 0x14, 0xe2, 0x9a, 0x29, 0x73, 0x7d, 0x04, 0x0b, 0x4c, 0xd8, 0xce, 0x05, 0xe9, 0x5d, 0x8e,
-	0x6c, 0xd3, 0x8a, 0xe9, 0xa3, 0x2b, 0x17, 0x04, 0x58, 0x3a, 0x0f, 0x3e, 0xb1, 0x8a, 0x4f, 0xec,
-	0x76, 0x0f, 0xf0, 0xe7, 0xb0, 0x1a, 0x91, 0x23, 0xcd, 0xff, 0x43, 0x28, 0xf7, 0x7c, 0xa2, 0x2b,
-	0x6a, 0x9d, 0x7b, 0x61, 0xe3, 0xa2, 0x43, 0xd5, 0x11, 0xb8, 0x03, 0xb7, 0x62, 0xa2, 0x67, 0x9a,
-	0xf3, 0xbb, 0xb0, 0xc2, 0x04, 0xee, 0x13, 0x32, 0xda, 0x1e, 0x98, 0x93, 0x54, 0x4f, 0x8f, 0xc4,
-	0xa4, 0x14, 0xc6, 0xaf, 0x77, 0x5f, 0xe0, 0xdf, 0x17, 0x1a, 0xbb, 0xe6, 0x90, 0x74, 0xed, 0x83,
-	0x74, 0xdb, 0x68, 0x36, 0xbb, 0x24, 0xd7, 0xae, 0x28, 0x6b, 0xd8, 0x33, 0xfe, 0x47, 0x4d, 0xb8,
-	0x4a, 0x1d, 0xfe, 0x35, 0xef, 0xe4, 0x35, 0x80, 0x73, 0x7a, 0x64, 0x48, 0x9f, 0x76, 0x70, 0x44,
-	0x45, 0xa1, 0xf8, 0x76, 0xd2, 0xf8, 0x5d, 0x11, 0x76, 0x2e, 0x8b, 0x7d, 0xce, 0xfe, 0xf8, 0x51,
-	0xee, 0x1e, 0x94, 0x19, 0xe1, 0xd8, 0x33, 0xbc, 0xb1, 0x1b, 0x5b, 0x8c, 0x3f, 0x17, 0xdb, 0x5e,
-	0x0e, 0x9a, 0x69, 0x5e, 0xdf, 0x82, 0x3c, 0x7b, 0x99, 0x90, 0xa5, 0xf4, 0xed, 0x84, 0xfd, 0xc8,
-	0xed, 0xd0, 0x05, 0x23, 0xfe, 0xa9, 0x06, 0xf9, 0x17, 0x0c, 0x82, 0x55, 0x4c, 0x9b, 0x97, 0x6b,
-	0x61, 0x19, 0x43, 0x0e, 0x0c, 0x95, 0x74, 0xf6, 0xcc, 0x4a, 0x4f, 0x42, 0x9c, 0x97, 0xfa, 0x01,
-	0x2f, 0x71, 0x4b, 0xba, 0xdf, 0xa6, 0x3e, 0xeb, 0x0d, 0x4c, 0x62, 0x79, 0xac, 0x77, 0x9e, 0xf5,
-	0x2a, 0x14, 0x5a, 0x3d, 0x9b, 0xee, 0x01, 0x31, 0x1c, 0x4b, 0x80, 0xa6, 0x45, 0x3d, 0x20, 0xe0,
-	0x03, 0xa8, 0x73, 0x3b, 0xb6, 0xfb, 0x7d, 0xa5, 0xc0, 0xf4, 0xb5, 0x69, 0x11, 0x6d, 0x21, 0x69,
-	0x99, 0xa8, 0xb4, 0x7f, 0xd2, 0x60, 0x51, 0x11, 0x37, 0x93, 0x57, 0xdf, 0x87, 0x3c, 0x07, 0xa9,
-	0x45, 0xa5, 0xb3, 0x1c, 0x1e, 0xc5, 0xd5, 0xe8, 0x82, 0x07, 0x6d, 0x42, 0x81, 0x3f, 0xc9, 0x77,
-	0x80, 0x64, 0x76, 0xc9, 0x84, 0x1f, 0xc2, 0x92, 0x20, 0x91, 0xa1, 0x9d, 0x74, 0x30, 0xd8, 0x62,
-	0xe0, 0x3f, 0x85, 0xe5, 0x30, 0xdb, 0x4c, 0x53, 0x52, 0x8c, 0xcc, 0xbc, 0x89, 0x91, 0xdb, 0xd2,
-	0xc8, 0x97, 0xa3, 0xbe, 0x52, 0x47, 0x45, 0x77, 0x8c, 0xba, 0x5e, 0x99, 0xf0, 0x7a, 0x05, 0x13,
-	0x90, 0x22, 0xbe, 0xd1, 0x09, 0x2c, 0xc9, 0xed, 0x70, 0x60, 0xba, 0x7e, 0xb9, 0xfe, 0x25, 0x20,
-	0x95, 0xf8, 0x8d, 0x1a, 0xf4, 0x8e, 0x74, 0xc7, 0x91, 0x63, 0x0f, 0xed, 0x54, 0x97, 0xe2, 0x3f,
-	0x83, 0x95, 0x08, 0xdf, 0x37, 0xed, 0xb7, 0x5d, 0x22, 0x8b, 0x15, 0xe9, 0xb7, 0x8f, 0x01, 0xa9,
-	0xc4, 0x99, 0xb2, 0x56, 0x0b, 0x16, 0x5f, 0xd8, 0x13, 0x1a, 0xfe, 0x28, 0x35, 0x38, 0xf7, 0x1c,
-	0x63, 0xf0, 0x5d, 0xe1, 0xb7, 0xa9, 0x72, 0x75, 0xc0, 0x4c, 0xca, 0xff, 0x43, 0x83, 0xca, 0xf6,
-	0xc0, 0x70, 0x86, 0x52, 0xf1, 0xf7, 0x20, 0xcf, 0xdf, 0x9c, 0x05, 0x58, 0xf5, 0x4e, 0x58, 0x8c,
-	0xca, 0xcb, 0x1b, 0xdb, 0xfc, 0x3d, 0x5b, 0x8c, 0xa2, 0x86, 0x8b, 0xef, 0x59, 0xbb, 0x91, 0xef,
-	0x5b, 0xbb, 0xe8, 0x03, 0xc8, 0x19, 0x74, 0x08, 0x4b, 0x33, 0xb5, 0x28, 0x66, 0xc1, 0xa4, 0xb1,
-	0xfa, 0x9e, 0x73, 0xe1, 0xef, 0x40, 0x59, 0xd1, 0x80, 0x0a, 0x90, 0x7d, 0xd6, 0x16, 0xc5, 0xf8,
-	0xf6, 0x4e, 0x77, 0xef, 0x15, 0x07, 0x6b, 0x6a, 0x00, 0xbb, 0x6d, 0xbf, 0x9d, 0xc1, 0x9f, 0x89,
-	0x51, 0x22, 0xa4, 0xab, 0xf6, 0x68, 0x69, 0xf6, 0x64, 0xde, 0xc8, 0x9e, 0x2b, 0xa8, 0x8a, 0xe9,
-	0xcf, 0x9a, 0xa2, 0x98, 0xbc, 0x94, 0x14, 0xa5, 0x18, 0xaf, 0x0b, 0x46, 0xbc, 0x00, 0x55, 0x91,
-	0xb4, 0xc4, 0xfe, 0xfb, 0xf7, 0x0c, 0xd4, 0x24, 0x65, 0x56, 0x50, 0x5d, 0xe2, 0x81, 0x3c, 0xc9,
-	0xf9, 0x68, 0xe0, 0x2a, 0xe4, 0xfb, 0xa7, 0xc7, 0xe6, 0x97, 0xf2, 0x03, 0x88, 0x68, 0x51, 0xfa,
-	0x80, 0xeb, 0xe1, 0x5f, 0x21, 0x45, 0x8b, 0x66, 0x23, 0xc7, 0x38, 0xf3, 0xf6, 0xac, 0x3e, 0xb9,
-	0x62, 0xb9, 0x6d, 0x5e, 0x0f, 0x08, 0x0c, 0x28, 0x11, 0x5f, 0x2b, 0xd9, 0x0b, 0x82, 0xf2, 0xf5,
-	0x12, 0x3d, 0x82, 0x3a, 0x7d, 0xde, 0x1e, 0x8d, 0x06, 0x26, 0xe9, 0x73, 0x01, 0x05, 0xc6, 0x13,
-	0xa3, 0x53, 0xed, 0xac, 0xa4, 0x76, 0x1b, 0x45, 0x16, 0x5d, 0x45, 0x0b, 0xad, 0x43, 0x99, 0xdb,
-	0xb7, 0x67, 0xbd, 0x74, 0x09, 0xfb, 0x84, 0x97, 0xd5, 0x55, 0x52, 0x38, 0x5b, 0x42, 0x34, 0x5b,
-	0x2e, 0xc1, 0xe2, 0xf6, 0xd8, 0xbb, 0x68, 0x5b, 0xc6, 0xe9, 0x40, 0x46, 0x22, 0x5a, 0xce, 0x50,
-	0xe2, 0xae, 0xe9, 0xaa, 0xd4, 0x36, 0x2c, 0x51, 0x2a, 0xb1, 0x3c, 0xb3, 0xa7, 0x64, 0x02, 0x59,
-	0x2b, 0x68, 0x91, 0x5a, 0xc1, 0x70, 0xdd, 0xd7, 0xb6, 0xd3, 0x17, 0xee, 0xf5, 0xdb, 0x78, 0xc2,
-	0x85, 0xbf, 0x74, 0x43, 0xf9, 0xfe, 0xd7, 0x94, 0x82, 0x3e, 0x84, 0x82, 0x3d, 0x62, 0x9f, 0xa4,
-	0x05, 0x6e, 0xb0, 0xba, 0xc9, 0x3f, 0x62, 0x6f, 0x0a, 0xc1, 0x1d, 0xde, 0xab, 0x4b, 0x36, 0xbc,
-	0x11, 0xe8, 0x7d, 0x46, 0xbc, 0x29, 0x7a, 0xf1, 0x63, 0x58, 0x91, 0x9c, 0x02, 0x26, 0x9f, 0xc2,
-	0xdc, 0x81, 0x7b, 0x92, 0x79, 0xe7, 0xc2, 0xb0, 0xce, 0xc9, 0x91, 0x30, 0xf1, 0x37, 0xf5, 0xcf,
-	0x53, 0x68, 0xf8, 0x76, 0xb2, 0x57, 0x37, 0x7b, 0xa0, 0x1a, 0x30, 0x76, 0xc5, 0x4e, 0x2f, 0xe9,
-	0xec, 0x99, 0xd2, 0x1c, 0x7b, 0xe0, 0xd7, 0x6a, 0xf4, 0x19, 0xef, 0xc0, 0x6d, 0x29, 0x43, 0xbc,
-	0x54, 0x85, 0x85, 0xc4, 0x0c, 0x4a, 0x12, 0x22, 0x1c, 0x46, 0x87, 0x4e, 0x5f, 0x28, 0x95, 0x33,
-	0xec, 0x5a, 0x26, 0x53, 0x53, 0x64, 0xae, 0xf0, 0x3d, 0x44, 0x0d, 0x53, 0xd3, 0xb1, 0x20, 0x53,
-	0x01, 0x2a, 0x59, 0x2c, 0x04, 0x25, 0xc7, 0x16, 0x22, 0x26, 0xfa, 0x07, 0xb0, 0xe6, 0x1b, 0x41,
-	0xfd, 0x76, 0x44, 0x9c, 0xa1, 0xe9, 0xba, 0x0a, 0xb0, 0x9a, 0x34, 0xf1, 0x77, 0x60, 0x7e, 0x44,
-	0x44, 0x24, 0x2c, 0x6f, 0x21, 0xb9, 0x89, 0x94, 0xc1, 0xac, 0x1f, 0xf7, 0xe1, 0xbe, 0x94, 0xce,
-	0x3d, 0x9a, 0x28, 0x3e, 0x6a, 0x94, 0x84, 0x9b, 0x32, 0x29, 0x70, 0x53, 0x36, 0x02, 0xf6, 0x7f,
-	0xcc, 0x1d, 0x29, 0x4f, 0xe3, 0x4c, 0x19, 0x6e, 0x9f, 0xfb, 0xd4, 0x3f, 0xc4, 0x33, 0x09, 0x3b,
-	0x85, 0xe5, 0xf0, 0xd9, 0x9f, 0x29, 0xf8, 0x2e, 0x43, 0xce, 0xb3, 0x2f, 0x89, 0x0c, 0xbd, 0xbc,
-	0x21, 0x0d, 0xf6, 0x03, 0xc3, 0x4c, 0x06, 0x1b, 0x81, 0x30, 0xb6, 0x25, 0x67, 0xb5, 0x97, 0xae,
-	0xa6, 0xac, 0x6c, 0x79, 0x03, 0x1f, 0xc2, 0x6a, 0x34, 0x4c, 0xcc, 0x64, 0xf2, 0x2b, 0xbe, 0x81,
-	0x93, 0x22, 0xc9, 0x4c, 0x72, 0x3f, 0x09, 0x82, 0x81, 0x12, 0x50, 0x66, 0x12, 0xa9, 0x43, 0x33,
-	0x29, 0xbe, 0xfc, 0x36, 0xf6, 0xab, 0x1f, 0x6e, 0x66, 0x12, 0xe6, 0x06, 0xc2, 0x66, 0x5f, 0xfe,
-	0x20, 0x46, 0x64, 0xa7, 0xc6, 0x08, 0x71, 0x48, 0x82, 0x28, 0xf6, 0x35, 0x6c, 0x3a, 0xa1, 0x23,
-	0x08, 0xa0, 0xb3, 0xea, 0xa0, 0x39, 0xc4, 0xd7, 0xc1, 0x1a, 0x72, 0x63, 0xab, 0x61, 0x77, 0xa6,
-	0xc5, 0xf8, 0x34, 0x88, 0x9d, 0xb1, 0xc8, 0x3c, 0x93, 0xe0, 0xcf, 0x60, 0x3d, 0x3d, 0x28, 0xcf,
-	0x22, 0xf9, 0x51, 0x0b, 0x4a, 0x7e, 0x19, 0xac, 0xdc, 0x22, 0x2a, 0x43, 0xe1, 0xb0, 0x73, 0x7c,
-	0xb4, 0xbd, 0xd3, 0xe6, 0xd7, 0x88, 0x76, 0x3a, 0xba, 0xfe, 0xf2, 0xa8, 0x5b, 0xcf, 0x6c, 0xfd,
-	0x32, 0x0b, 0x99, 0xfd, 0x57, 0xe8, 0x73, 0xc8, 0xf1, 0x6f, 0xea, 0x53, 0x2e, 0x52, 0x34, 0xa7,
-	0x5d, 0x1b, 0xc0, 0xb7, 0x7e, 0xfc, 0xdf, 0xbf, 0xfc, 0x79, 0x66, 0x11, 0x57, 0x5a, 0x93, 0x6f,
-	0xb7, 0x2e, 0x27, 0x2d, 0x96, 0x1b, 0x9e, 0x68, 0x8f, 0xd0, 0x27, 0x90, 0x3d, 0x1a, 0x7b, 0x28,
-	0xf5, 0x82, 0x45, 0x33, 0xfd, 0x26, 0x01, 0x5e, 0x61, 0x42, 0x17, 0x30, 0x08, 0xa1, 0xa3, 0xb1,
-	0x47, 0x45, 0xfe, 0x10, 0xca, 0xea, 0x3d, 0x80, 0x1b, 0x6f, 0x5d, 0x34, 0x6f, 0xbe, 0x63, 0x80,
-	0xef, 0x31, 0x55, 0xb7, 0x30, 0x12, 0xaa, 0xf8, 0x4d, 0x05, 0x75, 0x16, 0xdd, 0x2b, 0x0b, 0xa5,
-	0xde, 0xc9, 0x68, 0xa6, 0x5f, 0x3b, 0x88, 0xcd, 0xc2, 0xbb, 0xb2, 0xa8, 0xc8, 0x3f, 0x16, 0x37,
-	0x0e, 0x7a, 0x1e, 0xba, 0x9f, 0xf0, 0xc5, 0x59, 0xfd, 0xb6, 0xda, 0x5c, 0x4f, 0x67, 0x10, 0x4a,
-	0xee, 0x32, 0x25, 0xab, 0x78, 0x51, 0x28, 0xe9, 0xf9, 0x2c, 0x4f, 0xb4, 0x47, 0x5b, 0x3d, 0xc8,
-	0xb1, 0xef, 0x16, 0xe8, 0x0b, 0xf9, 0xd0, 0x4c, 0xf8, 0x80, 0x93, 0xb2, 0xd0, 0xa1, 0x2f, 0x1e,
-	0x78, 0x99, 0x29, 0xaa, 0xe1, 0x12, 0x55, 0xc4, 0xbe, 0x5a, 0x3c, 0xd1, 0x1e, 0x6d, 0x68, 0x1f,
-	0x6a, 0x5b, 0xff, 0x9c, 0x83, 0x1c, 0x03, 0xec, 0xd0, 0x25, 0x40, 0x80, 0xe1, 0x47, 0x67, 0x17,
-	0xfb, 0x2a, 0x10, 0x9d, 0x5d, 0x1c, 0xfe, 0xc7, 0x4d, 0xa6, 0x74, 0x19, 0x2f, 0x50, 0xa5, 0x0c,
-	0x07, 0x6c, 0x31, 0x68, 0x93, 0xfa, 0xf1, 0xaf, 0x34, 0x81, 0x57, 0xf2, 0xb3, 0x84, 0x92, 0xa4,
-	0x85, 0x80, 0xfc, 0xe8, 0x76, 0x48, 0x00, 0xf1, 0xf1, 0x77, 0x99, 0xc2, 0x16, 0xae, 0x07, 0x0a,
-	0x1d, 0xc6, 0xf1, 0x44, 0x7b, 0xf4, 0x45, 0x03, 0x2f, 0x09, 0x2f, 0x47, 0x7a, 0xd0, 0x8f, 0xa0,
-	0x16, 0x06, 0xaa, 0xd1, 0x83, 0x04, 0x5d, 0x51, 0xbc, 0xbb, 0xf9, 0xf6, 0x74, 0x26, 0x61, 0xd3,
-	0x1a, 0xb3, 0x49, 0x28, 0xe7, 0x9a, 0x2f, 0x09, 0x19, 0x19, 0x94, 0x49, 0xac, 0x01, 0xfa, 0x7b,
-	0x4d, 0x7c, 0x47, 0x08, 0x90, 0x67, 0x94, 0x24, 0x3d, 0x86, 0x6b, 0x37, 0x1f, 0xde, 0xc0, 0x25,
-	0x8c, 0xf8, 0x03, 0x66, 0xc4, 0xef, 0xe2, 0xe5, 0xc0, 0x08, 0xcf, 0x1c, 0x12, 0xcf, 0x16, 0x56,
-	0x7c, 0x71, 0x17, 0xdf, 0x0a, 0x39, 0x27, 0xd4, 0x1b, 0x2c, 0x16, 0x47, 0x8f, 0x13, 0x17, 0x2b,
-	0x84, 0x46, 0x27, 0x2e, 0x56, 0x18, 0x7a, 0x4e, 0x5a, 0x2c, 0x8e, 0x15, 0x27, 0x2d, 0x96, 0xdf,
-	0xb3, 0xf5, 0xff, 0xf3, 0x50, 0xd8, 0xe1, 0x37, 0x7d, 0x91, 0x0d, 0x25, 0x1f, 0x7c, 0x45, 0x6b,
-	0x49, 0x08, 0x53, 0xf0, 0x2e, 0xd1, 0xbc, 0x9f, 0xda, 0x2f, 0x0c, 0x7a, 0x8b, 0x19, 0x74, 0x07,
-	0xaf, 0x52, 0xcd, 0xe2, 0x32, 0x71, 0x8b, 0xc3, 0x18, 0x2d, 0xa3, 0xdf, 0xa7, 0x8e, 0xf8, 0x13,
-	0xa8, 0xa8, 0xe8, 0x28, 0x7a, 0x2b, 0x11, 0xd5, 0x52, 0x01, 0xd6, 0x26, 0x9e, 0xc6, 0x22, 0x34,
-	0xbf, 0xcd, 0x34, 0xaf, 0xe1, 0xdb, 0x09, 0x9a, 0x1d, 0xc6, 0x1a, 0x52, 0xce, 0x91, 0xcd, 0x64,
-	0xe5, 0x21, 0xe0, 0x34, 0x59, 0x79, 0x18, 0x18, 0x9d, 0xaa, 0x7c, 0xcc, 0x58, 0xa9, 0x72, 0x17,
-	0x20, 0xc0, 0x30, 0x51, 0xa2, 0x2f, 0x95, 0x97, 0xa9, 0x68, 0x70, 0x88, 0xc3, 0x9f, 0x18, 0x33,
-	0xb5, 0x62, 0xdf, 0x45, 0xd4, 0x0e, 0x4c, 0xd7, 0xe3, 0x07, 0xb3, 0x1a, 0x02, 0x25, 0x51, 0xe2,
-	0x7c, 0xc2, 0xc8, 0x66, 0xf3, 0xc1, 0x54, 0x1e, 0xa1, 0xfd, 0x21, 0xd3, 0x7e, 0x1f, 0x37, 0x13,
-	0xb4, 0x8f, 0x38, 0x2f, 0xdd, 0x6c, 0x7f, 0x9d, 0x87, 0xf2, 0x0b, 0xc3, 0xb4, 0x3c, 0x62, 0x19,
-	0x56, 0x8f, 0xa0, 0x53, 0xc8, 0xb1, 0x4c, 0x1d, 0x0d, 0xc4, 0x2a, 0x60, 0x17, 0x0d, 0xc4, 0x21,
-	0x34, 0x0b, 0xaf, 0x33, 0xc5, 0x4d, 0xbc, 0x42, 0x15, 0x0f, 0x03, 0xd1, 0x2d, 0x06, 0x42, 0xd1,
-	0x49, 0x9f, 0x41, 0x5e, 0x7c, 0xc3, 0x89, 0x08, 0x0a, 0x81, 0x53, 0xcd, 0xbb, 0xc9, 0x9d, 0x49,
-	0x7b, 0x59, 0x55, 0xe3, 0x32, 0x3e, 0xaa, 0x67, 0x02, 0x10, 0xa0, 0xab, 0xd1, 0x15, 0x8d, 0x81,
-	0xb1, 0xcd, 0xf5, 0x74, 0x86, 0x24, 0x9f, 0xaa, 0x3a, 0xfb, 0x3e, 0x2f, 0xd5, 0xfb, 0x47, 0x30,
-	0xff, 0xdc, 0x70, 0x2f, 0x50, 0x24, 0xf7, 0x2a, 0x37, 0x80, 0x9a, 0xcd, 0xa4, 0x2e, 0xa1, 0xe5,
-	0x3e, 0xd3, 0x72, 0x9b, 0x87, 0x32, 0x55, 0xcb, 0x85, 0xe1, 0xd2, 0xa4, 0x86, 0xfa, 0x90, 0xe7,
-	0x17, 0x82, 0xa2, 0xfe, 0x0b, 0x5d, 0x2a, 0x8a, 0xfa, 0x2f, 0x7c, 0x87, 0xe8, 0x66, 0x2d, 0x23,
-	0x28, 0xca, 0x1b, 0x38, 0x28, 0xf2, 0x39, 0x36, 0x72, 0x5b, 0xa7, 0xb9, 0x96, 0xd6, 0x2d, 0x74,
-	0x3d, 0x60, 0xba, 0xee, 0xe1, 0x46, 0x6c, 0xad, 0x04, 0xe7, 0x13, 0xed, 0xd1, 0x87, 0x1a, 0xfa,
-	0x11, 0x40, 0x00, 0x48, 0xc7, 0x4e, 0x60, 0x14, 0xdb, 0x8e, 0x9d, 0xc0, 0x18, 0x96, 0x8d, 0x37,
-	0x99, 0xde, 0x0d, 0xfc, 0x20, 0xaa, 0xd7, 0x73, 0x0c, 0xcb, 0x3d, 0x23, 0xce, 0x07, 0x1c, 0x74,
-	0x74, 0x2f, 0xcc, 0x11, 0x3d, 0x0c, 0xff, 0xba, 0x00, 0xf3, 0xb4, 0x02, 0xa6, 0x85, 0x42, 0x00,
-	0x1c, 0x44, 0x2d, 0x89, 0x01, 0x7c, 0x51, 0x4b, 0xe2, 0x98, 0x43, 0xb8, 0x50, 0x60, 0xbf, 0x11,
-	0x21, 0x8c, 0x81, 0x3a, 0xda, 0x86, 0xb2, 0x82, 0x2c, 0xa0, 0x04, 0x61, 0x61, 0xe4, 0x30, 0x9a,
-	0x7a, 0x12, 0x60, 0x09, 0x7c, 0x87, 0xe9, 0x5b, 0xe1, 0xa9, 0x87, 0xe9, 0xeb, 0x73, 0x0e, 0xaa,
-	0xf0, 0x35, 0x54, 0x54, 0xf4, 0x01, 0x25, 0xc8, 0x8b, 0xa0, 0x92, 0xd1, 0x30, 0x9b, 0x04, 0x5e,
-	0x84, 0x0f, 0xbe, 0xff, 0x3b, 0x18, 0xc9, 0x46, 0x15, 0x0f, 0xa0, 0x20, 0xe0, 0x88, 0xa4, 0x59,
-	0x86, 0x21, 0xcc, 0xa4, 0x59, 0x46, 0xb0, 0x8c, 0x70, 0x71, 0xc9, 0x34, 0xd2, 0x37, 0x2e, 0x99,
-	0xca, 0x84, 0xb6, 0x67, 0xc4, 0x4b, 0xd3, 0x16, 0xa0, 0x6b, 0x69, 0xda, 0x94, 0xb7, 0xdd, 0x34,
-	0x6d, 0xe7, 0xc4, 0x13, 0xc7, 0x45, 0xbe, 0x45, 0xa2, 0x14, 0x61, 0x6a, 0xfa, 0xc0, 0xd3, 0x58,
-	0x92, 0x6a, 0xff, 0x40, 0xa1, 0xcc, 0x1d, 0x57, 0x00, 0x01, 0x58, 0x12, 0x2d, 0xe8, 0x12, 0x11,
-	0xd7, 0x68, 0x41, 0x97, 0x8c, 0xb7, 0x84, 0x43, 0x43, 0xa0, 0x97, 0xbf, 0x7a, 0x50, 0xcd, 0x3f,
-	0xd3, 0x00, 0xc5, 0x71, 0x15, 0xf4, 0x38, 0x59, 0x7a, 0x22, 0x8e, 0xdb, 0x7c, 0xff, 0xcd, 0x98,
-	0x93, 0xa2, 0x7d, 0x60, 0x52, 0x8f, 0x71, 0x8f, 0x5e, 0x53, 0xa3, 0xfe, 0x42, 0x83, 0x6a, 0x08,
-	0x94, 0x41, 0xef, 0xa4, 0xac, 0x69, 0x04, 0x06, 0x6e, 0xbe, 0x7b, 0x23, 0x5f, 0x52, 0xa5, 0xab,
-	0xec, 0x00, 0x59, 0xf2, 0xff, 0x44, 0x83, 0x5a, 0x18, 0xc4, 0x41, 0x29, 0xb2, 0x63, 0x30, 0x72,
-	0x73, 0xe3, 0x66, 0xc6, 0xe9, 0xcb, 0x13, 0x54, 0xfb, 0x03, 0x28, 0x08, 0xd8, 0x27, 0x69, 0xe3,
-	0x87, 0x01, 0xe8, 0xa4, 0x8d, 0x1f, 0xc1, 0x8c, 0x12, 0x36, 0xbe, 0x63, 0x0f, 0x88, 0x72, 0xcc,
-	0x04, 0x2e, 0x94, 0xa6, 0x6d, 0xfa, 0x31, 0x8b, 0x80, 0x4a, 0x69, 0xda, 0x82, 0x63, 0x26, 0x01,
-	0x21, 0x94, 0x22, 0xec, 0x86, 0x63, 0x16, 0xc5, 0x93, 0x12, 0x8e, 0x19, 0x53, 0xa8, 0x1c, 0xb3,
-	0x00, 0xba, 0x49, 0x3a, 0x66, 0x31, 0x3c, 0x3d, 0xe9, 0x98, 0xc5, 0xd1, 0x9f, 0x84, 0x75, 0x64,
-	0x7a, 0x43, 0xc7, 0x6c, 0x29, 0x01, 0xe5, 0x41, 0xef, 0xa7, 0x38, 0x31, 0x11, 0xa6, 0x6f, 0x7e,
-	0xf0, 0x86, 0xdc, 0xa9, 0x7b, 0x9c, 0xbb, 0x5f, 0xee, 0xf1, 0xbf, 0xd1, 0x60, 0x39, 0x09, 0x21,
-	0x42, 0x29, 0x7a, 0x52, 0xe0, 0xfd, 0xe6, 0xe6, 0x9b, 0xb2, 0x4f, 0xf7, 0x96, 0xbf, 0xeb, 0x9f,
-	0xd6, 0xff, 0xed, 0xab, 0x35, 0xed, 0x3f, 0xbf, 0x5a, 0xd3, 0xfe, 0xe7, 0xab, 0x35, 0xed, 0x6f,
-	0xff, 0x77, 0x6d, 0xee, 0x34, 0xcf, 0x7e, 0x5d, 0xf9, 0xed, 0x5f, 0x05, 0x00, 0x00, 0xff, 0xff,
-	0x52, 0x4e, 0xd7, 0x33, 0xe4, 0x39, 0x00, 0x00,
+	// 4101 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x5c, 0xcd, 0x6f, 0x1c, 0xc9,
+	0x75, 0x67, 0xcf, 0xf7, 0xbc, 0xf9, 0xe0, 0xa8, 0x44, 0x49, 0xa3, 0x91, 0x44, 0x71, 0x5b, 0xab,
+	0x5d, 0xae, 0x76, 0x97, 0x5c, 0xd3, 0x8e, 0x63, 0xcb, 0x88, 0x63, 0x8a, 0x1c, 0x4b, 0x8c, 0x28,
+	0x92, 0x6e, 0x0e, 0x65, 0x78, 0x0f, 0x19, 0x34, 0x67, 0x8a, 0xc3, 0x36, 0x67, 0xba, 0x7b, 0xbb,
+	0x7b, 0x46, 0xa4, 0x9d, 0x8d, 0xe3, 0x20, 0x70, 0xe0, 0x1c, 0x72, 0x88, 0x91, 0xc0, 0x40, 0x60,
+	0x04, 0x49, 0x0e, 0x41, 0x1c, 0xe4, 0xec, 0x20, 0x87, 0x9c, 0x8d, 0x20, 0x08, 0x02, 0xe4, 0x1f,
+	0x08, 0x36, 0x7b, 0xca, 0x35, 0x41, 0xce, 0x41, 0x7d, 0x75, 0x57, 0xf7, 0xf4, 0x90, 0x3d, 0x9a,
+	0x9d, 0x78, 0x2f, 0x62, 0x57, 0xd5, 0xab, 0xf7, 0x7b, 0xef, 0xd5, 0xc7, 0xab, 0x7a, 0xaf, 0x46,
+	0x50, 0x74, 0xec, 0xce, 0x9a, 0xed, 0x58, 0x9e, 0x85, 0xca, 0xd8, 0xeb, 0x74, 0x5d, 0xec, 0x8c,
+	0xb0, 0x63, 0x1f, 0x37, 0x96, 0x7a, 0x56, 0xcf, 0xa2, 0x0d, 0xeb, 0xe4, 0x8b, 0xd1, 0x34, 0x6e,
+	0x13, 0x9a, 0xf5, 0xc1, 0xa8, 0xd3, 0xa1, 0xff, 0xd8, 0xc7, 0xeb, 0x67, 0x23, 0xde, 0x74, 0x87,
+	0x36, 0xe9, 0x43, 0xef, 0x94, 0xfe, 0x63, 0x1f, 0xd3, 0x3f, 0xbc, 0x71, 0xc9, 0x73, 0xf4, 0x0e,
+	0x76, 0xd6, 0x07, 0xd8, 0x75, 0xf5, 0x1e, 0xe6, 0xb5, 0x77, 0x7b, 0x96, 0xd5, 0xeb, 0xe3, 0x75,
+	0xdd, 0x36, 0xd6, 0x75, 0xd3, 0xb4, 0x3c, 0xdd, 0x33, 0x2c, 0xd3, 0x65, 0xad, 0xea, 0xcf, 0x15,
+	0xa8, 0x6a, 0xd8, 0xb5, 0x2d, 0xd3, 0xc5, 0xcf, 0xb0, 0xde, 0xc5, 0x0e, 0xba, 0x07, 0xd0, 0xe9,
+	0x0f, 0x5d, 0x0f, 0x3b, 0x6d, 0xa3, 0x5b, 0x57, 0x56, 0x94, 0xd5, 0x8c, 0x56, 0xe4, 0x35, 0x3b,
+	0x5d, 0x74, 0x07, 0x8a, 0x03, 0x3c, 0x38, 0x66, 0xad, 0x29, 0xda, 0x5a, 0x60, 0x15, 0x3b, 0x5d,
+	0xd4, 0x80, 0x82, 0x83, 0x47, 0x86, 0x6b, 0x58, 0x66, 0x3d, 0xbd, 0xa2, 0xac, 0xa6, 0x35, 0xbf,
+	0x4c, 0x3a, 0x3a, 0xfa, 0x89, 0xd7, 0xf6, 0xb0, 0x33, 0xa8, 0x67, 0x58, 0x47, 0x52, 0xd1, 0xc2,
+	0xce, 0x00, 0x3d, 0x80, 0x2c, 0x95, 0xbe, 0xde, 0x5d, 0x51, 0x56, 0x4b, 0x1b, 0x95, 0x35, 0xa6,
+	0xcb, 0x5a, 0x8b, 0xfc, 0xd1, 0x58, 0x9b, 0xfa, 0xb7, 0x59, 0x28, 0x6b, 0xba, 0xd9, 0xc3, 0x1a,
+	0xfe, 0x68, 0x88, 0x5d, 0x0f, 0xd5, 0x20, 0x7d, 0x86, 0x2f, 0xa8, 0x8c, 0x65, 0x8d, 0x7c, 0x32,
+	0x10, 0xb3, 0x87, 0xdb, 0xd8, 0x64, 0xd2, 0x95, 0x09, 0x88, 0xd9, 0xc3, 0x4d, 0xb3, 0x8b, 0x96,
+	0x20, 0xdb, 0x37, 0x06, 0x86, 0xc7, 0x45, 0x63, 0x85, 0x90, 0xcc, 0x99, 0x88, 0xcc, 0x5b, 0x00,
+	0xae, 0xe5, 0x78, 0x6d, 0xcb, 0xe9, 0x62, 0xa7, 0x9e, 0x5d, 0x51, 0x56, 0xab, 0x1b, 0x6f, 0xae,
+	0xc9, 0x63, 0xb8, 0x26, 0x0b, 0xb4, 0x76, 0x68, 0x39, 0xde, 0x3e, 0xa1, 0xd5, 0x8a, 0xae, 0xf8,
+	0x44, 0xdf, 0x84, 0x12, 0x65, 0xe2, 0xe9, 0x4e, 0x0f, 0x7b, 0xf5, 0x1c, 0xe5, 0xf2, 0xf0, 0x0a,
+	0x2e, 0x2d, 0x4a, 0xac, 0x51, 0x78, 0xf6, 0x8d, 0x54, 0x28, 0xbb, 0xd8, 0x31, 0xf4, 0xbe, 0xf1,
+	0x3d, 0xfd, 0xb8, 0x8f, 0xeb, 0xf9, 0x15, 0x65, 0xb5, 0xa0, 0x85, 0xea, 0x88, 0xfe, 0x67, 0xf8,
+	0xc2, 0x6d, 0x5b, 0x66, 0xff, 0xa2, 0x5e, 0xa0, 0x04, 0x05, 0x52, 0xb1, 0x6f, 0xf6, 0x2f, 0xe8,
+	0xc8, 0x5a, 0x43, 0xd3, 0x63, 0xad, 0x45, 0xda, 0x5a, 0xa4, 0x35, 0xb4, 0x79, 0x15, 0x6a, 0x03,
+	0xc3, 0x6c, 0x0f, 0xac, 0x6e, 0xdb, 0x37, 0x08, 0x50, 0x83, 0x54, 0x07, 0x86, 0xf9, 0xc2, 0xea,
+	0x6a, 0xc2, 0x2c, 0x84, 0x52, 0x3f, 0x0f, 0x53, 0x96, 0x38, 0xa5, 0x7e, 0x2e, 0x53, 0xae, 0xc1,
+	0x75, 0xc2, 0xb3, 0xe3, 0x60, 0xdd, 0xc3, 0x01, 0x71, 0x99, 0x12, 0x5f, 0x1b, 0x18, 0xe6, 0x16,
+	0x6d, 0x09, 0xd1, 0xeb, 0xe7, 0x63, 0xf4, 0x15, 0x4e, 0xaf, 0x9f, 0x47, 0xe8, 0x13, 0xcd, 0x9b,
+	0x35, 0x28, 0xfa, 0x03, 0x83, 0x0a, 0x90, 0xd9, 0xdb, 0xdf, 0x6b, 0xd6, 0x16, 0x10, 0x40, 0x6e,
+	0xf3, 0x70, 0xab, 0xb9, 0xb7, 0x5d, 0x53, 0x50, 0x09, 0xf2, 0xdb, 0x4d, 0x56, 0x48, 0xa9, 0x4f,
+	0x00, 0x82, 0x21, 0x40, 0x79, 0x48, 0x3f, 0x6f, 0x7e, 0xa7, 0xb6, 0x40, 0x68, 0x5e, 0x36, 0xb5,
+	0xc3, 0x9d, 0xfd, 0xbd, 0x9a, 0x42, 0x3a, 0x6f, 0x69, 0xcd, 0xcd, 0x56, 0xb3, 0x96, 0x22, 0x14,
+	0x2f, 0xf6, 0xb7, 0x6b, 0x69, 0x54, 0x84, 0xec, 0xcb, 0xcd, 0xdd, 0xa3, 0x66, 0x2d, 0xa3, 0xfe,
+	0x83, 0x02, 0x15, 0x3e, 0xa8, 0x6c, 0x75, 0xa1, 0x2f, 0x41, 0xee, 0x94, 0xae, 0x30, 0x3a, 0x5f,
+	0x4b, 0x1b, 0x77, 0x23, 0x33, 0x20, 0xb4, 0x0a, 0x35, 0x4e, 0x8b, 0x54, 0x48, 0x9f, 0x8d, 0xdc,
+	0x7a, 0x6a, 0x25, 0xbd, 0x5a, 0xda, 0xa8, 0xad, 0xb1, 0x0d, 0x61, 0xed, 0x39, 0xbe, 0x78, 0xa9,
+	0xf7, 0x87, 0x58, 0x23, 0x8d, 0x08, 0x41, 0x66, 0x60, 0x39, 0x98, 0x4e, 0xeb, 0x82, 0x46, 0xbf,
+	0xc9, 0x5c, 0xa7, 0x23, 0xcb, 0xa7, 0x34, 0x2b, 0x24, 0x33, 0xd7, 0xbf, 0x2a, 0x00, 0x07, 0x43,
+	0x6f, 0xf2, 0x22, 0x5b, 0x82, 0xec, 0x88, 0xa0, 0xf3, 0x05, 0xc6, 0x0a, 0x74, 0x75, 0x61, 0xdd,
+	0xc5, 0xfe, 0xea, 0x22, 0x05, 0x74, 0x0b, 0xf2, 0xb6, 0x83, 0x47, 0xed, 0xb3, 0x11, 0x95, 0xa4,
+	0xa0, 0xe5, 0x48, 0xf1, 0xf9, 0x08, 0xbd, 0x01, 0x65, 0xa3, 0x67, 0x5a, 0x0e, 0x6e, 0x33, 0x5e,
+	0x59, 0xda, 0x5a, 0x62, 0x75, 0x54, 0x39, 0x89, 0x84, 0x31, 0xce, 0xc9, 0x24, 0xbb, 0x94, 0x7d,
+	0x22, 0x85, 0x7e, 0xa2, 0x40, 0x89, 0x2a, 0x34, 0xd3, 0x48, 0xbc, 0x13, 0x68, 0x92, 0xa2, 0xdd,
+	0xc6, 0x47, 0x43, 0xe8, 0x96, 0x48, 0xaa, 0x1f, 0x2a, 0x80, 0xb6, 0x71, 0x1f, 0x7b, 0x78, 0x96,
+	0x3d, 0x4d, 0xb2, 0x6f, 0x3a, 0x64, 0xdf, 0x44, 0x32, 0xfc, 0x42, 0x81, 0xeb, 0x21, 0x19, 0x66,
+	0xb2, 0x50, 0x1d, 0xf2, 0x5d, 0xca, 0x8c, 0x89, 0x99, 0xd6, 0x44, 0x11, 0xbd, 0x0b, 0x05, 0x2e,
+	0xa5, 0x5b, 0x4f, 0x4f, 0x98, 0xca, 0x79, 0x26, 0xb8, 0x9b, 0xd0, 0x17, 0xa4, 0xa0, 0xc8, 0x4d,
+	0xb6, 0x6f, 0xa3, 0x4d, 0xa8, 0x38, 0xac, 0xd0, 0xa6, 0x96, 0xe1, 0x62, 0x37, 0x26, 0x6f, 0xb2,
+	0xcf, 0x16, 0xb4, 0x32, 0xef, 0x42, 0xab, 0xd1, 0xd7, 0xa0, 0x24, 0x58, 0xd8, 0x43, 0x8f, 0x0f,
+	0x71, 0x3d, 0xcc, 0x20, 0x58, 0x15, 0xcf, 0x16, 0x34, 0xe0, 0xe4, 0x07, 0x43, 0x0f, 0xb5, 0x60,
+	0x49, 0x74, 0x66, 0x2a, 0x73, 0x31, 0xd2, 0x94, 0xcb, 0x4a, 0x98, 0xcb, 0xf8, 0xa0, 0x3f, 0x5b,
+	0xd0, 0x10, 0xef, 0x2f, 0x35, 0xca, 0x22, 0x79, 0xe7, 0xcc, 0x39, 0x8d, 0x89, 0xd4, 0x3a, 0x37,
+	0xc7, 0x45, 0x6a, 0x9d, 0x9b, 0x4f, 0x8a, 0x90, 0xe7, 0x25, 0xf5, 0x17, 0x29, 0x00, 0x31, 0x64,
+	0xfb, 0x36, 0xda, 0x86, 0xaa, 0xc3, 0x4b, 0x21, 0x6b, 0xdd, 0x89, 0xb5, 0x16, 0x1f, 0xe9, 0x05,
+	0xad, 0x22, 0x3a, 0x31, 0xe1, 0xbe, 0x0e, 0x65, 0x9f, 0x4b, 0x60, 0xb0, 0xdb, 0x31, 0x06, 0xf3,
+	0x39, 0x94, 0x44, 0x07, 0x62, 0xb2, 0x6f, 0xc3, 0x0d, 0xbf, 0x7f, 0x8c, 0xcd, 0xde, 0xb8, 0xc4,
+	0x66, 0x3e, 0xc3, 0xeb, 0x82, 0x83, 0x6c, 0x35, 0x59, 0xb0, 0xc0, 0x6c, 0xb7, 0x63, 0xcc, 0x36,
+	0x2e, 0x18, 0x31, 0x1c, 0x90, 0xf3, 0x00, 0x2b, 0xaa, 0x7f, 0x9c, 0x81, 0xfc, 0x96, 0x35, 0xb0,
+	0x75, 0x87, 0x8c, 0x46, 0xce, 0xc1, 0xee, 0xb0, 0xef, 0x51, 0x73, 0x55, 0x37, 0x1e, 0x84, 0x39,
+	0x72, 0x32, 0xf1, 0x57, 0xa3, 0xa4, 0x1a, 0xef, 0x42, 0x3a, 0x73, 0xf7, 0x9f, 0x4a, 0xd0, 0x99,
+	0x3b, 0x7f, 0xde, 0x45, 0x6c, 0x09, 0xe9, 0x60, 0x4b, 0x68, 0x40, 0x7e, 0x84, 0x9d, 0xe0, 0xc8,
+	0xf2, 0x6c, 0x41, 0x13, 0x15, 0xe8, 0x1d, 0x58, 0x8c, 0xba, 0xcf, 0x2c, 0xa7, 0xa9, 0x76, 0xa2,
+	0xde, 0xb3, 0x1c, 0xf2, 0xe1, 0x39, 0x4e, 0x57, 0x1a, 0x48, 0x2e, 0xfc, 0xa6, 0xd8, 0xed, 0xc9,
+	0x79, 0xa3, 0xfc, 0x6c, 0x41, 0xec, 0xf7, 0x37, 0xc5, 0x7e, 0x5f, 0xe0, 0xbd, 0xf8, 0x8e, 0x1f,
+	0xda, 0xae, 0xbe, 0x11, 0xd9, 0xae, 0x12, 0xad, 0xed, 0x6f, 0x40, 0x25, 0x64, 0x45, 0xe2, 0x57,
+	0x9b, 0xdf, 0x3a, 0xda, 0xdc, 0x65, 0x4e, 0xf8, 0x29, 0xf5, 0xbb, 0x5a, 0x4d, 0x21, 0xbe, 0x7c,
+	0xb7, 0x79, 0x78, 0x58, 0x4b, 0xa1, 0x0a, 0x14, 0xf7, 0xf6, 0x5b, 0x6d, 0x46, 0x95, 0x56, 0x9f,
+	0xfa, 0x1c, 0xb8, 0x13, 0x97, 0x7c, 0xf7, 0x82, 0xe4, 0xbb, 0x15, 0xe1, 0xbb, 0x53, 0x81, 0xef,
+	0xa6, 0x6e, 0x7c, 0xb7, 0xb9, 0x79, 0xd8, 0xac, 0x65, 0x9e, 0x54, 0xa1, 0xcc, 0x06, 0xa1, 0x3d,
+	0x34, 0x0d, 0xcb, 0x54, 0x7f, 0xa9, 0x00, 0x04, 0x4b, 0x0e, 0xad, 0x43, 0xbe, 0xc3, 0x70, 0xea,
+	0x0a, 0xdd, 0xd6, 0x6e, 0xc4, 0x8e, 0xab, 0x26, 0xa8, 0xd0, 0x17, 0x20, 0xef, 0x0e, 0x3b, 0x1d,
+	0xec, 0x0a, 0x97, 0x7e, 0x2b, 0xba, 0xb3, 0xf2, 0x2d, 0x4d, 0x13, 0x74, 0xa4, 0xcb, 0x89, 0x6e,
+	0xf4, 0x87, 0xd4, 0xc1, 0x5f, 0xde, 0x85, 0xd3, 0x25, 0xb3, 0xf2, 0x3f, 0x29, 0x50, 0x92, 0x96,
+	0xc1, 0x6b, 0xee, 0xf9, 0x77, 0xa1, 0x48, 0x05, 0xc5, 0x5d, 0xbe, 0xeb, 0x17, 0xb4, 0xa0, 0x02,
+	0x7d, 0x19, 0x8a, 0x62, 0x2d, 0x89, 0x8d, 0xbf, 0x1e, 0xcf, 0x76, 0xdf, 0xd6, 0x02, 0xd2, 0x64,
+	0x0a, 0xd8, 0x70, 0x8d, 0xda, 0xb7, 0x43, 0x2e, 0x34, 0x62, 0x44, 0xe4, 0xd3, 0xbc, 0x12, 0x39,
+	0xcd, 0x37, 0xa0, 0x60, 0x9f, 0x5e, 0xb8, 0x46, 0x47, 0xef, 0x73, 0x51, 0xfd, 0x72, 0x32, 0x44,
+	0x0b, 0x90, 0x8c, 0x38, 0x93, 0xe1, 0x12, 0x01, 0x6e, 0x40, 0xe9, 0x99, 0xee, 0x9e, 0x0a, 0xe5,
+	0x12, 0xf5, 0x39, 0x80, 0x0a, 0xe9, 0xf3, 0xfc, 0x65, 0x12, 0x93, 0x24, 0xe2, 0x48, 0x2e, 0x89,
+	0x82, 0xe5, 0x4c, 0x3a, 0x23, 0xc8, 0x9c, 0xea, 0xee, 0x29, 0x35, 0x7e, 0x45, 0xa3, 0xdf, 0xe8,
+	0x1d, 0xa8, 0x75, 0x98, 0x4d, 0xdb, 0x91, 0xab, 0xe3, 0x22, 0xaf, 0x9f, 0xee, 0xb0, 0xff, 0x31,
+	0x94, 0x99, 0xc9, 0x3e, 0x73, 0x49, 0x13, 0xc1, 0x7f, 0x19, 0x16, 0x0f, 0x4d, 0xdd, 0x76, 0x4f,
+	0x2d, 0x6f, 0xaa, 0x51, 0xfb, 0xb9, 0x02, 0xb5, 0xa0, 0xe3, 0x4c, 0xb2, 0xbf, 0x0d, 0x8b, 0x0e,
+	0x1e, 0xe8, 0x86, 0x69, 0x98, 0xbd, 0xf6, 0xf1, 0x85, 0x87, 0x5d, 0x7e, 0x4f, 0xaf, 0xfa, 0xd5,
+	0x4f, 0x48, 0x2d, 0x51, 0xf2, 0xb8, 0x6f, 0x1d, 0x73, 0xc7, 0x42, 0xbf, 0x93, 0x09, 0xfb, 0xa3,
+	0x14, 0x94, 0xbf, 0xad, 0x7b, 0x1d, 0x7f, 0x62, 0xee, 0x40, 0xd5, 0xf7, 0x39, 0xb4, 0x86, 0x0b,
+	0x1c, 0x39, 0xf9, 0xd0, 0x3e, 0xe2, 0x06, 0x27, 0x0e, 0x2d, 0x95, 0x8e, 0x5c, 0x41, 0x59, 0xe9,
+	0x66, 0x07, 0xf7, 0x7d, 0x56, 0xa9, 0xc9, 0xac, 0x28, 0xa1, 0xcc, 0x4a, 0xae, 0x40, 0xfb, 0x50,
+	0xb3, 0x1d, 0xab, 0xe7, 0x60, 0xd7, 0xf5, 0x99, 0xb1, 0xd3, 0x85, 0x1a, 0xc3, 0xec, 0x80, 0x93,
+	0x06, 0xec, 0x16, 0xed, 0x70, 0xd5, 0x93, 0xc5, 0xe0, 0x98, 0xc9, 0xdc, 0xc1, 0xff, 0xa6, 0x00,
+	0x8d, 0x2b, 0x35, 0xed, 0x19, 0xfe, 0x21, 0x54, 0x5d, 0x4f, 0x77, 0xc6, 0x16, 0x40, 0x85, 0xd6,
+	0xfa, 0xd3, 0xff, 0x6d, 0xf0, 0x05, 0x6a, 0x9b, 0x96, 0x67, 0x9c, 0x5c, 0xf0, 0x2b, 0x55, 0x55,
+	0x54, 0xef, 0xd1, 0x5a, 0xd4, 0x84, 0xfc, 0x89, 0xd1, 0xf7, 0xb0, 0xe3, 0xd6, 0xb3, 0x2b, 0xe9,
+	0xd5, 0xea, 0xc6, 0xbb, 0x57, 0x0d, 0xc3, 0xda, 0x37, 0x29, 0x7d, 0xeb, 0xc2, 0xc6, 0x9a, 0xe8,
+	0x2b, 0x5f, 0x2d, 0x72, 0xa1, 0xab, 0xc5, 0x6d, 0x28, 0xbc, 0x22, 0x2c, 0xda, 0x46, 0x97, 0x1e,
+	0x0a, 0xd2, 0x5a, 0x9e, 0x96, 0x59, 0x00, 0xe8, 0xc4, 0xd1, 0x7b, 0x03, 0x6c, 0x7a, 0x22, 0xfc,
+	0x20, 0xca, 0xc9, 0xa6, 0xd6, 0x43, 0x80, 0x40, 0x16, 0xe2, 0x89, 0xf7, 0xf6, 0x0f, 0x8e, 0x5a,
+	0xb5, 0x05, 0x54, 0x86, 0xc2, 0xde, 0xfe, 0x76, 0x73, 0xb7, 0x49, 0xdc, 0xb6, 0xda, 0x12, 0x76,
+	0x0f, 0x0d, 0xb8, 0x2c, 0x98, 0x12, 0x16, 0x2c, 0x11, 0xf8, 0xd7, 0x60, 0x29, 0x6e, 0x2a, 0x24,
+	0xbc, 0x36, 0xa7, 0xa0, 0xc2, 0x17, 0xc5, 0x4c, 0xcb, 0x57, 0x56, 0x22, 0x15, 0x56, 0xa2, 0x0e,
+	0x79, 0xb6, 0x58, 0xba, 0xfc, 0xb2, 0x27, 0x8a, 0xc4, 0xee, 0x6c, 0xee, 0xe3, 0x2e, 0x9f, 0x14,
+	0x7e, 0x39, 0x76, 0x87, 0xcd, 0x4e, 0xda, 0x61, 0x2b, 0xfe, 0xe2, 0xd3, 0x5d, 0x7e, 0x22, 0x2c,
+	0x6a, 0x65, 0xb1, 0xae, 0x48, 0x5d, 0x68, 0x8c, 0xf3, 0x91, 0x31, 0x7e, 0x08, 0x39, 0x3c, 0xc2,
+	0xa6, 0xe7, 0xd6, 0x4b, 0xd4, 0xdb, 0x57, 0xc4, 0x35, 0xaf, 0x49, 0x6a, 0x35, 0xde, 0x98, 0xcc,
+	0xa0, 0x1f, 0xc2, 0x35, 0x7a, 0xc9, 0x7f, 0xea, 0xe8, 0xa6, 0x1c, 0x8d, 0x68, 0xb5, 0x76, 0xf9,
+	0xe8, 0x92, 0x4f, 0x54, 0x85, 0xd4, 0xce, 0x36, 0xb7, 0x54, 0x6a, 0x67, 0x3b, 0x19, 0xef, 0xbf,
+	0x51, 0x00, 0xc9, 0xcc, 0x67, 0x1a, 0xb1, 0xa8, 0x04, 0x5c, 0xc6, 0x74, 0x20, 0xe3, 0x12, 0x64,
+	0xb1, 0xe3, 0x58, 0x0e, 0x1d, 0x9b, 0xa2, 0xc6, 0x0a, 0xc9, 0x24, 0xdd, 0xe1, 0x82, 0x6a, 0x78,
+	0x64, 0x9d, 0xf9, 0x3b, 0x0c, 0x83, 0x54, 0xa6, 0x53, 0xda, 0x86, 0xeb, 0x21, 0x56, 0xf3, 0x3f,
+	0xbf, 0x9c, 0xc1, 0x22, 0x45, 0xdc, 0x3a, 0xc5, 0x9d, 0x33, 0xdb, 0x32, 0xcc, 0x38, 0xc9, 0x2b,
+	0x81, 0xb7, 0x22, 0x66, 0x63, 0x76, 0x2c, 0xfb, 0x95, 0xc4, 0x7e, 0x89, 0xc0, 0x7e, 0x17, 0x6e,
+	0x46, 0xc0, 0x84, 0xb5, 0x7e, 0x13, 0x4a, 0x1d, 0xbf, 0xd2, 0xe5, 0x47, 0xf5, 0x7b, 0x61, 0x35,
+	0xa3, 0x5d, 0xe5, 0x1e, 0xc9, 0xf0, 0x3d, 0xb8, 0x35, 0x86, 0x3f, 0x7f, 0x13, 0xef, 0xc2, 0x0d,
+	0x8a, 0xfa, 0x1c, 0x63, 0x7b, 0xb3, 0x6f, 0x8c, 0x66, 0x9b, 0x22, 0x7f, 0xaa, 0x70, 0x23, 0x4a,
+	0xec, 0xe6, 0xbc, 0x36, 0x12, 0xc9, 0xa5, 0x73, 0xb1, 0x5a, 0xc6, 0x00, 0xb7, 0xac, 0xdd, 0x4b,
+	0xd4, 0x44, 0x90, 0x39, 0xc3, 0x17, 0x2e, 0x3f, 0xe0, 0xd3, 0xef, 0x64, 0x10, 0xff, 0xac, 0xf0,
+	0xf1, 0x93, 0x31, 0xe6, 0xac, 0xfb, 0x32, 0x40, 0x8f, 0x6c, 0x40, 0xb8, 0x4b, 0x1a, 0x58, 0xa8,
+	0x56, 0xaa, 0xf1, 0x95, 0x21, 0x6e, 0xbc, 0x3c, 0x8d, 0x32, 0x5f, 0xe5, 0xbb, 0x06, 0xfd, 0x67,
+	0x3a, 0x3f, 0xf6, 0x04, 0x4a, 0xb4, 0xd7, 0xa1, 0xa7, 0x7b, 0x43, 0xf7, 0xf5, 0xa6, 0xd1, 0x5f,
+	0x2b, 0x7c, 0xab, 0x11, 0xf8, 0x33, 0xd9, 0xf1, 0x0b, 0x90, 0xa3, 0xa1, 0x05, 0x71, 0x67, 0xbe,
+	0x1d, 0xb3, 0x72, 0x99, 0xb4, 0x1a, 0x27, 0x4c, 0x26, 0xe5, 0xdf, 0x29, 0x90, 0x7b, 0x41, 0x53,
+	0x57, 0x92, 0x96, 0x19, 0x31, 0x8b, 0x4c, 0x7d, 0xc0, 0x22, 0xdc, 0x45, 0x8d, 0x7e, 0xd3, 0xeb,
+	0x23, 0xc6, 0xce, 0x91, 0xb6, 0xcb, 0xee, 0xb2, 0x45, 0xcd, 0x2f, 0x93, 0x81, 0xec, 0xf4, 0x0d,
+	0x6c, 0x7a, 0xb4, 0x35, 0x43, 0x5b, 0xa5, 0x1a, 0x72, 0x4d, 0x36, 0xdc, 0x5d, 0xac, 0x3b, 0x26,
+	0xcf, 0x23, 0x15, 0xb4, 0xa0, 0x22, 0x99, 0xb4, 0x1f, 0x41, 0x8d, 0x09, 0xbb, 0xd9, 0xed, 0x4a,
+	0x57, 0x3b, 0x5f, 0x24, 0x25, 0x22, 0x52, 0x08, 0x32, 0xf5, 0x5a, 0x90, 0xff, 0xa2, 0xc0, 0x35,
+	0x09, 0x73, 0xa6, 0x41, 0x7c, 0x0f, 0x72, 0x2c, 0x4d, 0xc8, 0xcf, 0xf3, 0x4b, 0xe1, 0x5e, 0x0c,
+	0x46, 0xe3, 0x34, 0x68, 0x0d, 0xf2, 0xec, 0x4b, 0x84, 0x0d, 0xe2, 0xc9, 0x05, 0x51, 0x32, 0x75,
+	0x7e, 0x0b, 0xae, 0xf3, 0x7e, 0x78, 0x60, 0xc5, 0xed, 0x20, 0x99, 0xe4, 0x33, 0xfc, 0x2f, 0x15,
+	0x58, 0x0a, 0x33, 0x9b, 0xc9, 0x3a, 0x92, 0xbe, 0xa9, 0xcf, 0x4c, 0xdf, 0x13, 0xa1, 0xef, 0x91,
+	0xdd, 0x95, 0x6e, 0x27, 0x51, 0x7d, 0xe5, 0x49, 0x94, 0x8a, 0x4c, 0xa2, 0x29, 0x6d, 0x21, 0x80,
+	0x3e, 0x7f, 0xb6, 0xf8, 0x8a, 0x98, 0xc9, 0xbb, 0x86, 0x3b, 0xdd, 0xcd, 0xfc, 0x2f, 0x14, 0x40,
+	0x72, 0xd7, 0xcf, 0x9f, 0x6e, 0xcf, 0x85, 0xf9, 0x0f, 0x1c, 0x6b, 0x60, 0x79, 0xb3, 0x4d, 0xec,
+	0xbf, 0x52, 0xe0, 0x46, 0x84, 0xdb, 0xe7, 0x72, 0x34, 0xb7, 0xb1, 0xb8, 0x74, 0x4c, 0x35, 0x9a,
+	0x16, 0x20, 0xb9, 0xe7, 0xfc, 0xcf, 0x67, 0x2d, 0xb8, 0xf6, 0xc2, 0x1a, 0x11, 0x47, 0x48, 0xba,
+	0x06, 0xfb, 0x36, 0x0b, 0x2b, 0xfb, 0xe3, 0xe3, 0x97, 0x13, 0xab, 0x21, 0x73, 0x9d, 0xbf, 0x1a,
+	0xff, 0xa3, 0x40, 0x79, 0xb3, 0xaf, 0x3b, 0x03, 0xa1, 0xc2, 0xd7, 0x21, 0xc7, 0xe2, 0xa0, 0x3c,
+	0x1d, 0xf2, 0x56, 0x18, 0x4b, 0xa6, 0x65, 0x85, 0x4d, 0x16, 0x35, 0xe5, 0xbd, 0x88, 0x09, 0xf8,
+	0xb3, 0x91, 0xed, 0xc8, 0x33, 0x92, 0x6d, 0xf4, 0x3e, 0x64, 0x75, 0xd2, 0x85, 0x1e, 0x95, 0xaa,
+	0xd1, 0x80, 0x37, 0xe5, 0x46, 0x43, 0x15, 0x8c, 0x2a, 0x99, 0x02, 0x5f, 0x82, 0x92, 0x24, 0x06,
+	0xca, 0x43, 0xfa, 0x69, 0x93, 0xc7, 0x15, 0x36, 0xb7, 0x5a, 0x3b, 0x2f, 0x59, 0x3a, 0xa0, 0x0a,
+	0xb0, 0xdd, 0xf4, 0xcb, 0x29, 0xf5, 0x63, 0xde, 0x8b, 0x1f, 0x13, 0x64, 0xa1, 0x95, 0x49, 0x42,
+	0xa7, 0x3e, 0x3b, 0xa1, 0x7f, 0xa6, 0x40, 0x85, 0x5b, 0x72, 0xd6, 0x13, 0x14, 0x45, 0x9d, 0x70,
+	0x82, 0x92, 0x54, 0xd4, 0x38, 0x61, 0x52, 0xa3, 0x56, 0xf8, 0xc1, 0x6b, 0x9a, 0x35, 0xf8, 0xdf,
+	0x29, 0xa8, 0x8a, 0x6e, 0xb3, 0x26, 0x9c, 0x45, 0x1a, 0x8c, 0x1d, 0xd4, 0xfc, 0x24, 0xd8, 0x4d,
+	0xc8, 0x75, 0x8f, 0x0f, 0x8d, 0xef, 0x89, 0xd7, 0x08, 0xbc, 0x44, 0xea, 0xfb, 0x0c, 0x87, 0xbd,
+	0x40, 0xe2, 0x25, 0x72, 0x58, 0x72, 0xf4, 0x13, 0x6f, 0xc7, 0xec, 0xe2, 0x73, 0x7a, 0x3e, 0xcb,
+	0x68, 0x41, 0x05, 0x8d, 0xa0, 0xf3, 0x97, 0x4a, 0x34, 0x22, 0x22, 0xbf, 0x5c, 0x7a, 0x04, 0x35,
+	0xf2, 0xbd, 0x69, 0xdb, 0x7d, 0x03, 0x77, 0x19, 0x83, 0x3c, 0xa5, 0x19, 0xab, 0x27, 0xe8, 0xf4,
+	0xe6, 0xef, 0xd6, 0x0b, 0xd4, 0xcf, 0xf2, 0x12, 0x5a, 0x81, 0x12, 0x93, 0x6f, 0xc7, 0x3c, 0x72,
+	0x31, 0x7d, 0x99, 0x93, 0xd6, 0xe4, 0xaa, 0xf0, 0x61, 0x0e, 0x5e, 0xeb, 0x30, 0xf7, 0x15, 0xb8,
+	0xb6, 0x39, 0xf4, 0x4e, 0x9b, 0xa6, 0x7e, 0xdc, 0xc7, 0x53, 0x8d, 0xd7, 0x57, 0x01, 0x91, 0x9e,
+	0xdb, 0x86, 0x3b, 0x75, 0xd7, 0xef, 0xc2, 0x75, 0xd2, 0x15, 0x9b, 0x9e, 0xd1, 0x91, 0x8e, 0x20,
+	0xe2, 0x78, 0xad, 0x44, 0x8e, 0xd7, 0xba, 0xeb, 0xbe, 0xb2, 0x9c, 0x2e, 0x1f, 0x4d, 0xbf, 0x9c,
+	0x0c, 0xeb, 0xcf, 0x15, 0x26, 0xe7, 0x91, 0x1b, 0x3a, 0x23, 0x4f, 0x8b, 0xf5, 0x01, 0xe4, 0x2d,
+	0x9b, 0xbe, 0x91, 0xe3, 0xc1, 0xe2, 0x9b, 0x6b, 0xec, 0xad, 0xdd, 0x1a, 0x67, 0xbc, 0xcf, 0x5a,
+	0x35, 0x41, 0x96, 0x4c, 0xba, 0x17, 0x81, 0x70, 0x4f, 0xb1, 0x77, 0x99, 0x70, 0x09, 0xb3, 0x3c,
+	0x37, 0x04, 0x3b, 0x9e, 0xfc, 0x9e, 0x95, 0xa3, 0x07, 0xf7, 0x04, 0xc7, 0xad, 0x53, 0xdd, 0xec,
+	0xe1, 0x03, 0x6e, 0x91, 0xb9, 0x0e, 0x5a, 0x0f, 0xea, 0xbe, 0x59, 0x68, 0x28, 0xce, 0xea, 0xcb,
+	0xaa, 0x0c, 0x5d, 0xbe, 0x25, 0x14, 0x35, 0xfa, 0x4d, 0xea, 0x1c, 0xab, 0xef, 0x5f, 0xcc, 0xc8,
+	0x77, 0x32, 0xa0, 0x53, 0xb8, 0x2d, 0x80, 0x78, 0xfc, 0x2b, 0x8c, 0x34, 0xa6, 0xda, 0x6b, 0x23,
+	0xf1, 0x91, 0x26, 0xfc, 0xaf, 0x98, 0x86, 0xd3, 0xb2, 0x0b, 0x4f, 0x1c, 0x2a, 0x9d, 0x32, 0xad,
+	0x74, 0x8f, 0xd9, 0x8a, 0x24, 0x76, 0x98, 0xfa, 0x28, 0xcc, 0xfb, 0x12, 0x51, 0xa6, 0xee, 0xcb,
+	0x27, 0x2c, 0xe9, 0x3b, 0x36, 0x61, 0x5f, 0x4f, 0x93, 0x1f, 0x2a, 0xb0, 0xec, 0x5b, 0x86, 0xcc,
+	0x9d, 0x03, 0xec, 0x0c, 0x0c, 0xd7, 0x95, 0xb2, 0xc1, 0x71, 0x46, 0x7f, 0x0b, 0x32, 0x36, 0xe6,
+	0x6e, 0xba, 0xb4, 0x81, 0xc4, 0xe2, 0x96, 0x3a, 0xd3, 0xf6, 0x64, 0x32, 0xfc, 0x58, 0x81, 0xfb,
+	0x42, 0x06, 0x36, 0xad, 0x62, 0x85, 0x18, 0x53, 0x90, 0x67, 0x88, 0x52, 0x13, 0x32, 0x44, 0xe9,
+	0xd7, 0x79, 0x36, 0x61, 0xb1, 0x89, 0x22, 0x36, 0xf8, 0xf9, 0x9f, 0x09, 0x6d, 0x36, 0x1d, 0x7c,
+	0xbf, 0x30, 0x7f, 0xc4, 0x3f, 0x54, 0x60, 0x29, 0xec, 0x4f, 0x66, 0xc2, 0x5c, 0x82, 0xac, 0x67,
+	0x9d, 0x61, 0x71, 0x7a, 0x60, 0x85, 0xa9, 0x74, 0xf7, 0x7d, 0xcd, 0xfc, 0x75, 0xff, 0x91, 0x12,
+	0x40, 0xd2, 0x8d, 0x60, 0x56, 0xd5, 0xc9, 0x44, 0x14, 0x37, 0x7e, 0x56, 0x48, 0x26, 0x88, 0x0b,
+	0x37, 0xa3, 0xae, 0x67, 0xfe, 0xda, 0x7f, 0x9f, 0xad, 0xf5, 0x38, 0xef, 0x34, 0x7f, 0xf0, 0x51,
+	0xe0, 0x3b, 0x24, 0x27, 0x35, 0x7f, 0xdc, 0x57, 0xd0, 0x88, 0xf3, 0x59, 0xff, 0x6f, 0x2b, 0xdb,
+	0x77, 0x61, 0xf3, 0x47, 0xfc, 0xa9, 0x12, 0x40, 0xce, 0x3e, 0xbb, 0x83, 0x3d, 0x3e, 0x3d, 0xfb,
+	0x1e, 0x2f, 0x36, 0x9d, 0xc0, 0xed, 0xfd, 0xaa, 0x56, 0x9e, 0x90, 0x24, 0x70, 0xde, 0xb3, 0x4a,
+	0x42, 0xce, 0x54, 0xbe, 0x24, 0xb4, 0x30, 0xd5, 0x1e, 0x20, 0x7b, 0xf3, 0xf9, 0xcf, 0x91, 0xdf,
+	0x09, 0x7c, 0xed, 0x98, 0xbf, 0x9f, 0x3f, 0xfa, 0xc7, 0xb0, 0x32, 0xd9, 0xd3, 0xcf, 0x1d, 0xfe,
+	0xd1, 0x3a, 0x14, 0xfd, 0x18, 0x82, 0xf4, 0x23, 0x86, 0x12, 0xe4, 0xf7, 0xf6, 0x0f, 0x0f, 0x36,
+	0xb7, 0x9a, 0xec, 0x57, 0x0c, 0x5b, 0xfb, 0x9a, 0x76, 0x74, 0xd0, 0xaa, 0xa5, 0x36, 0x3e, 0x4d,
+	0x43, 0xea, 0xf9, 0x4b, 0xf4, 0x1d, 0xc8, 0xb2, 0x77, 0xb1, 0x97, 0x3c, 0x86, 0x6e, 0x5c, 0xf6,
+	0xf4, 0x57, 0xbd, 0xf5, 0xfb, 0xff, 0xfe, 0xe9, 0x4f, 0x52, 0xd7, 0xd4, 0xf2, 0xfa, 0xe8, 0x8b,
+	0xeb, 0x67, 0xa3, 0x75, 0x7a, 0x2a, 0x79, 0xac, 0x3c, 0x42, 0xdf, 0x82, 0xf4, 0xc1, 0xd0, 0x43,
+	0x13, 0x1f, 0x49, 0x37, 0x26, 0xbf, 0x06, 0x56, 0x6f, 0x50, 0xa6, 0x8b, 0x2a, 0x70, 0xa6, 0xf6,
+	0xd0, 0x23, 0x2c, 0x3f, 0x82, 0x92, 0xfc, 0x96, 0xf7, 0xca, 0x97, 0xd3, 0x8d, 0xab, 0xdf, 0x09,
+	0xab, 0xf7, 0x28, 0xd4, 0x2d, 0x15, 0x71, 0x28, 0xf6, 0xda, 0x58, 0xd6, 0xa2, 0x75, 0x6e, 0xa2,
+	0x89, 0xef, 0xaa, 0x1b, 0x93, 0x9f, 0x0e, 0x8f, 0x69, 0xe1, 0x9d, 0x9b, 0x84, 0xe5, 0x77, 0xf9,
+	0xab, 0xe1, 0x8e, 0x87, 0xee, 0xc7, 0x3c, 0x08, 0x95, 0x1f, 0x2c, 0x36, 0x56, 0x26, 0x13, 0x70,
+	0x90, 0xbb, 0x14, 0xe4, 0xa6, 0x7a, 0x8d, 0x83, 0x74, 0x7c, 0x92, 0xc7, 0xca, 0xa3, 0x8d, 0x0e,
+	0x64, 0xe9, 0xab, 0x13, 0xf4, 0xa1, 0xf8, 0x68, 0xc4, 0xbc, 0xf6, 0x99, 0x30, 0xd0, 0xa1, 0xf7,
+	0x2a, 0xea, 0x12, 0x05, 0xaa, 0xaa, 0x45, 0x02, 0x44, 0xdf, 0x9c, 0x3c, 0x56, 0x1e, 0xad, 0x2a,
+	0x1f, 0x28, 0x1b, 0x7f, 0x9f, 0x85, 0x2c, 0xfb, 0xc1, 0xc5, 0x19, 0x40, 0xf0, 0x6e, 0x22, 0xaa,
+	0xdd, 0xd8, 0x73, 0x8d, 0xa8, 0x76, 0xe3, 0x4f, 0x2e, 0xd4, 0x06, 0x05, 0x5d, 0x52, 0x17, 0x09,
+	0x28, 0xcd, 0xde, 0xad, 0xd3, 0x04, 0x28, 0xb1, 0xe3, 0x8f, 0x15, 0x9e, 0x8b, 0x64, 0x0b, 0x0e,
+	0xc5, 0x71, 0x0b, 0xbd, 0x8b, 0x88, 0x4e, 0x87, 0x98, 0xe7, 0x0e, 0xea, 0xaf, 0x51, 0xc0, 0x75,
+	0xb5, 0x16, 0x00, 0x3a, 0x94, 0xe2, 0xb1, 0xf2, 0xe8, 0xc3, 0xba, 0x7a, 0x9d, 0x5b, 0x39, 0xd2,
+	0x82, 0x7e, 0x00, 0xd5, 0x70, 0x62, 0x1c, 0x3d, 0x88, 0xc1, 0x8a, 0x66, 0xe1, 0x1b, 0x6f, 0x5e,
+	0x4e, 0xc4, 0x65, 0x5a, 0xa6, 0x32, 0x71, 0x70, 0x86, 0x7c, 0x86, 0xb1, 0xad, 0x13, 0x22, 0x3e,
+	0x06, 0xe8, 0x67, 0x0a, 0x7f, 0x4c, 0x11, 0xe4, 0xa7, 0x51, 0x1c, 0xf7, 0xb1, 0x14, 0x79, 0xe3,
+	0xe1, 0x15, 0x54, 0x5c, 0x88, 0xdf, 0xa0, 0x42, 0xfc, 0xba, 0xba, 0x14, 0x08, 0xe1, 0x19, 0x03,
+	0xec, 0x59, 0x5c, 0x8a, 0x0f, 0xef, 0xaa, 0xb7, 0x42, 0xc6, 0x09, 0xb5, 0x06, 0x83, 0xc5, 0x72,
+	0xbe, 0xb1, 0x83, 0x15, 0x4a, 0x47, 0xc7, 0x0e, 0x56, 0x38, 0x61, 0x1c, 0x37, 0x58, 0x2c, 0xc3,
+	0x1b, 0x37, 0x58, 0x7e, 0xcb, 0xc6, 0x7f, 0x65, 0x20, 0xbf, 0xc5, 0x7e, 0xb2, 0x88, 0x2c, 0x28,
+	0xfa, 0x39, 0x4c, 0xb4, 0x1c, 0x97, 0x7c, 0x08, 0x6e, 0xe9, 0x8d, 0xfb, 0x13, 0xdb, 0xb9, 0x40,
+	0x6f, 0x50, 0x81, 0xee, 0xa8, 0x37, 0x09, 0x32, 0xff, 0x55, 0xe4, 0x3a, 0x8b, 0x01, 0xaf, 0xeb,
+	0xdd, 0x2e, 0x31, 0xc4, 0xf7, 0xa1, 0x2c, 0x67, 0x06, 0xd1, 0x1b, 0xb1, 0x09, 0x0f, 0x39, 0x05,
+	0xd9, 0x50, 0x2f, 0x23, 0xe1, 0xc8, 0x6f, 0x52, 0xe4, 0x65, 0xf5, 0x76, 0x0c, 0xb2, 0x43, 0x49,
+	0x43, 0xe0, 0x2c, 0x15, 0x17, 0x0f, 0x1e, 0xca, 0x07, 0xc6, 0x83, 0x87, 0x33, 0x79, 0x97, 0x82,
+	0x0f, 0x29, 0x29, 0x01, 0x77, 0x01, 0x82, 0x4c, 0x19, 0x8a, 0xb5, 0xa5, 0x14, 0x37, 0x88, 0x6e,
+	0x0e, 0xe3, 0x49, 0x36, 0x55, 0xa5, 0xb0, 0x7c, 0xde, 0x45, 0x60, 0xfb, 0x86, 0xeb, 0xb1, 0x85,
+	0x59, 0x09, 0xe5, 0xab, 0x50, 0xac, 0x3e, 0xe1, 0xd4, 0x58, 0xe3, 0xc1, 0xa5, 0x34, 0x1c, 0xfd,
+	0x21, 0x45, 0xbf, 0xaf, 0x36, 0x62, 0xd0, 0x6d, 0x46, 0x4b, 0x26, 0xdb, 0x1f, 0xe5, 0xa0, 0xf4,
+	0x42, 0x37, 0x4c, 0x0f, 0x9b, 0xba, 0xd9, 0xc1, 0xe8, 0x18, 0xb2, 0xd4, 0x53, 0x47, 0x37, 0x62,
+	0x39, 0x25, 0x12, 0xdd, 0x88, 0x43, 0x41, 0x7e, 0x75, 0x85, 0x02, 0x37, 0xd4, 0x1b, 0x04, 0x78,
+	0x10, 0xb0, 0x5e, 0xa7, 0xb1, 0x79, 0xa2, 0xf4, 0x09, 0xe4, 0xf8, 0xfb, 0x8c, 0x08, 0xa3, 0x50,
+	0x38, 0xbe, 0x71, 0x37, 0xbe, 0x31, 0x6e, 0x2e, 0xcb, 0x30, 0x2e, 0xa5, 0x23, 0x38, 0x23, 0x80,
+	0x20, 0x5d, 0x16, 0x1d, 0xd1, 0xb1, 0x14, 0x5c, 0x63, 0x65, 0x32, 0x41, 0x9c, 0x4d, 0x65, 0xcc,
+	0xae, 0x4f, 0x4b, 0x70, 0x7f, 0x1b, 0x32, 0xcf, 0x74, 0xf7, 0x14, 0x45, 0x7c, 0xaf, 0xf4, 0x18,
+	0xbe, 0xd1, 0x88, 0x6b, 0xe2, 0x28, 0xf7, 0x29, 0xca, 0x6d, 0xb6, 0x95, 0xc9, 0x28, 0xa7, 0xba,
+	0x4b, 0x9c, 0x1a, 0xea, 0x42, 0x8e, 0xbd, 0x68, 0x8f, 0xda, 0x2f, 0xf4, 0x74, 0x3e, 0x6a, 0xbf,
+	0xf0, 0x23, 0xf8, 0xab, 0x51, 0x6c, 0x28, 0x88, 0x37, 0xdd, 0x28, 0xf2, 0xdc, 0x2c, 0xf2, 0x48,
+	0xbc, 0xb1, 0x3c, 0xa9, 0x99, 0x63, 0x3d, 0xa0, 0x58, 0xf7, 0xd4, 0xfa, 0xd8, 0x58, 0x71, 0xca,
+	0xc7, 0xca, 0xa3, 0x0f, 0x14, 0xf4, 0x03, 0x80, 0x20, 0x2f, 0x38, 0xb6, 0x02, 0xa3, 0x79, 0xc8,
+	0xb1, 0x15, 0x38, 0x96, 0x52, 0x54, 0xd7, 0x28, 0xee, 0xaa, 0xfa, 0x20, 0x8a, 0xeb, 0x39, 0xba,
+	0xe9, 0x9e, 0x60, 0xe7, 0x7d, 0x96, 0x41, 0x71, 0x4f, 0x0d, 0x9b, 0x2c, 0x86, 0x7f, 0x5c, 0x84,
+	0x0c, 0x39, 0x26, 0x93, 0x83, 0x42, 0x10, 0x8d, 0x8a, 0x4a, 0x32, 0x96, 0x88, 0x88, 0x4a, 0x32,
+	0x1e, 0xc8, 0x0a, 0x1f, 0x14, 0xe8, 0x4f, 0xe0, 0x31, 0x25, 0x20, 0x86, 0xb6, 0xa0, 0x24, 0x45,
+	0xa2, 0x50, 0x0c, 0xb3, 0x70, 0xf2, 0x22, 0xea, 0x7a, 0x62, 0xc2, 0x58, 0xea, 0x1d, 0x8a, 0x77,
+	0x83, 0xb9, 0x1e, 0x8a, 0xd7, 0x65, 0x14, 0x04, 0xf0, 0x15, 0x94, 0xe5, 0x38, 0x14, 0x8a, 0xe1,
+	0x17, 0xc9, 0x79, 0x44, 0xb7, 0xd9, 0xb8, 0x30, 0x56, 0x78, 0xe1, 0xfb, 0x3f, 0xf3, 0x17, 0x64,
+	0x04, 0xb8, 0x0f, 0x79, 0x1e, 0x73, 0x8a, 0xd3, 0x32, 0x9c, 0xfa, 0x88, 0xd3, 0x32, 0x12, 0xb0,
+	0x0a, 0x1f, 0x2e, 0x29, 0x22, 0xb9, 0x05, 0x0a, 0x57, 0xc6, 0xd1, 0x9e, 0x62, 0x6f, 0x12, 0x5a,
+	0x10, 0x92, 0x9e, 0x84, 0x26, 0xdd, 0xe6, 0x27, 0xa1, 0xf5, 0xb0, 0xc7, 0x97, 0x8b, 0xb8, 0xd9,
+	0xa2, 0x09, 0xcc, 0x64, 0xf7, 0xa1, 0x5e, 0x46, 0x12, 0x77, 0xf6, 0x0f, 0x00, 0x85, 0xef, 0x38,
+	0x07, 0x08, 0xc2, 0x58, 0xd1, 0x03, 0x5d, 0x6c, 0x7e, 0x25, 0x7a, 0xa0, 0x8b, 0x8f, 0x84, 0x85,
+	0xb7, 0x86, 0x00, 0x97, 0x5d, 0x3d, 0x08, 0xf2, 0x9f, 0x28, 0x80, 0xc6, 0x83, 0x59, 0xe8, 0xdd,
+	0x78, 0xee, 0xb1, 0x09, 0x99, 0xc6, 0x7b, 0xc9, 0x88, 0xe3, 0x76, 0xfb, 0x40, 0xa4, 0x0e, 0xa5,
+	0xb6, 0x5f, 0x11, 0xa1, 0x7e, 0x4f, 0x81, 0x4a, 0x28, 0xc8, 0x85, 0xde, 0x9a, 0x30, 0xa6, 0x91,
+	0x54, 0x4d, 0xe3, 0xed, 0x2b, 0xe9, 0xe2, 0x4e, 0xba, 0xd2, 0x0c, 0x10, 0x47, 0xfe, 0x3f, 0x50,
+	0xa0, 0x1a, 0x8e, 0x77, 0xa1, 0x09, 0xbc, 0xc7, 0xb2, 0x38, 0x8d, 0xd5, 0xab, 0x09, 0x2f, 0x1f,
+	0x9e, 0xe0, 0xb4, 0xdf, 0x87, 0x3c, 0x0f, 0x7e, 0xc5, 0x4d, 0xfc, 0x70, 0x6a, 0x27, 0x6e, 0xe2,
+	0x47, 0x22, 0x67, 0x31, 0x13, 0xdf, 0xb1, 0xfa, 0x58, 0x5a, 0x66, 0x3c, 0xee, 0x35, 0x09, 0xed,
+	0xf2, 0x65, 0x16, 0x09, 0x9a, 0x4d, 0x42, 0x0b, 0x96, 0x99, 0x08, 0x65, 0xa1, 0x09, 0xcc, 0xae,
+	0x58, 0x66, 0xd1, 0x48, 0x58, 0xcc, 0x32, 0xa3, 0x80, 0xd2, 0x32, 0x0b, 0x22, 0x45, 0x71, 0xcb,
+	0x6c, 0x2c, 0x2b, 0x14, 0xb7, 0xcc, 0xc6, 0x83, 0x4d, 0x31, 0xe3, 0x48, 0x71, 0x43, 0xcb, 0xec,
+	0x7a, 0x4c, 0xbc, 0x08, 0xbd, 0x37, 0xc1, 0x88, 0xb1, 0x69, 0xa4, 0xc6, 0xfb, 0x09, 0xa9, 0x27,
+	0xce, 0x71, 0x66, 0x7e, 0x31, 0xc7, 0xff, 0x4c, 0x81, 0xa5, 0xb8, 0x30, 0x12, 0x9a, 0x80, 0x33,
+	0x21, 0xb1, 0xd4, 0x58, 0x4b, 0x4a, 0x7e, 0xb9, 0xb5, 0xfc, 0x59, 0xff, 0xa4, 0xf6, 0xcb, 0x4f,
+	0x96, 0x95, 0x7f, 0xfb, 0x64, 0x59, 0xf9, 0x8f, 0x4f, 0x96, 0x95, 0x9f, 0xfe, 0xe7, 0xf2, 0xc2,
+	0x71, 0x8e, 0xfe, 0x37, 0x31, 0x5f, 0xfc, 0xbf, 0x00, 0x00, 0x00, 0xff, 0xff, 0x75, 0xa3, 0x69,
+	0x9c, 0xc3, 0x46, 0x00, 0x00,
 }

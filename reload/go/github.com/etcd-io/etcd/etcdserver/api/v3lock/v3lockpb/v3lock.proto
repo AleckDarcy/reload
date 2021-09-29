@@ -3,6 +3,7 @@ package v3lockpb;
 
 import "gogoproto/gogo.proto";
 import "etcd/etcdserver/etcdserverpb/rpc.proto";
+import "tracer/message.proto";
 
 // for grpc-gateway
 import "google/api/annotations.proto";
@@ -45,6 +46,8 @@ message LockRequest {
   // be treated as a single acquisition; locking twice with the same lease is a
   // no-op.
   int64 lease = 2;
+
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message LockResponse {
@@ -53,13 +56,19 @@ message LockResponse {
   // owns the lock. Users should not modify this key or the lock may exhibit
   // undefined behavior.
   bytes key = 2;
+
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message UnlockRequest {
   // key is the lock ownership key granted by Lock.
   bytes key = 1;
+
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message UnlockResponse {
   etcdserverpb.ResponseHeader header = 1;
+
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }

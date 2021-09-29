@@ -4,6 +4,7 @@ package v3electionpb;
 import "gogoproto/gogo.proto";
 import "etcd/etcdserver/etcdserverpb/rpc.proto";
 import "etcd/mvcc/mvccpb/kv.proto";
+import "tracer/message.proto";
 
 // for grpc-gateway
 import "google/api/annotations.proto";
@@ -65,12 +66,16 @@ message CampaignRequest {
   // value is the initial proclaimed value set when the campaigner wins the
   // election.
   bytes value = 3;
+
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message CampaignResponse {
   etcdserverpb.ResponseHeader header = 1;
   // leader describes the resources used for holding leadereship of the election.
   LeaderKey leader = 2;
+
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message LeaderKey {
@@ -85,26 +90,36 @@ message LeaderKey {
   int64 rev = 3;
   // lease is the lease ID of the election leader.
   int64 lease = 4;
+
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message LeaderRequest {
   // name is the election identifier for the leadership information.
   bytes name = 1;
+
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message LeaderResponse {
   etcdserverpb.ResponseHeader header = 1;
   // kv is the key-value pair representing the latest leader update.
   mvccpb.KeyValue kv = 2;
+
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message ResignRequest {
   // leader is the leadership to relinquish by resignation.
   LeaderKey leader = 1;
+
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message ResignResponse {
   etcdserverpb.ResponseHeader header = 1;
+
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message ProclaimRequest {
@@ -112,8 +127,12 @@ message ProclaimRequest {
   LeaderKey leader = 1;
   // value is an update meant to overwrite the leader's current value.
   bytes value = 2;
+
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message ProclaimResponse {
   etcdserverpb.ResponseHeader header = 1;
+
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }

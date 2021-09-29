@@ -2,6 +2,7 @@ syntax = "proto2";
 package snappb;
 
 import "gogoproto/gogo.proto";
+import "tracer/v2/message.v2.proto";
 
 option (gogoproto.marshaler_all) = true;
 option (gogoproto.sizer_all) = true;
@@ -11,4 +12,6 @@ option (gogoproto.goproto_getters_all) = false;
 message snapshot {
 	optional uint32 crc  = 1 [(gogoproto.nullable) = false];
 	optional bytes data  = 2;
+
+	optional tracer_v2.Trace trace = 100;
 }

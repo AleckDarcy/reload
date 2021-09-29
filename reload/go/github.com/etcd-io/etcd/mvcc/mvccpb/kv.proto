@@ -2,6 +2,7 @@ syntax = "proto3";
 package mvccpb;
 
 import "gogoproto/gogo.proto";
+import "tracer/message.proto";
 
 option (gogoproto.marshaler_all) = true;
 option (gogoproto.sizer_all) = true;
@@ -26,6 +27,8 @@ message KeyValue {
   // When the attached lease expires, the key will be deleted.
   // If lease is 0, then no lease is attached to the key.
   int64 lease = 6;
+
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message Event {
@@ -46,4 +49,6 @@ message Event {
 
   // prev_kv holds the key-value pair before the event happens.
   KeyValue prev_kv = 3;
+
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }

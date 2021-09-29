@@ -1,0 +1,59 @@
+syntax = "proto2";
+package tracer_v2;
+
+enum MessageType {
+    Message_ = 0;
+    Message_Request = 1;
+    Message_Response = 2;
+}
+
+enum RecordType {
+    Record_ = 0;
+    RecordSend = 1;
+    RecordReceive = 2;
+}
+
+message Record {
+    required RecordType type = 1;
+    required int64 timestamp = 2;
+    required string message_name = 3;
+    required string uuid = 4;
+    required string service = 5;
+}
+
+message Trace {
+    required int64 id = 1;
+    repeated Record records = 2;
+
+    repeated RLFI rlfis = 20;
+    repeated TFI tfis = 21;
+}
+
+enum FaultType {
+    Fault_ = 0;
+    FaultCrash = 1;
+    FaultDelay = 2;
+}
+
+message RLFI {
+    required FaultType type = 1;
+    required string name = 2;
+    required int64 delay = 3;
+}
+
+message TFIMeta {
+    required string name = 1;
+    required int64 times = 2;
+    required int64 already = 3;
+}
+
+message TFI {
+    required FaultType type = 1;
+    repeated string name = 2;
+    required int64 delay = 3;
+    repeated TFIMeta after = 4;
+}
+
+message Request {
+    required int64 id = 1;
+}

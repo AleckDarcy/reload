@@ -33,6 +33,8 @@ import (
 
 	mvccpb "go.etcd.io/etcd/mvcc/mvccpb"
 
+	tracer "github.com/AleckDarcy/reload/core/tracer"
+
 	context "golang.org/x/net/context"
 
 	grpc "google.golang.org/grpc"
@@ -60,7 +62,8 @@ type CampaignRequest struct {
 	Lease int64 `protobuf:"varint,2,opt,name=lease,proto3" json:"lease,omitempty"`
 	// value is the initial proclaimed value set when the campaigner wins the
 	// election.
-	Value []byte `protobuf:"bytes,3,opt,name=value,proto3" json:"value,omitempty"`
+	Value []byte        `protobuf:"bytes,3,opt,name=value,proto3" json:"value,omitempty"`
+	Trace *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *CampaignRequest) Reset()                    { *m = CampaignRequest{} }
@@ -89,10 +92,18 @@ func (m *CampaignRequest) GetValue() []byte {
 	return nil
 }
 
+func (m *CampaignRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type CampaignResponse struct {
 	Header *etcdserverpb.ResponseHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
 	// leader describes the resources used for holding leadereship of the election.
-	Leader *LeaderKey `protobuf:"bytes,2,opt,name=leader" json:"leader,omitempty"`
+	Leader *LeaderKey    `protobuf:"bytes,2,opt,name=leader" json:"leader,omitempty"`
+	Trace  *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *CampaignResponse) Reset()                    { *m = CampaignResponse{} }
@@ -114,6 +125,13 @@ func (m *CampaignResponse) GetLeader() *LeaderKey {
 	return nil
 }
 
+func (m *CampaignResponse) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type LeaderKey struct {
 	// name is the election identifier that correponds to the leadership key.
 	Name []byte `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
@@ -125,7 +143,8 @@ type LeaderKey struct {
 	// matches rev.
 	Rev int64 `protobuf:"varint,3,opt,name=rev,proto3" json:"rev,omitempty"`
 	// lease is the lease ID of the election leader.
-	Lease int64 `protobuf:"varint,4,opt,name=lease,proto3" json:"lease,omitempty"`
+	Lease int64         `protobuf:"varint,4,opt,name=lease,proto3" json:"lease,omitempty"`
+	Trace *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *LeaderKey) Reset()                    { *m = LeaderKey{} }
@@ -161,9 +180,17 @@ func (m *LeaderKey) GetLease() int64 {
 	return 0
 }
 
+func (m *LeaderKey) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type LeaderRequest struct {
 	// name is the election identifier for the leadership information.
-	Name []byte `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Name  []byte        `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Trace *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *LeaderRequest) Reset()                    { *m = LeaderRequest{} }
@@ -178,10 +205,18 @@ func (m *LeaderRequest) GetName() []byte {
 	return nil
 }
 
+func (m *LeaderRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type LeaderResponse struct {
 	Header *etcdserverpb.ResponseHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
 	// kv is the key-value pair representing the latest leader update.
-	Kv *mvccpb.KeyValue `protobuf:"bytes,2,opt,name=kv" json:"kv,omitempty"`
+	Kv    *mvccpb.KeyValue `protobuf:"bytes,2,opt,name=kv" json:"kv,omitempty"`
+	Trace *tracer.Trace    `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *LeaderResponse) Reset()                    { *m = LeaderResponse{} }
@@ -203,9 +238,17 @@ func (m *LeaderResponse) GetKv() *mvccpb.KeyValue {
 	return nil
 }
 
+func (m *LeaderResponse) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type ResignRequest struct {
 	// leader is the leadership to relinquish by resignation.
-	Leader *LeaderKey `protobuf:"bytes,1,opt,name=leader" json:"leader,omitempty"`
+	Leader *LeaderKey    `protobuf:"bytes,1,opt,name=leader" json:"leader,omitempty"`
+	Trace  *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *ResignRequest) Reset()                    { *m = ResignRequest{} }
@@ -220,8 +263,16 @@ func (m *ResignRequest) GetLeader() *LeaderKey {
 	return nil
 }
 
+func (m *ResignRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type ResignResponse struct {
 	Header *etcdserverpb.ResponseHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
+	Trace  *tracer.Trace                `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *ResignResponse) Reset()                    { *m = ResignResponse{} }
@@ -236,11 +287,19 @@ func (m *ResignResponse) GetHeader() *etcdserverpb.ResponseHeader {
 	return nil
 }
 
+func (m *ResignResponse) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type ProclaimRequest struct {
 	// leader is the leadership hold on the election.
 	Leader *LeaderKey `protobuf:"bytes,1,opt,name=leader" json:"leader,omitempty"`
 	// value is an update meant to overwrite the leader's current value.
-	Value []byte `protobuf:"bytes,2,opt,name=value,proto3" json:"value,omitempty"`
+	Value []byte        `protobuf:"bytes,2,opt,name=value,proto3" json:"value,omitempty"`
+	Trace *tracer.Trace `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *ProclaimRequest) Reset()                    { *m = ProclaimRequest{} }
@@ -262,8 +321,16 @@ func (m *ProclaimRequest) GetValue() []byte {
 	return nil
 }
 
+func (m *ProclaimRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
+	}
+	return nil
+}
+
 type ProclaimResponse struct {
 	Header *etcdserverpb.ResponseHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
+	Trace  *tracer.Trace                `protobuf:"bytes,100,opt,name=trace" json:"trace,omitempty"`
 }
 
 func (m *ProclaimResponse) Reset()                    { *m = ProclaimResponse{} }
@@ -274,6 +341,13 @@ func (*ProclaimResponse) Descriptor() ([]byte, []int) { return fileDescriptorV3E
 func (m *ProclaimResponse) GetHeader() *etcdserverpb.ResponseHeader {
 	if m != nil {
 		return m.Header
+	}
+	return nil
+}
+
+func (m *ProclaimResponse) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.Trace
 	}
 	return nil
 }
@@ -574,6 +648,18 @@ func (m *CampaignRequest) MarshalTo(dAtA []byte) (int, error) {
 		i = encodeVarintV3Election(dAtA, i, uint64(len(m.Value)))
 		i += copy(dAtA[i:], m.Value)
 	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintV3Election(dAtA, i, uint64(m.Trace.Size()))
+		n1, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n1
+	}
 	return i, nil
 }
 
@@ -596,21 +682,33 @@ func (m *CampaignResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintV3Election(dAtA, i, uint64(m.Header.Size()))
-		n1, err := m.Header.MarshalTo(dAtA[i:])
+		n2, err := m.Header.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n1
+		i += n2
 	}
 	if m.Leader != nil {
 		dAtA[i] = 0x12
 		i++
 		i = encodeVarintV3Election(dAtA, i, uint64(m.Leader.Size()))
-		n2, err := m.Leader.MarshalTo(dAtA[i:])
+		n3, err := m.Leader.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n2
+		i += n3
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintV3Election(dAtA, i, uint64(m.Trace.Size()))
+		n4, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n4
 	}
 	return i, nil
 }
@@ -652,6 +750,18 @@ func (m *LeaderKey) MarshalTo(dAtA []byte) (int, error) {
 		i++
 		i = encodeVarintV3Election(dAtA, i, uint64(m.Lease))
 	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintV3Election(dAtA, i, uint64(m.Trace.Size()))
+		n5, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n5
+	}
 	return i, nil
 }
 
@@ -676,6 +786,18 @@ func (m *LeaderRequest) MarshalTo(dAtA []byte) (int, error) {
 		i = encodeVarintV3Election(dAtA, i, uint64(len(m.Name)))
 		i += copy(dAtA[i:], m.Name)
 	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintV3Election(dAtA, i, uint64(m.Trace.Size()))
+		n6, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n6
+	}
 	return i, nil
 }
 
@@ -698,21 +820,33 @@ func (m *LeaderResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintV3Election(dAtA, i, uint64(m.Header.Size()))
-		n3, err := m.Header.MarshalTo(dAtA[i:])
+		n7, err := m.Header.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n3
+		i += n7
 	}
 	if m.Kv != nil {
 		dAtA[i] = 0x12
 		i++
 		i = encodeVarintV3Election(dAtA, i, uint64(m.Kv.Size()))
-		n4, err := m.Kv.MarshalTo(dAtA[i:])
+		n8, err := m.Kv.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n4
+		i += n8
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintV3Election(dAtA, i, uint64(m.Trace.Size()))
+		n9, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n9
 	}
 	return i, nil
 }
@@ -736,11 +870,23 @@ func (m *ResignRequest) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintV3Election(dAtA, i, uint64(m.Leader.Size()))
-		n5, err := m.Leader.MarshalTo(dAtA[i:])
+		n10, err := m.Leader.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n5
+		i += n10
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintV3Election(dAtA, i, uint64(m.Trace.Size()))
+		n11, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n11
 	}
 	return i, nil
 }
@@ -764,11 +910,23 @@ func (m *ResignResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintV3Election(dAtA, i, uint64(m.Header.Size()))
-		n6, err := m.Header.MarshalTo(dAtA[i:])
+		n12, err := m.Header.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n6
+		i += n12
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintV3Election(dAtA, i, uint64(m.Trace.Size()))
+		n13, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n13
 	}
 	return i, nil
 }
@@ -792,17 +950,29 @@ func (m *ProclaimRequest) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintV3Election(dAtA, i, uint64(m.Leader.Size()))
-		n7, err := m.Leader.MarshalTo(dAtA[i:])
+		n14, err := m.Leader.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n7
+		i += n14
 	}
 	if len(m.Value) > 0 {
 		dAtA[i] = 0x12
 		i++
 		i = encodeVarintV3Election(dAtA, i, uint64(len(m.Value)))
 		i += copy(dAtA[i:], m.Value)
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintV3Election(dAtA, i, uint64(m.Trace.Size()))
+		n15, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n15
 	}
 	return i, nil
 }
@@ -826,11 +996,23 @@ func (m *ProclaimResponse) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintV3Election(dAtA, i, uint64(m.Header.Size()))
-		n8, err := m.Header.MarshalTo(dAtA[i:])
+		n16, err := m.Header.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n8
+		i += n16
+	}
+	if m.Trace != nil {
+		dAtA[i] = 0xa2
+		i++
+		dAtA[i] = 0x6
+		i++
+		i = encodeVarintV3Election(dAtA, i, uint64(m.Trace.Size()))
+		n17, err := m.Trace.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n17
 	}
 	return i, nil
 }
@@ -858,6 +1040,10 @@ func (m *CampaignRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovV3Election(uint64(l))
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovV3Election(uint64(l))
+	}
 	return n
 }
 
@@ -871,6 +1057,10 @@ func (m *CampaignResponse) Size() (n int) {
 	if m.Leader != nil {
 		l = m.Leader.Size()
 		n += 1 + l + sovV3Election(uint64(l))
+	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovV3Election(uint64(l))
 	}
 	return n
 }
@@ -892,6 +1082,10 @@ func (m *LeaderKey) Size() (n int) {
 	if m.Lease != 0 {
 		n += 1 + sovV3Election(uint64(m.Lease))
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovV3Election(uint64(l))
+	}
 	return n
 }
 
@@ -901,6 +1095,10 @@ func (m *LeaderRequest) Size() (n int) {
 	l = len(m.Name)
 	if l > 0 {
 		n += 1 + l + sovV3Election(uint64(l))
+	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovV3Election(uint64(l))
 	}
 	return n
 }
@@ -916,6 +1114,10 @@ func (m *LeaderResponse) Size() (n int) {
 		l = m.Kv.Size()
 		n += 1 + l + sovV3Election(uint64(l))
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovV3Election(uint64(l))
+	}
 	return n
 }
 
@@ -926,6 +1128,10 @@ func (m *ResignRequest) Size() (n int) {
 		l = m.Leader.Size()
 		n += 1 + l + sovV3Election(uint64(l))
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovV3Election(uint64(l))
+	}
 	return n
 }
 
@@ -935,6 +1141,10 @@ func (m *ResignResponse) Size() (n int) {
 	if m.Header != nil {
 		l = m.Header.Size()
 		n += 1 + l + sovV3Election(uint64(l))
+	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovV3Election(uint64(l))
 	}
 	return n
 }
@@ -950,6 +1160,10 @@ func (m *ProclaimRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovV3Election(uint64(l))
 	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovV3Election(uint64(l))
+	}
 	return n
 }
 
@@ -959,6 +1173,10 @@ func (m *ProclaimResponse) Size() (n int) {
 	if m.Header != nil {
 		l = m.Header.Size()
 		n += 1 + l + sovV3Election(uint64(l))
+	}
+	if m.Trace != nil {
+		l = m.Trace.Size()
+		n += 2 + l + sovV3Election(uint64(l))
 	}
 	return n
 }
@@ -1086,6 +1304,39 @@ func (m *CampaignRequest) Unmarshal(dAtA []byte) error {
 				m.Value = []byte{}
 			}
 			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowV3Election
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthV3Election
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipV3Election(dAtA[iNdEx:])
@@ -1199,6 +1450,39 @@ func (m *CampaignResponse) Unmarshal(dAtA []byte) error {
 				m.Leader = &LeaderKey{}
 			}
 			if err := m.Leader.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowV3Election
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthV3Election
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1352,6 +1636,39 @@ func (m *LeaderKey) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowV3Election
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthV3Election
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipV3Election(dAtA[iNdEx:])
@@ -1431,6 +1748,39 @@ func (m *LeaderRequest) Unmarshal(dAtA []byte) error {
 			m.Name = append(m.Name[:0], dAtA[iNdEx:postIndex]...)
 			if m.Name == nil {
 				m.Name = []byte{}
+			}
+			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowV3Election
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthV3Election
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
 			}
 			iNdEx = postIndex
 		default:
@@ -1549,6 +1899,39 @@ func (m *LeaderResponse) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowV3Election
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthV3Election
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipV3Election(dAtA[iNdEx:])
@@ -1632,6 +2015,39 @@ func (m *ResignRequest) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowV3Election
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthV3Election
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipV3Election(dAtA[iNdEx:])
@@ -1712,6 +2128,39 @@ func (m *ResignResponse) Unmarshal(dAtA []byte) error {
 				m.Header = &etcdserverpb.ResponseHeader{}
 			}
 			if err := m.Header.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowV3Election
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthV3Election
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1829,6 +2278,39 @@ func (m *ProclaimRequest) Unmarshal(dAtA []byte) error {
 				m.Value = []byte{}
 			}
 			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowV3Election
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthV3Election
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipV3Election(dAtA[iNdEx:])
@@ -1909,6 +2391,39 @@ func (m *ProclaimResponse) Unmarshal(dAtA []byte) error {
 				m.Header = &etcdserverpb.ResponseHeader{}
 			}
 			if err := m.Header.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Trace", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowV3Election
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthV3Election
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Trace == nil {
+				m.Trace = &tracer.Trace{}
+			}
+			if err := m.Trace.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -2041,39 +2556,43 @@ var (
 func init() { proto.RegisterFile("v3election.proto", fileDescriptorV3Election) }
 
 var fileDescriptorV3Election = []byte{
-	// 535 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x94, 0xcf, 0x6e, 0xd3, 0x40,
-	0x10, 0xc6, 0x59, 0x27, 0x84, 0x32, 0xa4, 0xad, 0x65, 0x82, 0x48, 0x43, 0x30, 0xd1, 0x22, 0xa1,
-	0x2a, 0x07, 0x2f, 0x6a, 0x38, 0xe5, 0x84, 0x40, 0xa0, 0x4a, 0x45, 0x02, 0x7c, 0x40, 0x70, 0xdc,
-	0xb8, 0x23, 0x37, 0x8a, 0xe3, 0x35, 0xb6, 0x6b, 0x29, 0x57, 0x5e, 0x81, 0x03, 0x3c, 0x12, 0x47,
-	0x24, 0x5e, 0x00, 0x05, 0x1e, 0x04, 0xed, 0xae, 0x8d, 0xff, 0x28, 0x41, 0xa8, 0xb9, 0x58, 0xe3,
-	0x9d, 0xcf, 0xf3, 0x9b, 0x6f, 0x76, 0x12, 0x30, 0xb3, 0x09, 0x06, 0xe8, 0xa5, 0x73, 0x11, 0x3a,
-	0x51, 0x2c, 0x52, 0x61, 0x75, 0xcb, 0x93, 0x68, 0x36, 0xe8, 0xf9, 0xc2, 0x17, 0x2a, 0xc1, 0x64,
-	0xa4, 0x35, 0x83, 0x47, 0x98, 0x7a, 0xe7, 0x4c, 0x3e, 0x12, 0x8c, 0x33, 0x8c, 0x2b, 0x61, 0x34,
-	0x63, 0x71, 0xe4, 0xe5, 0xba, 0x23, 0xa5, 0x5b, 0x66, 0x9e, 0xa7, 0x1e, 0xd1, 0x8c, 0x2d, 0xb2,
-	0x3c, 0x35, 0xf4, 0x85, 0xf0, 0x03, 0x64, 0x3c, 0x9a, 0x33, 0x1e, 0x86, 0x22, 0xe5, 0x92, 0x98,
-	0xe8, 0x2c, 0x7d, 0x0b, 0x87, 0xcf, 0xf9, 0x32, 0xe2, 0x73, 0x3f, 0x74, 0xf1, 0xe3, 0x25, 0x26,
-	0xa9, 0x65, 0x41, 0x3b, 0xe4, 0x4b, 0xec, 0x93, 0x11, 0x39, 0xee, 0xba, 0x2a, 0xb6, 0x7a, 0x70,
-	0x3d, 0x40, 0x9e, 0x60, 0xdf, 0x18, 0x91, 0xe3, 0x96, 0xab, 0x5f, 0xe4, 0x69, 0xc6, 0x83, 0x4b,
-	0xec, 0xb7, 0x94, 0x54, 0xbf, 0xd0, 0x15, 0x98, 0x65, 0xc9, 0x24, 0x12, 0x61, 0x82, 0xd6, 0x13,
-	0xe8, 0x5c, 0x20, 0x3f, 0xc7, 0x58, 0x55, 0xbd, 0x75, 0x32, 0x74, 0xaa, 0x46, 0x9c, 0x42, 0x77,
-	0xaa, 0x34, 0x6e, 0xae, 0xb5, 0x18, 0x74, 0x02, 0xfd, 0x95, 0xa1, 0xbe, 0xba, 0xeb, 0x54, 0x47,
-	0xe6, 0xbc, 0x52, 0xb9, 0x33, 0x5c, 0xb9, 0xb9, 0x8c, 0x7e, 0x80, 0x9b, 0x7f, 0x0f, 0x37, 0xfa,
-	0x30, 0xa1, 0xb5, 0xc0, 0x95, 0x2a, 0xd7, 0x75, 0x65, 0x28, 0x4f, 0x62, 0xcc, 0x94, 0x83, 0x96,
-	0x2b, 0xc3, 0xd2, 0x6b, 0xbb, 0xe2, 0x95, 0x3e, 0x84, 0x7d, 0x5d, 0xfa, 0x1f, 0x63, 0xa2, 0x17,
-	0x70, 0x50, 0x88, 0x76, 0x32, 0x3e, 0x02, 0x63, 0x91, 0xe5, 0xa6, 0x4d, 0x47, 0xdf, 0xa8, 0x73,
-	0x86, 0xab, 0x77, 0x72, 0xc0, 0xae, 0xb1, 0xc8, 0xe8, 0x53, 0xd8, 0x77, 0x31, 0xa9, 0xdc, 0x5a,
-	0x39, 0x2b, 0xf2, 0x7f, 0xb3, 0x7a, 0x09, 0x07, 0x45, 0x85, 0x5d, 0x7a, 0xa5, 0xef, 0xe1, 0xf0,
-	0x4d, 0x2c, 0xbc, 0x80, 0xcf, 0x97, 0x57, 0xed, 0xa5, 0x5c, 0x24, 0xa3, 0xba, 0x48, 0xa7, 0x60,
-	0x96, 0x95, 0x77, 0xe9, 0xf1, 0xe4, 0x4b, 0x1b, 0xf6, 0x5e, 0xe4, 0x0d, 0x58, 0x0b, 0xd8, 0x2b,
-	0xf6, 0xd3, 0xba, 0x5f, 0xef, 0xac, 0xf1, 0x53, 0x18, 0xd8, 0xdb, 0xd2, 0x9a, 0x42, 0x47, 0x9f,
-	0x7e, 0xfc, 0xfe, 0x6c, 0x0c, 0xe8, 0x1d, 0x96, 0x4d, 0x58, 0x21, 0x64, 0x5e, 0x2e, 0x9b, 0x92,
-	0xb1, 0x84, 0x15, 0x1e, 0x9a, 0xb0, 0xc6, 0xd4, 0x9a, 0xb0, 0xa6, 0xf5, 0x2d, 0xb0, 0x28, 0x97,
-	0x49, 0x98, 0x07, 0x1d, 0x3d, 0x5b, 0xeb, 0xde, 0xa6, 0x89, 0x17, 0xa0, 0xe1, 0xe6, 0x64, 0x8e,
-	0xb1, 0x15, 0xa6, 0x4f, 0x6f, 0xd7, 0x30, 0xfa, 0xa2, 0x24, 0xc4, 0x87, 0x1b, 0xaf, 0x67, 0x6a,
-	0xe0, 0xbb, 0x50, 0x1e, 0x28, 0xca, 0x11, 0xed, 0xd5, 0x28, 0x42, 0x17, 0x9e, 0x92, 0xf1, 0x63,
-	0x22, 0xdd, 0xe8, 0x05, 0x6d, 0x72, 0x6a, 0x8b, 0xdf, 0xe4, 0xd4, 0x77, 0x7a, 0x8b, 0x9b, 0x58,
-	0x89, 0xa6, 0x64, 0xfc, 0xcc, 0xfc, 0xb6, 0xb6, 0xc9, 0xf7, 0xb5, 0x4d, 0x7e, 0xae, 0x6d, 0xf2,
-	0xf5, 0x97, 0x7d, 0x6d, 0xd6, 0x51, 0x7f, 0x8c, 0x93, 0x3f, 0x01, 0x00, 0x00, 0xff, 0xff, 0x2f,
-	0x1d, 0xfa, 0x11, 0xb1, 0x05, 0x00, 0x00,
+	// 594 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x55, 0xcf, 0x6e, 0xd3, 0x4e,
+	0x10, 0xfe, 0xad, 0x93, 0xe6, 0x57, 0xa6, 0xff, 0x2c, 0x13, 0x44, 0x1a, 0x82, 0x1b, 0xf9, 0x80,
+	0x42, 0x0e, 0x5e, 0x94, 0x70, 0xca, 0xb1, 0x08, 0x09, 0xa9, 0x08, 0x90, 0x85, 0xb8, 0x6f, 0x9c,
+	0x91, 0x89, 0xec, 0x78, 0x5d, 0xdb, 0xb5, 0x14, 0x89, 0x13, 0xf0, 0x06, 0x3d, 0xc0, 0x03, 0xf0,
+	0x30, 0x3d, 0x22, 0x71, 0x47, 0x28, 0xf0, 0x20, 0x68, 0x77, 0xed, 0x26, 0xb1, 0x12, 0xa4, 0x34,
+	0x88, 0x8b, 0x33, 0xde, 0xf9, 0x76, 0xbf, 0x6f, 0xbe, 0xd9, 0x89, 0x41, 0xcf, 0xfa, 0x18, 0xa0,
+	0x9b, 0x8e, 0x79, 0x68, 0x47, 0x31, 0x4f, 0xb9, 0xb1, 0x3f, 0x5f, 0x89, 0x86, 0xcd, 0xba, 0xc7,
+	0x3d, 0x2e, 0x13, 0x54, 0x44, 0x0a, 0xd3, 0x7c, 0x80, 0xa9, 0x3b, 0xa2, 0xe2, 0x91, 0x60, 0x9c,
+	0x61, 0xbc, 0x10, 0x46, 0x43, 0x1a, 0x47, 0x6e, 0x8e, 0x3b, 0x96, 0xb8, 0x49, 0xe6, 0xba, 0xf2,
+	0x11, 0x0d, 0xa9, 0x9f, 0xe5, 0xa9, 0x7a, 0x1a, 0x33, 0x17, 0x63, 0x3a, 0xc1, 0x24, 0x61, 0x1e,
+	0xe6, 0xab, 0x2d, 0x8f, 0x73, 0x2f, 0x40, 0xca, 0xa2, 0x31, 0x65, 0x61, 0xc8, 0x53, 0x26, 0x74,
+	0x24, 0x2a, 0x6b, 0xbd, 0x83, 0xa3, 0x27, 0x6c, 0x12, 0xb1, 0xb1, 0x17, 0x3a, 0x78, 0x7e, 0x81,
+	0x49, 0x6a, 0x18, 0x50, 0x0d, 0xd9, 0x04, 0x1b, 0xa4, 0x4d, 0x3a, 0xfb, 0x8e, 0x8c, 0x8d, 0x3a,
+	0xec, 0x04, 0xc8, 0x12, 0x6c, 0x68, 0x6d, 0xd2, 0xa9, 0x38, 0xea, 0x45, 0xac, 0x66, 0x2c, 0xb8,
+	0xc0, 0x46, 0x45, 0x42, 0xd5, 0x8b, 0xf1, 0x10, 0x76, 0xa4, 0x90, 0xc6, 0xa8, 0x4d, 0x3a, 0x7b,
+	0xbd, 0x03, 0x5b, 0xc9, 0xb2, 0x5f, 0x8b, 0x9f, 0xd3, 0xea, 0xd5, 0xf7, 0x13, 0xe2, 0x28, 0x84,
+	0xf5, 0x85, 0x80, 0x3e, 0xa7, 0x4f, 0x22, 0x1e, 0x26, 0x68, 0x3c, 0x86, 0xda, 0x5b, 0x64, 0x23,
+	0x8c, 0xa5, 0x82, 0xbd, 0x5e, 0xcb, 0x5e, 0xb4, 0xc2, 0x2e, 0x70, 0xcf, 0x24, 0xc6, 0xc9, 0xb1,
+	0x06, 0x85, 0x5a, 0xa0, 0x76, 0x69, 0x72, 0xd7, 0x5d, 0x7b, 0xd1, 0x74, 0xfb, 0xb9, 0xcc, 0x9d,
+	0xe1, 0xd4, 0xc9, 0x61, 0x9b, 0xc8, 0xfc, 0x48, 0xe0, 0xd6, 0xf5, 0x01, 0x2b, 0xfd, 0xd1, 0xa1,
+	0xe2, 0xe3, 0x54, 0x52, 0xef, 0x3b, 0x22, 0x14, 0x2b, 0x31, 0x66, 0xd2, 0x99, 0x8a, 0x23, 0xc2,
+	0xb9, 0x87, 0xd5, 0x45, 0x0f, 0x37, 0x90, 0xf1, 0x02, 0x0e, 0x94, 0x8a, 0x3f, 0x75, 0x6a, 0x83,
+	0xf3, 0x2e, 0x09, 0x1c, 0x16, 0x07, 0x6e, 0xe5, 0x7d, 0x1b, 0x34, 0x3f, 0xcb, 0x7d, 0xd7, 0x6d,
+	0x75, 0x2d, 0xed, 0x33, 0x9c, 0xbe, 0x11, 0xf7, 0xc1, 0xd1, 0xfc, 0x6c, 0x13, 0x55, 0x3e, 0x1c,
+	0x38, 0x98, 0x2c, 0xdc, 0xc7, 0x79, 0x67, 0xc9, 0x5f, 0xef, 0xec, 0x39, 0x1c, 0x16, 0x64, 0x5b,
+	0x39, 0xb0, 0x01, 0xe5, 0x07, 0x02, 0x47, 0xaf, 0x62, 0xee, 0x06, 0x6c, 0x3c, 0xb9, 0x71, 0x89,
+	0xd7, 0x93, 0xa7, 0xdd, 0x70, 0xf2, 0x12, 0xd0, 0xe7, 0x22, 0xfe, 0x51, 0xe9, 0xbd, 0x4f, 0x55,
+	0xd8, 0x7d, 0x9a, 0x97, 0x65, 0xf8, 0xb0, 0x5b, 0x8c, 0xbe, 0x71, 0x7f, 0xb9, 0xde, 0xd2, 0x3f,
+	0x52, 0xd3, 0x5c, 0x97, 0x56, 0x82, 0xac, 0xf6, 0xfb, 0x6f, 0xbf, 0x2e, 0xb5, 0xa6, 0x75, 0x87,
+	0x66, 0x7d, 0x5a, 0x00, 0xa9, 0x9b, 0xc3, 0x06, 0xa4, 0x2b, 0xc8, 0x8a, 0x72, 0xcb, 0x64, 0xa5,
+	0x5e, 0x94, 0xc9, 0xca, 0x2e, 0xad, 0x21, 0x8b, 0x72, 0x98, 0x20, 0x73, 0xa1, 0xa6, 0x3a, 0x66,
+	0xdc, 0x5b, 0xd5, 0xc7, 0x82, 0xa8, 0xb5, 0x3a, 0x99, 0xd3, 0x98, 0x92, 0xa6, 0x61, 0xdd, 0x5e,
+	0xa2, 0x51, 0xed, 0x17, 0x24, 0x1e, 0xfc, 0xff, 0x72, 0x28, 0x7b, 0xb3, 0x0d, 0xcb, 0x89, 0x64,
+	0x39, 0xb6, 0xea, 0x4b, 0x2c, 0x5c, 0x1d, 0x3c, 0x20, 0xdd, 0x47, 0x44, 0x54, 0xa3, 0x46, 0xa4,
+	0xcc, 0xb3, 0x34, 0xa5, 0x65, 0x9e, 0xe5, 0xa9, 0x5a, 0x53, 0x4d, 0x2c, 0x41, 0x03, 0xd2, 0x3d,
+	0xd5, 0xaf, 0x66, 0x26, 0xf9, 0x3a, 0x33, 0xc9, 0x8f, 0x99, 0x49, 0x3e, 0xff, 0x34, 0xff, 0x1b,
+	0xd6, 0xe4, 0xf7, 0xa9, 0xff, 0x3b, 0x00, 0x00, 0xff, 0xff, 0x51, 0xb2, 0xb9, 0xfb, 0x4e, 0x07,
+	0x00, 0x00,
 }

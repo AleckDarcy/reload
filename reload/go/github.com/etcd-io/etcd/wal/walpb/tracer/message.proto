@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package tracer;
+
+import "gogoproto/gogo.proto";
+option (gogoproto.marshaler_all) = true;
+option (gogoproto.sizer_all) = true;
+option (gogoproto.unmarshaler_all) = true;
+option (gogoproto.goproto_getters_all) = false;
+
+enum MessageType {
+    Message_ = 0;
+    Message_Request = 1;
+    Message_Response = 2;
+}
+
+enum RecordType {
+    Record_ = 0;
+    RecordSend = 1;
+    RecordReceive = 2;
+}
+
+message Record {
+    RecordType type = 1;
+    int64 timestamp = 2;
+    string message_name = 3;
+    string uuid = 4;
+    string service = 5;
+}
+
+message Trace {
+    int64 id = 1;
+    repeated Record records = 2;
+
+    repeated RLFI rlfis = 20;
+    repeated TFI tfis = 21;
+}
+
+enum FaultType {
+    Fault_ = 0;
+    FaultCrash = 1;
+    FaultDelay = 2;
+}
+
+message RLFI {
+    FaultType type = 1;
+    string name = 2;
+    int64 delay = 3;
+}
+
+message TFIMeta {
+    string name = 1;
+    int64 times = 2;
+    int64 already = 3;
+}
+
+message TFI {
+    FaultType type = 1;
+    repeated string name = 2;
+    int64 delay = 3;
+    repeated TFIMeta after = 4;
+}
+
+message Request {
+    int64 id = 1;
+}

@@ -2,6 +2,7 @@ syntax = "proto3";
 package authpb;
 
 import "gogoproto/gogo.proto";
+import "tracer/message.proto";
 
 option (gogoproto.marshaler_all) = true;
 option (gogoproto.sizer_all) = true;
@@ -11,6 +12,8 @@ option (gogoproto.goproto_enum_prefix_all) = false;
 
 message UserAddOptions {
   bool no_password = 1;
+
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 };
 
 // User is a single entry in the bucket authUsers
@@ -19,6 +22,8 @@ message User {
   bytes password = 2;
   repeated string roles = 3;
   UserAddOptions options = 4;
+
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 // Permission is a single entity
@@ -32,6 +37,8 @@ message Permission {
 
   bytes key = 2;
   bytes range_end = 3;
+
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 // Role is a single entry in the bucket authRoles
@@ -39,4 +46,6 @@ message Role {
   bytes name = 1;
 
   repeated Permission keyPermission = 2;
+
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }

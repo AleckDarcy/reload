@@ -4,6 +4,7 @@ package etcdserverpb;
 import "gogoproto/gogo.proto";
 import "etcd/mvcc/mvccpb/kv.proto";
 import "etcd/auth/authpb/auth.proto";
+import "tracer/message.proto";
 
 // for grpc-gateway
 import "google/api/annotations.proto";
@@ -381,6 +382,8 @@ message ResponseHeader {
   int64 revision = 3;
   // raft_term is the raft term when the request was applied.
   uint64 raft_term = 4;
+
+  tracer.Trace trace = 100;
 }
 
 message RangeRequest {
@@ -448,6 +451,8 @@ message RangeRequest {
   // max_create_revision is the upper bound for returned key create revisions; all keys with
   // greater create revisions will be filtered away.
   int64 max_create_revision = 13;
+
+  tracer.Trace trace = 100;
 }
 
 message RangeResponse {
@@ -459,6 +464,8 @@ message RangeResponse {
   bool more = 3;
   // count is set to the number of keys within the range when requested.
   int64 count = 4;
+
+  tracer.Trace trace = 100;
 }
 
 message PutRequest {
@@ -481,12 +488,16 @@ message PutRequest {
   // If ignore_lease is set, etcd updates the key using its current lease.
   // Returns an error if the key does not exist.
   bool ignore_lease = 6;
+
+  tracer.Trace trace = 100;
 }
 
 message PutResponse {
   ResponseHeader header = 1;
   // if prev_kv is set in the request, the previous key-value pair will be returned.
   mvccpb.KeyValue prev_kv = 2;
+
+  tracer.Trace trace = 100;
 }
 
 message DeleteRangeRequest {
@@ -502,6 +513,8 @@ message DeleteRangeRequest {
   // If prev_kv is set, etcd gets the previous key-value pairs before deleting it.
   // The previous key-value pairs will be returned in the delete response.
   bool prev_kv = 3;
+
+  tracer.Trace trace = 100;
 }
 
 message DeleteRangeResponse {
@@ -510,6 +523,8 @@ message DeleteRangeResponse {
   int64 deleted = 2;
   // if prev_kv is set in the request, the previous key-value pairs will be returned.
   repeated mvccpb.KeyValue prev_kvs = 3;
+
+  tracer.Trace trace = 100;
 }
 
 message RequestOp {
@@ -570,6 +585,8 @@ message Compare {
   // See RangeRequest for more details on key ranges.
   bytes range_end = 64;
   // TODO: fill out with most of the rest of RangeRequest fields when needed.
+
+  tracer.Trace trace = 100;
 }
 
 // From google paxosdb paper:
@@ -598,6 +615,8 @@ message TxnRequest {
   repeated RequestOp success = 2;
   // failure is a list of requests which will be applied when compare evaluates to false.
   repeated RequestOp failure = 3;
+
+  tracer.Trace trace = 100;
 }
 
 message TxnResponse {
@@ -607,6 +626,8 @@ message TxnResponse {
   // responses is a list of responses corresponding to the results from applying
   // success if succeeded is true or failure if succeeded is false.
   repeated ResponseOp responses = 3;
+
+  tracer.Trace trace = 100;
 }
 
 // CompactionRequest compacts the key-value store up to a given revision. All superseded keys
@@ -618,18 +639,25 @@ message CompactionRequest {
   // applied to the local database such that compacted entries are totally
   // removed from the backend database.
   bool physical = 2;
+
+  tracer.Trace trace = 100;
 }
 
 message CompactionResponse {
   ResponseHeader header = 1;
+
+  tracer.Trace trace = 100;
 }
 
 message HashRequest {
+  tracer.Trace trace = 100;
 }
 
 message HashKVRequest {
   // revision is the key-value store revision for the hash operation.
   int64 revision = 1;
+
+  tracer.Trace trace = 100;
 }
 
 message HashKVResponse {
@@ -638,15 +666,20 @@ message HashKVResponse {
   uint32 hash = 2;
   // compact_revision is the compacted revision of key-value store when hash begins.
   int64 compact_revision = 3;
+
+  tracer.Trace trace = 100;
 }
 
 message HashResponse {
   ResponseHeader header = 1;
   // hash is the hash value computed from the responding member's KV's backend.
   uint32 hash = 2;
+
+  tracer.Trace trace = 100;
 }
 
 message SnapshotRequest {
+  tracer.Trace trace = 100;
 }
 
 message SnapshotResponse {
@@ -659,6 +692,8 @@ message SnapshotResponse {
 
   // blob contains the next chunk of the snapshot in the snapshot stream.
   bytes blob = 3;
+
+  tracer.Trace trace = 100;
 }
 
 message WatchRequest {
@@ -713,16 +748,21 @@ message WatchCreateRequest {
 
   // fragment enables splitting large revisions into multiple watch responses.
   bool fragment = 8;
+
+  tracer.Trace trace = 100;
 }
 
 message WatchCancelRequest {
   // watch_id is the watcher id to cancel so that no more events are transmitted.
   int64 watch_id = 1;
+
+  tracer.Trace trace = 100;
 }
 
 // Requests the a watch stream progress status be sent in the watch response stream as soon as
 // possible.
 message WatchProgressRequest {
+  tracer.Trace trace = 100;
 }
 
 message WatchResponse {
@@ -757,6 +797,8 @@ message WatchResponse {
   bool fragment = 7;
 
   repeated mvccpb.Event events = 11;
+
+  tracer.Trace trace = 100;
 }
 
 message LeaseGrantRequest {
@@ -764,6 +806,8 @@ message LeaseGrantRequest {
   int64 TTL = 1;
   // ID is the requested ID for the lease. If ID is set to 0, the lessor chooses an ID.
   int64 ID = 2;
+
+  tracer.Trace trace = 100;
 }
 
 message LeaseGrantResponse {
@@ -773,15 +817,21 @@ message LeaseGrantResponse {
   // TTL is the server chosen lease time-to-live in seconds.
   int64 TTL = 3;
   string error = 4;
+
+  tracer.Trace trace = 100;
 }
 
 message LeaseRevokeRequest {
   // ID is the lease ID to revoke. When the ID is revoked, all associated keys will be deleted.
   int64 ID = 1;
+
+  tracer.Trace trace = 100;
 }
 
 message LeaseRevokeResponse {
   ResponseHeader header = 1;
+
+  tracer.Trace trace = 100;
 }
 
 message LeaseCheckpoint {
@@ -790,19 +840,27 @@ message LeaseCheckpoint {
 
   // Remaining_TTL is the remaining time until expiry of the lease.
   int64 remaining_TTL = 2;
+
+  tracer.Trace trace = 100;
 }
 
 message LeaseCheckpointRequest {
   repeated LeaseCheckpoint checkpoints = 1;
+
+  tracer.Trace trace = 100;
 }
 
 message LeaseCheckpointResponse {
   ResponseHeader header = 1;
+
+  tracer.Trace trace = 100;
 }
 
 message LeaseKeepAliveRequest {
   // ID is the lease ID for the lease to keep alive.
   int64 ID = 1;
+
+  tracer.Trace trace = 100;
 }
 
 message LeaseKeepAliveResponse {
@@ -811,6 +869,8 @@ message LeaseKeepAliveResponse {
   int64 ID = 2;
   // TTL is the new time-to-live for the lease.
   int64 TTL = 3;
+
+  tracer.Trace trace = 100;
 }
 
 message LeaseTimeToLiveRequest {
@@ -818,6 +878,8 @@ message LeaseTimeToLiveRequest {
   int64 ID = 1;
   // keys is true to query all the keys attached to this lease.
   bool keys = 2;
+
+  tracer.Trace trace = 100;
 }
 
 message LeaseTimeToLiveResponse {
@@ -830,19 +892,26 @@ message LeaseTimeToLiveResponse {
   int64 grantedTTL = 4;
   // Keys is the list of keys attached to this lease.
   repeated bytes keys = 5;
+
+  tracer.Trace trace = 100;
 }
 
 message LeaseLeasesRequest {
+  tracer.Trace trace = 100;
 }
 
 message LeaseStatus {
   int64 ID = 1;
   // TODO: int64 TTL = 2;
+
+  tracer.Trace trace = 100;
 }
 
 message LeaseLeasesResponse {
   ResponseHeader header = 1;
   repeated LeaseStatus leases = 2;
+
+  tracer.Trace trace = 100;
 }
 
 message Member {
@@ -856,6 +925,8 @@ message Member {
   repeated string clientURLs = 4;
   // isLearner indicates if the member is raft learner.
   bool isLearner = 5;
+
+  tracer.Trace trace = 100;
 }
 
 message MemberAddRequest {
@@ -863,6 +934,8 @@ message MemberAddRequest {
   repeated string peerURLs = 1;
   // isLearner indicates if the added member is raft learner.
   bool isLearner = 2;
+
+  tracer.Trace trace = 100;
 }
 
 message MemberAddResponse {
@@ -871,17 +944,23 @@ message MemberAddResponse {
   Member member = 2;
   // members is a list of all members after adding the new member.
   repeated Member members = 3;
+
+  tracer.Trace trace = 100;
 }
 
 message MemberRemoveRequest {
   // ID is the member ID of the member to remove.
   uint64 ID = 1;
+
+  tracer.Trace trace = 100;
 }
 
 message MemberRemoveResponse {
   ResponseHeader header = 1;
   // members is a list of all members after removing the member.
   repeated Member members = 2;
+
+  tracer.Trace trace = 100;
 }
 
 message MemberUpdateRequest {
@@ -889,48 +968,66 @@ message MemberUpdateRequest {
   uint64 ID = 1;
   // peerURLs is the new list of URLs the member will use to communicate with the cluster.
   repeated string peerURLs = 2;
+
+  tracer.Trace trace = 100;
 }
 
 message MemberUpdateResponse{
   ResponseHeader header = 1;
   // members is a list of all members after updating the member.
   repeated Member members = 2;
+
+  tracer.Trace trace = 100;
 }
 
 message MemberListRequest {
+  tracer.Trace trace = 100;
 }
 
 message MemberListResponse {
   ResponseHeader header = 1;
   // members is a list of all members associated with the cluster.
   repeated Member members = 2;
+
+  tracer.Trace trace = 100;
 }
 
 message MemberPromoteRequest {
   // ID is the member ID of the member to promote.
   uint64 ID = 1;
+
+  tracer.Trace trace = 100;
 }
 
 message MemberPromoteResponse {
   ResponseHeader header = 1;
   // members is a list of all members after promoting the member.
   repeated Member members = 2;
+
+  tracer.Trace trace = 100;
 }
 
 message DefragmentRequest {
+  tracer.Trace trace = 100;
 }
 
 message DefragmentResponse {
   ResponseHeader header = 1;
+
+  tracer.Trace trace = 100;
 }
 
 message MoveLeaderRequest {
   // targetID is the node ID for the new leader.
   uint64 targetID = 1;
+
+  tracer.Trace trace = 100;
 }
 
 message MoveLeaderResponse {
   ResponseHeader header = 1;
+
+  tracer.Trace trace = 100;
 }
 
 enum AlarmType {
@@ -954,6 +1051,8 @@ message AlarmRequest {
   uint64 memberID = 2;
   // alarm is the type of alarm to consider for this request.
   AlarmType alarm = 3;
+
+  tracer.Trace trace = 100;
 }
 
 message AlarmMember {
@@ -961,15 +1060,20 @@ message AlarmMember {
   uint64 memberID = 1;
   // alarm is the type of alarm which has been raised.
   AlarmType alarm = 2;
+
+  tracer.Trace trace = 100;
 }
 
 message AlarmResponse {
   ResponseHeader header = 1;
   // alarms is a list of alarms associated with the alarm request.
   repeated AlarmMember alarms = 2;
+
+  tracer.Trace trace = 100;
 }
 
 message StatusRequest {
+  tracer.Trace trace = 100;
 }
 
 message StatusResponse {
@@ -992,32 +1096,44 @@ message StatusResponse {
   int64 dbSizeInUse = 9;
   // isLearner indicates if the member is raft learner.
   bool isLearner = 10;
+
+  tracer.Trace trace = 100;
 }
 
 message AuthEnableRequest {
+  tracer.Trace trace = 100;
 }
 
 message AuthDisableRequest {
+  tracer.Trace trace = 100;
 }
 
 message AuthenticateRequest {
   string name = 1;
   string password = 2;
+
+  tracer.Trace trace = 100;
 }
 
 message AuthUserAddRequest {
   string name = 1;
   string password = 2;
   authpb.UserAddOptions options = 3;
+
+  tracer.Trace trace = 100;
 }
 
 message AuthUserGetRequest {
   string name = 1;
+
+  tracer.Trace trace = 100;
 }
 
 message AuthUserDeleteRequest {
   // name is the name of the user to delete.
   string name = 1;
+
+  tracer.Trace trace = 100;
 }
 
 message AuthUserChangePasswordRequest {
@@ -1025,6 +1141,8 @@ message AuthUserChangePasswordRequest {
   string name = 1;
   // password is the new password for the user.
   string password = 2;
+
+  tracer.Trace trace = 100;
 }
 
 message AuthUserGrantRoleRequest {
@@ -1032,30 +1150,42 @@ message AuthUserGrantRoleRequest {
   string user = 1;
   // role is the name of the role to grant to the user.
   string role = 2;
+
+  tracer.Trace trace = 100;
 }
 
 message AuthUserRevokeRoleRequest {
   string name = 1;
   string role = 2;
+
+  tracer.Trace trace = 100;
 }
 
 message AuthRoleAddRequest {
   // name is the name of the role to add to the authentication system.
   string name = 1;
+
+  tracer.Trace trace = 100;
 }
 
 message AuthRoleGetRequest {
   string role = 1;
+
+  tracer.Trace trace = 100;
 }
 
 message AuthUserListRequest {
+  tracer.Trace trace = 100;
 }
 
 message AuthRoleListRequest {
+  tracer.Trace trace = 100;
 }
 
 message AuthRoleDeleteRequest {
   string role = 1;
+
+  tracer.Trace trace = 100;
 }
 
 message AuthRoleGrantPermissionRequest {
@@ -1063,84 +1193,120 @@ message AuthRoleGrantPermissionRequest {
   string name = 1;
   // perm is the permission to grant to the role.
   authpb.Permission perm = 2;
+
+  tracer.Trace trace = 100;
 }
 
 message AuthRoleRevokePermissionRequest {
   string role = 1;
   bytes key = 2;
   bytes range_end = 3;
+
+  tracer.Trace trace = 100;
 }
 
 message AuthEnableResponse {
   ResponseHeader header = 1;
+
+  tracer.Trace trace = 100;
 }
 
 message AuthDisableResponse {
   ResponseHeader header = 1;
+
+  tracer.Trace trace = 100;
 }
 
 message AuthenticateResponse {
   ResponseHeader header = 1;
   // token is an authorized token that can be used in succeeding RPCs
   string token = 2;
+
+  tracer.Trace trace = 100;
 }
 
 message AuthUserAddResponse {
   ResponseHeader header = 1;
+
+  tracer.Trace trace = 100;
 }
 
 message AuthUserGetResponse {
   ResponseHeader header = 1;
 
   repeated string roles = 2;
+
+  tracer.Trace trace = 100;
 }
 
 message AuthUserDeleteResponse {
   ResponseHeader header = 1;
+
+  tracer.Trace trace = 100;
 }
 
 message AuthUserChangePasswordResponse {
   ResponseHeader header = 1;
+
+  tracer.Trace trace = 100;
 }
 
 message AuthUserGrantRoleResponse {
   ResponseHeader header = 1;
+
+  tracer.Trace trace = 100;
 }
 
 message AuthUserRevokeRoleResponse {
   ResponseHeader header = 1;
+
+  tracer.Trace trace = 100;
 }
 
 message AuthRoleAddResponse {
   ResponseHeader header = 1;
+
+  tracer.Trace trace = 100;
 }
 
 message AuthRoleGetResponse {
   ResponseHeader header = 1;
 
   repeated authpb.Permission perm = 2;
+
+  tracer.Trace trace = 100;
 }
 
 message AuthRoleListResponse {
   ResponseHeader header = 1;
 
   repeated string roles = 2;
+
+  tracer.Trace trace = 100;
 }
 
 message AuthUserListResponse {
   ResponseHeader header = 1;
 
   repeated string users = 2;
+
+  tracer.Trace trace = 100;
 }
 
 message AuthRoleDeleteResponse {
   ResponseHeader header = 1;
+
+  tracer.Trace trace = 100;
 }
 
 message AuthRoleGrantPermissionResponse {
   ResponseHeader header = 1;
+
+  tracer.Trace trace = 100;
 }
 
 message AuthRoleRevokePermissionResponse {
   ResponseHeader header = 1;
+
+  tracer.Trace trace = 100;
 }
