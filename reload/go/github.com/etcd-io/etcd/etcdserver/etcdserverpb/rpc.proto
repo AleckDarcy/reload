@@ -383,7 +383,7 @@ message ResponseHeader {
   // raft_term is the raft term when the request was applied.
   uint64 raft_term = 4;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message RangeRequest {
@@ -452,7 +452,7 @@ message RangeRequest {
   // greater create revisions will be filtered away.
   int64 max_create_revision = 13;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message RangeResponse {
@@ -465,7 +465,7 @@ message RangeResponse {
   // count is set to the number of keys within the range when requested.
   int64 count = 4;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message PutRequest {
@@ -489,7 +489,7 @@ message PutRequest {
   // Returns an error if the key does not exist.
   bool ignore_lease = 6;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message PutResponse {
@@ -497,7 +497,7 @@ message PutResponse {
   // if prev_kv is set in the request, the previous key-value pair will be returned.
   mvccpb.KeyValue prev_kv = 2;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message DeleteRangeRequest {
@@ -514,7 +514,7 @@ message DeleteRangeRequest {
   // The previous key-value pairs will be returned in the delete response.
   bool prev_kv = 3;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message DeleteRangeResponse {
@@ -524,7 +524,7 @@ message DeleteRangeResponse {
   // if prev_kv is set in the request, the previous key-value pairs will be returned.
   repeated mvccpb.KeyValue prev_kvs = 3;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message RequestOp {
@@ -586,7 +586,7 @@ message Compare {
   bytes range_end = 64;
   // TODO: fill out with most of the rest of RangeRequest fields when needed.
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 // From google paxosdb paper:
@@ -616,7 +616,7 @@ message TxnRequest {
   // failure is a list of requests which will be applied when compare evaluates to false.
   repeated RequestOp failure = 3;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message TxnResponse {
@@ -627,7 +627,7 @@ message TxnResponse {
   // success if succeeded is true or failure if succeeded is false.
   repeated ResponseOp responses = 3;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 // CompactionRequest compacts the key-value store up to a given revision. All superseded keys
@@ -640,24 +640,24 @@ message CompactionRequest {
   // removed from the backend database.
   bool physical = 2;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message CompactionResponse {
   ResponseHeader header = 1;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message HashRequest {
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message HashKVRequest {
   // revision is the key-value store revision for the hash operation.
   int64 revision = 1;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message HashKVResponse {
@@ -667,7 +667,7 @@ message HashKVResponse {
   // compact_revision is the compacted revision of key-value store when hash begins.
   int64 compact_revision = 3;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message HashResponse {
@@ -675,11 +675,11 @@ message HashResponse {
   // hash is the hash value computed from the responding member's KV's backend.
   uint32 hash = 2;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message SnapshotRequest {
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message SnapshotResponse {
@@ -693,7 +693,7 @@ message SnapshotResponse {
   // blob contains the next chunk of the snapshot in the snapshot stream.
   bytes blob = 3;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message WatchRequest {
@@ -749,20 +749,20 @@ message WatchCreateRequest {
   // fragment enables splitting large revisions into multiple watch responses.
   bool fragment = 8;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message WatchCancelRequest {
   // watch_id is the watcher id to cancel so that no more events are transmitted.
   int64 watch_id = 1;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 // Requests the a watch stream progress status be sent in the watch response stream as soon as
 // possible.
 message WatchProgressRequest {
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message WatchResponse {
@@ -798,7 +798,7 @@ message WatchResponse {
 
   repeated mvccpb.Event events = 11;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message LeaseGrantRequest {
@@ -807,7 +807,7 @@ message LeaseGrantRequest {
   // ID is the requested ID for the lease. If ID is set to 0, the lessor chooses an ID.
   int64 ID = 2;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message LeaseGrantResponse {
@@ -818,20 +818,20 @@ message LeaseGrantResponse {
   int64 TTL = 3;
   string error = 4;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message LeaseRevokeRequest {
   // ID is the lease ID to revoke. When the ID is revoked, all associated keys will be deleted.
   int64 ID = 1;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message LeaseRevokeResponse {
   ResponseHeader header = 1;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message LeaseCheckpoint {
@@ -841,26 +841,26 @@ message LeaseCheckpoint {
   // Remaining_TTL is the remaining time until expiry of the lease.
   int64 remaining_TTL = 2;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message LeaseCheckpointRequest {
   repeated LeaseCheckpoint checkpoints = 1;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message LeaseCheckpointResponse {
   ResponseHeader header = 1;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message LeaseKeepAliveRequest {
   // ID is the lease ID for the lease to keep alive.
   int64 ID = 1;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message LeaseKeepAliveResponse {
@@ -870,7 +870,7 @@ message LeaseKeepAliveResponse {
   // TTL is the new time-to-live for the lease.
   int64 TTL = 3;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message LeaseTimeToLiveRequest {
@@ -879,7 +879,7 @@ message LeaseTimeToLiveRequest {
   // keys is true to query all the keys attached to this lease.
   bool keys = 2;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message LeaseTimeToLiveResponse {
@@ -893,25 +893,25 @@ message LeaseTimeToLiveResponse {
   // Keys is the list of keys attached to this lease.
   repeated bytes keys = 5;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message LeaseLeasesRequest {
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message LeaseStatus {
   int64 ID = 1;
   // TODO: int64 TTL = 2;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message LeaseLeasesResponse {
   ResponseHeader header = 1;
   repeated LeaseStatus leases = 2;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message Member {
@@ -926,7 +926,7 @@ message Member {
   // isLearner indicates if the member is raft learner.
   bool isLearner = 5;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message MemberAddRequest {
@@ -935,7 +935,7 @@ message MemberAddRequest {
   // isLearner indicates if the added member is raft learner.
   bool isLearner = 2;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message MemberAddResponse {
@@ -945,14 +945,14 @@ message MemberAddResponse {
   // members is a list of all members after adding the new member.
   repeated Member members = 3;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message MemberRemoveRequest {
   // ID is the member ID of the member to remove.
   uint64 ID = 1;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message MemberRemoveResponse {
@@ -960,7 +960,7 @@ message MemberRemoveResponse {
   // members is a list of all members after removing the member.
   repeated Member members = 2;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message MemberUpdateRequest {
@@ -969,7 +969,7 @@ message MemberUpdateRequest {
   // peerURLs is the new list of URLs the member will use to communicate with the cluster.
   repeated string peerURLs = 2;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message MemberUpdateResponse{
@@ -977,11 +977,11 @@ message MemberUpdateResponse{
   // members is a list of all members after updating the member.
   repeated Member members = 2;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message MemberListRequest {
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message MemberListResponse {
@@ -989,14 +989,14 @@ message MemberListResponse {
   // members is a list of all members associated with the cluster.
   repeated Member members = 2;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message MemberPromoteRequest {
   // ID is the member ID of the member to promote.
   uint64 ID = 1;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message MemberPromoteResponse {
@@ -1004,30 +1004,30 @@ message MemberPromoteResponse {
   // members is a list of all members after promoting the member.
   repeated Member members = 2;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message DefragmentRequest {
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message DefragmentResponse {
   ResponseHeader header = 1;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message MoveLeaderRequest {
   // targetID is the node ID for the new leader.
   uint64 targetID = 1;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message MoveLeaderResponse {
   ResponseHeader header = 1;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 enum AlarmType {
@@ -1052,7 +1052,7 @@ message AlarmRequest {
   // alarm is the type of alarm to consider for this request.
   AlarmType alarm = 3;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message AlarmMember {
@@ -1061,7 +1061,7 @@ message AlarmMember {
   // alarm is the type of alarm which has been raised.
   AlarmType alarm = 2;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message AlarmResponse {
@@ -1069,11 +1069,11 @@ message AlarmResponse {
   // alarms is a list of alarms associated with the alarm request.
   repeated AlarmMember alarms = 2;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message StatusRequest {
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message StatusResponse {
@@ -1097,22 +1097,22 @@ message StatusResponse {
   // isLearner indicates if the member is raft learner.
   bool isLearner = 10;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message AuthEnableRequest {
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message AuthDisableRequest {
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message AuthenticateRequest {
   string name = 1;
   string password = 2;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message AuthUserAddRequest {
@@ -1120,20 +1120,20 @@ message AuthUserAddRequest {
   string password = 2;
   authpb.UserAddOptions options = 3;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message AuthUserGetRequest {
   string name = 1;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message AuthUserDeleteRequest {
   // name is the name of the user to delete.
   string name = 1;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message AuthUserChangePasswordRequest {
@@ -1142,7 +1142,7 @@ message AuthUserChangePasswordRequest {
   // password is the new password for the user.
   string password = 2;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message AuthUserGrantRoleRequest {
@@ -1151,41 +1151,41 @@ message AuthUserGrantRoleRequest {
   // role is the name of the role to grant to the user.
   string role = 2;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message AuthUserRevokeRoleRequest {
   string name = 1;
   string role = 2;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message AuthRoleAddRequest {
   // name is the name of the role to add to the authentication system.
   string name = 1;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message AuthRoleGetRequest {
   string role = 1;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message AuthUserListRequest {
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message AuthRoleListRequest {
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message AuthRoleDeleteRequest {
   string role = 1;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message AuthRoleGrantPermissionRequest {
@@ -1194,7 +1194,7 @@ message AuthRoleGrantPermissionRequest {
   // perm is the permission to grant to the role.
   authpb.Permission perm = 2;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message AuthRoleRevokePermissionRequest {
@@ -1202,19 +1202,19 @@ message AuthRoleRevokePermissionRequest {
   bytes key = 2;
   bytes range_end = 3;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message AuthEnableResponse {
   ResponseHeader header = 1;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message AuthDisableResponse {
   ResponseHeader header = 1;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message AuthenticateResponse {
@@ -1222,13 +1222,13 @@ message AuthenticateResponse {
   // token is an authorized token that can be used in succeeding RPCs
   string token = 2;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message AuthUserAddResponse {
   ResponseHeader header = 1;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message AuthUserGetResponse {
@@ -1236,37 +1236,37 @@ message AuthUserGetResponse {
 
   repeated string roles = 2;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message AuthUserDeleteResponse {
   ResponseHeader header = 1;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message AuthUserChangePasswordResponse {
   ResponseHeader header = 1;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message AuthUserGrantRoleResponse {
   ResponseHeader header = 1;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message AuthUserRevokeRoleResponse {
   ResponseHeader header = 1;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message AuthRoleAddResponse {
   ResponseHeader header = 1;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message AuthRoleGetResponse {
@@ -1274,7 +1274,7 @@ message AuthRoleGetResponse {
 
   repeated authpb.Permission perm = 2;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message AuthRoleListResponse {
@@ -1282,7 +1282,7 @@ message AuthRoleListResponse {
 
   repeated string roles = 2;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message AuthUserListResponse {
@@ -1290,23 +1290,23 @@ message AuthUserListResponse {
 
   repeated string users = 2;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message AuthRoleDeleteResponse {
   ResponseHeader header = 1;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message AuthRoleGrantPermissionResponse {
   ResponseHeader header = 1;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message AuthRoleRevokePermissionResponse {
   ResponseHeader header = 1;
 
-  tracer.Trace trace = 100;
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }

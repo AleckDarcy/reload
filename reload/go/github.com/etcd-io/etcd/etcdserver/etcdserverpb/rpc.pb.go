@@ -685,11 +685,11 @@ func (m *RequestOp) String() string            { return proto.CompactTextString(
 func (*RequestOp) ProtoMessage()               {}
 func (*RequestOp) Descriptor() ([]byte, []int) { return fileDescriptorRpc, []int{7} }
 
-type isRequestOp_Request interface {
-	isRequestOp_Request()
-	MarshalTo([]byte) (int, error)
-	Size() int
-}
+//type isRequestOp_Request interface {
+//	isRequestOp_Request()
+//	MarshalTo([]byte) (int, error)
+//	Size() int
+//}
 
 type RequestOp_RequestRange struct {
 	RequestRange *RangeRequest `protobuf:"bytes,1,opt,name=request_range,json=requestRange,oneof"`
@@ -872,11 +872,11 @@ func (m *ResponseOp) String() string            { return proto.CompactTextString
 func (*ResponseOp) ProtoMessage()               {}
 func (*ResponseOp) Descriptor() ([]byte, []int) { return fileDescriptorRpc, []int{8} }
 
-type isResponseOp_Response interface {
-	isResponseOp_Response()
-	MarshalTo([]byte) (int, error)
-	Size() int
-}
+//type isResponseOp_Response interface {
+//	isResponseOp_Response()
+//	MarshalTo([]byte) (int, error)
+//	Size() int
+//}
 
 type ResponseOp_ResponseRange struct {
 	ResponseRange *RangeResponse `protobuf:"bytes,1,opt,name=response_range,json=responseRange,oneof"`
@@ -1638,11 +1638,11 @@ func (m *WatchRequest) String() string            { return proto.CompactTextStri
 func (*WatchRequest) ProtoMessage()               {}
 func (*WatchRequest) Descriptor() ([]byte, []int) { return fileDescriptorRpc, []int{20} }
 
-type isWatchRequest_RequestUnion interface {
-	isWatchRequest_RequestUnion()
-	MarshalTo([]byte) (int, error)
-	Size() int
-}
+//type isWatchRequest_RequestUnion interface {
+//	isWatchRequest_RequestUnion()
+//	MarshalTo([]byte) (int, error)
+//	Size() int
+//}
 
 type WatchRequest_CreateRequest struct {
 	CreateRequest *WatchCreateRequest `protobuf:"bytes,1,opt,name=create_request,json=createRequest,oneof"`

@@ -13,5 +13,5 @@ message snapshot {
 	optional uint32 crc  = 1 [(gogoproto.nullable) = false];
 	optional bytes data  = 2;
 
-	optional tracer_v2.Trace trace = 100;
+	optional tracer_v2.Trace trace = 100 [(gogoproto.nullable) = true];
 }

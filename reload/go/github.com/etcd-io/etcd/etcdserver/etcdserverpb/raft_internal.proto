@@ -4,6 +4,7 @@ package etcdserverpb;
 import "gogoproto/gogo.proto";
 import "etcdserver.proto";
 import "rpc.proto";
+import "tracer/message.proto";
 
 option (gogoproto.marshaler_all) = true;
 option (gogoproto.sizer_all) = true;
@@ -16,6 +17,8 @@ message RequestHeader {
   string username = 2;
   // auth_revision is a revision number of auth.authStore. It is not related to mvcc
   uint64 auth_revision = 3;
+
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 // An InternalRaftRequest is the union of all requests which can be
@@ -58,9 +61,12 @@ message InternalRaftRequest {
   AuthRoleGetRequest auth_role_get = 1202;
   AuthRoleGrantPermissionRequest auth_role_grant_permission = 1203;
   AuthRoleRevokePermissionRequest auth_role_revoke_permission = 1204;
+
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 message EmptyResponse {
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
 
 // What is the difference between AuthenticateRequest (defined in rpc.proto) and InternalAuthenticateRequest?
@@ -72,4 +78,6 @@ message InternalAuthenticateRequest {
 
   // simple_token is generated in API layer (etcdserver/v3_server.go)
   string simple_token = 3;
+
+  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
 }
