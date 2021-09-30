@@ -62,7 +62,7 @@ message InternalRaftRequest {
   AuthRoleGrantPermissionRequest auth_role_grant_permission = 1203;
   AuthRoleRevokePermissionRequest auth_role_revoke_permission = 1204;
 
-  tracer.Trace trace = 100 [(gogoproto.nullable) = true];
+  tracer.Trace trace = 101 [(gogoproto.nullable) = true];
 }
 
 message EmptyResponse {
