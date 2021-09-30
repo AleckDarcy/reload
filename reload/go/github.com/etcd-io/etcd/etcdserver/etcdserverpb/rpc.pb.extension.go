@@ -2,7 +2,6 @@ package etcdserverpb
 
 import "github.com/AleckDarcy/reload/core/tracer"
 
-
 func (m *ResponseHeader) SetTrace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
@@ -59,6 +58,62 @@ func (m *RequestOp) SetTrace(trace *tracer.Trace) {
 	}
 }
 
+func (m *RequestOp_RequestRange) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.RequestRange.GetTrace()
+	}
+
+	return nil
+}
+
+func (m *RequestOp_RequestRange) SetTrace(trace *tracer.Trace) {
+	if m != nil {
+		m.RequestRange.SetTrace(trace)
+	}
+}
+
+func (m *RequestOp_RequestPut) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.RequestPut.GetTrace()
+	}
+
+	return nil
+}
+
+func (m *RequestOp_RequestPut) SetTrace(trace *tracer.Trace) {
+	if m != nil {
+		m.RequestPut.SetTrace(trace)
+	}
+}
+
+func (m *RequestOp_RequestDeleteRange) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.RequestDeleteRange.GetTrace()
+	}
+
+	return nil
+}
+
+func (m *RequestOp_RequestDeleteRange) SetTrace(trace *tracer.Trace) {
+	if m != nil {
+		m.RequestDeleteRange.SetTrace(trace)
+	}
+}
+
+func (m *RequestOp_RequestTxn) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.RequestTxn.GetTrace()
+	}
+
+	return nil
+}
+
+func (m *RequestOp_RequestTxn) SetTrace(trace *tracer.Trace) {
+	if m != nil {
+		m.RequestTxn.SetTrace(trace)
+	}
+}
+
 type isResponseOp_Response interface {
 	isResponseOp_Response()
 	MarshalTo([]byte) (int, error)
@@ -70,6 +125,62 @@ type isResponseOp_Response interface {
 func (m *ResponseOp) SetTrace(trace *tracer.Trace) {
 	if m != nil {
 		m.Response.SetTrace(trace)
+	}
+}
+
+func (m *ResponseOp_ResponseRange) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.ResponseRange.GetTrace()
+	}
+
+	return nil
+}
+
+func (m *ResponseOp_ResponseRange) SetTrace(trace *tracer.Trace) {
+	if m != nil {
+		m.ResponseRange.SetTrace(trace)
+	}
+}
+
+func (m *ResponseOp_ResponsePut) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.ResponsePut.GetTrace()
+	}
+
+	return nil
+}
+
+func (m *ResponseOp_ResponsePut) SetTrace(trace *tracer.Trace) {
+	if m != nil {
+		m.ResponsePut.SetTrace(trace)
+	}
+}
+
+func (m *ResponseOp_ResponseDeleteRange) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.ResponseDeleteRange.GetTrace()
+	}
+
+	return nil
+}
+
+func (m *ResponseOp_ResponseDeleteRange) SetTrace(trace *tracer.Trace) {
+	if m != nil {
+		m.ResponseDeleteRange.SetTrace(trace)
+	}
+}
+
+func (m *ResponseOp_ResponseTxn) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.ResponseTxn.GetTrace()
+	}
+
+	return nil
+}
+
+func (m *ResponseOp_ResponseTxn) SetTrace(trace *tracer.Trace) {
+	if m != nil {
+		m.ResponseTxn.SetTrace(trace)
 	}
 }
 
@@ -145,6 +256,48 @@ type isWatchRequest_RequestUnion interface {
 	Size() int
 	GetTrace() *tracer.Trace
 	SetTrace(*tracer.Trace)
+}
+
+func (m *WatchRequest_CreateRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.CreateRequest.GetTrace()
+	}
+
+	return nil
+}
+
+func (m *WatchRequest_CreateRequest) SetTrace(trace *tracer.Trace) {
+	if m != nil {
+		m.CreateRequest.SetTrace(trace)
+	}
+}
+
+func (m *WatchRequest_CancelRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.CancelRequest.GetTrace()
+	}
+
+	return nil
+}
+
+func (m *WatchRequest_CancelRequest) SetTrace(trace *tracer.Trace) {
+	if m != nil {
+		m.CancelRequest.SetTrace(trace)
+	}
+}
+
+func (m *WatchRequest_ProgressRequest) GetTrace() *tracer.Trace {
+	if m != nil {
+		return m.ProgressRequest.GetTrace()
+	}
+
+	return nil
+}
+
+func (m *WatchRequest_ProgressRequest) SetTrace(trace *tracer.Trace) {
+	if m != nil {
+		m.ProgressRequest.SetTrace(trace)
+	}
 }
 
 func (m *WatchRequest) SetTrace(trace *tracer.Trace) {
