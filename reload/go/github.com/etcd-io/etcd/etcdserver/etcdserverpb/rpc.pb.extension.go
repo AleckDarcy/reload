@@ -44,6 +44,7 @@ func (m *DeleteRangeResponse) SetTrace(trace *tracer.Trace) {
 	}
 }
 
+// extended
 type isRequestOp_Request interface {
 	isRequestOp_Request()
 	MarshalTo([]byte) (int, error)
@@ -114,6 +115,7 @@ func (m *RequestOp_RequestTxn) SetTrace(trace *tracer.Trace) {
 	}
 }
 
+// extended
 type isResponseOp_Response interface {
 	isResponseOp_Response()
 	MarshalTo([]byte) (int, error)
@@ -250,6 +252,7 @@ func (m *SnapshotResponse) SetTrace(trace *tracer.Trace) {
 	}
 }
 
+// extended
 type isWatchRequest_RequestUnion interface {
 	isWatchRequest_RequestUnion()
 	MarshalTo([]byte) (int, error)
