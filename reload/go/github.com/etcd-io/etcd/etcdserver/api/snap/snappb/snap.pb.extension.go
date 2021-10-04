@@ -2,6 +2,10 @@ package snappb
 
 import "github.com/AleckDarcy/reload/core/tracer"
 
+func (m *Snapshot) MessageName() string {
+	return "Snapshot"
+}
+
 func (m *Snapshot) GetTrace() *tracer.Trace {
 	if m != nil {
 		return m.Trace

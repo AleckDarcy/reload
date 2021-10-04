@@ -16,7 +16,10 @@ package etcdserver
 
 import (
 	"context"
+	"fmt"
 	"time"
+
+	"go.etcd.io/etcd/milebeach"
 
 	"go.etcd.io/etcd/etcdserver/api/v2store"
 	pb "go.etcd.io/etcd/etcdserver/etcdserverpb"
@@ -139,6 +142,10 @@ func (s *EtcdServer) Do(ctx context.Context, r pb.Request) (Response, error) {
 // respective operation. Do will block until an action is performed or there is
 // an error.
 func (r *RequestV2) Handle(ctx context.Context, v2api RequestV2Handler) (Response, error) {
+	fmt.Println(r.String())
+	milebeach.ReceiveRequest((*pb.Request)(r))
+	fmt.Println(r.String())
+
 	if r.Method == "GET" && r.Quorum {
 		r.Method = "QGET"
 	}

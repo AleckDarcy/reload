@@ -28,6 +28,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/AleckDarcy/reload/core/tracer"
+
 	"go.etcd.io/etcd/etcdserver/api/membership"
 	"go.etcd.io/etcd/etcdserver/api/rafthttp"
 	"go.etcd.io/etcd/etcdserver/api/snap"
@@ -97,6 +99,21 @@ func TestDoLocalAction(t *testing.T) {
 			v2store:  st,
 			reqIDGen: idutil.NewGenerator(0, time.Time{}),
 		}
+
+		// 3MileBeach starts
+		tt.req.Trace = &tracer.Trace{
+			Records: []*tracer.Record{
+				{
+					Type:        tracer.RecordType_RecordSend,
+					Timestamp:   time.Now().UnixNano(),
+					MessageName: "test",
+					Uuid:        tracer.NewUUID(),
+					Service:     "service1",
+				},
+			},
+		}
+		// 3MileBeach ends
+
 		resp, err := srv.Do(context.TODO(), tt.req)
 
 		if err != tt.werr {
