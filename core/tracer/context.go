@@ -45,5 +45,14 @@ func NewUUID() UUID {
 		panic(err)
 	}
 
-	return UUID(uuid)
+	return uuid
+}
+
+func NewUUIDShort() UUID {
+	uuid, err := uuid.GenerateUUID()
+	if err != nil {
+		panic(err)
+	}
+
+	return uuid[len(uuid)-12:]
 }
