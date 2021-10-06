@@ -18,6 +18,8 @@ import (
 	"context"
 	"errors"
 
+	"go.etcd.io/etcd/milebeach"
+
 	pb "go.etcd.io/etcd/raft/raftpb"
 )
 
@@ -339,6 +341,8 @@ func (n *node) run() {
 		// described in raft dissertation)
 		// Currently it is dropped in Step silently.
 		case pm := <-propc:
+			milebeach.Logger.Printf("%s <-propc stub", r.serverID) // 3MileBeach
+
 			m := pm.m
 			m.From = r.id
 			err := r.Step(m)

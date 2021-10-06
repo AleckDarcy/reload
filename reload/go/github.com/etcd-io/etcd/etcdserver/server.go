@@ -29,6 +29,8 @@ import (
 	"sync/atomic"
 	"time"
 
+	"go.etcd.io/etcd/milebeach"
+
 	"go.etcd.io/etcd/auth"
 	"go.etcd.io/etcd/etcdserver/api"
 	"go.etcd.io/etcd/etcdserver/api/membership"
@@ -282,6 +284,10 @@ type EtcdServer struct {
 // NewServer creates a new EtcdServer from the supplied configuration. The
 // configuration is considered static for the lifetime of the EtcdServer.
 func NewServer(cfg ServerConfig) (srv *EtcdServer, err error) {
+	serverUUID := cfg.ServerUUID // 3MileBeach
+
+	milebeach.Logger.Printf("%s stub", serverUUID) // 3MileBeach
+
 	st := v2store.New(StoreClusterPrefix, StoreKeysPrefix)
 
 	var (
@@ -503,6 +509,7 @@ func NewServer(cfg ServerConfig) (srv *EtcdServer, err error) {
 		snapshotter: ss,
 		r: *newRaftNode(
 			raftNodeConfig{
+				serverUUID:  serverUUID, // 3MileBeach
 				lg:          cfg.Logger,
 				isIDRemoved: func(id uint64) bool { return cl.IsIDRemoved(types.ID(id)) },
 				Node:        n,

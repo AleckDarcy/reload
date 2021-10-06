@@ -25,6 +25,10 @@ import (
 	"sync"
 	"time"
 
+	"github.com/AleckDarcy/reload/core/tracer"
+
+	"go.etcd.io/etcd/milebeach"
+
 	"go.etcd.io/etcd/raft/confchange"
 	"go.etcd.io/etcd/raft/quorum"
 	pb "go.etcd.io/etcd/raft/raftpb"
@@ -114,6 +118,8 @@ func (st StateType) String() string {
 
 // Config contains the parameters to start a raft.
 type Config struct {
+	ServerID tracer.UUID // 3MileBeach
+
 	// ID is the identity of the local raft. ID cannot be 0.
 	ID uint64
 
@@ -252,6 +258,8 @@ func (c *Config) validate() error {
 }
 
 type raft struct {
+	serverID tracer.UUID // 3MileBeach
+
 	id uint64
 
 	Term uint64
@@ -342,6 +350,7 @@ func newRaft(c *Config) *raft {
 	}
 
 	r := &raft{
+		serverID:                  c.ServerID, // 3MileBeach
 		id:                        c.ID,
 		lead:                      None,
 		isLearner:                 false,
@@ -981,6 +990,8 @@ func (r *raft) Step(m pb.Message) error {
 		}
 
 	default:
+		//milebeach.Logger.Printf("stub", m.Type) // 3MileBeach
+
 		err := r.step(r, m)
 		if err != nil {
 			return err
@@ -1020,6 +1031,8 @@ func stepLeader(r *raft, m pb.Message) error {
 		})
 		return nil
 	case pb.MsgProp:
+		milebeach.Logger.Printf("%s stub", r.serverID) // 3MileBeach
+
 		if len(m.Entries) == 0 {
 			r.logger.Panicf("%x stepped empty MsgProp", r.id)
 		}
@@ -1286,6 +1299,8 @@ func stepCandidate(r *raft, m pb.Message) error {
 	}
 	switch m.Type {
 	case pb.MsgProp:
+		milebeach.Logger.Printf("step candidate stub") // 3MileBeach
+
 		r.logger.Infof("%x no leader at term %d; dropping proposal", r.id, r.Term)
 		return ErrProposalDropped
 	case pb.MsgApp:
@@ -1322,6 +1337,8 @@ func stepCandidate(r *raft, m pb.Message) error {
 func stepFollower(r *raft, m pb.Message) error {
 	switch m.Type {
 	case pb.MsgProp:
+		milebeach.Logger.Printf("%s stub", r.serverID) // 3MileBeach
+
 		if r.lead == None {
 			r.logger.Infof("%x no leader at term %d; dropping proposal", r.id, r.Term)
 			return ErrProposalDropped

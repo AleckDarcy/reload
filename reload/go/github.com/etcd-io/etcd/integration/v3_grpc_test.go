@@ -37,6 +37,25 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+// kVClient (rpc.pb.go)
+
+func TestV3Put_3MileBeach(t *testing.T) { // 3MileBeach starts
+	defer testutil.AfterTest(t)
+	clus := NewClusterV3(t, &ClusterConfig{Size: 3})
+	defer clus.Terminate(t)
+
+	kvc := toGRPC(clus.RandClient()).KV
+	key := []byte("foo")
+	reqput := &pb.PutRequest{Key: key, Value: []byte("bar"), PrevKv: true}
+
+	respput, err := kvc.Put(context.TODO(), reqput)
+	if err != nil {
+		t.Fatalf("couldn't put key (%v)", err)
+	}
+
+	_ = respput
+} // 3MileBeach ends
+
 // TestV3PutOverwrite puts a key with the v3 api to a random cluster member,
 // overwrites it, then checks that the change was applied.
 func TestV3PutOverwrite(t *testing.T) {

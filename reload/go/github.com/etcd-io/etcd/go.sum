@@ -5,6 +5,10 @@ github.com/AleckDarcy/reload v0.0.0-20210928031727-b484a7dffc54 h1:p5qZSUb/R5jEP
 github.com/AleckDarcy/reload v0.0.0-20210928031727-b484a7dffc54/go.mod h1:/353t07FzcLjtSr0uf7rbLHz1lK1iUJXCVGEkuM1Lqw=
 github.com/AleckDarcy/reload v0.0.0-20210929022959-a7106a221abf h1:Lk6j8E4yv0hn9S+m8n/nKlUivz7X5lS5cmkCgwM4RLk=
 github.com/AleckDarcy/reload v0.0.0-20210929022959-a7106a221abf/go.mod h1:/353t07FzcLjtSr0uf7rbLHz1lK1iUJXCVGEkuM1Lqw=
+github.com/AleckDarcy/reload v0.0.0-20211005215337-2654df2b5a33 h1:IHKrGR8gt0qPaI2h+aj2L5Tc8E9654SgnVzGDKnctjg=
+github.com/AleckDarcy/reload v0.0.0-20211005215337-2654df2b5a33/go.mod h1:/353t07FzcLjtSr0uf7rbLHz1lK1iUJXCVGEkuM1Lqw=
+github.com/AleckDarcy/reload v0.0.0-20211005221338-1e92e55ed652 h1:tP1oYuqMpSnGHIKDg3aFQ1PL+5qK4S3HHb2qHLn4X7g=
+github.com/AleckDarcy/reload v0.0.0-20211005221338-1e92e55ed652/go.mod h1:/353t07FzcLjtSr0uf7rbLHz1lK1iUJXCVGEkuM1Lqw=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/OneOfOne/xxhash v1.2.2/go.mod h1:HSdplMjZKSmBqAxg5vPj2TmRDmfkzw+cTzAElWljhcU=
 github.com/alecthomas/template v0.0.0-20160405071501-a0175ee3bccc/go.mod h1:LOuyumcjzFXgccqObfd/Ljyb9UuFJ6TxHnclSeseNhc=

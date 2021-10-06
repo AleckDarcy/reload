@@ -33,6 +33,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/AleckDarcy/reload/core/tracer"
+
+	"go.etcd.io/etcd/milebeach"
+
 	"go.etcd.io/etcd/client"
 	"go.etcd.io/etcd/clientv3"
 	"go.etcd.io/etcd/embed"
@@ -207,11 +211,13 @@ func newCluster(t testing.TB, cfg *ClusterConfig) *cluster {
 // NewCluster returns an unlaunched cluster of the given size which has been
 // set to use static bootstrap.
 func NewCluster(t testing.TB, size int) *cluster {
+	milebeach.Logger.Printf("stub")
 	return newCluster(t, &ClusterConfig{Size: size})
 }
 
 // NewClusterByConfig returns an unlaunched cluster defined by a cluster configuration
 func NewClusterByConfig(t testing.TB, cfg *ClusterConfig) *cluster {
+	milebeach.Logger.Printf("stub")
 	return newCluster(t, cfg)
 }
 
@@ -279,6 +285,7 @@ func (c *cluster) HTTPMembers() []client.Member {
 func (c *cluster) mustNewMember(t testing.TB) *member {
 	m := mustNewMember(t,
 		memberConfig{
+			serverUUID:               tracer.NewUUIDShort(), // 3MileBeach
 			name:                     c.name(rand.Int()),
 			authToken:                c.cfg.AuthToken,
 			peerTLS:                  c.cfg.PeerTLS,
@@ -568,6 +575,7 @@ type member struct {
 func (m *member) GRPCAddr() string { return m.grpcAddr }
 
 type memberConfig struct {
+	serverUUID               tracer.UUID
 	name                     string
 	peerTLS                  *transport.TLSInfo
 	clientTLS                *transport.TLSInfo
@@ -593,6 +601,7 @@ func mustNewMember(t testing.TB, mcfg memberConfig) *member {
 	var err error
 	m := &member{}
 
+	m.ServerConfig.ServerUUID = mcfg.serverUUID // 3MileBeach
 	peerScheme := schemeFromTLSInfo(mcfg.peerTLS)
 	clientScheme := schemeFromTLSInfo(mcfg.clientTLS)
 

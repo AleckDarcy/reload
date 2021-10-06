@@ -141,9 +141,10 @@ func (s *EtcdServer) Do(ctx context.Context, r pb.Request) (Response, error) {
 // Quorum == true, r will be sent through consensus before performing its
 // respective operation. Do will block until an action is performed or there is
 // an error.
-func (r *RequestV2) Handle(ctx context.Context, v2api RequestV2Handler) (Response, error) {
+func (r *RequestV2) Handle(ctx context.Context, v2api RequestV2Handler) (rsp Response, err error) { // 3MileBeach
+	// func (r *RequestV2) Handle(ctx context.Context, v2api RequestV2Handler) (Response, error) {
 	fmt.Println(r.String())
-	milebeach.ReceiveRequest((*pb.Request)(r))
+	milebeach.ReceiveRequest((*pb.Request)(r)) // 3MileBeach
 	fmt.Println(r.String())
 
 	if r.Method == "GET" && r.Quorum {
@@ -151,19 +152,29 @@ func (r *RequestV2) Handle(ctx context.Context, v2api RequestV2Handler) (Respons
 	}
 	switch r.Method {
 	case "POST":
-		return v2api.Post(ctx, r)
+		rsp, err = v2api.Post(ctx, r) // 3MileBeach
+		// return v2api.Post(ctx, r)
 	case "PUT":
-		return v2api.Put(ctx, r)
+		rsp, err = v2api.Put(ctx, r) // 3MileBeach
+		// return v2api.Put(ctx, r)
 	case "DELETE":
-		return v2api.Delete(ctx, r)
+		rsp, err = v2api.Delete(ctx, r) // 3MileBeach
+		// return v2api.Delete(ctx, r)
 	case "QGET":
-		return v2api.QGet(ctx, r)
+		rsp, err = v2api.QGet(ctx, r) // 3MileBeach
+		// return v2api.QGet(ctx, r)
 	case "GET":
-		return v2api.Get(ctx, r)
+		rsp, err = v2api.Get(ctx, r) // 3MileBeach
+		// return v2api.Get(ctx, r)
 	case "HEAD":
-		return v2api.Head(ctx, r)
+		rsp, err = v2api.Head(ctx, r) // 3MileBeach
+		// return v2api.Head(ctx, r)
 	}
-	return Response{}, ErrUnknownMethod
+
+	//milebeach.SendResponse(r, rsp) // 3MileBeach
+
+	return // 3MileBeach
+	// return Response{}, ErrUnknownMethod
 }
 
 func (r *RequestV2) String() string {

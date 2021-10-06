@@ -22,6 +22,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/AleckDarcy/reload/core/tracer"
+
 	"go.etcd.io/etcd/pkg/netutil"
 	"go.etcd.io/etcd/pkg/transport"
 	"go.etcd.io/etcd/pkg/types"
@@ -33,6 +35,8 @@ import (
 
 // ServerConfig holds the configuration of etcd as taken from the command line or discovery.
 type ServerConfig struct {
+	ServerUUID tracer.UUID // 3MileBeach
+
 	Name           string
 	DiscoveryURL   string
 	DiscoveryProxy string

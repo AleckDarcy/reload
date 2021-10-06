@@ -100,8 +100,7 @@ func TestDoLocalAction(t *testing.T) {
 			reqIDGen: idutil.NewGenerator(0, time.Time{}),
 		}
 
-		// 3MileBeach starts
-		tt.req.Trace = &tracer.Trace{
+		tt.req.Trace = &tracer.Trace{ // 3MileBeach starts
 			Records: []*tracer.Record{
 				{
 					Type:        tracer.RecordType_RecordSend,
@@ -111,8 +110,7 @@ func TestDoLocalAction(t *testing.T) {
 					Service:     "service1",
 				},
 			},
-		}
-		// 3MileBeach ends
+		} // 3MileBeach ends
 
 		resp, err := srv.Do(context.TODO(), tt.req)
 

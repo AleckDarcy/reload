@@ -23,6 +23,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/AleckDarcy/reload/core/tracer"
+	"go.etcd.io/etcd/milebeach"
+
 	"go.etcd.io/etcd/etcdserver/api/membership"
 	"go.etcd.io/etcd/etcdserver/api/rafthttp"
 	pb "go.etcd.io/etcd/etcdserver/etcdserverpb"
@@ -77,6 +80,8 @@ type apply struct {
 }
 
 type raftNode struct {
+	serviceUUID tracer.UUID // 3MileBeach
+
 	lg *zap.Logger
 
 	tickMu *sync.Mutex
@@ -101,6 +106,8 @@ type raftNode struct {
 }
 
 type raftNodeConfig struct {
+	serverUUID tracer.UUID // 3MileBeach
+
 	lg *zap.Logger
 
 	// to check if msg receiver is removed from cluster
@@ -117,6 +124,8 @@ type raftNodeConfig struct {
 }
 
 func newRaftNode(cfg raftNodeConfig) *raftNode {
+	milebeach.Logger.Printf("%s stub", cfg.serverUUID)
+
 	var lg raft.Logger
 	if cfg.lg != nil {
 		lg = logutil.NewRaftLoggerZap(cfg.lg)
@@ -130,6 +139,7 @@ func newRaftNode(cfg raftNodeConfig) *raftNode {
 	}
 	raft.SetLogger(lg)
 	r := &raftNode{
+		serviceUUID:    cfg.serverUUID, // 3MileBeach
 		lg:             cfg.lg,
 		tickMu:         new(sync.Mutex),
 		raftNodeConfig: cfg,
@@ -423,6 +433,7 @@ func (r *raftNode) advanceTicks(ticks int) {
 }
 
 func startNode(cfg ServerConfig, cl *membership.RaftCluster, ids []types.ID) (id types.ID, n raft.Node, s *raft.MemoryStorage, w *wal.WAL) {
+	milebeach.Logger.Printf("stub") // 3MileBeach
 	var err error
 	member := cl.MemberByName(cfg.Name)
 	metadata := pbutil.MustMarshal(
@@ -463,6 +474,7 @@ func startNode(cfg ServerConfig, cl *membership.RaftCluster, ids []types.ID) (id
 	}
 	s = raft.NewMemoryStorage()
 	c := &raft.Config{
+		ServerID:        cfg.ServerUUID, // 3MileBeach
 		ID:              uint64(id),
 		ElectionTick:    cfg.ElectionTicks,
 		HeartbeatTick:   1,
