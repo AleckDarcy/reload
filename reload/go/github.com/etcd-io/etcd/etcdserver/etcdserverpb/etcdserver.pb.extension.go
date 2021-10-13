@@ -2,11 +2,11 @@ package etcdserverpb
 
 import "github.com/AleckDarcy/reload/core/tracer"
 
-func (m *Request) MessageName() string {
+func (m *Request) GetFI_Name() string {
 	return "Request"
 }
 
-func (m *Request) GetTrace() *tracer.Trace {
+func (m *Request) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -14,17 +14,17 @@ func (m *Request) GetTrace() *tracer.Trace {
 	return nil
 }
 
-func (m *Request) SetTrace(trace *tracer.Trace) {
+func (m *Request) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *Metadata) MessageName() string {
+func (m *Metadata) GetFI_Name() string {
 	return "Metadata"
 }
 
-func (m *Metadata) GetTrace() *tracer.Trace {
+func (m *Metadata) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -32,7 +32,7 @@ func (m *Metadata) GetTrace() *tracer.Trace {
 	return nil
 }
 
-func (m *Metadata) SetTrace(trace *tracer.Trace) {
+func (m *Metadata) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}

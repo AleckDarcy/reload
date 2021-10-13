@@ -264,7 +264,7 @@ func (m *ResponseHeader) GetRaftTerm() uint64 {
 	return 0
 }
 
-func (m *ResponseHeader) GetTrace() *tracer.Trace {
+func (m *ResponseHeader) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -413,7 +413,7 @@ func (m *RangeRequest) GetMaxCreateRevision() int64 {
 	return 0
 }
 
-func (m *RangeRequest) GetTrace() *tracer.Trace {
+func (m *RangeRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -465,7 +465,7 @@ func (m *RangeResponse) GetCount() int64 {
 	return 0
 }
 
-func (m *RangeResponse) GetTrace() *tracer.Trace {
+func (m *RangeResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -539,7 +539,7 @@ func (m *PutRequest) GetIgnoreLease() bool {
 	return false
 }
 
-func (m *PutRequest) GetTrace() *tracer.Trace {
+func (m *PutRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -572,7 +572,7 @@ func (m *PutResponse) GetPrevKv() *mvccpb.KeyValue {
 	return nil
 }
 
-func (m *PutResponse) GetTrace() *tracer.Trace {
+func (m *PutResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -620,7 +620,7 @@ func (m *DeleteRangeRequest) GetPrevKv() bool {
 	return false
 }
 
-func (m *DeleteRangeRequest) GetTrace() *tracer.Trace {
+func (m *DeleteRangeRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -662,7 +662,7 @@ func (m *DeleteRangeResponse) GetPrevKvs() []*mvccpb.KeyValue {
 	return nil
 }
 
-func (m *DeleteRangeResponse) GetTrace() *tracer.Trace {
+func (m *DeleteRangeResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -1166,7 +1166,7 @@ func (m *Compare) GetRangeEnd() []byte {
 	return nil
 }
 
-func (m *Compare) GetTrace() *tracer.Trace {
+func (m *Compare) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -1335,7 +1335,7 @@ func (m *TxnRequest) GetFailure() []*RequestOp {
 	return nil
 }
 
-func (m *TxnRequest) GetTrace() *tracer.Trace {
+func (m *TxnRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -1378,7 +1378,7 @@ func (m *TxnResponse) GetResponses() []*ResponseOp {
 	return nil
 }
 
-func (m *TxnResponse) GetTrace() *tracer.Trace {
+func (m *TxnResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -1416,7 +1416,7 @@ func (m *CompactionRequest) GetPhysical() bool {
 	return false
 }
 
-func (m *CompactionRequest) GetTrace() *tracer.Trace {
+func (m *CompactionRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -1440,7 +1440,7 @@ func (m *CompactionResponse) GetHeader() *ResponseHeader {
 	return nil
 }
 
-func (m *CompactionResponse) GetTrace() *tracer.Trace {
+func (m *CompactionResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -1456,7 +1456,7 @@ func (m *HashRequest) String() string            { return proto.CompactTextStrin
 func (*HashRequest) ProtoMessage()               {}
 func (*HashRequest) Descriptor() ([]byte, []int) { return fileDescriptorRpc, []int{14} }
 
-func (m *HashRequest) GetTrace() *tracer.Trace {
+func (m *HashRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -1481,7 +1481,7 @@ func (m *HashKVRequest) GetRevision() int64 {
 	return 0
 }
 
-func (m *HashKVRequest) GetTrace() *tracer.Trace {
+func (m *HashKVRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -1523,7 +1523,7 @@ func (m *HashKVResponse) GetCompactRevision() int64 {
 	return 0
 }
 
-func (m *HashKVResponse) GetTrace() *tracer.Trace {
+func (m *HashKVResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -1556,7 +1556,7 @@ func (m *HashResponse) GetHash() uint32 {
 	return 0
 }
 
-func (m *HashResponse) GetTrace() *tracer.Trace {
+func (m *HashResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -1572,7 +1572,7 @@ func (m *SnapshotRequest) String() string            { return proto.CompactTextS
 func (*SnapshotRequest) ProtoMessage()               {}
 func (*SnapshotRequest) Descriptor() ([]byte, []int) { return fileDescriptorRpc, []int{18} }
 
-func (m *SnapshotRequest) GetTrace() *tracer.Trace {
+func (m *SnapshotRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -1616,7 +1616,7 @@ func (m *SnapshotResponse) GetBlob() []byte {
 	return nil
 }
 
-func (m *SnapshotResponse) GetTrace() *tracer.Trace {
+func (m *SnapshotResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -1872,7 +1872,7 @@ func (m *WatchCreateRequest) GetFragment() bool {
 	return false
 }
 
-func (m *WatchCreateRequest) GetTrace() *tracer.Trace {
+func (m *WatchCreateRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -1897,7 +1897,7 @@ func (m *WatchCancelRequest) GetWatchId() int64 {
 	return 0
 }
 
-func (m *WatchCancelRequest) GetTrace() *tracer.Trace {
+func (m *WatchCancelRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -1915,7 +1915,7 @@ func (m *WatchProgressRequest) String() string            { return proto.Compact
 func (*WatchProgressRequest) ProtoMessage()               {}
 func (*WatchProgressRequest) Descriptor() ([]byte, []int) { return fileDescriptorRpc, []int{23} }
 
-func (m *WatchProgressRequest) GetTrace() *tracer.Trace {
+func (m *WatchProgressRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -2012,7 +2012,7 @@ func (m *WatchResponse) GetEvents() []*mvccpb.Event {
 	return nil
 }
 
-func (m *WatchResponse) GetTrace() *tracer.Trace {
+func (m *WatchResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -2046,7 +2046,7 @@ func (m *LeaseGrantRequest) GetID() int64 {
 	return 0
 }
 
-func (m *LeaseGrantRequest) GetTrace() *tracer.Trace {
+func (m *LeaseGrantRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -2096,7 +2096,7 @@ func (m *LeaseGrantResponse) GetError() string {
 	return ""
 }
 
-func (m *LeaseGrantResponse) GetTrace() *tracer.Trace {
+func (m *LeaseGrantResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -2121,7 +2121,7 @@ func (m *LeaseRevokeRequest) GetID() int64 {
 	return 0
 }
 
-func (m *LeaseRevokeRequest) GetTrace() *tracer.Trace {
+func (m *LeaseRevokeRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -2145,7 +2145,7 @@ func (m *LeaseRevokeResponse) GetHeader() *ResponseHeader {
 	return nil
 }
 
-func (m *LeaseRevokeResponse) GetTrace() *tracer.Trace {
+func (m *LeaseRevokeResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -2179,7 +2179,7 @@ func (m *LeaseCheckpoint) GetRemaining_TTL() int64 {
 	return 0
 }
 
-func (m *LeaseCheckpoint) GetTrace() *tracer.Trace {
+func (m *LeaseCheckpoint) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -2203,7 +2203,7 @@ func (m *LeaseCheckpointRequest) GetCheckpoints() []*LeaseCheckpoint {
 	return nil
 }
 
-func (m *LeaseCheckpointRequest) GetTrace() *tracer.Trace {
+func (m *LeaseCheckpointRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -2227,7 +2227,7 @@ func (m *LeaseCheckpointResponse) GetHeader() *ResponseHeader {
 	return nil
 }
 
-func (m *LeaseCheckpointResponse) GetTrace() *tracer.Trace {
+func (m *LeaseCheckpointResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -2252,7 +2252,7 @@ func (m *LeaseKeepAliveRequest) GetID() int64 {
 	return 0
 }
 
-func (m *LeaseKeepAliveRequest) GetTrace() *tracer.Trace {
+func (m *LeaseKeepAliveRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -2294,7 +2294,7 @@ func (m *LeaseKeepAliveResponse) GetTTL() int64 {
 	return 0
 }
 
-func (m *LeaseKeepAliveResponse) GetTrace() *tracer.Trace {
+func (m *LeaseKeepAliveResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -2328,7 +2328,7 @@ func (m *LeaseTimeToLiveRequest) GetKeys() bool {
 	return false
 }
 
-func (m *LeaseTimeToLiveRequest) GetTrace() *tracer.Trace {
+func (m *LeaseTimeToLiveRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -2388,7 +2388,7 @@ func (m *LeaseTimeToLiveResponse) GetKeys() [][]byte {
 	return nil
 }
 
-func (m *LeaseTimeToLiveResponse) GetTrace() *tracer.Trace {
+func (m *LeaseTimeToLiveResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -2404,7 +2404,7 @@ func (m *LeaseLeasesRequest) String() string            { return proto.CompactTe
 func (*LeaseLeasesRequest) ProtoMessage()               {}
 func (*LeaseLeasesRequest) Descriptor() ([]byte, []int) { return fileDescriptorRpc, []int{36} }
 
-func (m *LeaseLeasesRequest) GetTrace() *tracer.Trace {
+func (m *LeaseLeasesRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -2428,7 +2428,7 @@ func (m *LeaseStatus) GetID() int64 {
 	return 0
 }
 
-func (m *LeaseStatus) GetTrace() *tracer.Trace {
+func (m *LeaseStatus) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -2460,7 +2460,7 @@ func (m *LeaseLeasesResponse) GetLeases() []*LeaseStatus {
 	return nil
 }
 
-func (m *LeaseLeasesResponse) GetTrace() *tracer.Trace {
+func (m *LeaseLeasesResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -2521,7 +2521,7 @@ func (m *Member) GetIsLearner() bool {
 	return false
 }
 
-func (m *Member) GetTrace() *tracer.Trace {
+func (m *Member) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -2555,7 +2555,7 @@ func (m *MemberAddRequest) GetIsLearner() bool {
 	return false
 }
 
-func (m *MemberAddRequest) GetTrace() *tracer.Trace {
+func (m *MemberAddRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -2597,7 +2597,7 @@ func (m *MemberAddResponse) GetMembers() []*Member {
 	return nil
 }
 
-func (m *MemberAddResponse) GetTrace() *tracer.Trace {
+func (m *MemberAddResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -2622,7 +2622,7 @@ func (m *MemberRemoveRequest) GetID() uint64 {
 	return 0
 }
 
-func (m *MemberRemoveRequest) GetTrace() *tracer.Trace {
+func (m *MemberRemoveRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -2655,7 +2655,7 @@ func (m *MemberRemoveResponse) GetMembers() []*Member {
 	return nil
 }
 
-func (m *MemberRemoveResponse) GetTrace() *tracer.Trace {
+func (m *MemberRemoveResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -2689,7 +2689,7 @@ func (m *MemberUpdateRequest) GetPeerURLs() []string {
 	return nil
 }
 
-func (m *MemberUpdateRequest) GetTrace() *tracer.Trace {
+func (m *MemberUpdateRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -2722,7 +2722,7 @@ func (m *MemberUpdateResponse) GetMembers() []*Member {
 	return nil
 }
 
-func (m *MemberUpdateResponse) GetTrace() *tracer.Trace {
+func (m *MemberUpdateResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -2738,7 +2738,7 @@ func (m *MemberListRequest) String() string            { return proto.CompactTex
 func (*MemberListRequest) ProtoMessage()               {}
 func (*MemberListRequest) Descriptor() ([]byte, []int) { return fileDescriptorRpc, []int{46} }
 
-func (m *MemberListRequest) GetTrace() *tracer.Trace {
+func (m *MemberListRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -2771,7 +2771,7 @@ func (m *MemberListResponse) GetMembers() []*Member {
 	return nil
 }
 
-func (m *MemberListResponse) GetTrace() *tracer.Trace {
+func (m *MemberListResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -2796,7 +2796,7 @@ func (m *MemberPromoteRequest) GetID() uint64 {
 	return 0
 }
 
-func (m *MemberPromoteRequest) GetTrace() *tracer.Trace {
+func (m *MemberPromoteRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -2829,7 +2829,7 @@ func (m *MemberPromoteResponse) GetMembers() []*Member {
 	return nil
 }
 
-func (m *MemberPromoteResponse) GetTrace() *tracer.Trace {
+func (m *MemberPromoteResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -2845,7 +2845,7 @@ func (m *DefragmentRequest) String() string            { return proto.CompactTex
 func (*DefragmentRequest) ProtoMessage()               {}
 func (*DefragmentRequest) Descriptor() ([]byte, []int) { return fileDescriptorRpc, []int{50} }
 
-func (m *DefragmentRequest) GetTrace() *tracer.Trace {
+func (m *DefragmentRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -2869,7 +2869,7 @@ func (m *DefragmentResponse) GetHeader() *ResponseHeader {
 	return nil
 }
 
-func (m *DefragmentResponse) GetTrace() *tracer.Trace {
+func (m *DefragmentResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -2894,7 +2894,7 @@ func (m *MoveLeaderRequest) GetTargetID() uint64 {
 	return 0
 }
 
-func (m *MoveLeaderRequest) GetTrace() *tracer.Trace {
+func (m *MoveLeaderRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -2918,7 +2918,7 @@ func (m *MoveLeaderResponse) GetHeader() *ResponseHeader {
 	return nil
 }
 
-func (m *MoveLeaderResponse) GetTrace() *tracer.Trace {
+func (m *MoveLeaderResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -2964,7 +2964,7 @@ func (m *AlarmRequest) GetAlarm() AlarmType {
 	return AlarmType_NONE
 }
 
-func (m *AlarmRequest) GetTrace() *tracer.Trace {
+func (m *AlarmRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -2998,7 +2998,7 @@ func (m *AlarmMember) GetAlarm() AlarmType {
 	return AlarmType_NONE
 }
 
-func (m *AlarmMember) GetTrace() *tracer.Trace {
+func (m *AlarmMember) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -3031,7 +3031,7 @@ func (m *AlarmResponse) GetAlarms() []*AlarmMember {
 	return nil
 }
 
-func (m *AlarmResponse) GetTrace() *tracer.Trace {
+func (m *AlarmResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -3047,7 +3047,7 @@ func (m *StatusRequest) String() string            { return proto.CompactTextStr
 func (*StatusRequest) ProtoMessage()               {}
 func (*StatusRequest) Descriptor() ([]byte, []int) { return fileDescriptorRpc, []int{57} }
 
-func (m *StatusRequest) GetTrace() *tracer.Trace {
+func (m *StatusRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -3152,7 +3152,7 @@ func (m *StatusResponse) GetIsLearner() bool {
 	return false
 }
 
-func (m *StatusResponse) GetTrace() *tracer.Trace {
+func (m *StatusResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -3168,7 +3168,7 @@ func (m *AuthEnableRequest) String() string            { return proto.CompactTex
 func (*AuthEnableRequest) ProtoMessage()               {}
 func (*AuthEnableRequest) Descriptor() ([]byte, []int) { return fileDescriptorRpc, []int{59} }
 
-func (m *AuthEnableRequest) GetTrace() *tracer.Trace {
+func (m *AuthEnableRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -3184,7 +3184,7 @@ func (m *AuthDisableRequest) String() string            { return proto.CompactTe
 func (*AuthDisableRequest) ProtoMessage()               {}
 func (*AuthDisableRequest) Descriptor() ([]byte, []int) { return fileDescriptorRpc, []int{60} }
 
-func (m *AuthDisableRequest) GetTrace() *tracer.Trace {
+func (m *AuthDisableRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -3216,7 +3216,7 @@ func (m *AuthenticateRequest) GetPassword() string {
 	return ""
 }
 
-func (m *AuthenticateRequest) GetTrace() *tracer.Trace {
+func (m *AuthenticateRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -3256,7 +3256,7 @@ func (m *AuthUserAddRequest) GetOptions() *authpb.UserAddOptions {
 	return nil
 }
 
-func (m *AuthUserAddRequest) GetTrace() *tracer.Trace {
+func (m *AuthUserAddRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -3280,7 +3280,7 @@ func (m *AuthUserGetRequest) GetName() string {
 	return ""
 }
 
-func (m *AuthUserGetRequest) GetTrace() *tracer.Trace {
+func (m *AuthUserGetRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -3305,7 +3305,7 @@ func (m *AuthUserDeleteRequest) GetName() string {
 	return ""
 }
 
-func (m *AuthUserDeleteRequest) GetTrace() *tracer.Trace {
+func (m *AuthUserDeleteRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -3341,7 +3341,7 @@ func (m *AuthUserChangePasswordRequest) GetPassword() string {
 	return ""
 }
 
-func (m *AuthUserChangePasswordRequest) GetTrace() *tracer.Trace {
+func (m *AuthUserChangePasswordRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -3375,7 +3375,7 @@ func (m *AuthUserGrantRoleRequest) GetRole() string {
 	return ""
 }
 
-func (m *AuthUserGrantRoleRequest) GetTrace() *tracer.Trace {
+func (m *AuthUserGrantRoleRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -3407,7 +3407,7 @@ func (m *AuthUserRevokeRoleRequest) GetRole() string {
 	return ""
 }
 
-func (m *AuthUserRevokeRoleRequest) GetTrace() *tracer.Trace {
+func (m *AuthUserRevokeRoleRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -3432,7 +3432,7 @@ func (m *AuthRoleAddRequest) GetName() string {
 	return ""
 }
 
-func (m *AuthRoleAddRequest) GetTrace() *tracer.Trace {
+func (m *AuthRoleAddRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -3456,7 +3456,7 @@ func (m *AuthRoleGetRequest) GetRole() string {
 	return ""
 }
 
-func (m *AuthRoleGetRequest) GetTrace() *tracer.Trace {
+func (m *AuthRoleGetRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -3472,7 +3472,7 @@ func (m *AuthUserListRequest) String() string            { return proto.CompactT
 func (*AuthUserListRequest) ProtoMessage()               {}
 func (*AuthUserListRequest) Descriptor() ([]byte, []int) { return fileDescriptorRpc, []int{70} }
 
-func (m *AuthUserListRequest) GetTrace() *tracer.Trace {
+func (m *AuthUserListRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -3488,7 +3488,7 @@ func (m *AuthRoleListRequest) String() string            { return proto.CompactT
 func (*AuthRoleListRequest) ProtoMessage()               {}
 func (*AuthRoleListRequest) Descriptor() ([]byte, []int) { return fileDescriptorRpc, []int{71} }
 
-func (m *AuthRoleListRequest) GetTrace() *tracer.Trace {
+func (m *AuthRoleListRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -3512,7 +3512,7 @@ func (m *AuthRoleDeleteRequest) GetRole() string {
 	return ""
 }
 
-func (m *AuthRoleDeleteRequest) GetTrace() *tracer.Trace {
+func (m *AuthRoleDeleteRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -3548,7 +3548,7 @@ func (m *AuthRoleGrantPermissionRequest) GetPerm() *authpb.Permission {
 	return nil
 }
 
-func (m *AuthRoleGrantPermissionRequest) GetTrace() *tracer.Trace {
+func (m *AuthRoleGrantPermissionRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -3590,7 +3590,7 @@ func (m *AuthRoleRevokePermissionRequest) GetRangeEnd() []byte {
 	return nil
 }
 
-func (m *AuthRoleRevokePermissionRequest) GetTrace() *tracer.Trace {
+func (m *AuthRoleRevokePermissionRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -3614,7 +3614,7 @@ func (m *AuthEnableResponse) GetHeader() *ResponseHeader {
 	return nil
 }
 
-func (m *AuthEnableResponse) GetTrace() *tracer.Trace {
+func (m *AuthEnableResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -3638,7 +3638,7 @@ func (m *AuthDisableResponse) GetHeader() *ResponseHeader {
 	return nil
 }
 
-func (m *AuthDisableResponse) GetTrace() *tracer.Trace {
+func (m *AuthDisableResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -3671,7 +3671,7 @@ func (m *AuthenticateResponse) GetToken() string {
 	return ""
 }
 
-func (m *AuthenticateResponse) GetTrace() *tracer.Trace {
+func (m *AuthenticateResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -3695,7 +3695,7 @@ func (m *AuthUserAddResponse) GetHeader() *ResponseHeader {
 	return nil
 }
 
-func (m *AuthUserAddResponse) GetTrace() *tracer.Trace {
+func (m *AuthUserAddResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -3727,7 +3727,7 @@ func (m *AuthUserGetResponse) GetRoles() []string {
 	return nil
 }
 
-func (m *AuthUserGetResponse) GetTrace() *tracer.Trace {
+func (m *AuthUserGetResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -3751,7 +3751,7 @@ func (m *AuthUserDeleteResponse) GetHeader() *ResponseHeader {
 	return nil
 }
 
-func (m *AuthUserDeleteResponse) GetTrace() *tracer.Trace {
+func (m *AuthUserDeleteResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -3777,7 +3777,7 @@ func (m *AuthUserChangePasswordResponse) GetHeader() *ResponseHeader {
 	return nil
 }
 
-func (m *AuthUserChangePasswordResponse) GetTrace() *tracer.Trace {
+func (m *AuthUserChangePasswordResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -3801,7 +3801,7 @@ func (m *AuthUserGrantRoleResponse) GetHeader() *ResponseHeader {
 	return nil
 }
 
-func (m *AuthUserGrantRoleResponse) GetTrace() *tracer.Trace {
+func (m *AuthUserGrantRoleResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -3825,7 +3825,7 @@ func (m *AuthUserRevokeRoleResponse) GetHeader() *ResponseHeader {
 	return nil
 }
 
-func (m *AuthUserRevokeRoleResponse) GetTrace() *tracer.Trace {
+func (m *AuthUserRevokeRoleResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -3849,7 +3849,7 @@ func (m *AuthRoleAddResponse) GetHeader() *ResponseHeader {
 	return nil
 }
 
-func (m *AuthRoleAddResponse) GetTrace() *tracer.Trace {
+func (m *AuthRoleAddResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -3881,7 +3881,7 @@ func (m *AuthRoleGetResponse) GetPerm() []*authpb.Permission {
 	return nil
 }
 
-func (m *AuthRoleGetResponse) GetTrace() *tracer.Trace {
+func (m *AuthRoleGetResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -3913,7 +3913,7 @@ func (m *AuthRoleListResponse) GetRoles() []string {
 	return nil
 }
 
-func (m *AuthRoleListResponse) GetTrace() *tracer.Trace {
+func (m *AuthRoleListResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -3945,7 +3945,7 @@ func (m *AuthUserListResponse) GetUsers() []string {
 	return nil
 }
 
-func (m *AuthUserListResponse) GetTrace() *tracer.Trace {
+func (m *AuthUserListResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -3969,7 +3969,7 @@ func (m *AuthRoleDeleteResponse) GetHeader() *ResponseHeader {
 	return nil
 }
 
-func (m *AuthRoleDeleteResponse) GetTrace() *tracer.Trace {
+func (m *AuthRoleDeleteResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -3995,7 +3995,7 @@ func (m *AuthRoleGrantPermissionResponse) GetHeader() *ResponseHeader {
 	return nil
 }
 
-func (m *AuthRoleGrantPermissionResponse) GetTrace() *tracer.Trace {
+func (m *AuthRoleGrantPermissionResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -4021,7 +4021,7 @@ func (m *AuthRoleRevokePermissionResponse) GetHeader() *ResponseHeader {
 	return nil
 }
 
-func (m *AuthRoleRevokePermissionResponse) GetTrace() *tracer.Trace {
+func (m *AuthRoleRevokePermissionResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}

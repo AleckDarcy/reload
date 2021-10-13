@@ -2,91 +2,91 @@ package v3electionpb
 
 import "github.com/AleckDarcy/reload/core/tracer"
 
-func (m *CampaignRequest) MessageName() string {
+func (m *CampaignRequest) GetFI_Name() string {
 	return "CampaignRequest"
 }
 
-func (m *CampaignRequest) SetTrace(trace *tracer.Trace) {
+func (m *CampaignRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *CampaignResponse) MessageName() string {
+func (m *CampaignResponse) GetFI_Name() string {
 	return "CampaignResponse"
 }
 
-func (m *CampaignResponse) SetTrace(trace *tracer.Trace) {
+func (m *CampaignResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *LeaderKey) MessageName() string {
+func (m *LeaderKey) GetFI_Name() string {
 	return "LeaderKey"
 }
 
-func (m *LeaderKey) SetTrace(trace *tracer.Trace) {
+func (m *LeaderKey) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *LeaderRequest) MessageName() string {
+func (m *LeaderRequest) GetFI_Name() string {
 	return "LeaderRequest"
 }
 
-func (m *LeaderRequest) SetTrace(trace *tracer.Trace) {
+func (m *LeaderRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *LeaderResponse) MessageName() string {
+func (m *LeaderResponse) GetFI_Name() string {
 	return "LeaderResponse"
 }
 
-func (m *LeaderResponse) SetTrace(trace *tracer.Trace) {
+func (m *LeaderResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *ResignRequest) MessageName() string {
+func (m *ResignRequest) GetFI_Name() string {
 	return "ResignRequest"
 }
 
-func (m *ResignRequest) SetTrace(trace *tracer.Trace) {
+func (m *ResignRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *ResignResponse) MessageName() string {
+func (m *ResignResponse) GetFI_Name() string {
 	return "ResignResponse"
 }
 
-func (m *ResignResponse) SetTrace(trace *tracer.Trace) {
+func (m *ResignResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *ProclaimRequest) MessageName() string {
+func (m *ProclaimRequest) GetFI_Name() string {
 	return "ProclaimRequest"
 }
 
-func (m *ProclaimRequest) SetTrace(trace *tracer.Trace) {
+func (m *ProclaimRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *ProclaimResponse) MessageName() string {
+func (m *ProclaimResponse) GetFI_Name() string {
 	return "ProclaimResponse"
 }
 
-func (m *ProclaimResponse) SetTrace(trace *tracer.Trace) {
+func (m *ProclaimResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}

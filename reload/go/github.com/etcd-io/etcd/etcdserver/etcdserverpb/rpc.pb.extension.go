@@ -2,71 +2,71 @@ package etcdserverpb
 
 import "github.com/AleckDarcy/reload/core/tracer"
 
-func (m *ResponseHeader) MessageName() string {
+func (m *ResponseHeader) GetFI_Name() string {
 	return "ResponseHeader"
 }
 
-func (m *ResponseHeader) SetTrace(trace *tracer.Trace) {
+func (m *ResponseHeader) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *RangeRequest) MessageName() string {
+func (m *RangeRequest) GetFI_Name() string {
 	return "RangeRequest"
 }
 
-func (m *RangeRequest) SetTrace(trace *tracer.Trace) {
+func (m *RangeRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *RangeResponse) MessageName() string {
+func (m *RangeResponse) GetFI_Name() string {
 	return "RangeResponse"
 }
 
-func (m *RangeResponse) SetTrace(trace *tracer.Trace) {
+func (m *RangeResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *PutRequest) MessageName() string {
+func (m *PutRequest) GetFI_Name() string {
 	return "PutRequest"
 }
 
-func (m *PutRequest) SetTrace(trace *tracer.Trace) {
+func (m *PutRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *PutResponse) MessageName() string {
+func (m *PutResponse) GetFI_Name() string {
 	return "PutResponse"
 }
 
-func (m *PutResponse) SetTrace(trace *tracer.Trace) {
+func (m *PutResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *DeleteRangeRequest) MessageName() string {
+func (m *DeleteRangeRequest) GetFI_Name() string {
 	return "DeleteRangeRequest"
 }
 
-func (m *DeleteRangeRequest) SetTrace(trace *tracer.Trace) {
+func (m *DeleteRangeRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *DeleteRangeResponse) MessageName() string {
+func (m *DeleteRangeResponse) GetFI_Name() string {
 	return "DeleteRangeResponse"
 }
 
-func (m *DeleteRangeResponse) SetTrace(trace *tracer.Trace) {
+func (m *DeleteRangeResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
@@ -77,97 +77,97 @@ type isRequestOp_Request interface {
 	isRequestOp_Request()
 	MarshalTo([]byte) (int, error)
 	Size() int
-	GetTrace() *tracer.Trace
-	SetTrace(*tracer.Trace)
+	GetFI_Trace() *tracer.Trace
+	SetFI_Trace(*tracer.Trace)
 }
 
-func (m *RequestOp) MessageName() string {
+func (m *RequestOp) GetFI_Name() string {
 	return "RequestOp"
 }
 
-func (m *RequestOp) GetTrace() *tracer.Trace {
+func (m *RequestOp) GetFI_Trace() *tracer.Trace {
 	if m != nil {
-		return m.Request.GetTrace()
+		return m.Request.GetFI_Trace()
 	}
 
 	return nil
 }
 
-func (m *RequestOp) SetTrace(trace *tracer.Trace) {
+func (m *RequestOp) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
-		m.Request.SetTrace(trace)
+		m.Request.SetFI_Trace(trace)
 	}
 }
 
-func (m *RequestOp_RequestRange) MessageName() string {
+func (m *RequestOp_RequestRange) GetFI_Name() string {
 	return "RequestOp_RequestRange"
 }
 
-func (m *RequestOp_RequestRange) GetTrace() *tracer.Trace {
+func (m *RequestOp_RequestRange) GetFI_Trace() *tracer.Trace {
 	if m != nil {
-		return m.RequestRange.GetTrace()
+		return m.RequestRange.GetFI_Trace()
 	}
 
 	return nil
 }
 
-func (m *RequestOp_RequestRange) SetTrace(trace *tracer.Trace) {
+func (m *RequestOp_RequestRange) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
-		m.RequestRange.SetTrace(trace)
+		m.RequestRange.SetFI_Trace(trace)
 	}
 }
 
-func (m *RequestOp_RequestPut) MessageName() string {
+func (m *RequestOp_RequestPut) GetFI_Name() string {
 	return "RequestOp_RequestPut"
 }
 
-func (m *RequestOp_RequestPut) GetTrace() *tracer.Trace {
+func (m *RequestOp_RequestPut) GetFI_Trace() *tracer.Trace {
 	if m != nil {
-		return m.RequestPut.GetTrace()
+		return m.RequestPut.GetFI_Trace()
 	}
 
 	return nil
 }
 
-func (m *RequestOp_RequestPut) SetTrace(trace *tracer.Trace) {
+func (m *RequestOp_RequestPut) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
-		m.RequestPut.SetTrace(trace)
+		m.RequestPut.SetFI_Trace(trace)
 	}
 }
 
-func (m *RequestOp_RequestDeleteRange) MessageName() string {
+func (m *RequestOp_RequestDeleteRange) GetFI_Name() string {
 	return "RequestOp_RequestDeleteRange"
 }
 
-func (m *RequestOp_RequestDeleteRange) GetTrace() *tracer.Trace {
+func (m *RequestOp_RequestDeleteRange) GetFI_Trace() *tracer.Trace {
 	if m != nil {
-		return m.RequestDeleteRange.GetTrace()
+		return m.RequestDeleteRange.GetFI_Trace()
 	}
 
 	return nil
 }
 
-func (m *RequestOp_RequestDeleteRange) SetTrace(trace *tracer.Trace) {
+func (m *RequestOp_RequestDeleteRange) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
-		m.RequestDeleteRange.SetTrace(trace)
+		m.RequestDeleteRange.SetFI_Trace(trace)
 	}
 }
 
-func (m *RequestOp_RequestTxn) MessageName() string {
+func (m *RequestOp_RequestTxn) GetFI_Name() string {
 	return "RequestOp_RequestTxn"
 }
 
-func (m *RequestOp_RequestTxn) GetTrace() *tracer.Trace {
+func (m *RequestOp_RequestTxn) GetFI_Trace() *tracer.Trace {
 	if m != nil {
-		return m.RequestTxn.GetTrace()
+		return m.RequestTxn.GetFI_Trace()
 	}
 
 	return nil
 }
 
-func (m *RequestOp_RequestTxn) SetTrace(trace *tracer.Trace) {
+func (m *RequestOp_RequestTxn) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
-		m.RequestTxn.SetTrace(trace)
+		m.RequestTxn.SetFI_Trace(trace)
 	}
 }
 
@@ -176,205 +176,205 @@ type isResponseOp_Response interface {
 	isResponseOp_Response()
 	MarshalTo([]byte) (int, error)
 	Size() int
-	GetTrace() *tracer.Trace
-	SetTrace(*tracer.Trace)
+	GetFI_Trace() *tracer.Trace
+	SetFI_Trace(*tracer.Trace)
 }
 
-func (m *ResponseOp) MessageName() string {
+func (m *ResponseOp) GetFI_Name() string {
 	return "ResponseOp"
 }
 
-func (m *ResponseOp) GetTrace() *tracer.Trace {
+func (m *ResponseOp) GetFI_Trace() *tracer.Trace {
 	if m != nil {
-		return m.Response.GetTrace()
+		return m.Response.GetFI_Trace()
 	}
 
 	return nil
 }
 
-func (m *ResponseOp) SetTrace(trace *tracer.Trace) {
+func (m *ResponseOp) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
-		m.Response.SetTrace(trace)
+		m.Response.SetFI_Trace(trace)
 	}
 }
 
-func (m *ResponseOp_ResponseRange) MessageName() string {
+func (m *ResponseOp_ResponseRange) GetFI_Name() string {
 	return "ResponseOp_ResponseRange"
 }
 
-func (m *ResponseOp_ResponseRange) GetTrace() *tracer.Trace {
+func (m *ResponseOp_ResponseRange) GetFI_Trace() *tracer.Trace {
 	if m != nil {
-		return m.ResponseRange.GetTrace()
+		return m.ResponseRange.GetFI_Trace()
 	}
 
 	return nil
 }
 
-func (m *ResponseOp_ResponseRange) SetTrace(trace *tracer.Trace) {
+func (m *ResponseOp_ResponseRange) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
-		m.ResponseRange.SetTrace(trace)
+		m.ResponseRange.SetFI_Trace(trace)
 	}
 }
 
-func (m *ResponseOp_ResponsePut) MessageName() string {
+func (m *ResponseOp_ResponsePut) GetFI_Name() string {
 	return "ResponseOp_ResponsePut"
 }
 
-func (m *ResponseOp_ResponsePut) GetTrace() *tracer.Trace {
+func (m *ResponseOp_ResponsePut) GetFI_Trace() *tracer.Trace {
 	if m != nil {
-		return m.ResponsePut.GetTrace()
+		return m.ResponsePut.GetFI_Trace()
 	}
 
 	return nil
 }
 
-func (m *ResponseOp_ResponsePut) SetTrace(trace *tracer.Trace) {
+func (m *ResponseOp_ResponsePut) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
-		m.ResponsePut.SetTrace(trace)
+		m.ResponsePut.SetFI_Trace(trace)
 	}
 }
 
-func (m *ResponseOp_ResponseDeleteRange) MessageName() string {
+func (m *ResponseOp_ResponseDeleteRange) GetFI_Name() string {
 	return "ResponseOp_ResponseDeleteRange"
 }
 
-func (m *ResponseOp_ResponseDeleteRange) GetTrace() *tracer.Trace {
+func (m *ResponseOp_ResponseDeleteRange) GetFI_Trace() *tracer.Trace {
 	if m != nil {
-		return m.ResponseDeleteRange.GetTrace()
+		return m.ResponseDeleteRange.GetFI_Trace()
 	}
 
 	return nil
 }
 
-func (m *ResponseOp_ResponseDeleteRange) SetTrace(trace *tracer.Trace) {
+func (m *ResponseOp_ResponseDeleteRange) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
-		m.ResponseDeleteRange.SetTrace(trace)
+		m.ResponseDeleteRange.SetFI_Trace(trace)
 	}
 }
 
-func (m *ResponseOp_ResponseTxn) MessageName() string {
+func (m *ResponseOp_ResponseTxn) GetFI_Name() string {
 	return "ResponseOp_ResponseTxn"
 }
 
-func (m *ResponseOp_ResponseTxn) GetTrace() *tracer.Trace {
+func (m *ResponseOp_ResponseTxn) GetFI_Trace() *tracer.Trace {
 	if m != nil {
-		return m.ResponseTxn.GetTrace()
+		return m.ResponseTxn.GetFI_Trace()
 	}
 
 	return nil
 }
 
-func (m *ResponseOp_ResponseTxn) SetTrace(trace *tracer.Trace) {
+func (m *ResponseOp_ResponseTxn) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
-		m.ResponseTxn.SetTrace(trace)
+		m.ResponseTxn.SetFI_Trace(trace)
 	}
 }
 
-func (m *Compare) MessageName() string {
+func (m *Compare) GetFI_Name() string {
 	return "Compare"
 }
 
-func (m *Compare) SetTrace(trace *tracer.Trace) {
+func (m *Compare) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *TxnRequest) MessageName() string {
+func (m *TxnRequest) GetFI_Name() string {
 	return "TxnRequest"
 }
 
-func (m *TxnRequest) SetTrace(trace *tracer.Trace) {
+func (m *TxnRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *TxnResponse) MessageName() string {
+func (m *TxnResponse) GetFI_Name() string {
 	return "TxnResponse"
 }
 
-func (m *TxnResponse) SetTrace(trace *tracer.Trace) {
+func (m *TxnResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *CompactionRequest) MessageName() string {
+func (m *CompactionRequest) GetFI_Name() string {
 	return "CompactionRequest"
 }
 
-func (m *CompactionRequest) SetTrace(trace *tracer.Trace) {
+func (m *CompactionRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *CompactionResponse) MessageName() string {
+func (m *CompactionResponse) GetFI_Name() string {
 	return "CompactionResponse"
 }
 
-func (m *CompactionResponse) SetTrace(trace *tracer.Trace) {
+func (m *CompactionResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *HashRequest) MessageName() string {
+func (m *HashRequest) GetFI_Name() string {
 	return "HashRequest"
 }
 
-func (m *HashRequest) SetTrace(trace *tracer.Trace) {
+func (m *HashRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *HashKVRequest) MessageName() string {
+func (m *HashKVRequest) GetFI_Name() string {
 	return "HashKVRequest"
 }
 
-func (m *HashKVRequest) SetTrace(trace *tracer.Trace) {
+func (m *HashKVRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *HashKVResponse) MessageName() string {
+func (m *HashKVResponse) GetFI_Name() string {
 	return "HashKVResponse"
 }
 
-func (m *HashKVResponse) SetTrace(trace *tracer.Trace) {
+func (m *HashKVResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *HashResponse) MessageName() string {
+func (m *HashResponse) GetFI_Name() string {
 	return "HashResponse"
 }
 
-func (m *HashResponse) SetTrace(trace *tracer.Trace) {
+func (m *HashResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *SnapshotRequest) MessageName() string {
+func (m *SnapshotRequest) GetFI_Name() string {
 	return "SnapshotRequest"
 }
 
-func (m *SnapshotRequest) SetTrace(trace *tracer.Trace) {
+func (m *SnapshotRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *SnapshotResponse) MessageName() string {
+func (m *SnapshotResponse) GetFI_Name() string {
 	return "SnapshotResponse"
 }
 
-func (m *SnapshotResponse) SetTrace(trace *tracer.Trace) {
+func (m *SnapshotResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
@@ -385,777 +385,777 @@ type isWatchRequest_RequestUnion interface {
 	isWatchRequest_RequestUnion()
 	MarshalTo([]byte) (int, error)
 	Size() int
-	GetTrace() *tracer.Trace
-	SetTrace(*tracer.Trace)
+	GetFI_Trace() *tracer.Trace
+	SetFI_Trace(*tracer.Trace)
 }
 
-func (m *WatchRequest_CreateRequest) MessageName() string {
+func (m *WatchRequest_CreateRequest) GetFI_Name() string {
 	return "WatchRequest_CreateRequest"
 }
 
-func (m *WatchRequest_CreateRequest) GetTrace() *tracer.Trace {
+func (m *WatchRequest_CreateRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
-		return m.CreateRequest.GetTrace()
+		return m.CreateRequest.GetFI_Trace()
 	}
 
 	return nil
 }
 
-func (m *WatchRequest_CreateRequest) SetTrace(trace *tracer.Trace) {
+func (m *WatchRequest_CreateRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
-		m.CreateRequest.SetTrace(trace)
+		m.CreateRequest.SetFI_Trace(trace)
 	}
 }
 
-func (m *WatchRequest_CancelRequest) MessageName() string {
+func (m *WatchRequest_CancelRequest) GetFI_Name() string {
 	return "WatchRequest_CancelRequest"
 }
 
-func (m *WatchRequest_CancelRequest) GetTrace() *tracer.Trace {
+func (m *WatchRequest_CancelRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
-		return m.CancelRequest.GetTrace()
+		return m.CancelRequest.GetFI_Trace()
 	}
 
 	return nil
 }
 
-func (m *WatchRequest_CancelRequest) SetTrace(trace *tracer.Trace) {
+func (m *WatchRequest_CancelRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
-		m.CancelRequest.SetTrace(trace)
+		m.CancelRequest.SetFI_Trace(trace)
 	}
 }
 
-func (m *WatchRequest_ProgressRequest) MessageName() string {
+func (m *WatchRequest_ProgressRequest) GetFI_Name() string {
 	return "WatchRequest_ProgressRequest"
 }
 
-func (m *WatchRequest_ProgressRequest) GetTrace() *tracer.Trace {
+func (m *WatchRequest_ProgressRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
-		return m.ProgressRequest.GetTrace()
+		return m.ProgressRequest.GetFI_Trace()
 	}
 
 	return nil
 }
 
-func (m *WatchRequest_ProgressRequest) SetTrace(trace *tracer.Trace) {
+func (m *WatchRequest_ProgressRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
-		m.ProgressRequest.SetTrace(trace)
+		m.ProgressRequest.SetFI_Trace(trace)
 	}
 }
 
-func (m *WatchRequest) MessageName() string {
+func (m *WatchRequest) GetFI_Name() string {
 	return "WatchRequest"
 }
 
-func (m *WatchRequest) GetTrace() *tracer.Trace {
+func (m *WatchRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
-		return m.RequestUnion.GetTrace()
+		return m.RequestUnion.GetFI_Trace()
 	}
 
 	return nil
 }
 
-func (m *WatchRequest) SetTrace(trace *tracer.Trace) {
+func (m *WatchRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
-		m.RequestUnion.SetTrace(trace)
+		m.RequestUnion.SetFI_Trace(trace)
 	}
 }
 
-func (m *WatchCreateRequest) MessageName() string {
+func (m *WatchCreateRequest) GetFI_Name() string {
 	return "WatchCreateRequest"
 }
 
-func (m *WatchCreateRequest) SetTrace(trace *tracer.Trace) {
+func (m *WatchCreateRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *WatchCancelRequest) MessageName() string {
+func (m *WatchCancelRequest) GetFI_Name() string {
 	return "WatchCancelRequest"
 }
 
-func (m *WatchCancelRequest) SetTrace(trace *tracer.Trace) {
+func (m *WatchCancelRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *WatchProgressRequest) MessageName() string {
+func (m *WatchProgressRequest) GetFI_Name() string {
 	return "WatchProgressRequest"
 }
 
-func (m *WatchProgressRequest) SetTrace(trace *tracer.Trace) {
+func (m *WatchProgressRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *WatchResponse) MessageName() string {
+func (m *WatchResponse) GetFI_Name() string {
 	return "WatchResponse"
 }
 
-func (m *WatchResponse) SetTrace(trace *tracer.Trace) {
+func (m *WatchResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *LeaseGrantRequest) MessageName() string {
+func (m *LeaseGrantRequest) GetFI_Name() string {
 	return "LeaseGrantRequest"
 }
 
-func (m *LeaseGrantRequest) SetTrace(trace *tracer.Trace) {
+func (m *LeaseGrantRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *LeaseGrantResponse) MessageName() string {
+func (m *LeaseGrantResponse) GetFI_Name() string {
 	return "LeaseGrantResponse"
 }
 
-func (m *LeaseGrantResponse) SetTrace(trace *tracer.Trace) {
+func (m *LeaseGrantResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *LeaseRevokeRequest) MessageName() string {
+func (m *LeaseRevokeRequest) GetFI_Name() string {
 	return "LeaseRevokeRequest"
 }
 
-func (m *LeaseRevokeRequest) SetTrace(trace *tracer.Trace) {
+func (m *LeaseRevokeRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *LeaseRevokeResponse) MessageName() string {
+func (m *LeaseRevokeResponse) GetFI_Name() string {
 	return "LeaseRevokeResponse"
 }
 
-func (m *LeaseRevokeResponse) SetTrace(trace *tracer.Trace) {
+func (m *LeaseRevokeResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *LeaseCheckpoint) MessageName() string {
+func (m *LeaseCheckpoint) GetFI_Name() string {
 	return "LeaseCheckpoint"
 }
 
-func (m *LeaseCheckpoint) SetTrace(trace *tracer.Trace) {
+func (m *LeaseCheckpoint) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *LeaseCheckpointRequest) MessageName() string {
+func (m *LeaseCheckpointRequest) GetFI_Name() string {
 	return "LeaseCheckpointRequest"
 }
 
-func (m *LeaseCheckpointRequest) SetTrace(trace *tracer.Trace) {
+func (m *LeaseCheckpointRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *LeaseCheckpointResponse) MessageName() string {
+func (m *LeaseCheckpointResponse) GetFI_Name() string {
 	return "LeaseCheckpointResponse"
 }
 
-func (m *LeaseCheckpointResponse) SetTrace(trace *tracer.Trace) {
+func (m *LeaseCheckpointResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *LeaseKeepAliveRequest) MessageName() string {
+func (m *LeaseKeepAliveRequest) GetFI_Name() string {
 	return "LeaseKeepAliveRequest"
 }
 
-func (m *LeaseKeepAliveRequest) SetTrace(trace *tracer.Trace) {
+func (m *LeaseKeepAliveRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *LeaseKeepAliveResponse) MessageName() string {
+func (m *LeaseKeepAliveResponse) GetFI_Name() string {
 	return "LeaseKeepAliveResponse"
 }
 
-func (m *LeaseKeepAliveResponse) SetTrace(trace *tracer.Trace) {
+func (m *LeaseKeepAliveResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *LeaseTimeToLiveRequest) MessageName() string {
+func (m *LeaseTimeToLiveRequest) GetFI_Name() string {
 	return "LeaseTimeToLiveRequest"
 }
 
-func (m *LeaseTimeToLiveRequest) SetTrace(trace *tracer.Trace) {
+func (m *LeaseTimeToLiveRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *LeaseTimeToLiveResponse) MessageName() string {
+func (m *LeaseTimeToLiveResponse) GetFI_Name() string {
 	return "LeaseTimeToLiveResponse"
 }
 
-func (m *LeaseTimeToLiveResponse) SetTrace(trace *tracer.Trace) {
+func (m *LeaseTimeToLiveResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *LeaseLeasesRequest) MessageName() string {
+func (m *LeaseLeasesRequest) GetFI_Name() string {
 	return "LeaseLeasesRequest"
 }
 
-func (m *LeaseLeasesRequest) SetTrace(trace *tracer.Trace) {
+func (m *LeaseLeasesRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *LeaseStatus) MessageName() string {
+func (m *LeaseStatus) GetFI_Name() string {
 	return "LeaseStatus"
 }
 
-func (m *LeaseStatus) SetTrace(trace *tracer.Trace) {
+func (m *LeaseStatus) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *LeaseLeasesResponse) MessageName() string {
+func (m *LeaseLeasesResponse) GetFI_Name() string {
 	return "LeaseLeasesResponse"
 }
 
-func (m *LeaseLeasesResponse) SetTrace(trace *tracer.Trace) {
+func (m *LeaseLeasesResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *Member) MessageName() string {
+func (m *Member) GetFI_Name() string {
 	return "Member"
 }
 
-func (m *Member) SetTrace(trace *tracer.Trace) {
+func (m *Member) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *MemberAddRequest) MessageName() string {
+func (m *MemberAddRequest) GetFI_Name() string {
 	return "MemberAddRequest"
 }
 
-func (m *MemberAddRequest) SetTrace(trace *tracer.Trace) {
+func (m *MemberAddRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *MemberAddResponse) MessageName() string {
+func (m *MemberAddResponse) GetFI_Name() string {
 	return "MemberAddResponse"
 }
 
-func (m *MemberAddResponse) SetTrace(trace *tracer.Trace) {
+func (m *MemberAddResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *MemberRemoveRequest) MessageName() string {
+func (m *MemberRemoveRequest) GetFI_Name() string {
 	return "MemberRemoveRequest"
 }
 
-func (m *MemberRemoveRequest) SetTrace(trace *tracer.Trace) {
+func (m *MemberRemoveRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *MemberRemoveResponse) MessageName() string {
+func (m *MemberRemoveResponse) GetFI_Name() string {
 	return "MemberRemoveResponse"
 }
 
-func (m *MemberRemoveResponse) SetTrace(trace *tracer.Trace) {
+func (m *MemberRemoveResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *MemberUpdateRequest) MessageName() string {
+func (m *MemberUpdateRequest) GetFI_Name() string {
 	return "MemberUpdateRequest"
 }
 
-func (m *MemberUpdateRequest) SetTrace(trace *tracer.Trace) {
+func (m *MemberUpdateRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *MemberUpdateResponse) MessageName() string {
+func (m *MemberUpdateResponse) GetFI_Name() string {
 	return "MemberUpdateResponse"
 }
 
-func (m *MemberUpdateResponse) SetTrace(trace *tracer.Trace) {
+func (m *MemberUpdateResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *MemberListRequest) MessageName() string {
+func (m *MemberListRequest) GetFI_Name() string {
 	return "MemberListRequest"
 }
 
-func (m *MemberListRequest) SetTrace(trace *tracer.Trace) {
+func (m *MemberListRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *MemberListResponse) MessageName() string {
+func (m *MemberListResponse) GetFI_Name() string {
 	return "MemberListResponse"
 }
 
-func (m *MemberListResponse) SetTrace(trace *tracer.Trace) {
+func (m *MemberListResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *MemberPromoteRequest) MessageName() string {
+func (m *MemberPromoteRequest) GetFI_Name() string {
 	return "MemberPromoteRequest"
 }
 
-func (m *MemberPromoteRequest) SetTrace(trace *tracer.Trace) {
+func (m *MemberPromoteRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *MemberPromoteResponse) MessageName() string {
+func (m *MemberPromoteResponse) GetFI_Name() string {
 	return "MemberPromoteResponse"
 }
 
-func (m *MemberPromoteResponse) SetTrace(trace *tracer.Trace) {
+func (m *MemberPromoteResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *DefragmentRequest) MessageName() string {
+func (m *DefragmentRequest) GetFI_Name() string {
 	return "DefragmentRequest"
 }
 
-func (m *DefragmentRequest) SetTrace(trace *tracer.Trace) {
+func (m *DefragmentRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *DefragmentResponse) MessageName() string {
+func (m *DefragmentResponse) GetFI_Name() string {
 	return "DefragmentResponse"
 }
 
-func (m *DefragmentResponse) SetTrace(trace *tracer.Trace) {
+func (m *DefragmentResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *MoveLeaderRequest) MessageName() string {
+func (m *MoveLeaderRequest) GetFI_Name() string {
 	return "MoveLeaderRequest"
 }
 
-func (m *MoveLeaderRequest) SetTrace(trace *tracer.Trace) {
+func (m *MoveLeaderRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *MoveLeaderResponse) MessageName() string {
+func (m *MoveLeaderResponse) GetFI_Name() string {
 	return "MoveLeaderResponse"
 }
 
-func (m *MoveLeaderResponse) SetTrace(trace *tracer.Trace) {
+func (m *MoveLeaderResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *AlarmRequest) MessageName() string {
+func (m *AlarmRequest) GetFI_Name() string {
 	return "AlarmRequest"
 }
 
-func (m *AlarmRequest) SetTrace(trace *tracer.Trace) {
+func (m *AlarmRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *AlarmMember) MessageName() string {
+func (m *AlarmMember) GetFI_Name() string {
 	return "AlarmMember"
 }
 
-func (m *AlarmMember) SetTrace(trace *tracer.Trace) {
+func (m *AlarmMember) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *AlarmResponse) MessageName() string {
+func (m *AlarmResponse) GetFI_Name() string {
 	return "AlarmResponse"
 }
 
-func (m *AlarmResponse) SetTrace(trace *tracer.Trace) {
+func (m *AlarmResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *StatusRequest) MessageName() string {
+func (m *StatusRequest) GetFI_Name() string {
 	return "StatusRequest"
 }
 
-func (m *StatusRequest) SetTrace(trace *tracer.Trace) {
+func (m *StatusRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *StatusResponse) MessageName() string {
+func (m *StatusResponse) GetFI_Name() string {
 	return "StatusResponse"
 }
 
-func (m *StatusResponse) SetTrace(trace *tracer.Trace) {
+func (m *StatusResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *AuthEnableRequest) MessageName() string {
+func (m *AuthEnableRequest) GetFI_Name() string {
 	return "AuthEnableRequest"
 }
 
-func (m *AuthEnableRequest) SetTrace(trace *tracer.Trace) {
+func (m *AuthEnableRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *AuthDisableRequest) MessageName() string {
+func (m *AuthDisableRequest) GetFI_Name() string {
 	return "AuthDisableRequest"
 }
 
-func (m *AuthDisableRequest) SetTrace(trace *tracer.Trace) {
+func (m *AuthDisableRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *AuthenticateRequest) MessageName() string {
+func (m *AuthenticateRequest) GetFI_Name() string {
 	return "AuthenticateRequest"
 }
 
-func (m *AuthenticateRequest) SetTrace(trace *tracer.Trace) {
+func (m *AuthenticateRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *AuthUserAddRequest) MessageName() string {
+func (m *AuthUserAddRequest) GetFI_Name() string {
 	return "AuthUserAddRequest"
 }
 
-func (m *AuthUserAddRequest) SetTrace(trace *tracer.Trace) {
+func (m *AuthUserAddRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *AuthUserGetRequest) MessageName() string {
+func (m *AuthUserGetRequest) GetFI_Name() string {
 	return "AuthUserGetRequest"
 }
 
-func (m *AuthUserGetRequest) SetTrace(trace *tracer.Trace) {
+func (m *AuthUserGetRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *AuthUserDeleteRequest) MessageName() string {
+func (m *AuthUserDeleteRequest) GetFI_Name() string {
 	return "AuthUserDeleteRequest"
 }
 
-func (m *AuthUserDeleteRequest) SetTrace(trace *tracer.Trace) {
+func (m *AuthUserDeleteRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *AuthUserChangePasswordRequest) MessageName() string {
+func (m *AuthUserChangePasswordRequest) GetFI_Name() string {
 	return "AuthUserChangePasswordRequest"
 }
 
-func (m *AuthUserChangePasswordRequest) SetTrace(trace *tracer.Trace) {
+func (m *AuthUserChangePasswordRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *AuthUserGrantRoleRequest) MessageName() string {
+func (m *AuthUserGrantRoleRequest) GetFI_Name() string {
 	return "AuthUserGrantRoleRequest"
 }
 
-func (m *AuthUserGrantRoleRequest) SetTrace(trace *tracer.Trace) {
+func (m *AuthUserGrantRoleRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *AuthUserRevokeRoleRequest) MessageName() string {
+func (m *AuthUserRevokeRoleRequest) GetFI_Name() string {
 	return "AuthUserRevokeRoleRequest"
 }
 
-func (m *AuthUserRevokeRoleRequest) SetTrace(trace *tracer.Trace) {
+func (m *AuthUserRevokeRoleRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *AuthRoleAddRequest) MessageName() string {
+func (m *AuthRoleAddRequest) GetFI_Name() string {
 	return "AuthRoleAddRequest"
 }
 
-func (m *AuthRoleAddRequest) SetTrace(trace *tracer.Trace) {
+func (m *AuthRoleAddRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *AuthRoleGetRequest) MessageName() string {
+func (m *AuthRoleGetRequest) GetFI_Name() string {
 	return "AuthRoleGetRequest"
 }
 
-func (m *AuthRoleGetRequest) SetTrace(trace *tracer.Trace) {
+func (m *AuthRoleGetRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *AuthUserListRequest) MessageName() string {
+func (m *AuthUserListRequest) GetFI_Name() string {
 	return "AuthUserListRequest"
 }
 
-func (m *AuthUserListRequest) SetTrace(trace *tracer.Trace) {
+func (m *AuthUserListRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *AuthRoleListRequest) MessageName() string {
+func (m *AuthRoleListRequest) GetFI_Name() string {
 	return "AuthRoleListRequest"
 }
 
-func (m *AuthRoleListRequest) SetTrace(trace *tracer.Trace) {
+func (m *AuthRoleListRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *AuthRoleDeleteRequest) MessageName() string {
+func (m *AuthRoleDeleteRequest) GetFI_Name() string {
 	return "AuthRoleDeleteRequest"
 }
 
-func (m *AuthRoleDeleteRequest) SetTrace(trace *tracer.Trace) {
+func (m *AuthRoleDeleteRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *AuthRoleGrantPermissionRequest) MessageName() string {
+func (m *AuthRoleGrantPermissionRequest) GetFI_Name() string {
 	return "AuthRoleGrantPermissionRequest"
 }
 
-func (m *AuthRoleGrantPermissionRequest) SetTrace(trace *tracer.Trace) {
+func (m *AuthRoleGrantPermissionRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *AuthRoleRevokePermissionRequest) MessageName() string {
+func (m *AuthRoleRevokePermissionRequest) GetFI_Name() string {
 	return "AuthRoleRevokePermissionRequest"
 }
 
-func (m *AuthRoleRevokePermissionRequest) SetTrace(trace *tracer.Trace) {
+func (m *AuthRoleRevokePermissionRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *AuthEnableResponse) MessageName() string {
+func (m *AuthEnableResponse) GetFI_Name() string {
 	return "AuthEnableResponse"
 }
 
-func (m *AuthEnableResponse) SetTrace(trace *tracer.Trace) {
+func (m *AuthEnableResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *AuthDisableResponse) MessageName() string {
+func (m *AuthDisableResponse) GetFI_Name() string {
 	return "AuthDisableResponse"
 }
 
-func (m *AuthDisableResponse) SetTrace(trace *tracer.Trace) {
+func (m *AuthDisableResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *AuthenticateResponse) MessageName() string {
+func (m *AuthenticateResponse) GetFI_Name() string {
 	return "AuthenticateResponse"
 }
 
-func (m *AuthenticateResponse) SetTrace(trace *tracer.Trace) {
+func (m *AuthenticateResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *AuthUserAddResponse) MessageName() string {
+func (m *AuthUserAddResponse) GetFI_Name() string {
 	return "AuthUserAddResponse"
 }
 
-func (m *AuthUserAddResponse) SetTrace(trace *tracer.Trace) {
+func (m *AuthUserAddResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *AuthUserGetResponse) MessageName() string {
+func (m *AuthUserGetResponse) GetFI_Name() string {
 	return "AuthUserGetResponse"
 }
 
-func (m *AuthUserGetResponse) SetTrace(trace *tracer.Trace) {
+func (m *AuthUserGetResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *AuthUserDeleteResponse) MessageName() string {
+func (m *AuthUserDeleteResponse) GetFI_Name() string {
 	return "AuthUserDeleteResponse"
 }
 
-func (m *AuthUserDeleteResponse) SetTrace(trace *tracer.Trace) {
+func (m *AuthUserDeleteResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *AuthUserChangePasswordResponse) MessageName() string {
+func (m *AuthUserChangePasswordResponse) GetFI_Name() string {
 	return "AuthUserChangePasswordResponse"
 }
 
-func (m *AuthUserChangePasswordResponse) SetTrace(trace *tracer.Trace) {
+func (m *AuthUserChangePasswordResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *AuthUserGrantRoleResponse) MessageName() string {
+func (m *AuthUserGrantRoleResponse) GetFI_Name() string {
 	return "AuthUserGrantRoleResponse"
 }
 
-func (m *AuthUserGrantRoleResponse) SetTrace(trace *tracer.Trace) {
+func (m *AuthUserGrantRoleResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *AuthUserRevokeRoleResponse) MessageName() string {
+func (m *AuthUserRevokeRoleResponse) GetFI_Name() string {
 	return "AuthUserRevokeRoleResponse"
 }
 
-func (m *AuthUserRevokeRoleResponse) SetTrace(trace *tracer.Trace) {
+func (m *AuthUserRevokeRoleResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *AuthRoleAddResponse) MessageName() string {
+func (m *AuthRoleAddResponse) GetFI_Name() string {
 	return "AuthRoleAddResponse"
 }
 
-func (m *AuthRoleAddResponse) SetTrace(trace *tracer.Trace) {
+func (m *AuthRoleAddResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *AuthRoleGetResponse) MessageName() string {
+func (m *AuthRoleGetResponse) GetFI_Name() string {
 	return "AuthRoleGetResponse"
 }
 
-func (m *AuthRoleGetResponse) SetTrace(trace *tracer.Trace) {
+func (m *AuthRoleGetResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *AuthRoleListResponse) MessageName() string {
+func (m *AuthRoleListResponse) GetFI_Name() string {
 	return "AuthRoleListResponse"
 }
 
-func (m *AuthRoleListResponse) SetTrace(trace *tracer.Trace) {
+func (m *AuthRoleListResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *AuthUserListResponse) MessageName() string {
+func (m *AuthUserListResponse) GetFI_Name() string {
 	return "AuthUserListResponse"
 }
 
-func (m *AuthUserListResponse) SetTrace(trace *tracer.Trace) {
+func (m *AuthUserListResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *AuthRoleDeleteResponse) MessageName() string {
+func (m *AuthRoleDeleteResponse) GetFI_Name() string {
 	return "AuthRoleDeleteResponse"
 }
 
-func (m *AuthRoleDeleteResponse) SetTrace(trace *tracer.Trace) {
+func (m *AuthRoleDeleteResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *AuthRoleGrantPermissionResponse) MessageName() string {
+func (m *AuthRoleGrantPermissionResponse) GetFI_Name() string {
 	return "AuthRoleGrantPermissionResponse"
 }
 
-func (m *AuthRoleGrantPermissionResponse) SetTrace(trace *tracer.Trace) {
+func (m *AuthRoleGrantPermissionResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *AuthRoleRevokePermissionResponse) MessageName() string {
+func (m *AuthRoleRevokePermissionResponse) GetFI_Name() string {
 	return "AuthRoleRevokePermissionResponse"
 }
 
-func (m *AuthRoleRevokePermissionResponse) SetTrace(trace *tracer.Trace) {
+func (m *AuthRoleRevokePermissionResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}

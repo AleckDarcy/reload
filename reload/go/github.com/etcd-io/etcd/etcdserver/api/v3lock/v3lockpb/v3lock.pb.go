@@ -77,7 +77,7 @@ func (m *LockRequest) GetLease() int64 {
 	return 0
 }
 
-func (m *LockRequest) GetTrace() *tracer.Trace {
+func (m *LockRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -112,7 +112,7 @@ func (m *LockResponse) GetKey() []byte {
 	return nil
 }
 
-func (m *LockResponse) GetTrace() *tracer.Trace {
+func (m *LockResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -137,7 +137,7 @@ func (m *UnlockRequest) GetKey() []byte {
 	return nil
 }
 
-func (m *UnlockRequest) GetTrace() *tracer.Trace {
+func (m *UnlockRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -161,7 +161,7 @@ func (m *UnlockResponse) GetHeader() *etcdserverpb.ResponseHeader {
 	return nil
 }
 
-func (m *UnlockResponse) GetTrace() *tracer.Trace {
+func (m *UnlockResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}

@@ -2,11 +2,11 @@ package raftpb
 
 import "github.com/AleckDarcy/reload/core/tracer"
 
-func (m *Entry) MessageName() string {
+func (m *Entry) GetFI_Name() string {
 	return "Entry"
 }
 
-func (m *Entry) GetTrace() *tracer.Trace {
+func (m *Entry) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -14,17 +14,17 @@ func (m *Entry) GetTrace() *tracer.Trace {
 	return nil
 }
 
-func (m *Entry) SetTrace(trace *tracer.Trace) {
+func (m *Entry) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *SnapshotMetadata) MessageName() string {
+func (m *SnapshotMetadata) GetFI_Name() string {
 	return "SnapshotMetadata"
 }
 
-func (m *SnapshotMetadata) GetTrace() *tracer.Trace {
+func (m *SnapshotMetadata) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -32,17 +32,17 @@ func (m *SnapshotMetadata) GetTrace() *tracer.Trace {
 	return nil
 }
 
-func (m *SnapshotMetadata) SetTrace(trace *tracer.Trace) {
+func (m *SnapshotMetadata) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *Snapshot) MessageName() string {
+func (m *Snapshot) GetFI_Name() string {
 	return "Snapshot"
 }
 
-func (m *Snapshot) GetTrace() *tracer.Trace {
+func (m *Snapshot) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -50,17 +50,17 @@ func (m *Snapshot) GetTrace() *tracer.Trace {
 	return nil
 }
 
-func (m *Snapshot) SetTrace(trace *tracer.Trace) {
+func (m *Snapshot) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *Message) MessageName() string {
+func (m *Message) GetFI_Name() string {
 	return "Message"
 }
 
-func (m *Message) GetTrace() *tracer.Trace {
+func (m *Message) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -68,17 +68,17 @@ func (m *Message) GetTrace() *tracer.Trace {
 	return nil
 }
 
-func (m *Message) SetTrace(trace *tracer.Trace) {
+func (m *Message) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *HardState) MessageName() string {
+func (m *HardState) GetFI_Name() string {
 	return "HardState"
 }
 
-func (m *HardState) GetTrace() *tracer.Trace {
+func (m *HardState) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -86,17 +86,17 @@ func (m *HardState) GetTrace() *tracer.Trace {
 	return nil
 }
 
-func (m *HardState) SetTrace(trace *tracer.Trace) {
+func (m *HardState) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *ConfState) MessageName() string {
+func (m *ConfState) GetFI_Name() string {
 	return "ConfState"
 }
 
-func (m *ConfState) GetTrace() *tracer.Trace {
+func (m *ConfState) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -104,17 +104,17 @@ func (m *ConfState) GetTrace() *tracer.Trace {
 	return nil
 }
 
-func (m *ConfState) SetTrace(trace *tracer.Trace) {
+func (m *ConfState) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *ConfChange) MessageName() string {
+func (m *ConfChange) GetFI_Name() string {
 	return "ConfChange"
 }
 
-func (m *ConfChange) GetTrace() *tracer.Trace {
+func (m *ConfChange) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -122,17 +122,17 @@ func (m *ConfChange) GetTrace() *tracer.Trace {
 	return nil
 }
 
-func (m *ConfChange) SetTrace(trace *tracer.Trace) {
+func (m *ConfChange) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *ConfChangeSingle) MessageName() string {
+func (m *ConfChangeSingle) GetFI_Name() string {
 	return "ConfChangeSingle"
 }
 
-func (m *ConfChangeSingle) GetTrace() *tracer.Trace {
+func (m *ConfChangeSingle) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -140,17 +140,17 @@ func (m *ConfChangeSingle) GetTrace() *tracer.Trace {
 	return nil
 }
 
-func (m *ConfChangeSingle) SetTrace(trace *tracer.Trace) {
+func (m *ConfChangeSingle) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *ConfChangeV2) MessageName() string {
+func (m *ConfChangeV2) GetFI_Name() string {
 	return "ConfChangeV2"
 }
 
-func (m *ConfChangeV2) GetTrace() *tracer.Trace {
+func (m *ConfChangeV2) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -158,7 +158,7 @@ func (m *ConfChangeV2) GetTrace() *tracer.Trace {
 	return nil
 }
 
-func (m *ConfChangeV2) SetTrace(trace *tracer.Trace) {
+func (m *ConfChangeV2) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}

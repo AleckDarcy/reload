@@ -26,6 +26,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/AleckDarcy/reload/core/tracer"
+
 	"go.etcd.io/etcd/milebeach"
 
 	"go.etcd.io/etcd/clientv3"
@@ -49,7 +51,16 @@ func TestV3Put_3MileBeach(t *testing.T) { // 3MileBeach starts
 
 	kvc := toGRPC(clus.RandClient()).KV
 	key := []byte("foo")
-	reqput := &pb.PutRequest{Key: key, Value: []byte("bar"), PrevKv: true}
+	trace := &tracer.Trace{Id: time.Now().UnixNano()}
+	reqput := &pb.PutRequest{Key: key, Value: []byte("bar"), PrevKv: true, Trace: trace}
+
+	trace.Records = append(trace.Records, &tracer.Record{
+		Type:        tracer.RecordType_RecordSend,
+		Timestamp:   time.Now().UnixNano(),
+		MessageName: "PutRequest",
+		Uuid:        tracer.NewUUID(),
+		Service:     "client",
+	})
 
 	runtime.Gosched()
 	milebeach.Logger.Printf("========== test ready ==========\n")

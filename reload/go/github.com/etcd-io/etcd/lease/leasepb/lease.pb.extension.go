@@ -2,11 +2,11 @@ package leasepb
 
 import "github.com/AleckDarcy/reload/core/tracer"
 
-func (m *Lease) MessageName() string {
+func (m *Lease) GetFI_Name() string {
 	return "Lease"
 }
 
-func (m *Lease) GetTrace() *tracer.Trace {
+func (m *Lease) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -14,17 +14,17 @@ func (m *Lease) GetTrace() *tracer.Trace {
 	return nil
 }
 
-func (m *Lease) SetTrace(trace *tracer.Trace) {
+func (m *Lease) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *LeaseInternalRequest) MessageName() string {
+func (m *LeaseInternalRequest) GetFI_Name() string {
 	return "LeaseInternalRequest"
 }
 
-func (m *LeaseInternalRequest) GetTrace() *tracer.Trace {
+func (m *LeaseInternalRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -32,17 +32,17 @@ func (m *LeaseInternalRequest) GetTrace() *tracer.Trace {
 	return nil
 }
 
-func (m *LeaseInternalRequest) SetTrace(trace *tracer.Trace) {
+func (m *LeaseInternalRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *LeaseInternalResponse) MessageName() string {
+func (m *LeaseInternalResponse) GetFI_Name() string {
 	return "LeaseInternalResponse"
 }
 
-func (m *LeaseInternalResponse) GetTrace() *tracer.Trace {
+func (m *LeaseInternalResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -50,7 +50,7 @@ func (m *LeaseInternalResponse) GetTrace() *tracer.Trace {
 	return nil
 }
 
-func (m *LeaseInternalResponse) SetTrace(trace *tracer.Trace) {
+func (m *LeaseInternalResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}

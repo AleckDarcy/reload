@@ -2,11 +2,11 @@ package etcdserverpb
 
 import "github.com/AleckDarcy/reload/core/tracer"
 
-func (m *RequestHeader) MessageName() string {
+func (m *RequestHeader) GetFI_Name() string {
 	return "RequestHeader"
 }
 
-func (m *RequestHeader) GetTrace() *tracer.Trace {
+func (m *RequestHeader) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -14,17 +14,17 @@ func (m *RequestHeader) GetTrace() *tracer.Trace {
 	return nil
 }
 
-func (m *RequestHeader) SetTrace(trace *tracer.Trace) {
+func (m *RequestHeader) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *InternalRaftRequest) MessageName() string {
+func (m *InternalRaftRequest) GetFI_Name() string {
 	return "InternalRaftRequest"
 }
 
-func (m *InternalRaftRequest) GetTrace() *tracer.Trace {
+func (m *InternalRaftRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -32,17 +32,17 @@ func (m *InternalRaftRequest) GetTrace() *tracer.Trace {
 	return nil
 }
 
-func (m *InternalRaftRequest) SetTrace(trace *tracer.Trace) {
+func (m *InternalRaftRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *EmptyResponse) MessageName() string {
+func (m *EmptyResponse) GetFI_Name() string {
 	return "EmptyResponse"
 }
 
-func (m *EmptyResponse) GetTrace() *tracer.Trace {
+func (m *EmptyResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -50,17 +50,17 @@ func (m *EmptyResponse) GetTrace() *tracer.Trace {
 	return nil
 }
 
-func (m *EmptyResponse) SetTrace(trace *tracer.Trace) {
+func (m *EmptyResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *InternalAuthenticateRequest) MessageName() string {
+func (m *InternalAuthenticateRequest) GetFI_Name() string {
 	return "InternalAuthenticateRequest"
 }
 
-func (m *InternalAuthenticateRequest) GetTrace() *tracer.Trace {
+func (m *InternalAuthenticateRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -68,7 +68,7 @@ func (m *InternalAuthenticateRequest) GetTrace() *tracer.Trace {
 	return nil
 }
 
-func (m *InternalAuthenticateRequest) SetTrace(trace *tracer.Trace) {
+func (m *InternalAuthenticateRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}

@@ -2,11 +2,11 @@ package snappb
 
 import "github.com/AleckDarcy/reload/core/tracer"
 
-func (m *Snapshot) MessageName() string {
+func (m *Snapshot) GetFI_Name() string {
 	return "Snapshot"
 }
 
-func (m *Snapshot) GetTrace() *tracer.Trace {
+func (m *Snapshot) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -14,7 +14,7 @@ func (m *Snapshot) GetTrace() *tracer.Trace {
 	return nil
 }
 
-func (m *Snapshot) SetTrace(trace *tracer.Trace) {
+func (m *Snapshot) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}

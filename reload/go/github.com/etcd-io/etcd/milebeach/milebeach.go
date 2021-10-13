@@ -7,13 +7,13 @@ import (
 )
 
 type Messager interface {
-	//MessageName() string
-	GetTrace() *tracer.Trace
-	SetTrace(*tracer.Trace)
+	GetFI_Name() string
+	GetFI_Trace() *tracer.Trace
+	SetFI_Trace(*tracer.Trace)
 }
 
 func ReceiveRequest(request Messager) {
-	if trace := request.GetTrace(); trace != nil {
+	if trace := request.GetFI_Trace(); trace != nil {
 		records := trace.GetRecords()
 		if count := len(records); count != 0 {
 			if lastEvent := records[count-1]; lastEvent.Type == tracer.RecordType_RecordSend {
@@ -32,7 +32,7 @@ func ReceiveRequest(request Messager) {
 }
 
 func SendResponse(request, response Messager) {
-	if trace := response.GetTrace(); trace != nil {
+	if trace := response.GetFI_Trace(); trace != nil {
 		records := trace.GetRecords()
 		if count := len(records); count != 0 {
 			if lastEvent := records[count-1]; lastEvent.Type == tracer.RecordType_RecordSend {
@@ -46,7 +46,7 @@ func SendResponse(request, response Messager) {
 
 				trace.Records = records
 
-				response.SetTrace(trace)
+				response.SetFI_Trace(trace)
 			}
 		}
 	}

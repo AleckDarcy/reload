@@ -2,11 +2,11 @@ package mvccpb
 
 import "github.com/AleckDarcy/reload/core/tracer"
 
-func (m *KeyValue) MessageName() string {
+func (m *KeyValue) GetFI_Name() string {
 	return "KeyValue"
 }
 
-func (m *KeyValue) GetTrace() *tracer.Trace {
+func (m *KeyValue) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -14,17 +14,17 @@ func (m *KeyValue) GetTrace() *tracer.Trace {
 	return nil
 }
 
-func (m *KeyValue) SetTrace(trace *tracer.Trace) {
+func (m *KeyValue) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *Event) MessageName() string {
+func (m *Event) GetFI_Name() string {
 	return "Event"
 }
 
-func (m *Event) GetTrace() *tracer.Trace {
+func (m *Event) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -32,7 +32,7 @@ func (m *Event) GetTrace() *tracer.Trace {
 	return nil
 }
 
-func (m *Event) SetTrace(trace *tracer.Trace) {
+func (m *Event) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}

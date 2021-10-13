@@ -2,41 +2,41 @@ package v3lockpb
 
 import "github.com/AleckDarcy/reload/core/tracer"
 
-func (m *LockRequest) MessageName() string {
+func (m *LockRequest) GetFI_Name() string {
 	return "LockRequest"
 }
 
-func (m *LockRequest) SetTrace(trace *tracer.Trace) {
+func (m *LockRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *LockResponse) MessageName() string {
+func (m *LockResponse) GetFI_Name() string {
 	return "LockResponse"
 }
 
-func (m *LockResponse) SetTrace(trace *tracer.Trace) {
+func (m *LockResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *UnlockRequest) MessageName() string {
+func (m *UnlockRequest) GetFI_Name() string {
 	return "UnlockRequest"
 }
 
-func (m *UnlockRequest) SetTrace(trace *tracer.Trace) {
+func (m *UnlockRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *UnlockResponse) MessageName() string {
+func (m *UnlockResponse) GetFI_Name() string {
 	return "UnlockResponse"
 }
 
-func (m *UnlockResponse) SetTrace(trace *tracer.Trace) {
+func (m *UnlockResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}

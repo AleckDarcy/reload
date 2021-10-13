@@ -92,7 +92,7 @@ func (m *CampaignRequest) GetValue() []byte {
 	return nil
 }
 
-func (m *CampaignRequest) GetTrace() *tracer.Trace {
+func (m *CampaignRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -125,7 +125,7 @@ func (m *CampaignResponse) GetLeader() *LeaderKey {
 	return nil
 }
 
-func (m *CampaignResponse) GetTrace() *tracer.Trace {
+func (m *CampaignResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -180,7 +180,7 @@ func (m *LeaderKey) GetLease() int64 {
 	return 0
 }
 
-func (m *LeaderKey) GetTrace() *tracer.Trace {
+func (m *LeaderKey) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -205,7 +205,7 @@ func (m *LeaderRequest) GetName() []byte {
 	return nil
 }
 
-func (m *LeaderRequest) GetTrace() *tracer.Trace {
+func (m *LeaderRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -238,7 +238,7 @@ func (m *LeaderResponse) GetKv() *mvccpb.KeyValue {
 	return nil
 }
 
-func (m *LeaderResponse) GetTrace() *tracer.Trace {
+func (m *LeaderResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -263,7 +263,7 @@ func (m *ResignRequest) GetLeader() *LeaderKey {
 	return nil
 }
 
-func (m *ResignRequest) GetTrace() *tracer.Trace {
+func (m *ResignRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -287,7 +287,7 @@ func (m *ResignResponse) GetHeader() *etcdserverpb.ResponseHeader {
 	return nil
 }
 
-func (m *ResignResponse) GetTrace() *tracer.Trace {
+func (m *ResignResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -321,7 +321,7 @@ func (m *ProclaimRequest) GetValue() []byte {
 	return nil
 }
 
-func (m *ProclaimRequest) GetTrace() *tracer.Trace {
+func (m *ProclaimRequest) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -345,7 +345,7 @@ func (m *ProclaimResponse) GetHeader() *etcdserverpb.ResponseHeader {
 	return nil
 }
 
-func (m *ProclaimResponse) GetTrace() *tracer.Trace {
+func (m *ProclaimResponse) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}

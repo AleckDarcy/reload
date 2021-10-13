@@ -2,11 +2,11 @@ package authpb
 
 import "github.com/AleckDarcy/reload/core/tracer"
 
-func (m *UserAddOptions) MessageName() string {
+func (m *UserAddOptions) GetFI_Name() string {
 	return "UserAddOptions"
 }
 
-func (m *UserAddOptions) GetTrace() *tracer.Trace {
+func (m *UserAddOptions) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -14,17 +14,17 @@ func (m *UserAddOptions) GetTrace() *tracer.Trace {
 	return nil
 }
 
-func (m *UserAddOptions) SetTrace(trace *tracer.Trace) {
+func (m *UserAddOptions) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *User) MessageName() string {
+func (m *User) GetFI_Name() string {
 	return "User"
 }
 
-func (m *User) GetTrace() *tracer.Trace {
+func (m *User) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -32,17 +32,17 @@ func (m *User) GetTrace() *tracer.Trace {
 	return nil
 }
 
-func (m *User) SetTrace(trace *tracer.Trace) {
+func (m *User) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *Permission) MessageName() string {
+func (m *Permission) GetFI_Name() string {
 	return "Permission"
 }
 
-func (m *Permission) GetTrace() *tracer.Trace {
+func (m *Permission) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -50,17 +50,17 @@ func (m *Permission) GetTrace() *tracer.Trace {
 	return nil
 }
 
-func (m *Permission) SetTrace(trace *tracer.Trace) {
+func (m *Permission) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
 }
 
-func (m *Role) MessageName() string {
+func (m *Role) GetFI_Name() string {
 	return "Role"
 }
 
-func (m *Role) GetTrace() *tracer.Trace {
+func (m *Role) GetFI_Trace() *tracer.Trace {
 	if m != nil {
 		return m.Trace
 	}
@@ -68,7 +68,7 @@ func (m *Role) GetTrace() *tracer.Trace {
 	return nil
 }
 
-func (m *Role) SetTrace(trace *tracer.Trace) {
+func (m *Role) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}

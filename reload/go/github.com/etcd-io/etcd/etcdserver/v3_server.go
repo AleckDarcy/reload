@@ -18,6 +18,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/binary"
+	"runtime/debug"
 	"time"
 
 	"go.etcd.io/etcd/milebeach"
@@ -112,7 +113,9 @@ func (s *EtcdServer) Range(ctx context.Context, r *pb.RangeRequest) (*pb.RangeRe
 }
 
 func (s *EtcdServer) Put(ctx context.Context, r *pb.PutRequest) (*pb.PutResponse, error) {
+	debug.PrintStack()
 	milebeach.Logger.PrintlnWithCaller("%s stub", s.Cfg.ServerUUID) // 3MileBeach
+	milebeach.Logger.PrintlnWithCaller("%s %s", s.Cfg.ServerUUID, r.String())
 	resp, err := s.raftRequest(ctx, pb.InternalRaftRequest{Put: r})
 	if err != nil {
 		return nil, err
