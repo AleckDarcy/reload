@@ -32,9 +32,9 @@ func (c *codec) Marshal(v interface{}) ([]byte, error) {
 				//log.Logf("[RELOAD] Marshal, %s, CheckByContextMeta ok", t.GetFI_Name())
 
 				var uuid string
-				if t.GetMessageType() == MessageType_Message_Request {
+				if t.GetFI_MessageType() == MessageType_Message_Request {
 					uuid = NewUUID()
-				} else if t.GetMessageType() == MessageType_Message_Response {
+				} else if t.GetFI_MessageType() == MessageType_Message_Response {
 					uuid = meta.uuid
 				}
 
@@ -50,7 +50,7 @@ func (c *codec) Marshal(v interface{}) ([]byte, error) {
 					trace.Records = append(trace.Records, record)
 				}
 				if trace, ok := Store.UpdateFunctionByContextMeta(meta, updateFunction); ok {
-					if t.GetMessageType() == MessageType_Message_Request {
+					if t.GetFI_MessageType() == MessageType_Message_Request {
 						if tfis := trace.Tfis; tfis != nil {
 							crash, found := true, false
 							for _, tfi := range tfis {
@@ -90,7 +90,7 @@ func (c *codec) Marshal(v interface{}) ([]byte, error) {
 							Rlfis:   trace.Rlfis,
 							Tfis:    trace.Tfis,
 						}
-					} else if t.GetMessageType() == MessageType_Message_Response {
+					} else if t.GetFI_MessageType() == MessageType_Message_Response {
 						//log.Logf("[RELOAD] Marshal send response")
 						Store.DeleteByContextMeta(meta)
 					}
@@ -125,7 +125,7 @@ func (c *codec) Unmarshal(data []byte, v interface{}) error {
 					return err
 				}
 
-				if t.GetMessageType() == MessageType_Message_Request {
+				if t.GetFI_MessageType() == MessageType_Message_Request {
 					//log.Logf("[RELOAD] Unmarshal, receive request %s", t.GetFI_Name())
 					if len(trace.Records) != 1 {
 						log.Logf("[RELOAD] Unmarshal, receive invalid trace: %s", trace.JSONString())
@@ -144,7 +144,7 @@ func (c *codec) Unmarshal(data []byte, v interface{}) error {
 						}
 						Store.SetByContextMeta(meta, trace)
 					}
-				} else if t.GetMessageType() == MessageType_Message_Response {
+				} else if t.GetFI_MessageType() == MessageType_Message_Response {
 					//log.Logf("[RELOAD] Unmarshal, receive response %s", t.GetFI_Name())
 					if len(trace.Records) == 0 {
 						//log.Logf("[RELOAD] Unmarshal, receive empty trace")
