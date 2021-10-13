@@ -341,7 +341,7 @@ func (n *node) run() {
 		// described in raft dissertation)
 		// Currently it is dropped in Step silently.
 		case pm := <-propc:
-			milebeach.Logger.Printf("%s <-propc stub", r.serverID) // 3MileBeach
+			milebeach.Logger.PrintlnWithCaller("%s <-propc stub", r.serverID) // 3MileBeach
 
 			m := pm.m
 			m.From = r.id
@@ -472,6 +472,7 @@ func (n *node) stepWithWaitOption(ctx context.Context, m pb.Message, wait bool) 
 	}
 	select {
 	case ch <- pm:
+		milebeach.Logger.PrintlnWithCaller("%s propc<- stub", n.rn.raft.serverID)
 		if !wait {
 			return nil
 		}

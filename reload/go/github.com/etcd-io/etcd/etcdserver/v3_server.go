@@ -112,7 +112,7 @@ func (s *EtcdServer) Range(ctx context.Context, r *pb.RangeRequest) (*pb.RangeRe
 }
 
 func (s *EtcdServer) Put(ctx context.Context, r *pb.PutRequest) (*pb.PutResponse, error) {
-	milebeach.Logger.Printf("%s stub", s.Cfg.ServerUUID) // 3MileBeach
+	milebeach.Logger.PrintlnWithCaller("%s stub", s.Cfg.ServerUUID) // 3MileBeach
 	resp, err := s.raftRequest(ctx, pb.InternalRaftRequest{Put: r})
 	if err != nil {
 		return nil, err
@@ -572,7 +572,7 @@ func (s *EtcdServer) doSerialize(ctx context.Context, chk func(*auth.AuthInfo) e
 }
 
 func (s *EtcdServer) processInternalRaftRequestOnce(ctx context.Context, r pb.InternalRaftRequest) (*applyResult, error) {
-	milebeach.Logger.Printf("%s stub", s.Cfg.ServerUUID) // 3MileBeach
+	milebeach.Logger.PrintlnWithCaller("%s stub", s.Cfg.ServerUUID) // 3MileBeach
 	ai := s.getAppliedIndex()
 	ci := s.getCommittedIndex()
 	if ci > ai+maxGapBetweenApplyAndCommitIndex {

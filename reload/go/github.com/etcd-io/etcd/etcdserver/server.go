@@ -286,7 +286,7 @@ type EtcdServer struct {
 func NewServer(cfg ServerConfig) (srv *EtcdServer, err error) {
 	serverUUID := cfg.ServerUUID // 3MileBeach
 
-	milebeach.Logger.Printf("%s stub", serverUUID) // 3MileBeach
+	milebeach.Logger.PrintlnWithCaller("%s stub", serverUUID) // 3MileBeach
 
 	st := v2store.New(StoreClusterPrefix, StoreKeysPrefix)
 

@@ -211,13 +211,13 @@ func newCluster(t testing.TB, cfg *ClusterConfig) *cluster {
 // NewCluster returns an unlaunched cluster of the given size which has been
 // set to use static bootstrap.
 func NewCluster(t testing.TB, size int) *cluster {
-	milebeach.Logger.Printf("stub")
+	milebeach.Logger.PrintlnWithCaller("stub")
 	return newCluster(t, &ClusterConfig{Size: size})
 }
 
 // NewClusterByConfig returns an unlaunched cluster defined by a cluster configuration
 func NewClusterByConfig(t testing.TB, cfg *ClusterConfig) *cluster {
-	milebeach.Logger.Printf("stub")
+	milebeach.Logger.PrintlnWithCaller("stub")
 	return newCluster(t, cfg)
 }
 

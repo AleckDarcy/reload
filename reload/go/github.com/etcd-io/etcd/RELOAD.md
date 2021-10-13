@@ -1,5 +1,15 @@
 version: 3.4.0
 
+go get git.xxxxx/reload@commit_id
+
+go mod vendor
+
+
+
+go mod download
+
+go mod vendor
+
 # ProtoBuf
 
 ## 3milebeach payload

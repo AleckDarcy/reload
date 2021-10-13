@@ -124,7 +124,7 @@ type raftNodeConfig struct {
 }
 
 func newRaftNode(cfg raftNodeConfig) *raftNode {
-	milebeach.Logger.Printf("%s stub", cfg.serverUUID)
+	milebeach.Logger.PrintlnWithCaller("%s stub", cfg.serverUUID)
 
 	var lg raft.Logger
 	if cfg.lg != nil {
@@ -433,7 +433,7 @@ func (r *raftNode) advanceTicks(ticks int) {
 }
 
 func startNode(cfg ServerConfig, cl *membership.RaftCluster, ids []types.ID) (id types.ID, n raft.Node, s *raft.MemoryStorage, w *wal.WAL) {
-	milebeach.Logger.Printf("stub") // 3MileBeach
+	milebeach.Logger.PrintlnWithCaller("stub") // 3MileBeach
 	var err error
 	member := cl.MemberByName(cfg.Name)
 	metadata := pbutil.MustMarshal(

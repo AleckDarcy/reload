@@ -22,8 +22,11 @@ import (
 	"math/rand"
 	"os"
 	"reflect"
+	"runtime"
 	"testing"
 	"time"
+
+	"go.etcd.io/etcd/milebeach"
 
 	"go.etcd.io/etcd/clientv3"
 	"go.etcd.io/etcd/etcdserver/api/v3rpc/rpctypes"
@@ -48,7 +51,11 @@ func TestV3Put_3MileBeach(t *testing.T) { // 3MileBeach starts
 	key := []byte("foo")
 	reqput := &pb.PutRequest{Key: key, Value: []byte("bar"), PrevKv: true}
 
+	runtime.Gosched()
+	milebeach.Logger.Printf("========== test ready ==========\n")
+
 	respput, err := kvc.Put(context.TODO(), reqput)
+	milebeach.Logger.Printf("========== test ended ==========\n")
 	if err != nil {
 		t.Fatalf("couldn't put key (%v)", err)
 	}
