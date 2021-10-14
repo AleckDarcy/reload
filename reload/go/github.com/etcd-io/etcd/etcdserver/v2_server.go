@@ -19,8 +19,6 @@ import (
 	"fmt"
 	"time"
 
-	"go.etcd.io/etcd/milebeach"
-
 	"go.etcd.io/etcd/etcdserver/api/v2store"
 	pb "go.etcd.io/etcd/etcdserver/etcdserverpb"
 )
@@ -144,7 +142,7 @@ func (s *EtcdServer) Do(ctx context.Context, r pb.Request) (Response, error) {
 func (r *RequestV2) Handle(ctx context.Context, v2api RequestV2Handler) (rsp Response, err error) { // 3MileBeach
 	// func (r *RequestV2) Handle(ctx context.Context, v2api RequestV2Handler) (Response, error) {
 	fmt.Println(r.String())
-	milebeach.ReceiveRequest((*pb.Request)(r)) // 3MileBeach
+	//milebeach.ReceiveRequest((*pb.Request)(r)) // 3MileBeach
 	fmt.Println(r.String())
 
 	if r.Method == "GET" && r.Quorum {

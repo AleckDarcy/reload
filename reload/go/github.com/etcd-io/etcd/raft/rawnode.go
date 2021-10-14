@@ -17,7 +17,7 @@ package raft
 import (
 	"errors"
 
-	"go.etcd.io/etcd/milebeach"
+	"github.com/AleckDarcy/reload/core/log"
 
 	pb "go.etcd.io/etcd/raft/raftpb"
 	"go.etcd.io/etcd/raft/tracker"
@@ -47,7 +47,7 @@ type RawNode struct {
 // state manually by setting up a Storage that has a first index > 1 and which
 // stores the desired ConfState as its InitialState.
 func NewRawNode(config *Config) (*RawNode, error) {
-	milebeach.Logger.PrintlnWithCaller("stub")
+	log.Logger.PrintlnWithCaller("stub")
 	r := newRaft(config)
 	rn := &RawNode{
 		raft: r,

@@ -13,7 +13,7 @@ func caller(skip int) string {
 	return fmt.Sprintf(" %s:%d\n", file, line)
 }
 
-func Caller(skip int) (string, string) {
+func caller2(skip int) (string, string) {
 	pc, file, line, _ := runtime.Caller(skip)
 	f := runtime.FuncForPC(pc).Name()
 	if id := strings.Index(f, "("); id != -1 {
@@ -32,4 +32,24 @@ func Logf(format string, v ...interface{}) {
 
 func Printf(format string, v ...interface{}) {
 	fmt.Printf(format, v...)
+}
+
+type logger struct{}
+
+var Logger *logger
+
+func (l *logger) PrintlnWithStackTrace(skip int, format string, a ...interface{}) {
+	f, line := caller2(skip)
+
+	Printf("[3MileBeach] "+f+" "+format+line, a...)
+}
+
+func (l *logger) PrintlnWithCaller(format string, a ...interface{}) {
+	f, line := caller2(2)
+
+	Printf("[3MileBeach] "+f+" "+format+line, a...)
+}
+
+func (l *logger) Printf(format string, a ...interface{}) {
+	Printf("[3MileBeach] "+format, a...)
 }

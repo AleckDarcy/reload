@@ -6,13 +6,8 @@ import (
 	"github.com/AleckDarcy/reload/core/tracer"
 )
 
-type Messager interface {
-	GetFI_Name() string
-	GetFI_Trace() *tracer.Trace
-	SetFI_Trace(*tracer.Trace)
-}
-
-func ReceiveRequest(request Messager) {
+// 3milebeach todo delete
+func ReceiveRequest(request tracer.Tracer) {
 	if trace := request.GetFI_Trace(); trace != nil {
 		records := trace.GetRecords()
 		if count := len(records); count != 0 {
@@ -31,7 +26,8 @@ func ReceiveRequest(request Messager) {
 	}
 }
 
-func SendResponse(request, response Messager) {
+// 3milebeach todo delete
+func SendResponse(request, response tracer.Tracer) {
 	if trace := response.GetFI_Trace(); trace != nil {
 		records := trace.GetRecords()
 		if count := len(records); count != 0 {

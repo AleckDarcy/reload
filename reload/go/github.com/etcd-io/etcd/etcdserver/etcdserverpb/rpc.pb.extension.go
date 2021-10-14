@@ -12,6 +12,10 @@ func (m *ResponseHeader) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *ResponseHeader) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
+}
+
 func (m *RangeRequest) GetFI_Name() string {
 	return "RangeRequest"
 }
@@ -20,6 +24,10 @@ func (m *RangeRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *RangeRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
 }
 
 func (m *RangeResponse) GetFI_Name() string {
@@ -32,6 +40,10 @@ func (m *RangeResponse) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *RangeResponse) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
+}
+
 func (m *PutRequest) GetFI_Name() string {
 	return "PutRequest"
 }
@@ -40,6 +52,10 @@ func (m *PutRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *PutRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
 }
 
 func (m *PutResponse) GetFI_Name() string {
@@ -52,6 +68,10 @@ func (m *PutResponse) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *PutResponse) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
+}
+
 func (m *DeleteRangeRequest) GetFI_Name() string {
 	return "DeleteRangeRequest"
 }
@@ -60,6 +80,10 @@ func (m *DeleteRangeRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *DeleteRangeRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
 }
 
 func (m *DeleteRangeResponse) GetFI_Name() string {
@@ -72,13 +96,16 @@ func (m *DeleteRangeResponse) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *DeleteRangeResponse) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
+}
+
 // extended
 type isRequestOp_Request interface {
 	isRequestOp_Request()
 	MarshalTo([]byte) (int, error)
 	Size() int
-	GetFI_Trace() *tracer.Trace
-	SetFI_Trace(*tracer.Trace)
+	tracer.Tracer // new method
 }
 
 func (m *RequestOp) GetFI_Name() string {
@@ -99,6 +126,10 @@ func (m *RequestOp) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *RequestOp) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
+}
+
 func (m *RequestOp_RequestRange) GetFI_Name() string {
 	return "RequestOp_RequestRange"
 }
@@ -115,6 +146,10 @@ func (m *RequestOp_RequestRange) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.RequestRange.SetFI_Trace(trace)
 	}
+}
+
+func (m *RequestOp_RequestRange) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
 }
 
 func (m *RequestOp_RequestPut) GetFI_Name() string {
@@ -135,6 +170,10 @@ func (m *RequestOp_RequestPut) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *RequestOp_RequestPut) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
+}
+
 func (m *RequestOp_RequestDeleteRange) GetFI_Name() string {
 	return "RequestOp_RequestDeleteRange"
 }
@@ -151,6 +190,10 @@ func (m *RequestOp_RequestDeleteRange) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.RequestDeleteRange.SetFI_Trace(trace)
 	}
+}
+
+func (m *RequestOp_RequestDeleteRange) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
 }
 
 func (m *RequestOp_RequestTxn) GetFI_Name() string {
@@ -171,13 +214,16 @@ func (m *RequestOp_RequestTxn) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *RequestOp_RequestTxn) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
+}
+
 // extended
 type isResponseOp_Response interface {
 	isResponseOp_Response()
 	MarshalTo([]byte) (int, error)
 	Size() int
-	GetFI_Trace() *tracer.Trace
-	SetFI_Trace(*tracer.Trace)
+	tracer.Tracer // new method
 }
 
 func (m *ResponseOp) GetFI_Name() string {
@@ -198,6 +244,10 @@ func (m *ResponseOp) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *ResponseOp) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
+}
+
 func (m *ResponseOp_ResponseRange) GetFI_Name() string {
 	return "ResponseOp_ResponseRange"
 }
@@ -214,6 +264,10 @@ func (m *ResponseOp_ResponseRange) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.ResponseRange.SetFI_Trace(trace)
 	}
+}
+
+func (m *ResponseOp_ResponseRange) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
 }
 
 func (m *ResponseOp_ResponsePut) GetFI_Name() string {
@@ -234,6 +288,10 @@ func (m *ResponseOp_ResponsePut) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *ResponseOp_ResponsePut) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
+}
+
 func (m *ResponseOp_ResponseDeleteRange) GetFI_Name() string {
 	return "ResponseOp_ResponseDeleteRange"
 }
@@ -250,6 +308,10 @@ func (m *ResponseOp_ResponseDeleteRange) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.ResponseDeleteRange.SetFI_Trace(trace)
 	}
+}
+
+func (m *ResponseOp_ResponseDeleteRange) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
 }
 
 func (m *ResponseOp_ResponseTxn) GetFI_Name() string {
@@ -270,6 +332,10 @@ func (m *ResponseOp_ResponseTxn) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *ResponseOp_ResponseTxn) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
+}
+
 func (m *Compare) GetFI_Name() string {
 	return "Compare"
 }
@@ -278,6 +344,10 @@ func (m *Compare) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *Compare) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_ // 3MileBeach todo
 }
 
 func (m *TxnRequest) GetFI_Name() string {
@@ -290,6 +360,10 @@ func (m *TxnRequest) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *TxnRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
+}
+
 func (m *TxnResponse) GetFI_Name() string {
 	return "TxnResponse"
 }
@@ -298,6 +372,10 @@ func (m *TxnResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *TxnResponse) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
 }
 
 func (m *CompactionRequest) GetFI_Name() string {
@@ -310,6 +388,10 @@ func (m *CompactionRequest) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *CompactionRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
+}
+
 func (m *CompactionResponse) GetFI_Name() string {
 	return "CompactionResponse"
 }
@@ -318,6 +400,10 @@ func (m *CompactionResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *CompactionResponse) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
 }
 
 func (m *HashRequest) GetFI_Name() string {
@@ -330,6 +416,10 @@ func (m *HashRequest) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *HashRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
+}
+
 func (m *HashKVRequest) GetFI_Name() string {
 	return "HashKVRequest"
 }
@@ -338,6 +428,10 @@ func (m *HashKVRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *HashKVRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
 }
 
 func (m *HashKVResponse) GetFI_Name() string {
@@ -350,6 +444,10 @@ func (m *HashKVResponse) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *HashKVResponse) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
+}
+
 func (m *HashResponse) GetFI_Name() string {
 	return "HashResponse"
 }
@@ -358,6 +456,10 @@ func (m *HashResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *HashResponse) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
 }
 
 func (m *SnapshotRequest) GetFI_Name() string {
@@ -370,6 +472,10 @@ func (m *SnapshotRequest) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *SnapshotRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
+}
+
 func (m *SnapshotResponse) GetFI_Name() string {
 	return "SnapshotResponse"
 }
@@ -380,13 +486,16 @@ func (m *SnapshotResponse) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *SnapshotResponse) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
+}
+
 // extended
 type isWatchRequest_RequestUnion interface {
 	isWatchRequest_RequestUnion()
 	MarshalTo([]byte) (int, error)
 	Size() int
-	GetFI_Trace() *tracer.Trace
-	SetFI_Trace(*tracer.Trace)
+	tracer.Tracer // new method
 }
 
 func (m *WatchRequest_CreateRequest) GetFI_Name() string {
@@ -407,6 +516,10 @@ func (m *WatchRequest_CreateRequest) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *WatchRequest_CreateRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
+}
+
 func (m *WatchRequest_CancelRequest) GetFI_Name() string {
 	return "WatchRequest_CancelRequest"
 }
@@ -423,6 +536,10 @@ func (m *WatchRequest_CancelRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.CancelRequest.SetFI_Trace(trace)
 	}
+}
+
+func (m *WatchRequest_CancelRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
 }
 
 func (m *WatchRequest_ProgressRequest) GetFI_Name() string {
@@ -443,6 +560,10 @@ func (m *WatchRequest_ProgressRequest) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *WatchRequest_ProgressRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
+}
+
 func (m *WatchRequest) GetFI_Name() string {
 	return "WatchRequest"
 }
@@ -461,6 +582,10 @@ func (m *WatchRequest) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *WatchRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
+}
+
 func (m *WatchCreateRequest) GetFI_Name() string {
 	return "WatchCreateRequest"
 }
@@ -469,6 +594,10 @@ func (m *WatchCreateRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *WatchCreateRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
 }
 
 func (m *WatchCancelRequest) GetFI_Name() string {
@@ -481,6 +610,10 @@ func (m *WatchCancelRequest) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *WatchCancelRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
+}
+
 func (m *WatchProgressRequest) GetFI_Name() string {
 	return "WatchProgressRequest"
 }
@@ -489,6 +622,10 @@ func (m *WatchProgressRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *WatchProgressRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
 }
 
 func (m *WatchResponse) GetFI_Name() string {
@@ -501,6 +638,10 @@ func (m *WatchResponse) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *WatchResponse) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
+}
+
 func (m *LeaseGrantRequest) GetFI_Name() string {
 	return "LeaseGrantRequest"
 }
@@ -509,6 +650,10 @@ func (m *LeaseGrantRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *LeaseGrantRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
 }
 
 func (m *LeaseGrantResponse) GetFI_Name() string {
@@ -521,6 +666,10 @@ func (m *LeaseGrantResponse) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *LeaseGrantResponse) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
+}
+
 func (m *LeaseRevokeRequest) GetFI_Name() string {
 	return "LeaseRevokeRequest"
 }
@@ -529,6 +678,10 @@ func (m *LeaseRevokeRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *LeaseRevokeRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
 }
 
 func (m *LeaseRevokeResponse) GetFI_Name() string {
@@ -541,6 +694,10 @@ func (m *LeaseRevokeResponse) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *LeaseRevokeResponse) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
+}
+
 func (m *LeaseCheckpoint) GetFI_Name() string {
 	return "LeaseCheckpoint"
 }
@@ -549,6 +706,10 @@ func (m *LeaseCheckpoint) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *LeaseCheckpoint) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_ // 3MileBeach todo
 }
 
 func (m *LeaseCheckpointRequest) GetFI_Name() string {
@@ -561,6 +722,10 @@ func (m *LeaseCheckpointRequest) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *LeaseCheckpointRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
+}
+
 func (m *LeaseCheckpointResponse) GetFI_Name() string {
 	return "LeaseCheckpointResponse"
 }
@@ -569,6 +734,10 @@ func (m *LeaseCheckpointResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *LeaseCheckpointResponse) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
 }
 
 func (m *LeaseKeepAliveRequest) GetFI_Name() string {
@@ -581,6 +750,10 @@ func (m *LeaseKeepAliveRequest) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *LeaseKeepAliveRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
+}
+
 func (m *LeaseKeepAliveResponse) GetFI_Name() string {
 	return "LeaseKeepAliveResponse"
 }
@@ -589,6 +762,10 @@ func (m *LeaseKeepAliveResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *LeaseKeepAliveResponse) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
 }
 
 func (m *LeaseTimeToLiveRequest) GetFI_Name() string {
@@ -601,6 +778,10 @@ func (m *LeaseTimeToLiveRequest) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *LeaseTimeToLiveRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
+}
+
 func (m *LeaseTimeToLiveResponse) GetFI_Name() string {
 	return "LeaseTimeToLiveResponse"
 }
@@ -609,6 +790,10 @@ func (m *LeaseTimeToLiveResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *LeaseTimeToLiveResponse) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
 }
 
 func (m *LeaseLeasesRequest) GetFI_Name() string {
@@ -621,6 +806,10 @@ func (m *LeaseLeasesRequest) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *LeaseLeasesRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
+}
+
 func (m *LeaseStatus) GetFI_Name() string {
 	return "LeaseStatus"
 }
@@ -629,6 +818,10 @@ func (m *LeaseStatus) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *LeaseStatus) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_ // 3milebeach todo
 }
 
 func (m *LeaseLeasesResponse) GetFI_Name() string {
@@ -641,6 +834,10 @@ func (m *LeaseLeasesResponse) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *LeaseLeasesResponse) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
+}
+
 func (m *Member) GetFI_Name() string {
 	return "Member"
 }
@@ -649,6 +846,10 @@ func (m *Member) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *Member) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_ // 3milebeach todo
 }
 
 func (m *MemberAddRequest) GetFI_Name() string {
@@ -661,6 +862,10 @@ func (m *MemberAddRequest) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *MemberAddRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
+}
+
 func (m *MemberAddResponse) GetFI_Name() string {
 	return "MemberAddResponse"
 }
@@ -669,6 +874,10 @@ func (m *MemberAddResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *MemberAddResponse) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
 }
 
 func (m *MemberRemoveRequest) GetFI_Name() string {
@@ -681,6 +890,10 @@ func (m *MemberRemoveRequest) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *MemberRemoveRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
+}
+
 func (m *MemberRemoveResponse) GetFI_Name() string {
 	return "MemberRemoveResponse"
 }
@@ -689,6 +902,10 @@ func (m *MemberRemoveResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *MemberRemoveResponse) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
 }
 
 func (m *MemberUpdateRequest) GetFI_Name() string {
@@ -701,6 +918,10 @@ func (m *MemberUpdateRequest) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *MemberUpdateRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
+}
+
 func (m *MemberUpdateResponse) GetFI_Name() string {
 	return "MemberUpdateResponse"
 }
@@ -709,6 +930,10 @@ func (m *MemberUpdateResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *MemberUpdateResponse) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
 }
 
 func (m *MemberListRequest) GetFI_Name() string {
@@ -721,6 +946,10 @@ func (m *MemberListRequest) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *MemberListRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
+}
+
 func (m *MemberListResponse) GetFI_Name() string {
 	return "MemberListResponse"
 }
@@ -729,6 +958,10 @@ func (m *MemberListResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *MemberListResponse) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
 }
 
 func (m *MemberPromoteRequest) GetFI_Name() string {
@@ -741,6 +974,10 @@ func (m *MemberPromoteRequest) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *MemberPromoteRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
+}
+
 func (m *MemberPromoteResponse) GetFI_Name() string {
 	return "MemberPromoteResponse"
 }
@@ -749,6 +986,10 @@ func (m *MemberPromoteResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *MemberPromoteResponse) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
 }
 
 func (m *DefragmentRequest) GetFI_Name() string {
@@ -761,6 +1002,10 @@ func (m *DefragmentRequest) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *DefragmentRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
+}
+
 func (m *DefragmentResponse) GetFI_Name() string {
 	return "DefragmentResponse"
 }
@@ -769,6 +1014,10 @@ func (m *DefragmentResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *DefragmentResponse) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
 }
 
 func (m *MoveLeaderRequest) GetFI_Name() string {
@@ -781,6 +1030,10 @@ func (m *MoveLeaderRequest) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *MoveLeaderRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
+}
+
 func (m *MoveLeaderResponse) GetFI_Name() string {
 	return "MoveLeaderResponse"
 }
@@ -789,6 +1042,10 @@ func (m *MoveLeaderResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *MoveLeaderResponse) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
 }
 
 func (m *AlarmRequest) GetFI_Name() string {
@@ -801,6 +1058,10 @@ func (m *AlarmRequest) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *AlarmRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
+}
+
 func (m *AlarmMember) GetFI_Name() string {
 	return "AlarmMember"
 }
@@ -809,6 +1070,10 @@ func (m *AlarmMember) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *AlarmMember) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_ // 3milebeach todo
 }
 
 func (m *AlarmResponse) GetFI_Name() string {
@@ -821,6 +1086,10 @@ func (m *AlarmResponse) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *AlarmResponse) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
+}
+
 func (m *StatusRequest) GetFI_Name() string {
 	return "StatusRequest"
 }
@@ -829,6 +1098,10 @@ func (m *StatusRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *StatusRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
 }
 
 func (m *StatusResponse) GetFI_Name() string {
@@ -841,6 +1114,10 @@ func (m *StatusResponse) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *StatusResponse) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
+}
+
 func (m *AuthEnableRequest) GetFI_Name() string {
 	return "AuthEnableRequest"
 }
@@ -849,6 +1126,10 @@ func (m *AuthEnableRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *AuthEnableRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
 }
 
 func (m *AuthDisableRequest) GetFI_Name() string {
@@ -861,6 +1142,10 @@ func (m *AuthDisableRequest) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *AuthDisableRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
+}
+
 func (m *AuthenticateRequest) GetFI_Name() string {
 	return "AuthenticateRequest"
 }
@@ -869,6 +1154,10 @@ func (m *AuthenticateRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *AuthenticateRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
 }
 
 func (m *AuthUserAddRequest) GetFI_Name() string {
@@ -881,6 +1170,10 @@ func (m *AuthUserAddRequest) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *AuthUserAddRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
+}
+
 func (m *AuthUserGetRequest) GetFI_Name() string {
 	return "AuthUserGetRequest"
 }
@@ -889,6 +1182,10 @@ func (m *AuthUserGetRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *AuthUserGetRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
 }
 
 func (m *AuthUserDeleteRequest) GetFI_Name() string {
@@ -901,6 +1198,10 @@ func (m *AuthUserDeleteRequest) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *AuthUserDeleteRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
+}
+
 func (m *AuthUserChangePasswordRequest) GetFI_Name() string {
 	return "AuthUserChangePasswordRequest"
 }
@@ -909,6 +1210,10 @@ func (m *AuthUserChangePasswordRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *AuthUserChangePasswordRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
 }
 
 func (m *AuthUserGrantRoleRequest) GetFI_Name() string {
@@ -921,6 +1226,10 @@ func (m *AuthUserGrantRoleRequest) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *AuthUserGrantRoleRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
+}
+
 func (m *AuthUserRevokeRoleRequest) GetFI_Name() string {
 	return "AuthUserRevokeRoleRequest"
 }
@@ -929,6 +1238,10 @@ func (m *AuthUserRevokeRoleRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *AuthUserRevokeRoleRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
 }
 
 func (m *AuthRoleAddRequest) GetFI_Name() string {
@@ -941,6 +1254,10 @@ func (m *AuthRoleAddRequest) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *AuthRoleAddRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
+}
+
 func (m *AuthRoleGetRequest) GetFI_Name() string {
 	return "AuthRoleGetRequest"
 }
@@ -949,6 +1266,10 @@ func (m *AuthRoleGetRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *AuthRoleGetRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
 }
 
 func (m *AuthUserListRequest) GetFI_Name() string {
@@ -961,6 +1282,10 @@ func (m *AuthUserListRequest) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *AuthUserListRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
+}
+
 func (m *AuthRoleListRequest) GetFI_Name() string {
 	return "AuthRoleListRequest"
 }
@@ -969,6 +1294,10 @@ func (m *AuthRoleListRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *AuthRoleListRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
 }
 
 func (m *AuthRoleDeleteRequest) GetFI_Name() string {
@@ -981,6 +1310,10 @@ func (m *AuthRoleDeleteRequest) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *AuthRoleDeleteRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
+}
+
 func (m *AuthRoleGrantPermissionRequest) GetFI_Name() string {
 	return "AuthRoleGrantPermissionRequest"
 }
@@ -989,6 +1322,10 @@ func (m *AuthRoleGrantPermissionRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *AuthRoleGrantPermissionRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
 }
 
 func (m *AuthRoleRevokePermissionRequest) GetFI_Name() string {
@@ -1001,6 +1338,10 @@ func (m *AuthRoleRevokePermissionRequest) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *AuthRoleRevokePermissionRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
+}
+
 func (m *AuthEnableResponse) GetFI_Name() string {
 	return "AuthEnableResponse"
 }
@@ -1009,6 +1350,10 @@ func (m *AuthEnableResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *AuthEnableResponse) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
 }
 
 func (m *AuthDisableResponse) GetFI_Name() string {
@@ -1021,6 +1366,10 @@ func (m *AuthDisableResponse) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *AuthDisableResponse) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
+}
+
 func (m *AuthenticateResponse) GetFI_Name() string {
 	return "AuthenticateResponse"
 }
@@ -1029,6 +1378,10 @@ func (m *AuthenticateResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *AuthenticateResponse) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
 }
 
 func (m *AuthUserAddResponse) GetFI_Name() string {
@@ -1041,6 +1394,10 @@ func (m *AuthUserAddResponse) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *AuthUserAddResponse) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
+}
+
 func (m *AuthUserGetResponse) GetFI_Name() string {
 	return "AuthUserGetResponse"
 }
@@ -1049,6 +1406,10 @@ func (m *AuthUserGetResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *AuthUserGetResponse) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
 }
 
 func (m *AuthUserDeleteResponse) GetFI_Name() string {
@@ -1061,6 +1422,10 @@ func (m *AuthUserDeleteResponse) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *AuthUserDeleteResponse) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
+}
+
 func (m *AuthUserChangePasswordResponse) GetFI_Name() string {
 	return "AuthUserChangePasswordResponse"
 }
@@ -1069,6 +1434,10 @@ func (m *AuthUserChangePasswordResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *AuthUserChangePasswordResponse) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
 }
 
 func (m *AuthUserGrantRoleResponse) GetFI_Name() string {
@@ -1081,6 +1450,10 @@ func (m *AuthUserGrantRoleResponse) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *AuthUserGrantRoleResponse) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
+}
+
 func (m *AuthUserRevokeRoleResponse) GetFI_Name() string {
 	return "AuthUserRevokeRoleResponse"
 }
@@ -1089,6 +1462,10 @@ func (m *AuthUserRevokeRoleResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *AuthUserRevokeRoleResponse) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
 }
 
 func (m *AuthRoleAddResponse) GetFI_Name() string {
@@ -1101,6 +1478,10 @@ func (m *AuthRoleAddResponse) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *AuthRoleAddResponse) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
+}
+
 func (m *AuthRoleGetResponse) GetFI_Name() string {
 	return "AuthRoleGetResponse"
 }
@@ -1109,6 +1490,10 @@ func (m *AuthRoleGetResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *AuthRoleGetResponse) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
 }
 
 func (m *AuthRoleListResponse) GetFI_Name() string {
@@ -1121,6 +1506,10 @@ func (m *AuthRoleListResponse) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *AuthRoleListResponse) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
+}
+
 func (m *AuthUserListResponse) GetFI_Name() string {
 	return "AuthUserListResponse"
 }
@@ -1129,6 +1518,10 @@ func (m *AuthUserListResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *AuthUserListResponse) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
 }
 
 func (m *AuthRoleDeleteResponse) GetFI_Name() string {
@@ -1141,6 +1534,10 @@ func (m *AuthRoleDeleteResponse) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *AuthRoleDeleteResponse) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
+}
+
 func (m *AuthRoleGrantPermissionResponse) GetFI_Name() string {
 	return "AuthRoleGrantPermissionResponse"
 }
@@ -1151,6 +1548,10 @@ func (m *AuthRoleGrantPermissionResponse) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *AuthRoleGrantPermissionResponse) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
+}
+
 func (m *AuthRoleRevokePermissionResponse) GetFI_Name() string {
 	return "AuthRoleRevokePermissionResponse"
 }
@@ -1159,4 +1560,8 @@ func (m *AuthRoleRevokePermissionResponse) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *AuthRoleRevokePermissionResponse) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
 }

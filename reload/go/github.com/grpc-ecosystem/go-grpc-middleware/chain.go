@@ -6,6 +6,8 @@
 package grpc_middleware
 
 import (
+	"fmt"
+
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 
@@ -29,12 +31,13 @@ func ChainUnaryServer(interceptors ...grpc.UnaryServerInterceptor) grpc.UnarySer
 			)
 
 			if reqT, ok := req.(tracer.Tracer); ok {
-				print("hahahahahaha")
+				event := &tracer.Record{}
+				fmt.Println("hahahaha", event.GetMessageName())
 				_ = reqT
 			}
 
 			print("jjjjjj")
-			
+
 			chainHandler = func(currentCtx context.Context, currentReq interface{}) (interface{}, error) {
 				if curI == lastI {
 					return handler(currentCtx, currentReq)

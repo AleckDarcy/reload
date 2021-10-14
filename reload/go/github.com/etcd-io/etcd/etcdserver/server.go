@@ -29,7 +29,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"go.etcd.io/etcd/milebeach"
+	"github.com/AleckDarcy/reload/core/log"
 
 	"go.etcd.io/etcd/auth"
 	"go.etcd.io/etcd/etcdserver/api"
@@ -286,7 +286,7 @@ type EtcdServer struct {
 func NewServer(cfg ServerConfig) (srv *EtcdServer, err error) {
 	serverUUID := cfg.ServerUUID // 3MileBeach
 
-	milebeach.Logger.PrintlnWithCaller("%s stub", serverUUID) // 3MileBeach
+	log.Logger.PrintlnWithCaller("%s stub", serverUUID) // 3MileBeach
 
 	st := v2store.New(StoreClusterPrefix, StoreKeysPrefix)
 

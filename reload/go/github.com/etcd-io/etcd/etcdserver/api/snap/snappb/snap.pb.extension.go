@@ -19,3 +19,7 @@ func (m *Snapshot) SetFI_Trace(trace *tracer.Trace) {
 		m.Trace = trace
 	}
 }
+
+func (m *Snapshot) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_ // 3milebeach todo
+}

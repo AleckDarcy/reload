@@ -42,6 +42,7 @@ type streamsMap struct {
 	streams map[grpc.ServerStream]struct{}
 }
 
+// 3milebeach todo: possible interposition point
 func newUnaryInterceptor(s *etcdserver.EtcdServer) grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 		if !api.IsCapabilityEnabled(api.V3rpcCapability) {
@@ -78,6 +79,7 @@ func newLogUnaryInterceptor(s *etcdserver.EtcdServer) grpc.UnaryServerIntercepto
 	}
 }
 
+// 3milebeach todo: possible interposition point
 func logUnaryRequestStats(ctx context.Context, lg *zap.Logger, info *grpc.UnaryServerInfo, startTime time.Time, req interface{}, resp interface{}) {
 	duration := time.Since(startTime)
 	remote := "No remote client info."

@@ -33,9 +33,8 @@ import (
 	"testing"
 	"time"
 
+	log2 "github.com/AleckDarcy/reload/core/log"
 	"github.com/AleckDarcy/reload/core/tracer"
-
-	"go.etcd.io/etcd/milebeach"
 
 	"go.etcd.io/etcd/client"
 	"go.etcd.io/etcd/clientv3"
@@ -211,13 +210,13 @@ func newCluster(t testing.TB, cfg *ClusterConfig) *cluster {
 // NewCluster returns an unlaunched cluster of the given size which has been
 // set to use static bootstrap.
 func NewCluster(t testing.TB, size int) *cluster {
-	milebeach.Logger.PrintlnWithCaller("stub")
+	log2.Logger.PrintlnWithCaller("stub")
 	return newCluster(t, &ClusterConfig{Size: size})
 }
 
 // NewClusterByConfig returns an unlaunched cluster defined by a cluster configuration
 func NewClusterByConfig(t testing.TB, cfg *ClusterConfig) *cluster {
-	milebeach.Logger.PrintlnWithCaller("stub")
+	log2.Logger.PrintlnWithCaller("stub")
 	return newCluster(t, cfg)
 }
 

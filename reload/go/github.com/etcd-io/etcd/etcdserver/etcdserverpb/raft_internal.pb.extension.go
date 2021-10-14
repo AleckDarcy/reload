@@ -20,6 +20,10 @@ func (m *RequestHeader) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *RequestHeader) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
+}
+
 func (m *InternalRaftRequest) GetFI_Name() string {
 	return "InternalRaftRequest"
 }
@@ -36,6 +40,10 @@ func (m *InternalRaftRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *InternalRaftRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
 }
 
 func (m *EmptyResponse) GetFI_Name() string {
@@ -56,6 +64,10 @@ func (m *EmptyResponse) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *EmptyResponse) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Response
+}
+
 func (m *InternalAuthenticateRequest) GetFI_Name() string {
 	return "InternalAuthenticateRequest"
 }
@@ -72,4 +84,8 @@ func (m *InternalAuthenticateRequest) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *InternalAuthenticateRequest) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_Request
 }

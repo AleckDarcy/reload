@@ -20,6 +20,10 @@ func (m *UserAddOptions) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *UserAddOptions) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_ // 3milebeach todo
+}
+
 func (m *User) GetFI_Name() string {
 	return "User"
 }
@@ -36,6 +40,10 @@ func (m *User) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *User) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_ // 3milebeach todo
 }
 
 func (m *Permission) GetFI_Name() string {
@@ -56,6 +64,10 @@ func (m *Permission) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *Permission) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_ // 3milebeach todo
+}
+
 func (m *Role) GetFI_Name() string {
 	return "Role"
 }
@@ -72,4 +84,8 @@ func (m *Role) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *Role) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_ // 3milebeach todo
 }

@@ -58,8 +58,7 @@ type isResponseOp_Response interface {
 	isResponseOp_Response()
 	MarshalTo([]byte) (int, error)
 	Size() int
-	GetFI_Trace() *tracer.Trace // new method
-	SetTrace(*tracer.Trace)  // new method
+	tracer.Tracer // new method
 }
 ```
 

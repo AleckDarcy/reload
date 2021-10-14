@@ -25,9 +25,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/AleckDarcy/reload/core/tracer"
+	"github.com/AleckDarcy/reload/core/log"
 
-	"go.etcd.io/etcd/milebeach"
+	"github.com/AleckDarcy/reload/core/tracer"
 
 	"go.etcd.io/etcd/raft/confchange"
 	"go.etcd.io/etcd/raft/quorum"
@@ -422,11 +422,11 @@ func (r *raft) send(m pb.Message) {
 	_ = ents
 
 	if m.Type == pb.MsgVote || m.Type == pb.MsgVoteResp || m.Type == pb.MsgPreVote || m.Type == pb.MsgPreVoteResp {
-		milebeach.Logger.PrintlnWithCaller("%d", len(m.Entries))
+		log.Logger.PrintlnWithCaller("%d", len(m.Entries))
 
-		milebeach.Logger.PrintlnWithStackTrace(4, "%s who calls send()", r.serverID)
-		milebeach.Logger.PrintlnWithStackTrace(3, "%s who calls send()", r.serverID)
-		milebeach.Logger.PrintlnWithCaller("%s type (%s) from (%d) to (%d)", r.serverID, m.Type, m.From, m.To) // 3MileBeach
+		log.Logger.PrintlnWithStackTrace(4, "%s who calls send()", r.serverID)
+		log.Logger.PrintlnWithStackTrace(3, "%s who calls send()", r.serverID)
+		log.Logger.PrintlnWithCaller("%s type (%s) from (%d) to (%d)", r.serverID, m.Type, m.From, m.To) // 3MileBeach
 		if m.Term == 0 {
 			// All {pre-,}campaign messages need to have the term set when
 			// sending.
@@ -443,10 +443,10 @@ func (r *raft) send(m pb.Message) {
 			panic(fmt.Sprintf("term should be set when sending %s", m.Type))
 		}
 	} else {
-		milebeach.Logger.Printf("%d", len(m.Entries))
-		milebeach.Logger.PrintlnWithStackTrace(4, "%s who calls send()", r.serverID)
-		milebeach.Logger.PrintlnWithStackTrace(3, "%s who calls send()", r.serverID)
-		milebeach.Logger.PrintlnWithCaller("%s type (%s) from (%d) to (%d)", r.serverID, m.Type, m.From, m.To) // 3MileBeach
+		log.Logger.Printf("%d", len(m.Entries))
+		log.Logger.PrintlnWithStackTrace(4, "%s who calls send()", r.serverID)
+		log.Logger.PrintlnWithStackTrace(3, "%s who calls send()", r.serverID)
+		log.Logger.PrintlnWithCaller("%s type (%s) from (%d) to (%d)", r.serverID, m.Type, m.From, m.To) // 3MileBeach
 		if m.Term != 0 {
 			panic(fmt.Sprintf("term should not be set when sending %s (was %d)", m.Type, m.Term))
 		}
@@ -1011,7 +1011,7 @@ func (r *raft) Step(m pb.Message) error {
 		}
 
 	default:
-		//milebeach.Logger.Printf("stub", m.Type) // 3MileBeach
+		//log.Logger.Printf("stub", m.Type) // 3MileBeach
 
 		// 3MileBeach todo: both leader and follower use this to send pb.Message
 		err := r.step(r, m)
@@ -1053,7 +1053,7 @@ func stepLeader(r *raft, m pb.Message) error {
 		})
 		return nil
 	case pb.MsgProp:
-		milebeach.Logger.PrintlnWithCaller("%s stub", r.serverID) // 3MileBeach
+		log.Logger.PrintlnWithCaller("%s stub", r.serverID) // 3MileBeach
 
 		if len(m.Entries) == 0 {
 			r.logger.Panicf("%x stepped empty MsgProp", r.id)
@@ -1321,7 +1321,7 @@ func stepCandidate(r *raft, m pb.Message) error {
 	}
 	switch m.Type {
 	case pb.MsgProp:
-		milebeach.Logger.PrintlnWithCaller("step candidate stub") // 3MileBeach
+		log.Logger.PrintlnWithCaller("step candidate stub") // 3MileBeach
 
 		r.logger.Infof("%x no leader at term %d; dropping proposal", r.id, r.Term)
 		return ErrProposalDropped
@@ -1359,7 +1359,7 @@ func stepCandidate(r *raft, m pb.Message) error {
 func stepFollower(r *raft, m pb.Message) error {
 	switch m.Type {
 	case pb.MsgProp:
-		milebeach.Logger.PrintlnWithCaller("%s stub", r.serverID) // 3MileBeach
+		log.Logger.PrintlnWithCaller("%s stub", r.serverID) // 3MileBeach
 
 		if r.lead == None {
 			r.logger.Infof("%x no leader at term %d; dropping proposal", r.id, r.Term)

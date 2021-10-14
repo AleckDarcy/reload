@@ -20,6 +20,10 @@ func (m *Entry) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *Entry) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_ // 3milebeach todo
+}
+
 func (m *SnapshotMetadata) GetFI_Name() string {
 	return "SnapshotMetadata"
 }
@@ -36,6 +40,10 @@ func (m *SnapshotMetadata) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *SnapshotMetadata) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_ // 3milebeach todo
 }
 
 func (m *Snapshot) GetFI_Name() string {
@@ -56,6 +64,10 @@ func (m *Snapshot) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *Snapshot) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_ // 3milebeach todo
+}
+
 func (m *Message) GetFI_Name() string {
 	return "Message"
 }
@@ -72,6 +84,10 @@ func (m *Message) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *Message) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_ // 3milebeach todo
 }
 
 func (m *HardState) GetFI_Name() string {
@@ -92,6 +108,10 @@ func (m *HardState) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *HardState) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_ // 3milebeach todo
+}
+
 func (m *ConfState) GetFI_Name() string {
 	return "ConfState"
 }
@@ -108,6 +128,10 @@ func (m *ConfState) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *ConfState) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_ // 3milebeach todo
 }
 
 func (m *ConfChange) GetFI_Name() string {
@@ -128,6 +152,10 @@ func (m *ConfChange) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *ConfChange) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_ // 3milebeach todo
+}
+
 func (m *ConfChangeSingle) GetFI_Name() string {
 	return "ConfChangeSingle"
 }
@@ -146,6 +174,10 @@ func (m *ConfChangeSingle) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *ConfChangeSingle) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_ // 3milebeach todo
+}
+
 func (m *ConfChangeV2) GetFI_Name() string {
 	return "ConfChangeV2"
 }
@@ -162,4 +194,8 @@ func (m *ConfChangeV2) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *ConfChangeV2) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_ // 3milebeach todo
 }

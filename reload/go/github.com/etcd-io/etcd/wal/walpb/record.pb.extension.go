@@ -20,6 +20,10 @@ func (m *Record) SetFI_Trace(trace *tracer.Trace) {
 	}
 }
 
+func (m *Record) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_ // 3milebeach todo
+}
+
 func (m *Snapshot) GetFI_Name() string {
 	return "RequestHeader"
 }
@@ -36,4 +40,8 @@ func (m *Snapshot) SetFI_Trace(trace *tracer.Trace) {
 	if m != nil {
 		m.Trace = trace
 	}
+}
+
+func (m *Snapshot) GetFI_MessageType() tracer.MessageType {
+	return tracer.MessageType_Message_ // 3milebeach todo
 }

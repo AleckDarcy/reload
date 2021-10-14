@@ -1,7 +1,13 @@
 # coding:utf-8
 
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
+
+matplotlib.rc('pdf', fonttype=42)
+
+# matplotlib.rcParams['pdf.fonttype'] = 42
+# matplotlib.rcParams['ps.fonttype'] = 42
 
 def client_throughput(data,subplot,title,file):
     if subplot != 0:
@@ -106,7 +112,8 @@ def throughput_latency(data,subplot,title,legend,file):
     if subplot != 0:
         plt.subplot(subplot)
 
-    plt.figure(figsize=(3.6,2.7))
+    plt.figure()
+    # plt.figure(figsize=(3.6,2.7))
 
     baseline_tp,baseline_lat=data["trace_off_throughputs"],data["trace_off_e2eLatencies"]
     milebeach_tp,milebeach_lat=data["trace_on_throughputs"],data["trace_on_e2eLatencies"]
@@ -114,29 +121,32 @@ def throughput_latency(data,subplot,title,legend,file):
 
     plt.errorbar(baseline_tp,baseline_lat,
                  yerr=data["trace_off_e2eLatency_error_bar"],xerr=data["trace_off_throughputs_error_bar"],
-                 fmt='r.-',ecolor='black',label='Case1')
+                 fmt='r.-',ecolor='black',label='TraceOff')
     plt.errorbar(milebeach_tp,milebeach_lat,
              yerr=data["trace_on_e2eLatencies_error_bar"],xerr=data["trace_on_throughputs_error_bar"],
-             fmt='g.-',ecolor='black',label='Case2')
+             fmt='g.-',ecolor='black',label='3MileBeachOn')
     plt.errorbar(jaeger_tp,jaeger_lat,
              yerr=data["jaeger_on_e2eLatencies_error_bar"],xerr=data["jaeger_on_throughputs_error_bar"],
-             fmt='b.-',ecolor='black',label='Case3')
+             fmt='b.-',ecolor='black',label='JaegerOn')
 
-    # for i in (7,7):
-    #     milebeach_o=100*(milebeach_lat[i]/baseline_lat[i]-1)
-    #     milebeach_l=100*(milebeach_tp[i]/baseline_tp[i]-1)
-    #
-    #     jaeger_o=100*(jaeger_lat[i]/baseline_lat[i]-1)
-    #     jaeger_l=100*(jaeger_tp[i]/baseline_tp[i]-1)
-    #
-    #     plt.annotate("<%0.1f%%,%0.1f%%>"%(milebeach_o,milebeach_l), (milebeach_tp[i],milebeach_lat[i]))
-    #     plt.annotate("<%0.1f%%,%0.1f%%>"%(jaeger_o,jaeger_l), (jaeger_tp[i],jaeger_lat[i]))
+    for i in (6,7):
+        milebeach_o=100*(milebeach_lat[i]/baseline_lat[i]-1)
+        milebeach_l=100*(milebeach_tp[i]/baseline_tp[i]-1)
+
+        jaeger_o=100*(jaeger_lat[i]/baseline_lat[i]-1)
+        jaeger_l=100*(jaeger_tp[i]/baseline_tp[i]-1)
+
+        plt.annotate("(%0.1f%%)"%milebeach_o, (milebeach_tp[i],milebeach_lat[i]))
+        plt.annotate("(%0.1f%%)"%jaeger_o, (jaeger_tp[i],jaeger_lat[i]))
+
+        # plt.annotate("<%0.1f%%,%0.1f%%>"%(milebeach_o,milebeach_l), (milebeach_tp[i],milebeach_lat[i]))
+        # plt.annotate("<%0.1f%%,%0.1f%%>"%(jaeger_o,jaeger_l), (jaeger_tp[i],jaeger_lat[i]))
 
     plt.xlabel('Throughput(op/s)')
     plt.xlim(xmin=0,xmax=3500)
     plt.ylim(ymin=0,ymax=120)
     plt.ylabel('Latency(ms)')
-    plt.subplots_adjust(left=0.16,right=0.97,top=0.97,bottom=0.16)
+    # plt.subplots_adjust(left=0.16,right=0.97,top=0.97,bottom=0.16)
 
     if legend:
         plt.legend()
@@ -284,37 +294,37 @@ opt={
     "before":{
         "e2e":{
             "data":[1.00,1.12,1.53,2.40,4.18,7.75,14.58,26.82],
-            "T#":-1,
-            "color":"k.-",
+            "T#":6,
+            "color":".-",
         },
         "rt":{
             "data":[1.00,1.14,1.44,1.81,2.33,3.38,4.58,9.59],
             "T#":6,
-            "color":"k*-",
+            "color":"*-",
             # "color":"g*-",
         },
         "c1":{
             "data":[1.00,1.13,1.68,2.85,5.50,10.28,20.43,37.00],
             "T#":3,
-            "color":"kv-",
+            "color":"v-",
             # "color":"bv-",
         },
         "c2":{
             "data":[1.00,1.22,1.81,3.26,6.36,12.57,24.77,44.94],
             "T#":3,
-            "color":"k^-",
+            "color":"^-",
             # "color":"b^-",
         },
         "p1":{
             "data":[1.00,1.10,1.32,1.59,1.96,2.96,4.39,9.76],
             "T#":6,
-            "color":"k+-",
+            "color":"+-",
             # "color":"g+-",
         },
         "a1":{
             "data":[1.00,0.74,0.82,0.99,1.27,1.97,2.98,6.59],
             "T#":6,
-            "color":"ko-",
+            "color":"o-",
             # "color":"go-",
         },
     },
@@ -323,33 +333,33 @@ opt={
         "e2e":{
             "data":[1.00,1.17,1.43,1.71,2.67,4.86,9.57,17.11],
             "T#":-1,
-            "color":"k.-"
+            "color":".-"
         },
         "rt":{
             "data":[1.00,1.21,1.58,2.15,3.49,8.70,24.78,52.16],
             "T#":4,
-            "color":"k*-",
+            "color":"*-",
             # "color":"b*-",
         },
         "c1":{
             "data":[1.00,1.25,1.52,1.90,3.32,5.98,9.89,16.96],
             "T#":-1,
-            "color":"kv-",
+            "color":"v-",
         },
         "c2":{
             "data":[1.00,1.22,1.51,1.97,3.46,6.10,10.76,17.99],
             "T#":-1,
-            "color":"k^-",
+            "color":"^-",
         },
         "p1":{
             "data":[1.00,1.14,1.33,1.56,2.21,3.15,4.91,7.40],
             "T#":-1,
-            "color":"k+-",
+            "color":"+-",
         },
         "a1":{
             "data":[1.00,1.08,1.32,1.37,2.09,3.48,5.35,6.73],
             "T#":-1,
-            "color":"ko-",
+            "color":"o-",
         },
     },
     # 0814, 8 nodes
@@ -430,9 +440,10 @@ def tuning(opt,name,legend,file):
 
     e2e, rt, c1, c2, p1, a1 = data["e2e"],data["rt"],data["c1"],data["c2"],data["p1"],data["a1"]
 
-    plt.figure(figsize=(4.8,3.6))
+    plt.figure()
+    # plt.figure(figsize=(4.8,3.6))
 
-    # plt.plot(x, np.log2(e2e["data"][1:]),e2e["color"],label="E2E")
+    plt.plot(x, np.log2(e2e["data"][1:]),e2e["color"],label="E2E")
     plt.plot(x, np.log2(rt["data"][1:]),rt["color"],label="RT")
     plt.plot(x, np.log2(c1["data"][1:]),c1["color"],label="Req$_{C1}$")
     plt.plot(x, np.log2(c2["data"][1:]),c2["color"],label="Req$_{C2}$")
@@ -441,21 +452,21 @@ def tuning(opt,name,legend,file):
 
     # if e2e["T#"] != -1:
     #     plt.plot([e2e["T#"]],np.log2(e2e["data"])[e2e["T#"]],"r.--")
-    if rt["T#"] != -1:
-        plt.plot([rt["T#"]],np.log2(rt["data"])[rt["T#"]],"r*--")
-    if c1["T#"] != -1:
-        plt.plot([c1["T#"]],np.log2(c1["data"])[c1["T#"]],"rv--")
-    if c2["T#"] != -1:
-        plt.plot([c2["T#"]],np.log2(c2["data"])[c2["T#"]],"r^--")
-    if p1["T#"] != -1:
-        plt.plot([p1["T#"]],np.log2(p1["data"])[p1["T#"]],"r+--")
-    if a1["T#"] != -1:
-        plt.plot([a1["T#"]],np.log2(a1["data"])[a1["T#"]],"ro--")
+    # if rt["T#"] != -1:
+    #     plt.plot([rt["T#"]],np.log2(rt["data"])[rt["T#"]],"r*--")
+    # if c1["T#"] != -1:
+    #     plt.plot([c1["T#"]],np.log2(c1["data"])[c1["T#"]],"rv--")
+    # if c2["T#"] != -1:
+    #     plt.plot([c2["T#"]],np.log2(c2["data"])[c2["T#"]],"r^--")
+    # if p1["T#"] != -1:
+    #     plt.plot([p1["T#"]],np.log2(p1["data"])[p1["T#"]],"r+--")
+    # if a1["T#"] != -1:
+    #     plt.plot([a1["T#"]],np.log2(a1["data"])[a1["T#"]],"ro--")
 
     plt.ylim(ymin=-1,ymax=7)
     plt.xlabel('log$_{2}$(N$_{C}$)')
     plt.ylabel('log$_{2}$(R$_{N_{C}}$)')
-    plt.subplots_adjust(left=0.12,right=0.99,top=0.98,bottom=0.13)
+    # plt.subplots_adjust(left=0.12,right=0.99,top=0.98,bottom=0.13)
 
     if legend:
         plt.legend()
@@ -542,7 +553,7 @@ def overhead_and_loss(o_l,legend,file):
 # # client_latency(data2,0,"6 nodes","plots/client_latency_6.pdf")
 # client_latency(data3,0,"8 nodes","plots/client_latency_8.pdf")
 
-# throughput_latency(data1,0,"1 node",False,"plots/throughput_latency_1.pdf")
+throughput_latency(data1,0,"1 node",False,"plots/throughput_latency_1.pdf")
 # # throughput_latency(data2,0,"6 nodes","plots/throughput_latency_6.pdf")
 throughput_latency(data3,0,"8 nodes",True,"plots/throughput_latency_8.pdf")
 
@@ -560,8 +571,8 @@ throughput_latency(data3,0,"8 nodes",True,"plots/throughput_latency_8.pdf")
 # # client_process_latency(data2,0,"6 nodes","plots/client_process_latency_6.pdf")
 # client_process_latency(data3,0,"8 nodes","plots/client_process_latency_8.pdf")
 
-# tuning(opt,"before",True,"plots/opt_before.pdf")
-# tuning(opt,"after",False,"plots/opt_after.pdf")
+tuning(opt,"before",True,"plots/opt_before.pdf")
+tuning(opt,"after",False,"plots/opt_after.pdf")
 # tuning(opt,"cluster1",False,"plots/opt_cluster1.pdf")
 # tuning(opt,"cluster2",False,"plots/opt_cluster2.pdf")
 
