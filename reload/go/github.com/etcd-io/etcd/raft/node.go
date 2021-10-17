@@ -416,6 +416,7 @@ func (n *node) Tick() {
 func (n *node) Campaign(ctx context.Context) error { return n.step(ctx, pb.Message{Type: pb.MsgHup}) }
 
 func (n *node) Propose(ctx context.Context, data []byte) error {
+	log.Logger.PrintlnWithCaller("%s stub", n.rn.raft.serverID) // 3milebeach
 	return n.stepWait(ctx, pb.Message{Type: pb.MsgProp, Entries: []pb.Entry{{Data: data}}})
 }
 
@@ -472,7 +473,7 @@ func (n *node) stepWithWaitOption(ctx context.Context, m pb.Message, wait bool) 
 	}
 	select {
 	case ch <- pm:
-		log.Logger.PrintlnWithCaller("%s propc<- stub", n.rn.raft.serverID)
+		log.Logger.PrintlnWithCaller("%s propc<- stub", n.rn.raft.serverID) // 3milebeach
 		if !wait {
 			return nil
 		}

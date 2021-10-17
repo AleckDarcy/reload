@@ -47,7 +47,7 @@ type RawNode struct {
 // state manually by setting up a Storage that has a first index > 1 and which
 // stores the desired ConfState as its InitialState.
 func NewRawNode(config *Config) (*RawNode, error) {
-	log.Logger.PrintlnWithCaller("stub")
+	log.Logger.PrintlnWithCaller("stub") // 3milebeach
 	r := newRaft(config)
 	rn := &RawNode{
 		raft: r,

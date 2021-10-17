@@ -15,12 +15,17 @@ type ContextMeta struct {
 	traceID TraceID
 	uuid    UUID
 	url     string
+	server  UUID
 }
 
 type ContextMetaKey struct{}
 
 func NewContextMeta(traceID TraceID, uuid UUID, url string) *ContextMeta {
 	return &ContextMeta{traceID: traceID, uuid: uuid, url: url}
+}
+
+func NewContextMeta1(traceID TraceID, uuid UUID, url string, server UUID) *ContextMeta {
+	return &ContextMeta{traceID: traceID, uuid: uuid, url: url, server: server}
 }
 
 func (c *ContextMeta) UUID() UUID {

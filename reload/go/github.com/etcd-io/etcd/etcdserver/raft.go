@@ -124,7 +124,7 @@ type raftNodeConfig struct {
 }
 
 func newRaftNode(cfg raftNodeConfig) *raftNode {
-	log2.Logger.PrintlnWithCaller("%s stub", cfg.serverUUID)
+	log2.Logger.PrintlnWithCaller("%s stub", cfg.serverUUID) // 3milebeach
 
 	var lg raft.Logger
 	if cfg.lg != nil {

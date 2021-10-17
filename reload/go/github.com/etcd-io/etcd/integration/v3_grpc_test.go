@@ -66,6 +66,8 @@ func TestV3Put_3MileBeach(t *testing.T) { // 3MileBeach starts
 	log.Logger.Printf("========== test ready ==========\n")
 
 	respput, err := kvc.Put(context.TODO(), reqput)
+
+	log.Logger.Printf("response: %s\n", respput.Trace.JSONString())
 	log.Logger.Printf("========== test ended ==========\n")
 	if err != nil {
 		t.Fatalf("couldn't put key (%v)", err)

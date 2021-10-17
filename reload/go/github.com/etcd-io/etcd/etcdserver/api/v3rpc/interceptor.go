@@ -19,6 +19,10 @@ import (
 	"sync"
 	"time"
 
+	"github.com/AleckDarcy/reload/core/tracer"
+
+	"github.com/AleckDarcy/reload/core/log"
+
 	"go.etcd.io/etcd/etcdserver"
 	"go.etcd.io/etcd/etcdserver/api"
 	"go.etcd.io/etcd/etcdserver/api/v3rpc/rpctypes"
@@ -61,6 +65,51 @@ func newUnaryInterceptor(s *etcdserver.EtcdServer) grpc.UnaryServerInterceptor {
 				}
 			}
 		}
+
+		if reqT, ok := req.(tracer.Tracer); ok { // 3milebeach begins
+			if trace := reqT.GetFI_Trace(); trace != nil && trace.Id != 0 {
+				records := trace.GetRecords()
+				recordC := len(records)
+				lastRecord := records[recordC-1]
+				log.Logger.PrintlnWithStackTrace(6, "%s last event %s", s.Cfg.ServerUUID, lastRecord)
+
+				// 1) read trace from request;
+				event := &tracer.Record{
+					Type:        tracer.RecordType_RecordReceive,
+					Timestamp:   time.Now().UnixNano(),
+					MessageName: reqT.GetFI_Name(),
+					Uuid:        lastRecord.GetUuid(),
+					Service:     s.Cfg.ServerUUID,
+				}
+				log.Logger.PrintlnWithStackTrace(6, "%s new event %s", s.Cfg.ServerUUID, event)
+				records = append(records, event)
+
+				// 2) call handler();
+				ctxM := tracer.NewContextMeta1(trace.Id, lastRecord.Uuid, reqT.GetFI_Name(), s.Cfg.ServerUUID)
+				ctx = tracer.NewContextWithContextMeta(ctx, ctxM)
+				rsp, err := handler(ctx, req)
+
+				// 3) append trace to rsp
+				rspT := rsp.(tracer.Tracer)
+				records = append(records, rspT.GetFI_Trace().GetRecords()...)
+
+				event = &tracer.Record{
+					Type:        tracer.RecordType_RecordSend,
+					Timestamp:   time.Now().UnixNano(),
+					MessageName: rsp.(tracer.Tracer).GetFI_Name(),
+					Uuid:        lastRecord.GetUuid(),
+					Service:     s.Cfg.ServerUUID,
+				}
+				records = append(records, event)
+				log.Logger.PrintlnWithStackTrace(6, "%s new event %s", s.Cfg.ServerUUID, event)
+
+				trace.Records = records
+				rspT.SetFI_Trace(trace)
+
+				log.Logger.PrintlnWithStackTrace(6, "new trace: %s", trace)
+				return rsp, err
+			}
+		} // 3milebeach ends
 
 		return handler(ctx, req)
 	}
