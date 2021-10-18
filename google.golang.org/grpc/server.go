@@ -849,7 +849,8 @@ func (s *Server) incrCallsFailed() {
 }
 
 func (s *Server) sendResponse(ctx context.Context, t transport.ServerTransport, stream *transport.Stream, msg interface{}, cp Compressor, opts *transport.Options, comp encoding.Compressor) error {
-	data, err := encode(s.getCodec(stream.ContentSubtype(), ctx), msg)
+	data, err := encode(s.getCodec(stream.ContentSubtype(), ctx), msg) // 3milebeach
+	// data, err := encode(s.getCodec(stream.ContentSubtype(), ctx), msg)
 	if err != nil {
 		grpclog.Errorln("grpc: server failed to encode response: ", err)
 		return err
