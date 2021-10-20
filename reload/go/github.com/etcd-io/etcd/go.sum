@@ -11,6 +11,8 @@ github.com/AleckDarcy/reload v0.0.0-20211005221338-1e92e55ed652 h1:tP1oYuqMpSnGH
 github.com/AleckDarcy/reload v0.0.0-20211005221338-1e92e55ed652/go.mod h1:/353t07FzcLjtSr0uf7rbLHz1lK1iUJXCVGEkuM1Lqw=
 github.com/AleckDarcy/reload v0.0.0-20211013055631-d42942a8bd62 h1:50DAgBK8i4rwWL0b4bspjA1+/vFLbpfKP/CdFeAW4dI=
 github.com/AleckDarcy/reload v0.0.0-20211013055631-d42942a8bd62/go.mod h1:/353t07FzcLjtSr0uf7rbLHz1lK1iUJXCVGEkuM1Lqw=
+github.com/AleckDarcy/reload v0.0.0-20211018060605-455d5d2278bf h1:EyO2tFz7FCNtjze89JVV6iFRbu22Q8x3ULie1IbiVYk=
+github.com/AleckDarcy/reload v0.0.0-20211018060605-455d5d2278bf/go.mod h1:/353t07FzcLjtSr0uf7rbLHz1lK1iUJXCVGEkuM1Lqw=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/OneOfOne/xxhash v1.2.2/go.mod h1:HSdplMjZKSmBqAxg5vPj2TmRDmfkzw+cTzAElWljhcU=
 github.com/alecthomas/template v0.0.0-20160405071501-a0175ee3bccc/go.mod h1:LOuyumcjzFXgccqObfd/Ljyb9UuFJ6TxHnclSeseNhc=

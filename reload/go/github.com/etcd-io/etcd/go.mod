@@ -1,7 +1,7 @@
 module go.etcd.io/etcd
 
 require (
-	github.com/AleckDarcy/reload v0.0.0-20211013055631-d42942a8bd62
+	github.com/AleckDarcy/reload v0.0.0-20211018060605-455d5d2278bf
 	github.com/antihax/optional v1.0.0 // indirect
 	github.com/bgentry/speakeasy v0.1.0
 	github.com/cespare/xxhash v1.1.0 // indirect

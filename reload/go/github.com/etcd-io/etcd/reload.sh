@@ -10,5 +10,5 @@ rm -rf vendor/github.com/grpc-ecosystem/go-grpc-middleware/
 cp -r ../../../../go/github.com/grpc-ecosystem/go-grpc-middleware/ vendor/github.com/grpc-ecosystem/go-grpc-middleware/
 
 # reload core
-rm -rf vendor/github.com/AleckDarcy/reload/
-cp -r ../../../../../core vendor/github.com/AleckDarcy/reload/
+rm -rf vendor/github.com/AleckDarcy/reload/core
+cp -r ../../../../../core vendor/github.com/AleckDarcy/reload/core

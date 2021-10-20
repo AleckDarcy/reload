@@ -27,7 +27,6 @@ import (
 	"time"
 
 	"github.com/AleckDarcy/reload/core/log"
-
 	"github.com/AleckDarcy/reload/core/tracer"
 
 	"go.etcd.io/etcd/clientv3"
