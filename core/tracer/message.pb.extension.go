@@ -19,6 +19,19 @@ func (m *Trace) Copy() *Trace {
 	return &newM
 }
 
+func (m *Trace) GetLastEvent() (*Record, bool) {
+	if m == nil {
+		return nil, false
+	}
+
+	recordC := len(m.Records)
+	if recordC == 0 {
+		return nil, false
+	}
+
+	return m.Records[recordC-1], true
+}
+
 func (m *Trace) CalFI(records []*Record) {
 	for _, tfi := range m.Tfis {
 		for _, record := range records {
