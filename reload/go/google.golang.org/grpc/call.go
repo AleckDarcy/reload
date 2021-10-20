@@ -65,13 +65,9 @@ func Invoke(ctx context.Context, method string, args, reply interface{}, cc *Cli
 var unaryStreamDesc = &StreamDesc{ServerStreams: false, ClientStreams: false}
 
 func invoke(ctx context.Context, method string, req, reply interface{}, cc *ClientConn, opts ...CallOption) error {
-	if t, ok := req.(tracer.Tracer); ok { // 3milebeach begins
-		if trace := t.GetFI_Trace(); trace != nil {
-			records := trace.Records
-			if recordC := len(records); recordC != 0 {
-				lastEvent := records[recordC-1]
-				ctx = tracer.NewContextWithContextMeta(ctx, tracer.NewContextMeta(trace.Id, lastEvent.Uuid, "client"))
-			}
+	if trace, ok := tracer.Assertion.GetTrace(req); ok { // 3milebeach
+		if lastEvent, ok := trace.GetLastEvent(); ok {
+			ctx = tracer.NewContextWithContextMeta(ctx, tracer.NewContextMeta(trace.Id, lastEvent.Uuid, "client"))
 		}
 	} // 3milebeach ends
 	cs, err := newClientStream(ctx, unaryStreamDesc, cc, method, opts...)
