@@ -70,7 +70,7 @@ func newUnaryInterceptor(s *etcdserver.EtcdServer) grpc.UnaryServerInterceptor {
 				records := trace.GetRecords()
 				recordC := len(records)
 				lastRecord := records[recordC-1]
-				log.Debug.PrintlnWithStackTrace(6, "%s last event %s", s.Cfg.ServerUUID, lastRecord) // 3milebeach: tracing
+				// log.Debug.PrintlnWithStackTrace(6, "%s last event %s", s.Cfg.ServerUUID, lastRecord) // 3milebeach: tracing
 
 				// 1) read trace from request;
 				event := &tracer.Record{
@@ -80,7 +80,7 @@ func newUnaryInterceptor(s *etcdserver.EtcdServer) grpc.UnaryServerInterceptor {
 					Uuid:        lastRecord.GetUuid(),
 					Service:     s.Cfg.ServerUUID,
 				}
-				log.Debug.PrintlnWithStackTrace(6, "%s new event %s", s.Cfg.ServerUUID, event) // 3milebeach: tracing
+				// log.Debug.PrintlnWithStackTrace(6, "%s new event %s", s.Cfg.ServerUUID, event) // 3milebeach: tracing
 				records = append(records, event)
 
 				// 2) call handler();
@@ -100,12 +100,12 @@ func newUnaryInterceptor(s *etcdserver.EtcdServer) grpc.UnaryServerInterceptor {
 					Service:     s.Cfg.ServerUUID,
 				}
 				records = append(records, event)
-				log.Debug.PrintlnWithStackTrace(6, "%s new event %s", s.Cfg.ServerUUID, event) // 3milebeach: tracing
+				// log.Debug.PrintlnWithStackTrace(6, "%s new event %s", s.Cfg.ServerUUID, event) // 3milebeach: tracing
 
 				trace.Records = records
 				rspT.SetFI_Trace(trace)
 
-				log.Debug.PrintlnWithStackTrace(6, "%s rsp: %s", s.Cfg.ServerUUID, rsp) // 3milebeach: tracing
+				log.Debug.PrintlnWithCaller("%s rsp: %s", s.Cfg.ServerUUID, rsp) // 3milebeach: tracing
 
 				return rsp, err
 			}

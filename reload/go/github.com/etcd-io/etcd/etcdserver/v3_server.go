@@ -112,8 +112,6 @@ func (s *EtcdServer) Range(ctx context.Context, r *pb.RangeRequest) (*pb.RangeRe
 }
 
 func (s *EtcdServer) Put(ctx context.Context, r *pb.PutRequest) (*pb.PutResponse, error) {
-	log.Logger.PrintlnWithCaller("%s stub", s.Cfg.ServerUUID)           // 3MileBeach
-	log.Logger.PrintlnWithCaller("%s %s", s.Cfg.ServerUUID, r.String()) // 3milebeach
 	resp, err := s.raftRequest(ctx, pb.InternalRaftRequest{Put: r})
 	if err != nil {
 		return nil, err
@@ -530,7 +528,6 @@ func (s *EtcdServer) RoleDelete(ctx context.Context, r *pb.AuthRoleDeleteRequest
 }
 
 func (s *EtcdServer) raftRequestOnce(ctx context.Context, r pb.InternalRaftRequest) (proto.Message, error) {
-	log.Logger.PrintlnWithCaller("%s stub", s.Cfg.ServerUUID) // 3milebeach
 	result, err := s.processInternalRaftRequestOnce(ctx, r)
 	if err != nil {
 		return nil, err

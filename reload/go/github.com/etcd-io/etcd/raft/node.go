@@ -456,6 +456,7 @@ func (n *node) stepWait(ctx context.Context, m pb.Message) error {
 // Step advances the state machine using msgs. The ctx.Err() will be returned,
 // if any.
 func (n *node) stepWithWaitOption(ctx context.Context, m pb.Message, wait bool) error {
+	log.Stub.PrintlnWithCaller("%s stub", n.rn.raft.serverID) // 3milebeach
 	if m.Type != pb.MsgProp {
 		select {
 		case n.recvc <- m:

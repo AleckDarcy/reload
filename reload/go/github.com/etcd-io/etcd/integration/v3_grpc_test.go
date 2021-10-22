@@ -44,7 +44,7 @@ import (
 // kVClient (rpc.pb.go)
 
 func TestV3Put_3MileBeach(t *testing.T) { // 3MileBeach starts
-	log.SetLogger(log.DebugHelperLogger, false)
+	//log.SetLogger(log.DebugHelperLogger, false)
 
 	defer testutil.AfterTest(t)
 	clus := NewClusterV3(t, &ClusterConfig{Size: 3})

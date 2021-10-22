@@ -41,12 +41,12 @@ func ChainUnaryServer(interceptors ...grpc.UnaryServerInterceptor) grpc.UnarySer
 				if reqT, ok := req.(tracer.Tracer); ok {
 					trace, ok = tracer.Assertion.GetTrace(req) // 3milebeach begins
 					if ok {
-						//log.Logger.PrintlnWithStackTrace(3, "hhhhhhh")
-						//log.Logger.PrintlnWithStackTrace(4, "hhhhhhh")
-						//log.Logger.PrintlnWithStackTrace(5, "hhhhhhh")
-						//log.Logger.PrintlnWithStackTrace(6, "hhhhhhh")
-						//log.Logger.PrintlnWithStackTrace(7, "hhhhhhh")
-						//log.Logger.PrintlnWithStackTrace(8, "hhhhhhh")
+						//log.Debug.PrintlnWithStackTrace(3, "hhhhhhh")
+						//log.Debug.PrintlnWithStackTrace(4, "hhhhhhh")
+						//log.Debug.PrintlnWithStackTrace(5, "hhhhhhh")
+						//log.Debug.PrintlnWithStackTrace(6, "hhhhhhh")
+						//log.Debug.PrintlnWithStackTrace(7, "hhhhhhh")
+						//log.Debug.PrintlnWithStackTrace(8, "hhhhhhh")
 
 						log.Debug.PrintlnWithCaller("%s processing %s", cm.ServerUUID(), reqT.GetFI_Name())
 						trace = reqT.GetFI_Trace()

@@ -424,10 +424,9 @@ func (r *raft) send(m pb.Message) {
 
 	if m.Type == pb.MsgVote || m.Type == pb.MsgVoteResp || m.Type == pb.MsgPreVote || m.Type == pb.MsgPreVoteResp {
 		// log.Logger.PrintlnWithCaller("%d", len(m.Entries)) // 3milebeach begins
-
-		log.Logger.PrintlnWithStackTrace(4, "%s who calls send() (skip 4)", r.serverID)
-		log.Logger.PrintlnWithStackTrace(3, "%s who calls send() (skip 3)", r.serverID)
-		log.Logger.PrintlnWithCaller("%s type (%s) from (%d) to (%d)", r.serverID, m.Type, m.From, m.To) // 3MileBeach ends
+		// log.Logger.PrintlnWithStackTrace(4, "%s", r.serverID)                  // stepLead or stepFollower
+		// log.Logger.PrintlnWithStackTrace(3, "%s", r.serverID)                  // handleAppendEntries()
+		log.Debug.PrintlnWithCaller("%s type (%s) from (%d) to (%d)", r.serverID, m.Type, m.From, m.To) // 3MileBeach ends
 		if m.Term == 0 {
 			// All {pre-,}campaign messages need to have the term set when
 			// sending.
@@ -445,10 +444,9 @@ func (r *raft) send(m pb.Message) {
 		}
 	} else {
 		// log.Logger.PrintlnWithCaller("%d", len(m.Entries)) // 3milebeach begins
-
-		log.Logger.PrintlnWithStackTrace(4, "%s who calls send() (skip 4)", r.serverID)                  // stepLead or stepFollower
-		log.Logger.PrintlnWithStackTrace(3, "%s who calls send() (skip 3)", r.serverID)                  // handleAppendEntries()
-		log.Logger.PrintlnWithCaller("%s type (%s) from (%d) to (%d)", r.serverID, m.Type, m.From, m.To) // 3MileBeach ends
+		// log.Logger.PrintlnWithStackTrace(4, "%s", r.serverID)                  // stepLead or stepFollower
+		// log.Logger.PrintlnWithStackTrace(3, "%s", r.serverID)                  // handleAppendEntries()
+		log.Debug.PrintlnWithCaller("%s type (%s) from (%d) to (%d)", r.serverID, m.Type, m.From, m.To) // 3MileBeach ends
 		if m.Term != 0 {
 			panic(fmt.Sprintf("term should not be set when sending %s (was %d)", m.Type, m.Term))
 		}
@@ -1013,9 +1011,8 @@ func (r *raft) Step(m pb.Message) error {
 		}
 
 	default:
-		//log.Logger.Printf("stub", m.Type) // 3MileBeach
-
-		// 3MileBeach todo: both leader and follower use this to send pb.Message
+		// log.Stub.Printf("stub", m.Type) // 3MileBeach
+		// 3MileBeach note: both leader and follower use this to send pb.Message
 		err := r.step(r, m)
 		if err != nil {
 			return err
@@ -1418,19 +1415,19 @@ func stepFollower(r *raft, m pb.Message) error {
 	return nil
 }
 
-// 3milebeach notes: a follower or candidate method
+// 3milebeach note: a follower or candidate method
 func (r *raft) handleAppendEntries(m pb.Message) {
 	if m.Index < r.raftLog.committed {
-		log.Logger.PrintlnWithCaller("%s already committed", r.serverID) // 3milebeach
+		log.CriticalPath.PrintlnWithCaller("%s already committed", r.serverID) // 3milebeach
 		r.send(pb.Message{To: m.From, Type: pb.MsgAppResp, Index: r.raftLog.committed})
 		return
 	}
 
 	if mlastIndex, ok := r.raftLog.maybeAppend(m.Index, m.LogTerm, m.Commit, m.Entries...); ok {
-		log.Logger.PrintlnWithCaller("%s committed, last index: %d", r.serverID, mlastIndex) // 3milebeach
+		log.CriticalPath.PrintlnWithCaller("%s committed, last index: %d", r.serverID, mlastIndex) // 3milebeach
 		r.send(pb.Message{To: m.From, Type: pb.MsgAppResp, Index: mlastIndex})
 	} else {
-		log.Logger.PrintlnWithCaller("%s commit failed", r.serverID) // 3milebeach
+		log.CriticalPath.PrintlnWithCaller("%s commit failed", r.serverID) // 3milebeach
 		r.logger.Debugf("%x [logterm: %d, index: %d] rejected MsgApp [logterm: %d, index: %d] from %x",
 			r.id, r.raftLog.zeroTermOnErrCompacted(r.raftLog.term(m.Index)), m.Index, m.LogTerm, m.Index, m.From)
 		r.send(pb.Message{To: m.From, Type: pb.MsgAppResp, Index: m.Index, Reject: true, RejectHint: r.raftLog.lastIndex()})
