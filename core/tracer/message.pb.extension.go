@@ -103,6 +103,12 @@ func (m *Trace) TFI(name string) error {
 	return nil
 }
 
+func (m *Trace) AppendRecords(records []*Record) *Trace {
+	m.Records = append(m.Records, records...)
+
+	return m
+}
+
 func (m *Trace) AppendRecord(record *Record) *Trace {
 	m.Records = append(m.Records, record)
 

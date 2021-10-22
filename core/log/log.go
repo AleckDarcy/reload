@@ -34,22 +34,66 @@ func Printf(format string, v ...interface{}) {
 	fmt.Printf(format, v...)
 }
 
-type logger struct{}
+const (
+	normalLogger = iota
+	debugHelperLogger
+	criticalPathLogger
+	count
+)
 
-var Logger *logger
+type logger struct {
+	type_ int
+}
+
+var conf = make([]bool, count)
+
+func init() {
+	for i := range conf {
+		conf[i] = true
+	}
+}
+
+func SetLogger(type_ uint, on bool) {
+	if type_ < count {
+		conf[type_] = on
+	}
+}
+
+var Logger = logger{normalLogger}
+var Debug = logger{debugHelperLogger}
+var CriticalPath = logger{criticalPathLogger}
 
 func (l *logger) PrintlnWithStackTrace(skip int, format string, a ...interface{}) {
-	f, line := caller2(skip)
+	if conf[l.type_] == false {
+		return
+	}
 
-	Printf("[3MileBeach] "+f+" "+format+line, a...)
+	if skip == 2 {
+		l.PrintlnWithCaller(format, a...)
+	} else {
+		f2, _ := caller2(2)
+		f, line := caller2(skip)
+
+		a = append([]interface{}{skip}, a...)
+
+		Printf("[3MileBeach] "+f2+" (skip %d: "+f+") "+format+line, a...)
+	}
 }
 
 func (l *logger) PrintlnWithCaller(format string, a ...interface{}) {
+	if conf[l.type_] == false {
+		return
+	}
+
 	f, line := caller2(2)
 
 	Printf("[3MileBeach] "+f+" "+format+line, a...)
 }
 
 func (l *logger) Printf(format string, a ...interface{}) {
+	if conf[l.type_] == false {
+		return
+	}
+
 	Printf("[3MileBeach] "+format, a...)
 }

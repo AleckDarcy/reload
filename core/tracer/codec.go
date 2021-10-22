@@ -15,12 +15,15 @@ type baseCodec interface {
 }
 
 type codec struct {
-	ctx   context.Context
-	basic baseCodec
+	serverUUID UUID
+	ctx        context.Context
+	basic      baseCodec
 }
 
 func NewCodec(ctx context.Context, basic baseCodec) *codec {
-	return &codec{ctx: ctx, basic: basic}
+	cm := ctx.Value(ContextMetaKey{}).(*ContextMeta)
+
+	return &codec{ctx: ctx, basic: basic, serverUUID: cm.server}
 }
 
 func (c *codec) Marshal(v interface{}) ([]byte, error) {
@@ -43,7 +46,7 @@ func (c *codec) Marshal(v interface{}) ([]byte, error) {
 					Timestamp:   time.Now().UnixNano(),
 					MessageName: t.GetFI_Name(),
 					Uuid:        uuid,
-					Service:     ServiceUUID,
+					Service:     c.serverUUID,
 				}
 
 				updateFunction := func(trace *Trace) {
@@ -140,7 +143,7 @@ func (c *codec) Unmarshal(data []byte, v interface{}) error {
 							Timestamp:   time.Now().UnixNano(),
 							MessageName: t.GetFI_Name(),
 							Uuid:        uuid,
-							Service:     ServiceUUID,
+							Service:     c.serverUUID,
 						}
 						Store.SetByContextMeta(meta, trace)
 					}
@@ -151,20 +154,28 @@ func (c *codec) Unmarshal(data []byte, v interface{}) error {
 					} else if uuid := trace.Records[0].Uuid; uuid == "" {
 						log.Logf("[RELOAD] Unmarshal, receive invalid uuid: %s", uuid)
 					} else {
-						Store.UpdateFunctionByContextMeta(meta, func(oldTrace *Trace) {
-							length := len(trace.Records) + 1
-							oldTrace.Records = append(oldTrace.Records, trace.Records...)
-							oldTrace.Records = append(oldTrace.Records, &Record{
-								Type:        RecordType_RecordReceive,
-								Timestamp:   time.Now().UnixNano(),
-								MessageName: t.GetFI_Name(),
-								Uuid:        uuid,
-								Service:     ServiceUUID,
-							})
-							oldTrace.CalFI(oldTrace.Records[len(oldTrace.Records)-length:])
+						//Store.UpdateFunctionByContextMeta(meta, func(oldTrace *Trace) {
+						//	length := len(trace.Records) + 1
+						//	oldTrace.Records = append(oldTrace.Records, trace.Records...)
+						//	oldTrace.Records = append(oldTrace.Records, &Record{
+						//		Type:        RecordType_RecordReceive,
+						//		Timestamp:   time.Now().UnixNano(),
+						//		MessageName: t.GetFI_Name(),
+						//		Uuid:        uuid,
+						//		Service:     ServiceUUID,
+						//	})
+						//	oldTrace.CalFI(oldTrace.Records[len(oldTrace.Records)-length:])
+						//})
+
+						trace.Records = append(trace.Records, &Record{
+							Type:        RecordType_RecordReceive,
+							Timestamp:   time.Now().UnixNano(),
+							MessageName: t.GetFI_Name(),
+							Uuid:        uuid,
+							Service:     c.serverUUID,
 						})
 
-						t.SetFI_Trace(nil)
+						t.SetFI_Trace(trace)
 					}
 				}
 			} else {

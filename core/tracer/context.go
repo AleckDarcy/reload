@@ -36,6 +36,10 @@ func (c *ContextMeta) Url() string {
 	return c.url
 }
 
+func (c *ContextMeta) ServerUUID() UUID {
+	return c.server
+}
+
 func NewContextWithContextMeta(ctx context.Context, c *ContextMeta) context.Context {
 	return context.WithValue(ctx, ContextMetaKey{}, c)
 }
