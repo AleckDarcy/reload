@@ -15,26 +15,20 @@
 package v3rpc
 
 import (
-	"github.com/AleckDarcy/reload/core/log"
-
 	"github.com/gogo/protobuf/proto"
 )
 
 type codec struct{}
 
-// 3milebeach todo: boundary component where server sends RPC response to the client
+// 3milebeach note: boundary component where server sends RPC response to the client
 func (c *codec) Marshal(v interface{}) ([]byte, error) {
-	log.Logger.PrintlnWithCaller("stub") // 3milebeach
-
 	b, err := proto.Marshal(v.(proto.Message))
 	sentBytes.Add(float64(len(b)))
 	return b, err
 }
 
-// 3milebeach todo: boundary component where server receives RPC request from the client
+// 3milebeach note: boundary component where server receives RPC request from the client
 func (c *codec) Unmarshal(data []byte, v interface{}) error {
-	log.Logger.PrintlnWithCaller("stub") // 3milebeach
-
 	receivedBytes.Add(float64(len(data)))
 	return proto.Unmarshal(data, v.(proto.Message))
 }

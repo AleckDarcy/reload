@@ -19,9 +19,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/AleckDarcy/reload/core/tracer"
-
 	"github.com/AleckDarcy/reload/core/log"
+	"github.com/AleckDarcy/reload/core/tracer"
 
 	"go.etcd.io/etcd/etcdserver"
 	"go.etcd.io/etcd/etcdserver/api"
@@ -71,7 +70,7 @@ func newUnaryInterceptor(s *etcdserver.EtcdServer) grpc.UnaryServerInterceptor {
 				records := trace.GetRecords()
 				recordC := len(records)
 				lastRecord := records[recordC-1]
-				log.Logger.PrintlnWithStackTrace(6, "%s last event %s", s.Cfg.ServerUUID, lastRecord)
+				log.Debug.PrintlnWithStackTrace(6, "%s last event %s", s.Cfg.ServerUUID, lastRecord) // 3milebeach: tracing
 
 				// 1) read trace from request;
 				event := &tracer.Record{
@@ -81,12 +80,12 @@ func newUnaryInterceptor(s *etcdserver.EtcdServer) grpc.UnaryServerInterceptor {
 					Uuid:        lastRecord.GetUuid(),
 					Service:     s.Cfg.ServerUUID,
 				}
-				log.Logger.PrintlnWithStackTrace(6, "%s new event %s", s.Cfg.ServerUUID, event)
+				log.Debug.PrintlnWithStackTrace(6, "%s new event %s", s.Cfg.ServerUUID, event) // 3milebeach: tracing
 				records = append(records, event)
 
 				// 2) call handler();
-				ctxM := tracer.NewContextMeta1(trace.Id, lastRecord.Uuid, reqT.GetFI_Name(), s.Cfg.ServerUUID)
-				ctx = tracer.NewContextWithContextMeta(ctx, ctxM)
+				cm := tracer.NewContextMeta1(trace.Id, lastRecord.Uuid, reqT.GetFI_Name(), s.Cfg.ServerUUID)
+				ctx = tracer.NewContextWithContextMeta(ctx, cm)
 				rsp, err := handler(ctx, req)
 
 				// 3) append trace to rsp
@@ -101,12 +100,13 @@ func newUnaryInterceptor(s *etcdserver.EtcdServer) grpc.UnaryServerInterceptor {
 					Service:     s.Cfg.ServerUUID,
 				}
 				records = append(records, event)
-				log.Logger.PrintlnWithStackTrace(6, "%s new event %s", s.Cfg.ServerUUID, event)
+				log.Debug.PrintlnWithStackTrace(6, "%s new event %s", s.Cfg.ServerUUID, event) // 3milebeach: tracing
 
 				trace.Records = records
 				rspT.SetFI_Trace(trace)
 
-				log.Logger.PrintlnWithStackTrace(6, "new trace: %s", trace)
+				log.Debug.PrintlnWithStackTrace(6, "%s rsp: %s", s.Cfg.ServerUUID, rsp) // 3milebeach: tracing
+
 				return rsp, err
 			}
 		} // 3milebeach ends
@@ -119,6 +119,9 @@ func newLogUnaryInterceptor(s *etcdserver.EtcdServer) grpc.UnaryServerIntercepto
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 		startTime := time.Now()
 		resp, err := handler(ctx, req)
+
+		// log.Debug.PrintlnWithCaller("rsp: %s", resp) // 3milebeach: check server response
+
 		lg := s.Logger()
 		if (lg != nil && lg.Core().Enabled(zap.DebugLevel)) || // using zap logger and debug level is enabled
 			(lg == nil && plog.LevelAt(capnslog.DEBUG)) { // or, using capnslog and debug level is enabled

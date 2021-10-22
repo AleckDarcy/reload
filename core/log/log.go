@@ -35,9 +35,10 @@ func Printf(format string, v ...interface{}) {
 }
 
 const (
-	normalLogger = iota
-	debugHelperLogger
-	criticalPathLogger
+	NormalLogger = iota
+	DebugHelperLogger
+	StubLogger
+	CriticalPathLogger
 	count
 )
 
@@ -59,9 +60,10 @@ func SetLogger(type_ uint, on bool) {
 	}
 }
 
-var Logger = logger{normalLogger}
-var Debug = logger{debugHelperLogger}
-var CriticalPath = logger{criticalPathLogger}
+var Logger = logger{NormalLogger}
+var Debug = logger{DebugHelperLogger}
+var Stub = logger{StubLogger}
+var CriticalPath = logger{CriticalPathLogger}
 
 func (l *logger) PrintlnWithStackTrace(skip int, format string, a ...interface{}) {
 	if conf[l.type_] == false {

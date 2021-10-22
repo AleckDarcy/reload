@@ -27,6 +27,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/AleckDarcy/reload/core/log"
+
 	"golang.org/x/net/trace"
 	"google.golang.org/grpc/balancer"
 	"google.golang.org/grpc/codes"
@@ -42,6 +44,8 @@ import (
 	"google.golang.org/grpc/stats"
 	"google.golang.org/grpc/status"
 )
+
+var _ = log.Logger // 3milebeach
 
 // StreamHandler defines the handler called by gRPC server to complete the
 // execution of a streaming RPC. If a StreamHandler returns an error, it
@@ -725,6 +729,7 @@ func (cs *clientStream) SendMsg(m interface{}) (err error) {
 }
 
 func (cs *clientStream) RecvMsg(m interface{}) error {
+	log.Debug.PrintlnWithCaller("msg %s", m)
 	if cs.binlog != nil && !cs.serverHeaderBinlogged {
 		// Call Header() to binary log header if it's not already logged.
 		cs.Header()

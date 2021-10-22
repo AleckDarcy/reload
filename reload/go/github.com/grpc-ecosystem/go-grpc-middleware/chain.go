@@ -6,12 +6,13 @@
 package grpc_middleware
 
 import (
-	"fmt"
+	"time"
+
+	"github.com/AleckDarcy/reload/core/log"
+	"github.com/AleckDarcy/reload/core/tracer"
 
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
-
-	"github.com/AleckDarcy/reload/core/tracer"
 )
 
 // ChainUnaryServer creates a single interceptor out of a chain of many interceptors.
@@ -30,21 +31,85 @@ func ChainUnaryServer(interceptors ...grpc.UnaryServerInterceptor) grpc.UnarySer
 				curI         int
 			)
 
-			if reqT, ok := req.(tracer.Tracer); ok {
-				event := &tracer.Record{}
-				fmt.Println("hahahaha", event.GetMessageName())
-				_ = reqT
-			}
-
-			print("jjjjjj")
-
 			chainHandler = func(currentCtx context.Context, currentReq interface{}) (interface{}, error) {
+				log.CriticalPath.PrintlnWithCaller("stub")
+
+				var trace *tracer.Trace
+				var lastEvent *tracer.Record
+				cm := ctx.Value(tracer.ContextMetaKey{}).(*tracer.ContextMeta)
+
+				if reqT, ok := req.(tracer.Tracer); ok {
+					trace, ok = tracer.Assertion.GetTrace(req) // 3milebeach begins
+					if ok {
+						//log.Logger.PrintlnWithStackTrace(3, "hhhhhhh")
+						//log.Logger.PrintlnWithStackTrace(4, "hhhhhhh")
+						//log.Logger.PrintlnWithStackTrace(5, "hhhhhhh")
+						//log.Logger.PrintlnWithStackTrace(6, "hhhhhhh")
+						//log.Logger.PrintlnWithStackTrace(7, "hhhhhhh")
+						//log.Logger.PrintlnWithStackTrace(8, "hhhhhhh")
+
+						log.Debug.PrintlnWithCaller("%s processing %s", cm.ServerUUID(), reqT.GetFI_Name())
+						trace = reqT.GetFI_Trace()
+						if lastEvent, ok = tracer.Assertion.GetLastEvent(reqT); ok {
+							log.Debug.PrintlnWithCaller("%s processing %s %s", cm.ServerUUID(), reqT.GetFI_Name(), lastEvent.GetMessageName())
+						}
+					}
+				} // 3milebeach ends
+
 				if curI == lastI {
-					return handler(currentCtx, currentReq)
+					resp, err := handler(currentCtx, currentReq) // 3milebeach begins
+					if err == nil && trace != nil {
+						if respT, ok := resp.(tracer.Tracer); ok {
+							if trace2 := respT.GetFI_Trace(); trace2 != nil {
+								trace.AppendRecords(trace2.GetRecords())
+
+								event := &tracer.Record{
+									Type:        tracer.RecordType_RecordReceive,
+									Timestamp:   time.Now().UnixNano(),
+									MessageName: respT.GetFI_Name(),
+									Uuid:        lastEvent.Uuid,
+									Service:     cm.ServerUUID(),
+								}
+
+								trace.AppendRecord(event)
+							}
+
+							respT.SetFI_Trace(trace)
+
+							log.Debug.PrintlnWithCaller("ChainUnaryServer() rsp: %s", resp)
+						}
+					}
+
+					return resp, err // 3milebeach ends
+
+					// return handler(currentCtx, currentReq)
 				}
 				curI++
 				resp, err := interceptors[curI](currentCtx, currentReq, info, chainHandler)
 				curI--
+
+				if err == nil && trace != nil { // 3milebeach begins
+					if respT, ok := resp.(tracer.Tracer); ok {
+						if trace2 := respT.GetFI_Trace(); trace2 != nil {
+							trace.AppendRecords(trace2.GetRecords())
+
+							event := &tracer.Record{
+								Type:        tracer.RecordType_RecordReceive,
+								Timestamp:   time.Now().UnixNano(),
+								MessageName: respT.GetFI_Name(),
+								Uuid:        lastEvent.Uuid,
+								Service:     cm.ServerUUID(),
+							}
+
+							trace.AppendRecord(event)
+						}
+
+						respT.SetFI_Trace(trace)
+
+						log.Debug.PrintlnWithCaller("ChainUnaryServer() rsp: %s", resp)
+					}
+				} // 3milebeach ends
+
 				return resp, err
 			}
 

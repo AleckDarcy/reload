@@ -44,6 +44,8 @@ import (
 // kVClient (rpc.pb.go)
 
 func TestV3Put_3MileBeach(t *testing.T) { // 3MileBeach starts
+	log.SetLogger(log.DebugHelperLogger, false)
+
 	defer testutil.AfterTest(t)
 	clus := NewClusterV3(t, &ClusterConfig{Size: 3})
 	defer clus.Terminate(t)
@@ -66,7 +68,7 @@ func TestV3Put_3MileBeach(t *testing.T) { // 3MileBeach starts
 
 	respput, err := kvc.Put(context.TODO(), reqput)
 
-	log.Logger.PrintlnWithCaller("response: %s", respput.Trace.JSONString())
+	log.Logger.PrintlnWithCaller("trace: %s", respput.Trace.JSONString())
 	log.Logger.Printf("========== test ended ==========\n")
 	if err != nil {
 		t.Fatalf("couldn't put key (%v)", err)
