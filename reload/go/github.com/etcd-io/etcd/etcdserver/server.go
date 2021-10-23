@@ -1980,7 +1980,8 @@ func (s *EtcdServer) sync(timeout time.Duration) {
 	// so it uses goroutine to propose.
 	ctx, cancel := context.WithTimeout(s.ctx, timeout)
 	s.goAttach(func() {
-		s.r.Propose(ctx, data)
+		s.r.Propose(ctx, nil, data) // 3milebeach
+		// s.r.Propose(ctx, data)
 		cancel()
 	})
 }

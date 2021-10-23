@@ -18,6 +18,8 @@ import (
 	"context"
 	"errors"
 
+	"github.com/AleckDarcy/reload/core/tracer"
+
 	"github.com/AleckDarcy/reload/core/log"
 
 	pb "go.etcd.io/etcd/raft/raftpb"
@@ -133,7 +135,13 @@ type Node interface {
 	Campaign(ctx context.Context) error
 	// Propose proposes that data be appended to the log. Note that proposals can be lost without
 	// notice, therefore it is user's job to ensure proposal retries.
-	Propose(ctx context.Context, data []byte) error
+	// 3milebeach note (todo):
+	// 1) data: encoded original message as payload
+	// 2) pb.Message: in implementation (node.go), as the top layer representatives of inter-service propose messages,
+	//    it contains payload and trace (3milebeach additional);
+	// 3) trace: additional field member of pb.Message, extracted from the original message before encoding;
+	Propose(ctx context.Context, trace *tracer.Trace, data []byte) error // 3milebeach
+	// Propose(ctx context.Context, data []byte) error
 	// ProposeConfChange proposes a configuration change. Like any proposal, the
 	// configuration change may be dropped with or without an error being
 	// returned. In particular, configuration changes are dropped unless the
@@ -415,7 +423,8 @@ func (n *node) Tick() {
 
 func (n *node) Campaign(ctx context.Context) error { return n.step(ctx, pb.Message{Type: pb.MsgHup}) }
 
-func (n *node) Propose(ctx context.Context, data []byte) error {
+func (n *node) Propose(ctx context.Context, trace *tracer.Trace, data []byte) error {
+	// func (n *node) Propose(ctx context.Context, data []byte) error {
 	log.Logger.PrintlnWithCaller("%s stub", n.rn.raft.serverID) // 3milebeach
 	return n.stepWait(ctx, pb.Message{Type: pb.MsgProp, Entries: []pb.Entry{{Data: data}}})
 }

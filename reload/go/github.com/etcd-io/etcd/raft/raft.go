@@ -426,7 +426,7 @@ func (r *raft) send(m pb.Message) {
 		// log.Logger.PrintlnWithCaller("%d", len(m.Entries)) // 3milebeach begins
 		// log.Logger.PrintlnWithStackTrace(4, "%s", r.serverID)                  // stepLead or stepFollower
 		// log.Logger.PrintlnWithStackTrace(3, "%s", r.serverID)                  // handleAppendEntries()
-		log.Debug.PrintlnWithCaller("%s type (%s) from (%d) to (%d)", r.serverID, m.Type, m.From, m.To) // 3MileBeach ends
+		// log.Debug.PrintlnWithCaller("%s type (%s) from (%d) to (%d)", r.serverID, m.Type, m.From, m.To) // 3MileBeach ends
 		if m.Term == 0 {
 			// All {pre-,}campaign messages need to have the term set when
 			// sending.
@@ -444,8 +444,10 @@ func (r *raft) send(m pb.Message) {
 		}
 	} else {
 		// log.Logger.PrintlnWithCaller("%d", len(m.Entries)) // 3milebeach begins
-		// log.Logger.PrintlnWithStackTrace(4, "%s", r.serverID)                  // stepLead or stepFollower
-		// log.Logger.PrintlnWithStackTrace(3, "%s", r.serverID)                  // handleAppendEntries()
+		log.Logger.PrintlnWithStackTrace(6, "%s", r.serverID)
+		log.Logger.PrintlnWithStackTrace(5, "%s", r.serverID)
+		log.Logger.PrintlnWithStackTrace(4, "%s", r.serverID)                                           // stepLead or stepFollower
+		log.Logger.PrintlnWithStackTrace(3, "%s", r.serverID)                                           // handleAppendEntries()
 		log.Debug.PrintlnWithCaller("%s type (%s) from (%d) to (%d)", r.serverID, m.Type, m.From, m.To) // 3MileBeach ends
 		if m.Term != 0 {
 			panic(fmt.Sprintf("term should not be set when sending %s (was %d)", m.Type, m.Term))
@@ -531,6 +533,8 @@ func (r *raft) maybeSendAppend(to uint64, sendIfEmpty bool) bool {
 		}
 	}
 	r.send(m)
+	log.Debug.PrintlnWithCaller("done")
+
 	return true
 }
 
@@ -555,6 +559,7 @@ func (r *raft) sendHeartbeat(to uint64, ctx []byte) {
 
 // bcastAppend sends RPC, with entries to all peers that are not up-to-date
 // according to the progress recorded in r.prs.
+// 3milebeach todo: read message queue and send messages to other nodes
 func (r *raft) bcastAppend() {
 	r.prs.Visit(func(id uint64, _ *tracker.Progress) {
 		if id == r.id {
@@ -562,6 +567,7 @@ func (r *raft) bcastAppend() {
 		}
 		r.sendAppend(id)
 	})
+	log.Debug.PrintlnWithCaller("done")
 }
 
 // bcastHeartbeat sends RPC, without entries to all the peers.
@@ -1051,8 +1057,8 @@ func stepLeader(r *raft, m pb.Message) error {
 			}
 		})
 		return nil
-	case pb.MsgProp:
-		log.Logger.PrintlnWithCaller("%s stub", r.serverID) // 3MileBeach
+	case pb.MsgProp: // 3milebeach todo: send PropMsg to followers
+		log.CriticalPath.PrintlnWithCaller("%s stub", r.serverID) // 3MileBeach
 
 		if len(m.Entries) == 0 {
 			r.logger.Panicf("%x stepped empty MsgProp", r.id)

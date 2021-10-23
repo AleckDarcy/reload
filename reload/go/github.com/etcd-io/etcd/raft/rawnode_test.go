@@ -22,6 +22,8 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/AleckDarcy/reload/core/tracer"
+
 	"go.etcd.io/etcd/raft/quorum"
 	pb "go.etcd.io/etcd/raft/raftpb"
 	"go.etcd.io/etcd/raft/tracker"
@@ -62,8 +64,13 @@ func (a *rawNodeAdapter) ReadIndex(_ context.Context, rctx []byte) error {
 	// RawNode swallowed the error in ReadIndex, it probably should not do that.
 	return nil
 }
-func (a *rawNodeAdapter) Step(_ context.Context, m pb.Message) error   { return a.RawNode.Step(m) }
-func (a *rawNodeAdapter) Propose(_ context.Context, data []byte) error { return a.RawNode.Propose(data) }
+func (a *rawNodeAdapter) Step(_ context.Context, m pb.Message) error { return a.RawNode.Step(m) }
+
+func (a *rawNodeAdapter) Propose(_ context.Context, _ tracer.Tracer, data []byte) error { // 3milebeach begins
+	return a.RawNode.Propose(data)
+} // 3milebeach ends
+
+// func (a *rawNodeAdapter) Propose(_ context.Context, data []byte) error { return a.RawNode.Propose(data) }
 func (a *rawNodeAdapter) ProposeConfChange(_ context.Context, cc pb.ConfChangeI) error {
 	return a.RawNode.ProposeConfChange(cc)
 }
