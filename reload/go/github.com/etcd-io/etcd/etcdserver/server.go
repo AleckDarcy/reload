@@ -508,7 +508,7 @@ func NewServer(cfg ServerConfig) (srv *EtcdServer, err error) {
 		snapshotter: ss,
 		r: *newRaftNode(
 			raftNodeConfig{
-				serverID:    serverID_, // 3MileBeach
+				serverID:    fmt.Sprintf("%d", id), // 3MileBeach
 				lg:          cfg.Logger,
 				isIDRemoved: func(id uint64) bool { return cl.IsIDRemoved(types.ID(id)) },
 				Node:        n,
@@ -638,7 +638,6 @@ func NewServer(cfg ServerConfig) (srv *EtcdServer, err error) {
 	}
 	srv.r.transport = tr
 
-	log.CriticalPath.PrintlnWithCaller("raft id: %d", id) // 3milebeach
 	return srv, nil
 }
 

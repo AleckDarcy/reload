@@ -433,7 +433,7 @@ func (r *raftNode) advanceTicks(ticks int) {
 }
 
 func startNode(cfg ServerConfig, cl *membership.RaftCluster, ids []types.ID) (id types.ID, n raft.Node, s *raft.MemoryStorage, w *wal.WAL) {
-	log2.Stub.PrintlnWithCaller("stub") // 3MileBeach
+	log2.Stub.PrintlnWithCaller("%s stub", cfg.ServerID) // 3MileBeach
 	var err error
 	member := cl.MemberByName(cfg.Name)
 	metadata := pbutil.MustMarshal(
@@ -474,7 +474,6 @@ func startNode(cfg ServerConfig, cl *membership.RaftCluster, ids []types.ID) (id
 	}
 	s = raft.NewMemoryStorage()
 	c := &raft.Config{
-		ServerID:        cfg.ServerID, // 3MileBeach
 		ID:              uint64(id),
 		ElectionTick:    cfg.ElectionTicks,
 		HeartbeatTick:   1,

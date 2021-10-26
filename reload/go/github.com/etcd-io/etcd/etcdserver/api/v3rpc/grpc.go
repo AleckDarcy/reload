@@ -17,6 +17,9 @@ package v3rpc
 import (
 	"crypto/tls"
 	"math"
+	"runtime/debug"
+
+	"github.com/AleckDarcy/reload/core/log"
 
 	"go.etcd.io/etcd/etcdserver"
 	pb "go.etcd.io/etcd/etcdserver/etcdserverpb"
@@ -37,6 +40,8 @@ const (
 
 // 3milebeach todo: add serverID
 func Server(s *etcdserver.EtcdServer, tls *tls.Config, gopts ...grpc.ServerOption) *grpc.Server {
+	debug.PrintStack()
+	log.Debug.PrintlnWithCaller("%s stub", s.Cfg.ServerID)
 	var opts []grpc.ServerOption
 	opts = append(opts, grpc.CustomCodec(&codec{}))
 	if tls != nil {
