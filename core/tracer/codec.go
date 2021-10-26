@@ -20,10 +20,12 @@ type codec struct {
 	basic      baseCodec
 }
 
-func NewCodec(ctx context.Context, basic baseCodec) *codec {
-	cm := ctx.Value(ContextMetaKey{}).(*ContextMeta)
+func NewCodec(ctx context.Context, basic baseCodec) baseCodec {
+	if obj := ctx.Value(ContextMetaKey{}); obj != nil {
+		return &codec{ctx: ctx, basic: basic, serverUUID: obj.(*ContextMeta).server}
+	}
 
-	return &codec{ctx: ctx, basic: basic, serverUUID: cm.server}
+	return basic
 }
 
 func (c *codec) Marshal(v interface{}) ([]byte, error) {

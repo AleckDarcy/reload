@@ -284,7 +284,7 @@ func (c *cluster) HTTPMembers() []client.Member {
 func (c *cluster) mustNewMember(t testing.TB) *member {
 	m := mustNewMember(t,
 		memberConfig{
-			serverUUID:               tracer.NewUUIDShort(), // 3MileBeach
+			serverID:                 tracer.NewUUIDShort(), // 3MileBeach
 			name:                     c.name(rand.Int()),
 			authToken:                c.cfg.AuthToken,
 			peerTLS:                  c.cfg.PeerTLS,
@@ -574,7 +574,7 @@ type member struct {
 func (m *member) GRPCAddr() string { return m.grpcAddr }
 
 type memberConfig struct {
-	serverUUID               tracer.UUID
+	serverID                 tracer.UUID
 	name                     string
 	peerTLS                  *transport.TLSInfo
 	clientTLS                *transport.TLSInfo
@@ -600,7 +600,7 @@ func mustNewMember(t testing.TB, mcfg memberConfig) *member {
 	var err error
 	m := &member{}
 
-	m.ServerConfig.ServerUUID = mcfg.serverUUID // 3MileBeach
+	m.ServerConfig.ServerID = mcfg.serverID // 3MileBeach
 	peerScheme := schemeFromTLSInfo(mcfg.peerTLS)
 	clientScheme := schemeFromTLSInfo(mcfg.clientTLS)
 

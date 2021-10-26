@@ -444,10 +444,13 @@ func (r *raft) send(m pb.Message) {
 		}
 	} else {
 		// log.Logger.PrintlnWithCaller("%d", len(m.Entries)) // 3milebeach begins
-		log.Logger.PrintlnWithStackTrace(6, "%s", r.serverID)
-		log.Logger.PrintlnWithStackTrace(5, "%s", r.serverID)
-		log.Logger.PrintlnWithStackTrace(4, "%s", r.serverID)                                           // stepLead or stepFollower
-		log.Logger.PrintlnWithStackTrace(3, "%s", r.serverID)                                           // handleAppendEntries()
+		//log.Logger.PrintlnWithStackTrace(6, "%s", r.serverID)
+		//log.Logger.PrintlnWithStackTrace(5, "%s", r.serverID)
+		//log.Logger.PrintlnWithStackTrace(4, "%s", r.serverID)                                           // stepLead or stepFollower
+		//log.Logger.PrintlnWithStackTrace(3, "%s", r.serverID)                                          // handleAppendEntries()
+		if len(m.Entries) > 0 {
+			log.Debug.PrintlnWithCaller("data: %v", m.Entries[0].Data)
+		}
 		log.Debug.PrintlnWithCaller("%s type (%s) from (%d) to (%d)", r.serverID, m.Type, m.From, m.To) // 3MileBeach ends
 		if m.Term != 0 {
 			panic(fmt.Sprintf("term should not be set when sending %s (was %d)", m.Type, m.Term))
@@ -460,6 +463,15 @@ func (r *raft) send(m pb.Message) {
 			m.Term = r.Term
 		}
 	}
+
+	for _, ent := range m.Entries { // 3milebeach begins
+		if ent.Trace != nil {
+			log.Debug.PrintlnWithCaller("send entry with trace %s", ent.Trace)
+		} else {
+			log.Debug.PrintlnWithCaller("send entry without trace")
+		}
+	} // 3milebeach ends
+
 	r.msgs = append(r.msgs, m)
 }
 

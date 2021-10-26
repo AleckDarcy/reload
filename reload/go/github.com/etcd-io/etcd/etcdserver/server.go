@@ -284,8 +284,8 @@ type EtcdServer struct {
 // NewServer creates a new EtcdServer from the supplied configuration. The
 // configuration is considered static for the lifetime of the EtcdServer.
 func NewServer(cfg ServerConfig) (srv *EtcdServer, err error) {
-	serverUUID := cfg.ServerUUID                      // 3MileBeach
-	log.Stub.PrintlnWithCaller("%s stub", serverUUID) // 3MileBeach
+	serverID_ := cfg.ServerID                        // 3MileBeach
+	log.Stub.PrintlnWithCaller("%s stub", serverID_) // 3MileBeach
 
 	st := v2store.New(StoreClusterPrefix, StoreKeysPrefix)
 
@@ -508,7 +508,7 @@ func NewServer(cfg ServerConfig) (srv *EtcdServer, err error) {
 		snapshotter: ss,
 		r: *newRaftNode(
 			raftNodeConfig{
-				serverUUID:  serverUUID, // 3MileBeach
+				serverID:    serverID_, // 3MileBeach
 				lg:          cfg.Logger,
 				isIDRemoved: func(id uint64) bool { return cl.IsIDRemoved(types.ID(id)) },
 				Node:        n,
@@ -638,6 +638,7 @@ func NewServer(cfg ServerConfig) (srv *EtcdServer, err error) {
 	}
 	srv.r.transport = tr
 
+	log.CriticalPath.PrintlnWithCaller("raft id: %d", id) // 3milebeach
 	return srv, nil
 }
 
@@ -868,7 +869,7 @@ func (s *EtcdServer) RaftHandler() http.Handler { return s.r.transport.Handler()
 // machine, respecting any timeout of the given context.
 // 3milebeach note: etcd server processes messages from client (?) and other servers
 func (s *EtcdServer) Process(ctx context.Context, m raftpb.Message) error {
-	log.Debug.PrintlnWithCaller("%s stub", s.Cfg.ServerUUID) // 3milebeach
+	log.Debug.PrintlnWithCaller("%s stub", s.Cfg.ServerID) // 3milebeach
 	if s.cluster.IsIDRemoved(types.ID(m.From)) {
 		if lg := s.getLogger(); lg != nil {
 			lg.Warn(

@@ -24,6 +24,7 @@ func (m *RequestHeader) GetFI_MessageType() tracer.MessageType {
 	return tracer.MessageType_Message_Request
 }
 
+// 3milebeach todo: optimize
 func (m *InternalRaftRequest) GetFI_Name() string {
 	if m.V2 != nil {
 		return m.V2.GetFI_Name()

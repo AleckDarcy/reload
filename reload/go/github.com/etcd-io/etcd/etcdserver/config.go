@@ -35,7 +35,7 @@ import (
 
 // ServerConfig holds the configuration of etcd as taken from the command line or discovery.
 type ServerConfig struct {
-	ServerUUID tracer.UUID // 3MileBeach
+	ServerID tracer.UUID // 3MileBeach
 
 	Name           string
 	DiscoveryURL   string

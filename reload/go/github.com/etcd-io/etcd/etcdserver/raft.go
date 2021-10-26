@@ -80,7 +80,7 @@ type apply struct {
 }
 
 type raftNode struct {
-	serviceUUID tracer.UUID // 3MileBeach
+	serverID tracer.UUID // 3MileBeach
 
 	lg *zap.Logger
 
@@ -106,7 +106,7 @@ type raftNode struct {
 }
 
 type raftNodeConfig struct {
-	serverUUID tracer.UUID // 3MileBeach
+	serverID tracer.UUID // 3MileBeach
 
 	lg *zap.Logger
 
@@ -124,7 +124,7 @@ type raftNodeConfig struct {
 }
 
 func newRaftNode(cfg raftNodeConfig) *raftNode {
-	log2.Logger.PrintlnWithCaller("%s stub", cfg.serverUUID) // 3milebeach
+	log2.Logger.PrintlnWithCaller("%s stub", cfg.serverID) // 3milebeach
 
 	var lg raft.Logger
 	if cfg.lg != nil {
@@ -139,7 +139,7 @@ func newRaftNode(cfg raftNodeConfig) *raftNode {
 	}
 	raft.SetLogger(lg)
 	r := &raftNode{
-		serviceUUID:    cfg.serverUUID, // 3MileBeach
+		serverID:       cfg.serverID, // 3MileBeach
 		lg:             cfg.lg,
 		tickMu:         new(sync.Mutex),
 		raftNodeConfig: cfg,
@@ -474,7 +474,7 @@ func startNode(cfg ServerConfig, cl *membership.RaftCluster, ids []types.ID) (id
 	}
 	s = raft.NewMemoryStorage()
 	c := &raft.Config{
-		ServerID:        cfg.ServerUUID, // 3MileBeach
+		ServerID:        cfg.ServerID, // 3MileBeach
 		ID:              uint64(id),
 		ElectionTick:    cfg.ElectionTicks,
 		HeartbeatTick:   1,

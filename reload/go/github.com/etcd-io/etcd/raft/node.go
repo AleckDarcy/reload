@@ -426,7 +426,7 @@ func (n *node) Campaign(ctx context.Context) error { return n.step(ctx, pb.Messa
 func (n *node) Propose(ctx context.Context, trace *tracer.Trace, data []byte) error {
 	// func (n *node) Propose(ctx context.Context, data []byte) error {
 	log.Logger.PrintlnWithCaller("%s stub", n.rn.raft.serverID) // 3milebeach
-	return n.stepWait(ctx, pb.Message{Type: pb.MsgProp, Entries: []pb.Entry{{Data: data}}})
+	return n.stepWait(ctx, pb.Message{Type: pb.MsgProp, Entries: []pb.Entry{{Data: data, Trace: trace}}})
 }
 
 func (n *node) Step(ctx context.Context, m pb.Message) error {

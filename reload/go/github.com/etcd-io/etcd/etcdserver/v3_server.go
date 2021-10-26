@@ -572,7 +572,7 @@ func (s *EtcdServer) doSerialize(ctx context.Context, chk func(*auth.AuthInfo) e
 }
 
 func (s *EtcdServer) processInternalRaftRequestOnce(ctx context.Context, r pb.InternalRaftRequest) (*applyResult, error) {
-	log.Logger.PrintlnWithCaller("%s stub", s.Cfg.ServerUUID) // 3MileBeach
+	log.Logger.PrintlnWithCaller("%s stub", s.Cfg.ServerID) // 3MileBeach
 	ai := s.getAppliedIndex()
 	ci := s.getCommittedIndex()
 	if ci > ai+maxGapBetweenApplyAndCommitIndex {

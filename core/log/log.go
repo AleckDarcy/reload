@@ -60,6 +60,12 @@ func SetLogger(type_ uint, on bool) {
 	}
 }
 
+func SetLoggers(types []uint, on bool) {
+	for _, type_ := range types {
+		SetLogger(type_, on)
+	}
+}
+
 var Logger = logger{NormalLogger}
 var Debug = logger{DebugHelperLogger}
 var Stub = logger{StubLogger}
