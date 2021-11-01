@@ -14,7 +14,10 @@
 
 package types
 
-import "strconv"
+import (
+	"fmt"
+	"strconv"
+)
 
 // ID represents a generic identifier which is canonically
 // stored as a uint64 but is typically represented as a
@@ -23,6 +26,10 @@ type ID uint64
 
 func (i ID) String() string {
 	return strconv.FormatUint(uint64(i), 16)
+}
+
+func (i ID) Decimal() string {
+	return fmt.Sprintf("%d", i)
 }
 
 // IDFromString attempts to create an ID from a base-16 string.

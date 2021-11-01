@@ -30,6 +30,7 @@ import (
 	"time"
 
 	"github.com/AleckDarcy/reload/core/log"
+	"github.com/AleckDarcy/reload/core/tracer"
 
 	"go.etcd.io/etcd/auth"
 	"go.etcd.io/etcd/etcdserver/api"
@@ -226,6 +227,7 @@ type EtcdServer struct {
 	leaderChangedMu sync.RWMutex
 
 	errorc     chan error
+	serverID   tracer.UUID // 3milebeach note: string of id
 	id         types.ID
 	attributes membership.Attributes
 
@@ -284,9 +286,6 @@ type EtcdServer struct {
 // NewServer creates a new EtcdServer from the supplied configuration. The
 // configuration is considered static for the lifetime of the EtcdServer.
 func NewServer(cfg ServerConfig) (srv *EtcdServer, err error) {
-	serverID_ := cfg.ServerID                        // 3MileBeach
-	log.Stub.PrintlnWithCaller("%s stub", serverID_) // 3MileBeach
-
 	st := v2store.New(StoreClusterPrefix, StoreKeysPrefix)
 
 	var (
@@ -508,7 +507,7 @@ func NewServer(cfg ServerConfig) (srv *EtcdServer, err error) {
 		snapshotter: ss,
 		r: *newRaftNode(
 			raftNodeConfig{
-				serverID:    fmt.Sprintf("%d", id), // 3MileBeach
+				serverID:    id.Decimal(), // 3MileBeach
 				lg:          cfg.Logger,
 				isIDRemoved: func(id uint64) bool { return cl.IsIDRemoved(types.ID(id)) },
 				Node:        n,
@@ -517,6 +516,7 @@ func NewServer(cfg ServerConfig) (srv *EtcdServer, err error) {
 				storage:     NewStorage(w, ss),
 			},
 		),
+		serverID:         id.Decimal(), // 3milebeach
 		id:               id,
 		attributes:       membership.Attributes{Name: cfg.Name, ClientURLs: cfg.ClientURLs.StringSlice()},
 		cluster:          cl,
@@ -529,6 +529,8 @@ func NewServer(cfg ServerConfig) (srv *EtcdServer, err error) {
 		AccessController: &AccessController{CORS: cfg.CORS, HostWhitelist: cfg.HostWhitelist},
 	}
 	serverID.With(prometheus.Labels{"server_id": id.String()}).Set(1)
+
+	log.Stub.PrintlnWithCaller("%d stub", id) // 3MileBeach
 
 	srv.applyV2 = &applierV2store{store: srv.v2store, cluster: srv.cluster}
 
@@ -868,7 +870,7 @@ func (s *EtcdServer) RaftHandler() http.Handler { return s.r.transport.Handler()
 // machine, respecting any timeout of the given context.
 // 3milebeach note: etcd server processes messages from client (?) and other servers
 func (s *EtcdServer) Process(ctx context.Context, m raftpb.Message) error {
-	log.Debug.PrintlnWithCaller("%s stub", s.Cfg.ServerID) // 3milebeach
+	log.Debug.PrintlnWithCaller("%s message: %s", s.serverID, m) // 3milebeach
 	if s.cluster.IsIDRemoved(types.ID(m.From)) {
 		if lg := s.getLogger(); lg != nil {
 			lg.Warn(
@@ -1900,11 +1902,16 @@ func (s *EtcdServer) leaderChangedNotify() <-chan struct{} {
 
 // RaftStatusGetter represents etcd server and Raft progress.
 type RaftStatusGetter interface {
+	ServerID() tracer.UUID
 	ID() types.ID
 	Leader() types.ID
 	CommittedIndex() uint64
 	AppliedIndex() uint64
 	Term() uint64
+}
+
+func (s *EtcdServer) ServerID() tracer.UUID {
+	return s.serverID
 }
 
 func (s *EtcdServer) ID() types.ID { return s.id }

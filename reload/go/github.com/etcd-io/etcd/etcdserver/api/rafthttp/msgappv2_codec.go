@@ -20,6 +20,8 @@ import (
 	"io"
 	"time"
 
+	"github.com/AleckDarcy/reload/core/tracer"
+
 	stats "go.etcd.io/etcd/etcdserver/api/v2stats"
 	"go.etcd.io/etcd/pkg/pbutil"
 	"go.etcd.io/etcd/pkg/types"
@@ -125,6 +127,28 @@ func (enc *msgAppV2Encoder) encode(m *raftpb.Message) error {
 		if _, err := enc.w.Write(enc.uint64buf); err != nil {
 			return err
 		}
+
+		// 3milebeach note:
+		// Unlike rafthttp.messageEncoder's directly using built-in Marshal function, msgAppV2Encoder "manually" encodes
+		// essential fields of pb.Message to bytes. The order of encoding determines the order of decoding.
+		if trace := m.Trace; trace == nil { // 3milebeach begins
+			// write size of trace
+			binary.BigEndian.PutUint64(enc.uint64buf, 0)
+			if _, err := enc.w.Write(enc.uint64buf); err != nil {
+				return err
+			}
+		} else {
+			// write size of trace
+			binary.BigEndian.PutUint64(enc.uint64buf, uint64(trace.Size()))
+			if _, err := enc.w.Write(enc.uint64buf); err != nil {
+				return err
+			}
+			// write trace
+			if _, err := enc.w.Write(pbutil.MustMarshal(trace)); err != nil {
+				return err
+			}
+		} // 3milebeach ends
+
 		enc.fs.Succ(time.Since(start))
 	default:
 		if err := binary.Write(enc.w, binary.BigEndian, msgTypeApp); err != nil {
@@ -225,6 +249,24 @@ func (dec *msgAppV2Decoder) decode() (raftpb.Message, error) {
 			return m, err
 		}
 		m.Commit = binary.BigEndian.Uint64(dec.uint64buf)
+
+		// 3milebeach note:
+		// Unlike rafthttp.messageDecoder's directly using built-in Unmarshal function, msgAppV2Decoder "manually"
+		// decodes essential fields of pb.Message out of bytes. The order of decoding should be according to
+		// msgAppV2Encoder.
+		if _, err := io.ReadFull(dec.r, dec.uint64buf); err != nil { // 3milebeach begins
+			return m, err
+		}
+
+		if size := binary.BigEndian.Uint64(dec.uint64buf); size != 0 {
+			buf := dec.buf[:size]
+			if _, err := io.ReadFull(dec.r, buf); err != nil {
+				return m, err
+			}
+
+			m.Trace = &tracer.Trace{}
+			pbutil.MustUnmarshal(m.Trace, buf)
+		} // 3milebeach ends
 	case msgTypeApp:
 		var size uint64
 		if err := binary.Read(dec.r, binary.BigEndian, &size); err != nil {

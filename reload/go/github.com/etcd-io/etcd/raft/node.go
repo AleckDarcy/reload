@@ -18,9 +18,8 @@ import (
 	"context"
 	"errors"
 
-	"github.com/AleckDarcy/reload/core/tracer"
-
 	"github.com/AleckDarcy/reload/core/log"
+	"github.com/AleckDarcy/reload/core/tracer"
 
 	pb "go.etcd.io/etcd/raft/raftpb"
 )
@@ -349,7 +348,7 @@ func (n *node) run() {
 		// described in raft dissertation)
 		// Currently it is dropped in Step silently.
 		case pm := <-propc:
-			log.Logger.PrintlnWithCaller("%s <-propc stub", r.serverID) // 3MileBeach
+			log.Logger.PrintlnWithCaller("%d <-propc stub", r.id) // 3MileBeach
 
 			m := pm.m
 			m.From = r.id
@@ -359,6 +358,8 @@ func (n *node) run() {
 				close(pm.result)
 			}
 		case m := <-n.recvc:
+			log.Logger.PrintlnWithCaller("%d <-recvc stub", r.id) // 3MileBeach
+
 			// filter out response message from unknown From.
 			if pr := r.prs.Progress[m.From]; pr != nil || !IsResponseMsg(m.Type) {
 				r.Step(m)
@@ -465,10 +466,12 @@ func (n *node) stepWait(ctx context.Context, m pb.Message) error {
 // Step advances the state machine using msgs. The ctx.Err() will be returned,
 // if any.
 func (n *node) stepWithWaitOption(ctx context.Context, m pb.Message, wait bool) error {
-	log.Stub.PrintlnWithCaller("%s stub", n.rn.raft.serverID) // 3milebeach
+	log.Stub.PrintlnWithCaller("%d message jajajaja %+v", n.rn.raft.id, m) // 3milebeach
 	if m.Type != pb.MsgProp {
 		select {
 		case n.recvc <- m:
+			log.Logger.PrintlnWithCaller("%d recvc<- stub", n.rn.raft.id) // 3milebeach
+
 			return nil
 		case <-ctx.Done():
 			return ctx.Err()
@@ -483,7 +486,7 @@ func (n *node) stepWithWaitOption(ctx context.Context, m pb.Message, wait bool) 
 	}
 	select {
 	case ch <- pm:
-		log.Logger.PrintlnWithCaller("%s propc<- stub", n.rn.raft.serverID) // 3milebeach
+		log.Logger.PrintlnWithCaller("%d propc<- stub", n.rn.raft.id) // 3milebeach
 		if !wait {
 			return nil
 		}
@@ -572,6 +575,10 @@ func newReady(r *raft, prevSoftSt *SoftState, prevHardSt pb.HardState) Ready {
 		CommittedEntries: r.raftLog.nextEnts(),
 		Messages:         r.msgs,
 	}
+	log.Logger.PrintlnWithCaller("%s stub %s", r.serverID, rd.Entries)          // 3milebeach
+	log.Logger.PrintlnWithCaller("%s stub %s", r.serverID, rd.CommittedEntries) // 3milebeach
+	log.Logger.PrintlnWithCaller("%s stub %s", r.serverID, rd.Messages)         // 3milebeach
+
 	if softSt := r.softState(); !softSt.equal(prevSoftSt) {
 		rd.SoftState = softSt
 	}

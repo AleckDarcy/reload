@@ -90,6 +90,15 @@ func (m *Message) GetFI_MessageType() tracer.MessageType {
 	return tracer.MessageType_Message_ // 3milebeach todo
 }
 
+// 3milebeach todo
+func (m *Message) PrepareTrace() *Message {
+	for _, ent := range m.Entries {
+		m.Trace = m.Trace.Merge(ent.Trace)
+	}
+
+	return m
+}
+
 func (m *HardState) GetFI_Name() string {
 	return "HardState"
 }

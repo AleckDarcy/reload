@@ -92,7 +92,7 @@ type service struct {
 
 // Server is a gRPC server to serve RPC requests.
 type Server struct {
-	ServerUUID tracer.UUID // 3milebeach
+	ServerID tracer.UUID // 3milebeach
 
 	opts serverOptions
 
@@ -976,7 +976,7 @@ func (s *Server) processUnaryRPC(t transport.ServerTransport, stream *transport.
 	}
 
 	ctx := NewContextWithServerTransportStream(stream.Context(), stream) // 3milebeach begins
-	ctx = tracer.NewContextWithContextMeta(ctx, tracer.NewContextMeta1(0, "", "", s.ServerUUID))
+	ctx = tracer.NewContextWithContextMeta(ctx, tracer.NewContextMeta1(0, "", "", s.ServerID))
 	//log.Logf("new thread: %+v", ctx.Value(tracer.ContextMetaKey{})) // 3milebeach ends
 
 	df := func(v interface{}) error {

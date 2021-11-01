@@ -17,7 +17,6 @@ package v3rpc
 import (
 	"crypto/tls"
 	"math"
-	"runtime/debug"
 
 	"github.com/AleckDarcy/reload/core/log"
 
@@ -40,8 +39,7 @@ const (
 
 // 3milebeach todo: add serverID
 func Server(s *etcdserver.EtcdServer, tls *tls.Config, gopts ...grpc.ServerOption) *grpc.Server {
-	debug.PrintStack()
-	log.Debug.PrintlnWithCaller("%s stub", s.Cfg.ServerID)
+	log.Debug.PrintlnWithCaller(s.ServerID()) // 3milebeach
 	var opts []grpc.ServerOption
 	opts = append(opts, grpc.CustomCodec(&codec{}))
 	if tls != nil {
@@ -61,7 +59,7 @@ func Server(s *etcdserver.EtcdServer, tls *tls.Config, gopts ...grpc.ServerOptio
 	opts = append(opts, grpc.MaxSendMsgSize(maxSendBytes))
 	opts = append(opts, grpc.MaxConcurrentStreams(maxStreams))
 	grpcServer := grpc.NewServer(append(opts, gopts...)...)
-	grpcServer.ServerID = s.Cfg.ServerID // 3milebeach
+	grpcServer.ServerID = s.ServerID() // 3milebeach
 
 	pb.RegisterKVServer(grpcServer, NewQuotaKVServer(s))
 	pb.RegisterWatchServer(grpcServer, NewWatchServer(s))

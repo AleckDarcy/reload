@@ -115,6 +115,23 @@ func (m *Trace) AppendRecord(record *Record) *Trace {
 	return m
 }
 
+// 3milebeach note:
+// On receiving more than one Trace's associated with the same Trace.Id, Storage merges and stores a singleton of trace.
+func (m *Trace) Merge(t *Trace) *Trace {
+	if m == nil {
+		return t
+	}
+
+	m.MergeRecords(t.Records)
+
+	return m
+}
+
+func (m *Trace) MergeRecords(records []*Record) {
+	// todo: "merge"
+	m.Records = append(m.Records, records...)
+}
+
 func (m *Trace) JSONString() string {
 	bytes, _ := json.Marshal(m)
 

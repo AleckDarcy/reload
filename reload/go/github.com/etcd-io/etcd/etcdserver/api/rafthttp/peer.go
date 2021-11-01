@@ -19,6 +19,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/AleckDarcy/reload/core/log"
+
 	"go.etcd.io/etcd/etcdserver/api/snap"
 	stats "go.etcd.io/etcd/etcdserver/api/v2stats"
 	"go.etcd.io/etcd/pkg/types"
@@ -204,26 +206,28 @@ func startPeer(t *Transport, urls types.URLs, peerID types.ID, fs *stats.Followe
 	}()
 
 	p.msgAppV2Reader = &streamReader{
-		lg:     t.Logger,
-		peerID: peerID,
-		typ:    streamTypeMsgAppV2,
-		tr:     t,
-		picker: picker,
-		status: status,
-		recvc:  p.recvc,
-		propc:  p.propc,
-		rl:     rate.NewLimiter(t.DialRetryFrequency, 1),
+		lg:      t.Logger,
+		localID: p.localID, // 3milebeach
+		peerID:  peerID,
+		typ:     streamTypeMsgAppV2,
+		tr:      t,
+		picker:  picker,
+		status:  status,
+		recvc:   p.recvc,
+		propc:   p.propc,
+		rl:      rate.NewLimiter(t.DialRetryFrequency, 1),
 	}
 	p.msgAppReader = &streamReader{
-		lg:     t.Logger,
-		peerID: peerID,
-		typ:    streamTypeMessage,
-		tr:     t,
-		picker: picker,
-		status: status,
-		recvc:  p.recvc,
-		propc:  p.propc,
-		rl:     rate.NewLimiter(t.DialRetryFrequency, 1),
+		lg:      t.Logger,
+		localID: p.localID, // 3milebeach
+		peerID:  peerID,
+		typ:     streamTypeMessage,
+		tr:      t,
+		picker:  picker,
+		status:  status,
+		recvc:   p.recvc,
+		propc:   p.propc,
+		rl:      rate.NewLimiter(t.DialRetryFrequency, 1),
 	}
 
 	p.msgAppV2Reader.start()
@@ -244,6 +248,7 @@ func (p *peer) send(m raftpb.Message) {
 	writec, name := p.pick(m)
 	select {
 	case writec <- m:
+		log.Debug.PrintlnWithCaller("%d writec<- message: %+v", p.localID, m) // 3milebeach
 	default:
 		p.r.ReportUnreachable(m.To)
 		if isMsgSnap(m) {

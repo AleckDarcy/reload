@@ -1398,7 +1398,8 @@ func TestMsgAppRespWaitReset(t *testing.T) {
 
 	// The new leader has just emitted a new Term 4 entry; consume those messages
 	// from the outgoing queue.
-	sm.bcastAppend()
+	sm.bcastAppend(nil) // 3milebeach
+	// sm.bcastAppend()
 	sm.readMessages()
 
 	// Node 2 acks the first entry, making it committed.
@@ -2599,7 +2600,8 @@ func TestSendAppendForProgressProbe(t *testing.T) {
 			// loop. After that, the follower is paused until a heartbeat response is
 			// received.
 			mustAppendEntry(r, pb.Entry{Data: []byte("somedata")})
-			r.sendAppend(2)
+			r.sendAppend(2, nil) // 3milebeach
+			// r.sendAppend(2)
 			msg := r.readMessages()
 			if len(msg) != 1 {
 				t.Errorf("len(msg) = %d, want %d", len(msg), 1)
@@ -2614,7 +2616,7 @@ func TestSendAppendForProgressProbe(t *testing.T) {
 		}
 		for j := 0; j < 10; j++ {
 			mustAppendEntry(r, pb.Entry{Data: []byte("somedata")})
-			r.sendAppend(2)
+			r.sendAppend(2, nil) // 3milebeach
 			if l := len(r.readMessages()); l != 0 {
 				t.Errorf("len(msg) = %d, want %d", l, 0)
 			}
@@ -2661,7 +2663,7 @@ func TestSendAppendForProgressReplicate(t *testing.T) {
 
 	for i := 0; i < 10; i++ {
 		mustAppendEntry(r, pb.Entry{Data: []byte("somedata")})
-		r.sendAppend(2)
+		r.sendAppend(2, nil) // 3milebeach
 		msgs := r.readMessages()
 		if len(msgs) != 1 {
 			t.Errorf("len(msg) = %d, want %d", len(msgs), 1)
@@ -2678,7 +2680,7 @@ func TestSendAppendForProgressSnapshot(t *testing.T) {
 
 	for i := 0; i < 10; i++ {
 		mustAppendEntry(r, pb.Entry{Data: []byte("somedata")})
-		r.sendAppend(2)
+		r.sendAppend(2, nil) // 3milebeach
 		msgs := r.readMessages()
 		if len(msgs) != 0 {
 			t.Errorf("len(msg) = %d, want %d", len(msgs), 0)

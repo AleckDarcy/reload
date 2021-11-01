@@ -78,13 +78,13 @@ func newUnaryInterceptor(s *etcdserver.EtcdServer) grpc.UnaryServerInterceptor {
 					Timestamp:   time.Now().UnixNano(),
 					MessageName: reqT.GetFI_Name(),
 					Uuid:        lastRecord.GetUuid(),
-					Service:     s.Cfg.ServerID,
+					Service:     s.ServerID(),
 				}
 				// log.Debug.PrintlnWithStackTrace(6, "%s new event %s", s.Cfg.ServerUUID, event) // 3milebeach: tracing
 				records = append(records, event)
 
 				// 2) call handler();
-				cm := tracer.NewContextMeta1(trace.Id, lastRecord.Uuid, reqT.GetFI_Name(), s.Cfg.ServerID)
+				cm := tracer.NewContextMeta1(trace.Id, lastRecord.Uuid, reqT.GetFI_Name(), s.ServerID())
 				ctx = tracer.NewContextWithContextMeta(ctx, cm)
 				rsp, err := handler(ctx, req)
 
@@ -97,7 +97,7 @@ func newUnaryInterceptor(s *etcdserver.EtcdServer) grpc.UnaryServerInterceptor {
 					Timestamp:   time.Now().UnixNano(),
 					MessageName: rsp.(tracer.Tracer).GetFI_Name(),
 					Uuid:        lastRecord.GetUuid(),
-					Service:     s.Cfg.ServerID,
+					Service:     s.ServerID(),
 				}
 				records = append(records, event)
 				// log.Debug.PrintlnWithStackTrace(6, "%s new event %s", s.Cfg.ServerUUID, event) // 3milebeach: tracing
@@ -105,7 +105,7 @@ func newUnaryInterceptor(s *etcdserver.EtcdServer) grpc.UnaryServerInterceptor {
 				trace.Records = records
 				rspT.SetFI_Trace(trace)
 
-				log.Debug.PrintlnWithCaller("%s rsp: %s", s.Cfg.ServerID, rsp) // 3milebeach: tracing
+				log.Debug.PrintlnWithCaller("%s rsp: %s", s.ServerID(), rsp) // 3milebeach: tracing
 
 				return rsp, err
 			}

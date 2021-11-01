@@ -20,6 +20,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/AleckDarcy/reload/core/log"
+
 	"go.etcd.io/etcd/etcdserver/api/snap"
 	stats "go.etcd.io/etcd/etcdserver/api/v2stats"
 	"go.etcd.io/etcd/pkg/logutil"
@@ -193,11 +195,16 @@ func (t *Transport) Send(msgs []raftpb.Message) {
 			if m.Type == raftpb.MsgApp {
 				t.ServerStats.SendAppendReq(m.Size())
 			}
+
+			log.Debug.PrintlnWithCaller("%d message: %+v", t.ID, m) // 3milebeach
+
 			p.send(m)
 			continue
 		}
 
 		if rok {
+			log.Debug.PrintlnWithCaller("%d message: %+v", t.ID, m) // 3milebeach
+
 			g.send(m)
 			continue
 		}

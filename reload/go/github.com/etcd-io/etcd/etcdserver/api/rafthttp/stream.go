@@ -25,6 +25,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/AleckDarcy/reload/core/log"
+
 	stats "go.etcd.io/etcd/etcdserver/api/v2stats"
 	"go.etcd.io/etcd/pkg/httputil"
 	"go.etcd.io/etcd/pkg/transport"
@@ -201,6 +203,7 @@ func (cw *streamWriter) run() {
 			heartbeatc, msgc = nil, nil
 
 		case m := <-msgc:
+			log.Debug.PrintlnWithCaller("%d <-msgc message: %+v", cw.localID, m)
 			err := enc.encode(&m)
 			if err == nil {
 				unflushed += m.Size()
@@ -365,8 +368,9 @@ func (cw *streamWriter) stop() {
 type streamReader struct {
 	lg *zap.Logger
 
-	peerID types.ID
-	typ    streamType
+	localID types.ID // 3milebeach
+	peerID  types.ID
+	typ     streamType
 
 	tr     *Transport
 	picker *urlPicker
@@ -546,6 +550,7 @@ func (cr *streamReader) decodeLoop(rc io.ReadCloser, t streamType) error {
 
 		select {
 		case recvc <- m:
+			log.Debug.PrintlnWithCaller("%d recvc<- message: %+v", cr.localID, m) // 3milebeach
 		default:
 			if cr.status.isActive() {
 				if cr.lg != nil {

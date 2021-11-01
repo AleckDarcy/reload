@@ -25,8 +25,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/AleckDarcy/reload/core/log"
+	"go.etcd.io/etcd/pkg/types"
 
+	"github.com/AleckDarcy/reload/core/log"
 	"github.com/AleckDarcy/reload/core/tracer"
 
 	"go.etcd.io/etcd/raft/confchange"
@@ -118,8 +119,6 @@ func (st StateType) String() string {
 
 // Config contains the parameters to start a raft.
 type Config struct {
-	ServerID tracer.UUID // 3MileBeach
-
 	// ID is the identity of the local raft. ID cannot be 0.
 	ID uint64
 
@@ -258,9 +257,8 @@ func (c *Config) validate() error {
 }
 
 type raft struct {
-	serverID tracer.UUID // 3MileBeach
-
-	id uint64
+	serverID tracer.UUID // 3milebeach note: string of id
+	id       uint64
 
 	Term uint64
 	Vote uint64
@@ -350,7 +348,7 @@ func newRaft(c *Config) *raft {
 	}
 
 	r := &raft{
-		serverID:                  c.ServerID, // 3MileBeach
+		serverID:                  types.ID(c.ID).Decimal(), // 3milebeach
 		id:                        c.ID,
 		lead:                      None,
 		isLearner:                 false,
@@ -411,17 +409,6 @@ func (r *raft) hardState() pb.HardState {
 func (r *raft) send(m pb.Message) {
 	m.From = r.id
 
-	// todo 3MileBeach
-	ents := ""
-	for i, ent := range m.Entries {
-		_ = ent
-		if i == 0 {
-		} else {
-
-		}
-	}
-	_ = ents
-
 	if m.Type == pb.MsgVote || m.Type == pb.MsgVoteResp || m.Type == pb.MsgPreVote || m.Type == pb.MsgPreVoteResp {
 		// log.Logger.PrintlnWithCaller("%d", len(m.Entries)) // 3milebeach begins
 		// log.Logger.PrintlnWithStackTrace(4, "%s", r.serverID)                  // stepLead or stepFollower
@@ -448,9 +435,9 @@ func (r *raft) send(m pb.Message) {
 		//log.Logger.PrintlnWithStackTrace(5, "%s", r.serverID)
 		//log.Logger.PrintlnWithStackTrace(4, "%s", r.serverID)                                           // stepLead or stepFollower
 		//log.Logger.PrintlnWithStackTrace(3, "%s", r.serverID)                                          // handleAppendEntries()
-		if len(m.Entries) > 0 {
-			log.Debug.PrintlnWithCaller("data: %v", m.Entries[0].Data)
-		}
+		//if len(m.Entries) > 0 {
+		//	log.Debug.PrintlnWithCaller("%s data: %v", r.serverID, m.Entries[0].Data)
+		//}
 		log.Debug.PrintlnWithCaller("%s type (%s) from (%d) to (%d)", r.serverID, m.Type, m.From, m.To) // 3MileBeach ends
 		if m.Term != 0 {
 			panic(fmt.Sprintf("term should not be set when sending %s (was %d)", m.Type, m.Term))
@@ -466,9 +453,9 @@ func (r *raft) send(m pb.Message) {
 
 	for _, ent := range m.Entries { // 3milebeach begins
 		if ent.Trace != nil {
-			log.Debug.PrintlnWithCaller("send entry with trace %s", ent.Trace)
+			log.Debug.PrintlnWithCaller("%s entry with trace %s", r.serverID, ent.Trace)
 		} else {
-			log.Debug.PrintlnWithCaller("send entry without trace")
+			log.Debug.PrintlnWithCaller("%s entry without trace", r.serverID)
 		}
 	} // 3milebeach ends
 
@@ -477,18 +464,29 @@ func (r *raft) send(m pb.Message) {
 
 // sendAppend sends an append RPC with new entries (if any) and the
 // current commit index to the given peer.
-func (r *raft) sendAppend(to uint64) {
-	r.maybeSendAppend(to, true)
-}
+// 3milebeach note:
+// Send trace with pb.Message when empty
+func (r *raft) sendAppend(to uint64, trace *tracer.Trace) { // 3milebeach begins
+	r.maybeSendAppend(to, trace, true)
+} // 3milebeach ends
+
+// func (r *raft) sendAppend(to uint64) {
+//	r.maybeSendAppend(to, true)
+// }
 
 // maybeSendAppend sends an append RPC with new entries to the given peer,
 // if necessary. Returns true if a message was sent. The sendIfEmpty
 // argument controls whether messages with no entries will be sent
 // ("empty" messages are useful to convey updated Commit indexes, but
 // are undesirable when we're sending multiple messages in a batch).
-func (r *raft) maybeSendAppend(to uint64, sendIfEmpty bool) bool {
+// 3milebeach note:
+// Send trace with pb.Message when empty
+// func (r *raft) maybeSendAppend(to uint64, sendIfEmpty bool) bool {
+func (r *raft) maybeSendAppend(to uint64, trace *tracer.Trace, sendIfEmpty bool) bool { // 3milebeach
+	log.Debug.PrintlnWithCaller("%s to: %d", r.serverID, to) // 3milebeach
 	pr := r.prs.Progress[to]
 	if pr.IsPaused() {
+		log.Debug.PrintlnWithCaller("%s paused", r.serverID)
 		return false
 	}
 	m := pb.Message{}
@@ -496,9 +494,21 @@ func (r *raft) maybeSendAppend(to uint64, sendIfEmpty bool) bool {
 
 	term, errt := r.raftLog.term(pr.Next - 1)
 	ents, erre := r.raftLog.entries(pr.Next, r.maxMsgSize)
-	if len(ents) == 0 && !sendIfEmpty {
-		return false
-	}
+	if len(ents) == 0 { // 3milebeach begins
+		if !sendIfEmpty {
+			log.Debug.PrintlnWithCaller("%s empty", r.serverID)
+
+			return false
+		}
+
+		m.Trace = trace
+	} // 3milebeach ends
+
+	// if len(ents) == 0 && !sendIfEmpty {
+	//	log.Debug.PrintlnWithCaller("%s empty", r.serverID)
+	//
+	//	return false
+	// }
 
 	if errt != nil || erre != nil { // send snapshot if we failed to get term or entries
 		if !pr.RecentActive {
@@ -534,10 +544,14 @@ func (r *raft) maybeSendAppend(to uint64, sendIfEmpty bool) bool {
 			switch pr.State {
 			// optimistically increase the next when in StateReplicate
 			case tracker.StateReplicate:
+				log.Debug.PrintlnWithCaller("%s StateReplicate type (%s) to (%d)", r.serverID, pb.MsgApp, to) // 3milebeach
+
 				last := m.Entries[n-1].Index
 				pr.OptimisticUpdate(last)
 				pr.Inflights.Add(last)
 			case tracker.StateProbe:
+				log.Debug.PrintlnWithCaller("%s StateProbe type (%s) to (%d)", r.serverID, pb.MsgApp, to) // 3milebeach
+
 				pr.ProbeSent = true
 			default:
 				r.logger.Panicf("%x is sending append in unhandled state %s", r.id, pr.State)
@@ -545,7 +559,7 @@ func (r *raft) maybeSendAppend(to uint64, sendIfEmpty bool) bool {
 		}
 	}
 	r.send(m)
-	log.Debug.PrintlnWithCaller("done")
+	log.Debug.PrintlnWithCaller("%s done", r.serverID)
 
 	return true
 }
@@ -571,15 +585,18 @@ func (r *raft) sendHeartbeat(to uint64, ctx []byte) {
 
 // bcastAppend sends RPC, with entries to all peers that are not up-to-date
 // according to the progress recorded in r.prs.
-// 3milebeach todo: read message queue and send messages to other nodes
-func (r *raft) bcastAppend() {
+// 3milebeach note:
+// Read message queue and send messages to other nodes
+// Send trace with pb.Message when no entries are sent (sendIfEmpty = true)
+// func (r *raft) bcastAppend() {
+func (r *raft) bcastAppend(trace *tracer.Trace) { // 3milebeach
 	r.prs.Visit(func(id uint64, _ *tracker.Progress) {
 		if id == r.id {
 			return
 		}
-		r.sendAppend(id)
+		r.sendAppend(id, trace) // 3milebeach
 	})
-	log.Debug.PrintlnWithCaller("done")
+	log.Debug.PrintlnWithCaller("%s done", r.serverID)
 }
 
 // bcastHeartbeat sends RPC, without entries to all the peers.
@@ -778,6 +795,7 @@ func (r *raft) becomePreCandidate() {
 }
 
 func (r *raft) becomeLeader() {
+	log.CriticalPath.PrintlnWithCaller("%s is the leader", r.serverID)
 	// TODO(xiangli) remove the panic when the raft implementation is stable
 	if r.state == StateFollower {
 		panic("invalid transition [follower -> leader]")
@@ -1043,6 +1061,9 @@ type stepFunc func(r *raft, m pb.Message) error
 
 func stepLeader(r *raft, m pb.Message) error {
 	// These message types do not require any progress for m.From.
+
+	trace := m.PrepareTrace().Trace // 3milebeach
+
 	switch m.Type {
 	case pb.MsgBeat:
 		r.bcastHeartbeat()
@@ -1070,7 +1091,7 @@ func stepLeader(r *raft, m pb.Message) error {
 		})
 		return nil
 	case pb.MsgProp: // 3milebeach todo: send PropMsg to followers
-		log.CriticalPath.PrintlnWithCaller("%s stub", r.serverID) // 3MileBeach
+		log.CriticalPath.PrintlnWithCaller("%d MsgProp stub", r.id) // 3MileBeach
 
 		if len(m.Entries) == 0 {
 			r.logger.Panicf("%x stepped empty MsgProp", r.id)
@@ -1128,7 +1149,9 @@ func stepLeader(r *raft, m pb.Message) error {
 		if !r.appendEntry(m.Entries...) {
 			return ErrProposalDropped
 		}
-		r.bcastAppend()
+		r.bcastAppend(trace) // 3milebeach
+		// r.bcastAppend()
+
 		return nil
 	case pb.MsgReadIndex:
 		// If more than the local vote is needed, go through a full broadcast,
@@ -1175,6 +1198,20 @@ func stepLeader(r *raft, m pb.Message) error {
 	}
 	switch m.Type {
 	case pb.MsgAppResp:
+		// 3milebeach note:
+		// Leader receives responses from followers
+		log.CriticalPath.PrintlnWithCaller("%d MsgAppResp stub", r.id) // 3milebeach begins
+		if lastEvent, ok := trace.GetLastEvent(); ok {
+			trace.Records = append(trace.Records, &tracer.Record{
+				Type:        tracer.RecordType_RecordReceive,
+				Timestamp:   time.Now().UnixNano(),
+				MessageName: lastEvent.MessageName,
+				Uuid:        lastEvent.GetUuid(),
+				Service:     r.serverID,
+			})
+			log.Debug.PrintlnWithCaller("%s received trace from (%d)) %s", r.serverID, m.From, trace.JSONString())
+		} // 3milebeach ends
+
 		pr.RecentActive = true
 
 		if m.Reject {
@@ -1185,15 +1222,18 @@ func stepLeader(r *raft, m pb.Message) error {
 				if pr.State == tracker.StateReplicate {
 					pr.BecomeProbe()
 				}
-				r.sendAppend(m.From)
+				r.sendAppend(m.From, nil) // 3milebeach todo: trace != nil?
+				// r.sendAppend(m.From)
 			}
 		} else {
 			oldPaused := pr.IsPaused()
 			if pr.MaybeUpdate(m.Index) {
 				switch {
 				case pr.State == tracker.StateProbe:
+					log.Debug.PrintlnWithCaller("%s StateProbe stub", r.serverID) // 3milebeach
 					pr.BecomeReplicate()
 				case pr.State == tracker.StateSnapshot && pr.Match >= pr.PendingSnapshot:
+					log.Debug.PrintlnWithCaller("%s StateSnapshot stub", r.serverID) // 3milebeach
 					// TODO(tbg): we should also enter this branch if a snapshot is
 					// received that is below pr.PendingSnapshot but which makes it
 					// possible to use the log again.
@@ -1206,15 +1246,20 @@ func stepLeader(r *raft, m pb.Message) error {
 					pr.BecomeProbe()
 					pr.BecomeReplicate()
 				case pr.State == tracker.StateReplicate:
+					log.Debug.PrintlnWithCaller("%s StateReplicate stub", r.serverID) // 3milebeach
 					pr.Inflights.FreeLE(m.Index)
 				}
 
 				if r.maybeCommit() {
-					r.bcastAppend()
+					log.Debug.PrintlnWithCaller("%s ========== maybe commit ==========", r.serverID)
+					r.bcastAppend(trace) // 3milebeach
+					// r.bcastAppend()
 				} else if oldPaused {
+					log.Debug.PrintlnWithCaller("%s oldPaused stub", r.serverID) // 3milebeach
 					// If we were paused before, this node may be missing the
 					// latest commit index, so send it.
-					r.sendAppend(m.From)
+					r.sendAppend(m.From, nil) // 3milebeach todo: trace != nil
+					// r.sendAppend(m.From)
 				}
 				// We've updated flow control information above, which may
 				// allow us to send multiple (size-limited) in-flight messages
@@ -1222,10 +1267,13 @@ func stepLeader(r *raft, m pb.Message) error {
 				// replicate, or when freeTo() covers multiple messages). If
 				// we have more entries to send, send as many messages as we
 				// can (without sending empty messages for the commit index)
-				for r.maybeSendAppend(m.From, false) {
+				// for r.maybeSendAppend(m.From, false) {
+				for r.maybeSendAppend(m.From, nil, false) { // 3milebeach
+					log.Debug.PrintlnWithCaller("%s maybeSendAppend stub", r.serverID) // 3milebeach
 				}
 				// Transfer leadership is in progress.
 				if m.From == r.leadTransferee && pr.Match == r.raftLog.lastIndex() {
+					log.Debug.PrintlnWithCaller("%s stub", r.serverID) // 3milebeach
 					r.logger.Infof("%x sent MsgTimeoutNow to %x after received MsgAppResp", r.id, m.From)
 					r.sendTimeoutNow(m.From)
 				}
@@ -1240,7 +1288,8 @@ func stepLeader(r *raft, m pb.Message) error {
 			pr.Inflights.FreeFirstOne()
 		}
 		if pr.Match < r.raftLog.lastIndex() {
-			r.sendAppend(m.From)
+			r.sendAppend(m.From, nil) // 3milebeach todo: trace != nil?
+			// r.sendAppend(m.From)
 		}
 
 		if r.readOnly.option != ReadOnlySafe || len(m.Context) == 0 {
@@ -1318,7 +1367,8 @@ func stepLeader(r *raft, m pb.Message) error {
 			r.sendTimeoutNow(leadTransferee)
 			r.logger.Infof("%x sends MsgTimeoutNow to %x immediately as %x already has up-to-date log", r.id, leadTransferee, leadTransferee)
 		} else {
-			r.sendAppend(leadTransferee)
+			r.sendAppend(leadTransferee, nil) // 3milebeach todo: trace != nil?
+			// r.sendAppend(leadTransferee)
 		}
 	}
 	return nil
@@ -1360,7 +1410,8 @@ func stepCandidate(r *raft, m pb.Message) error {
 				r.campaign(campaignElection)
 			} else {
 				r.becomeLeader()
-				r.bcastAppend()
+				r.bcastAppend(nil) // 3milebeach todo: trace != nil?
+				// r.bcastAppend()
 			}
 		case quorum.VoteLost:
 			// pb.MsgPreVoteResp contains future term of pre-candidate
@@ -1376,7 +1427,7 @@ func stepCandidate(r *raft, m pb.Message) error {
 func stepFollower(r *raft, m pb.Message) error {
 	switch m.Type {
 	case pb.MsgProp:
-		log.Logger.PrintlnWithCaller("%s stub", r.serverID) // 3MileBeach
+		log.Logger.PrintlnWithCaller("%d MsgProp stub", r.id) // 3MileBeach
 
 		if r.lead == None {
 			r.logger.Infof("%x no leader at term %d; dropping proposal", r.id, r.Term)
@@ -1388,6 +1439,7 @@ func stepFollower(r *raft, m pb.Message) error {
 		m.To = r.lead
 		r.send(m)
 	case pb.MsgApp:
+		log.Logger.PrintlnWithCaller("%s MsgApp message: %+v", r.serverID, m) // 3MileBeach
 		r.electionElapsed = 0
 		r.lead = m.From
 		r.handleAppendEntries(m)
@@ -1435,20 +1487,38 @@ func stepFollower(r *raft, m pb.Message) error {
 
 // 3milebeach note: a follower or candidate method
 func (r *raft) handleAppendEntries(m pb.Message) {
+	trace := m.PrepareTrace().Trace // 3milebeach begins
+	log.Debug.PrintlnWithCaller("%s trace: %s", r.serverID, trace)
+	if lastEvent, ok := trace.GetLastEvent(); ok {
+		trace.Records = append(trace.Records, &tracer.Record{
+			Type:        tracer.RecordType_RecordSend,
+			Timestamp:   time.Now().UnixNano(),
+			MessageName: pb.MessageType_name[int32(pb.MsgAppResp)], // todo
+			Uuid:        lastEvent.GetUuid(),
+			Service:     r.serverID,
+		})
+	} // 3milebeach ends
+
 	if m.Index < r.raftLog.committed {
-		log.CriticalPath.PrintlnWithCaller("%s already committed", r.serverID) // 3milebeach
-		r.send(pb.Message{To: m.From, Type: pb.MsgAppResp, Index: r.raftLog.committed})
+		log.CriticalPath.PrintlnWithCaller("%d already committed", r.id)                              // 3milebeach
+		r.send(pb.Message{To: m.From, Type: pb.MsgAppResp, Index: r.raftLog.committed, Trace: trace}) // 3milebeach
+
+		// r.send(pb.Message{To: m.From, Type: pb.MsgAppResp, Index: r.raftLog.committed})
 		return
 	}
 
 	if mlastIndex, ok := r.raftLog.maybeAppend(m.Index, m.LogTerm, m.Commit, m.Entries...); ok {
-		log.CriticalPath.PrintlnWithCaller("%s committed, last index: %d", r.serverID, mlastIndex) // 3milebeach
-		r.send(pb.Message{To: m.From, Type: pb.MsgAppResp, Index: mlastIndex})
+		log.CriticalPath.PrintlnWithCaller("%s committed, last index: %d", r.serverID, mlastIndex) // 3milebeach begins
+		r.send(pb.Message{To: m.From, Type: pb.MsgAppResp, Index: mlastIndex, Trace: trace})       // 3milebeach ends
+
+		// r.send(pb.Message{To: m.From, Type: pb.MsgAppResp, Index: mlastIndex})
 	} else {
-		log.CriticalPath.PrintlnWithCaller("%s commit failed", r.serverID) // 3milebeach
+		log.CriticalPath.PrintlnWithCaller("%d commit failed", r.id) // 3milebeach
 		r.logger.Debugf("%x [logterm: %d, index: %d] rejected MsgApp [logterm: %d, index: %d] from %x",
 			r.id, r.raftLog.zeroTermOnErrCompacted(r.raftLog.term(m.Index)), m.Index, m.LogTerm, m.Index, m.From)
-		r.send(pb.Message{To: m.From, Type: pb.MsgAppResp, Index: m.Index, Reject: true, RejectHint: r.raftLog.lastIndex()})
+		r.send(pb.Message{To: m.From, Type: pb.MsgAppResp, Index: m.Index, Reject: true, RejectHint: r.raftLog.lastIndex(), Trace: trace}) // 3milebeach
+
+		// r.send(pb.Message{To: m.From, Type: pb.MsgAppResp, Index: m.Index, Reject: true, RejectHint: r.raftLog.lastIndex()})
 	}
 }
 
@@ -1617,13 +1687,15 @@ func (r *raft) switchToConfig(cfg tracker.Config, prs tracker.ProgressMap) pb.Co
 	if r.maybeCommit() {
 		// If the configuration change means that more entries are committed now,
 		// broadcast/append to everyone in the updated config.
-		r.bcastAppend()
+		r.bcastAppend(nil) // 3milebeach todo: trace != nil?
+		// r.bcastAppend()
 	} else {
 		// Otherwise, still probe the newly added replicas; there's no reason to
 		// let them wait out a heartbeat interval (or the next incoming
 		// proposal).
 		r.prs.Visit(func(id uint64, pr *tracker.Progress) {
-			r.maybeSendAppend(id, false /* sendIfEmpty */)
+			r.maybeSendAppend(id, nil, false /* sendIfEmpty */)
+			// r.maybeSendAppend(id, false /* sendIfEmpty */)
 		})
 	}
 	// If the the leadTransferee was removed, abort the leadership transfer.
