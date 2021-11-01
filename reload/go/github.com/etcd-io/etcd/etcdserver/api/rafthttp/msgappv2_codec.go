@@ -138,6 +138,8 @@ func (enc *msgAppV2Encoder) encode(m *raftpb.Message) error {
 				return err
 			}
 		} else {
+			// todo capture event
+
 			// write size of trace
 			binary.BigEndian.PutUint64(enc.uint64buf, uint64(trace.Size()))
 			if _, err := enc.w.Write(enc.uint64buf); err != nil {
@@ -266,6 +268,8 @@ func (dec *msgAppV2Decoder) decode() (raftpb.Message, error) {
 
 			m.Trace = &tracer.Trace{}
 			pbutil.MustUnmarshal(m.Trace, buf)
+
+			// todo capture event
 		} // 3milebeach ends
 	case msgTypeApp:
 		var size uint64

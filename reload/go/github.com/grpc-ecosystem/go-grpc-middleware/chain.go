@@ -32,14 +32,14 @@ func ChainUnaryServer(interceptors ...grpc.UnaryServerInterceptor) grpc.UnarySer
 			)
 
 			chainHandler = func(currentCtx context.Context, currentReq interface{}) (interface{}, error) {
-				log.CriticalPath.PrintlnWithCaller("stub")
+				// log.CriticalPath.PrintlnWithCaller("stub") // 3milebeach begins
 
 				var trace *tracer.Trace
 				var lastEvent *tracer.Record
 				cm := ctx.Value(tracer.ContextMetaKey{}).(*tracer.ContextMeta)
 
 				if reqT, ok := req.(tracer.Tracer); ok {
-					trace, ok = tracer.Assertion.GetTrace(req) // 3milebeach begins
+					trace, ok = tracer.Assertion.GetTrace(req)
 					if ok {
 						//log.Debug.PrintlnWithStackTrace(3, "hhhhhhh")
 						//log.Debug.PrintlnWithStackTrace(4, "hhhhhhh")
@@ -48,10 +48,11 @@ func ChainUnaryServer(interceptors ...grpc.UnaryServerInterceptor) grpc.UnarySer
 						//log.Debug.PrintlnWithStackTrace(7, "hhhhhhh")
 						//log.Debug.PrintlnWithStackTrace(8, "hhhhhhh")
 
-						log.Debug.PrintlnWithCaller("%s processing %s", cm.ServerUUID(), reqT.GetFI_Name())
 						trace = reqT.GetFI_Trace()
 						if lastEvent, ok = tracer.Assertion.GetLastEvent(reqT); ok {
 							log.Debug.PrintlnWithCaller("%s processing %s %s", cm.ServerUUID(), reqT.GetFI_Name(), lastEvent.GetMessageName())
+						} else {
+							log.Error.PrintlnWithCaller("%s processing %s without events", cm.ServerUUID(), reqT.GetFI_Name())
 						}
 					}
 				} // 3milebeach ends
@@ -76,7 +77,7 @@ func ChainUnaryServer(interceptors ...grpc.UnaryServerInterceptor) grpc.UnarySer
 
 							respT.SetFI_Trace(trace)
 
-							log.Debug.PrintlnWithCaller("ChainUnaryServer() rsp: %s", resp)
+							log.Debug.PrintlnWithCaller("ChainUnaryServer() rsp: %s", log.Stringer.JSON(resp))
 						}
 					}
 

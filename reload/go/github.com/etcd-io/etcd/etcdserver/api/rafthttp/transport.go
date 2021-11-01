@@ -196,7 +196,7 @@ func (t *Transport) Send(msgs []raftpb.Message) {
 				t.ServerStats.SendAppendReq(m.Size())
 			}
 
-			log.Debug.PrintlnWithCaller("%d message: %+v", t.ID, m) // 3milebeach
+			log.Debug.PrintlnWithCaller("%d message: %s", t.ID, log.Stringer.JSON(m)) // 3milebeach
 
 			p.send(m)
 			continue

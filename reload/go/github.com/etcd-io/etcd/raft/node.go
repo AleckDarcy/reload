@@ -466,11 +466,10 @@ func (n *node) stepWait(ctx context.Context, m pb.Message) error {
 // Step advances the state machine using msgs. The ctx.Err() will be returned,
 // if any.
 func (n *node) stepWithWaitOption(ctx context.Context, m pb.Message, wait bool) error {
-	log.Stub.PrintlnWithCaller("%d message jajajaja %+v", n.rn.raft.id, m) // 3milebeach
 	if m.Type != pb.MsgProp {
 		select {
 		case n.recvc <- m:
-			log.Logger.PrintlnWithCaller("%d recvc<- stub", n.rn.raft.id) // 3milebeach
+			log.Logger.PrintlnWithCaller("%s recvc<- writing recv channel", n.rn.raft.serverID) // 3milebeach
 
 			return nil
 		case <-ctx.Done():
@@ -486,7 +485,7 @@ func (n *node) stepWithWaitOption(ctx context.Context, m pb.Message, wait bool) 
 	}
 	select {
 	case ch <- pm:
-		log.Logger.PrintlnWithCaller("%d propc<- stub", n.rn.raft.id) // 3milebeach
+		log.Logger.PrintlnWithCaller("%s propc<- writing prop channel", n.rn.raft.serverID) // 3milebeach
 		if !wait {
 			return nil
 		}
@@ -575,9 +574,9 @@ func newReady(r *raft, prevSoftSt *SoftState, prevHardSt pb.HardState) Ready {
 		CommittedEntries: r.raftLog.nextEnts(),
 		Messages:         r.msgs,
 	}
-	log.Logger.PrintlnWithCaller("%s stub %s", r.serverID, rd.Entries)          // 3milebeach
-	log.Logger.PrintlnWithCaller("%s stub %s", r.serverID, rd.CommittedEntries) // 3milebeach
-	log.Logger.PrintlnWithCaller("%s stub %s", r.serverID, rd.Messages)         // 3milebeach
+
+	// log.Logger.PrintlnWithCaller("%s\n\t\tEntries: %s\n\t\tCommittedEntries: %s\n\t\tMessages: %s", r.serverID,
+	//	log.Stringer.JSON(rd.Entries), log.Stringer.JSON(rd.CommittedEntries), log.Stringer.JSON(rd.Messages)) // 3milebeach
 
 	if softSt := r.softState(); !softSt.equal(prevSoftSt) {
 		rd.SoftState = softSt

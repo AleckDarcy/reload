@@ -870,7 +870,7 @@ func (s *EtcdServer) RaftHandler() http.Handler { return s.r.transport.Handler()
 // machine, respecting any timeout of the given context.
 // 3milebeach note: etcd server processes messages from client (?) and other servers
 func (s *EtcdServer) Process(ctx context.Context, m raftpb.Message) error {
-	log.Debug.PrintlnWithCaller("%s message: %s", s.serverID, m) // 3milebeach
+	log.Debug.PrintlnWithCaller("%s message: %s", s.serverID, log.Stringer.JSON(m)) // 3milebeach
 	if s.cluster.IsIDRemoved(types.ID(m.From)) {
 		if lg := s.getLogger(); lg != nil {
 			lg.Warn(

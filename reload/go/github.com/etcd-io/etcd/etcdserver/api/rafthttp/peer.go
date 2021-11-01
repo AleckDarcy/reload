@@ -248,7 +248,7 @@ func (p *peer) send(m raftpb.Message) {
 	writec, name := p.pick(m)
 	select {
 	case writec <- m:
-		log.Debug.PrintlnWithCaller("%d writec<- message: %+v", p.localID, m) // 3milebeach
+		log.Debug.PrintlnWithCaller("%d writec<- writing write channel message: %s", p.localID, log.Stringer.JSON(m)) // 3milebeach
 	default:
 		p.r.ReportUnreachable(m.To)
 		if isMsgSnap(m) {

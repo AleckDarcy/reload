@@ -203,7 +203,7 @@ func (cw *streamWriter) run() {
 			heartbeatc, msgc = nil, nil
 
 		case m := <-msgc:
-			log.Debug.PrintlnWithCaller("%d <-msgc message: %+v", cw.localID, m)
+			log.Debug.PrintlnWithCaller("%d <-msgc writing msg channel message: %s", cw.localID, log.Stringer.JSON(m))
 			err := enc.encode(&m)
 			if err == nil {
 				unflushed += m.Size()
@@ -550,7 +550,7 @@ func (cr *streamReader) decodeLoop(rc io.ReadCloser, t streamType) error {
 
 		select {
 		case recvc <- m:
-			log.Debug.PrintlnWithCaller("%d recvc<- message: %+v", cr.localID, m) // 3milebeach
+			log.Debug.PrintlnWithCaller("%d recvc<- writing recv channel message: %s", cr.localID, log.Stringer.JSON(m)) // 3milebeach
 		default:
 			if cr.status.isActive() {
 				if cr.lg != nil {

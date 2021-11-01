@@ -453,7 +453,7 @@ func (r *raft) send(m pb.Message) {
 
 	for _, ent := range m.Entries { // 3milebeach begins
 		if ent.Trace != nil {
-			log.Debug.PrintlnWithCaller("%s entry with trace %s", r.serverID, ent.Trace)
+			log.Debug.PrintlnWithCaller("%s entry with trace %s", r.serverID, ent.Trace.JSONString())
 		} else {
 			log.Debug.PrintlnWithCaller("%s entry without trace", r.serverID)
 		}
@@ -1200,7 +1200,7 @@ func stepLeader(r *raft, m pb.Message) error {
 	case pb.MsgAppResp:
 		// 3milebeach note:
 		// Leader receives responses from followers
-		log.CriticalPath.PrintlnWithCaller("%d MsgAppResp stub", r.id) // 3milebeach begins
+		log.CriticalPath.PrintlnWithCaller("%s MsgAppResp stub", r.serverID) // 3milebeach begins
 		if lastEvent, ok := trace.GetLastEvent(); ok {
 			trace.Records = append(trace.Records, &tracer.Record{
 				Type:        tracer.RecordType_RecordReceive,
@@ -1209,7 +1209,7 @@ func stepLeader(r *raft, m pb.Message) error {
 				Uuid:        lastEvent.GetUuid(),
 				Service:     r.serverID,
 			})
-			log.Debug.PrintlnWithCaller("%s received trace from (%d)) %s", r.serverID, m.From, trace.JSONString())
+			log.Debug.PrintlnWithCaller("%s received trace from (%d) %s", r.serverID, m.From, trace.JSONString())
 		} // 3milebeach ends
 
 		pr.RecentActive = true
@@ -1273,7 +1273,7 @@ func stepLeader(r *raft, m pb.Message) error {
 				}
 				// Transfer leadership is in progress.
 				if m.From == r.leadTransferee && pr.Match == r.raftLog.lastIndex() {
-					log.Debug.PrintlnWithCaller("%s stub", r.serverID) // 3milebeach
+					log.Debug.PrintlnWithCaller("%s MsgTimeoutNow stub", r.serverID) // 3milebeach
 					r.logger.Infof("%x sent MsgTimeoutNow to %x after received MsgAppResp", r.id, m.From)
 					r.sendTimeoutNow(m.From)
 				}
@@ -1439,7 +1439,7 @@ func stepFollower(r *raft, m pb.Message) error {
 		m.To = r.lead
 		r.send(m)
 	case pb.MsgApp:
-		log.Logger.PrintlnWithCaller("%s MsgApp message: %+v", r.serverID, m) // 3MileBeach
+		log.Logger.PrintlnWithCaller("%s MsgApp message: %s", r.serverID, log.Stringer.JSON(m)) // 3MileBeach
 		r.electionElapsed = 0
 		r.lead = m.From
 		r.handleAppendEntries(m)
@@ -1486,9 +1486,10 @@ func stepFollower(r *raft, m pb.Message) error {
 }
 
 // 3milebeach note: a follower or candidate method
+// 3milebeach todo
 func (r *raft) handleAppendEntries(m pb.Message) {
 	trace := m.PrepareTrace().Trace // 3milebeach begins
-	log.Debug.PrintlnWithCaller("%s trace: %s", r.serverID, trace)
+	log.Debug.PrintlnWithCaller("%s trace: %s", r.serverID, trace.JSONString())
 	if lastEvent, ok := trace.GetLastEvent(); ok {
 		trace.Records = append(trace.Records, &tracer.Record{
 			Type:        tracer.RecordType_RecordSend,

@@ -1,6 +1,7 @@
 package log
 
 import (
+	"encoding/json"
 	"fmt"
 	"runtime"
 	"strings"
@@ -39,6 +40,7 @@ const (
 	DebugHelperLogger
 	StubLogger
 	CriticalPathLogger
+	ErrorLogger
 	count
 )
 
@@ -70,6 +72,7 @@ var Logger = logger{NormalLogger}
 var Debug = logger{DebugHelperLogger}
 var Stub = logger{StubLogger}
 var CriticalPath = logger{CriticalPathLogger}
+var Error = logger{ErrorLogger}
 
 func (l *logger) PrintlnWithStackTrace(skip int, format string, a ...interface{}) {
 	if conf[l.type_] == false {
@@ -104,4 +107,17 @@ func (l *logger) Printf(format string, a ...interface{}) {
 	}
 
 	Printf("[3MileBeach] "+format, a...)
+}
+
+type stringer struct{}
+
+var Stringer stringer
+
+func (s *stringer) JSON(value interface{}) string {
+	bytes, err := json.Marshal(value)
+	if err != nil {
+		return fmt.Sprintf("%+v", value)
+	}
+
+	return string(bytes)
 }
