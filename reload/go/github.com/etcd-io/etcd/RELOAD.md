@@ -1,14 +1,41 @@
 version: 3.4.0
 
-go get git.xxxxx/reload@commit_id
+# Preparation (IMPORTANT)
 
-go mod vendor
+## Git
 
+Under a random empty folder, clone the repo and checkout to the correct branch:
 
+```go
+git clone http://github.com/AleckDarcy/reload.git
+cd reload
+git checkout feature/etcd_3_4_0
+```
 
+Before opening ./ as the root folder of a Goland project, please do the following in terminal:
+
+```shell script
+cd reload/go/github.com/etcd-io/etcd
+# download dependencies
 go mod download
-
 go mod vendor
+# reload 3milebeach to vendor
+chmod +x reload.sh
+./reload.sh
+```
+
+Bugs may occur if this is done in Goland's terminal (after opening the project), not sure why it's happening.
+One possible reason is that the hacking of dependencies under vendor may confuse Goland.
+So do all the tricks before Goland can even react and do stupid things. XD
+
+## Use a specific version of reload repo
+
+```shell script
+go get github.com/AleckDarcy/reload@commit_id
+go mod download
+go mod vendor
+(WIP)
+```
 
 # ProtoBuf
 
