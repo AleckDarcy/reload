@@ -24,6 +24,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/AleckDarcy/reload/core/log"
+	"github.com/AleckDarcy/reload/core/tracer"
+
 	"go.etcd.io/etcd/etcdserver/api/snap"
 	pioutil "go.etcd.io/etcd/pkg/ioutil"
 	"go.etcd.io/etcd/pkg/types"
@@ -171,6 +174,7 @@ type snapshotHandler struct {
 	r           Raft
 	snapshotter *snap.Snapshotter
 
+	TMB     *tracer.Plugin // 3milebeach
 	localID types.ID
 	cid     types.ID
 }
@@ -181,6 +185,7 @@ func newSnapshotHandler(t *Transport, r Raft, snapshotter *snap.Snapshotter, cid
 		tr:          t,
 		r:           r,
 		snapshotter: snapshotter,
+		TMB:         t.TMB,
 		localID:     t.ID,
 		cid:         cid,
 	}
@@ -198,6 +203,8 @@ const unknownSnapshotSender = "UNKNOWN_SNAPSHOT_SENDER"
 // received and processed.
 // 2. this case should happen rarely, so no further optimization is done.
 func (h *snapshotHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	log.Debug.PrintlnWithCaller("%s stub", h.TMB) // 3milebeach
+
 	start := time.Now()
 
 	if r.Method != "POST" {
@@ -217,7 +224,8 @@ func (h *snapshotHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	addRemoteFromRequest(h.tr, r)
 
-	dec := &messageDecoder{r: r.Body}
+	dec := &messageDecoder{TMB: h.TMB, r: r.Body} // 3milebeach
+	// dec := &messageDecoder{r: r.Body}
 	// let snapshots be very large since they can exceed 512MB for large installations
 	m, err := dec.decodeLimit(uint64(1 << 63))
 	from := types.ID(m.From).String()
@@ -348,6 +356,7 @@ type streamHandler struct {
 	tr         *Transport
 	peerGetter peerGetter
 	r          Raft
+	TMB        *tracer.Plugin // 3milebeach
 	id         types.ID
 	cid        types.ID
 }
@@ -358,12 +367,15 @@ func newStreamHandler(t *Transport, pg peerGetter, r Raft, id, cid types.ID) htt
 		tr:         t,
 		peerGetter: pg,
 		r:          r,
+		TMB:        t.TMB,
 		id:         id,
 		cid:        cid,
 	}
 }
 
 func (h *streamHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	log.Debug.PrintlnWithCaller("%s stub", h.TMB) // 3milebeach
+
 	if r.Method != "GET" {
 		w.Header().Set("Allow", "GET")
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)

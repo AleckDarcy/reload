@@ -20,6 +20,8 @@ import (
 	"io"
 	"time"
 
+	"github.com/AleckDarcy/reload/core/log"
+
 	"github.com/AleckDarcy/reload/core/tracer"
 
 	stats "go.etcd.io/etcd/etcdserver/api/v2stats"
@@ -64,6 +66,8 @@ const (
 // | 1      | 8     | length of encoded message |
 // | 9      | n     | encoded message |
 type msgAppV2Encoder struct {
+	TMB *tracer.Plugin // 3milebeach
+
 	w  io.Writer
 	fs *stats.FollowerStats
 
@@ -83,6 +87,10 @@ func newMsgAppV2Encoder(w io.Writer, fs *stats.FollowerStats) *msgAppV2Encoder {
 		uint8buf:  make([]byte, 1),
 	}
 }
+
+func (enc *msgAppV2Encoder) setServerID(id tracer.UUID) { // 3milebeach begins
+	enc.TMB = tracer.GetPlugin(id)
+} // 3milebeach ends
 
 func (enc *msgAppV2Encoder) encode(m *raftpb.Message) error {
 	start := time.Now()
@@ -138,7 +146,18 @@ func (enc *msgAppV2Encoder) encode(m *raftpb.Message) error {
 				return err
 			}
 		} else {
-			// todo capture event
+			// 3milebeach todo: capture event && fault injection
+
+			uuid := tracer.NewUUID()
+			event := &tracer.Record{
+				Type:        tracer.RecordType_RecordSend,
+				Timestamp:   time.Now().UnixNano(),
+				MessageName: m.Type.String(),
+				Uuid:        uuid,
+				Service:     enc.TMB.ServerID,
+			}
+
+			log.Debug.PrintlnWithCaller("%s capture event: %s", enc.TMB, log.Stringer.JSON(event))
 
 			// write size of trace
 			binary.BigEndian.PutUint64(enc.uint64buf, uint64(trace.Size()))
@@ -176,6 +195,8 @@ func (enc *msgAppV2Encoder) encode(m *raftpb.Message) error {
 }
 
 type msgAppV2Decoder struct {
+	TMB *tracer.Plugin // 3milebeach
+
 	r             io.Reader
 	local, remote types.ID
 
@@ -188,6 +209,7 @@ type msgAppV2Decoder struct {
 
 func newMsgAppV2Decoder(r io.Reader, local, remote types.ID) *msgAppV2Decoder {
 	return &msgAppV2Decoder{
+		TMB:       tracer.GetPlugin(local.Decimal()), // 3milebeach
 		r:         r,
 		local:     local,
 		remote:    remote,
@@ -266,10 +288,25 @@ func (dec *msgAppV2Decoder) decode() (raftpb.Message, error) {
 				return m, err
 			}
 
-			m.Trace = &tracer.Trace{}
-			pbutil.MustUnmarshal(m.Trace, buf)
+			trace := &tracer.Trace{}
+			pbutil.MustUnmarshal(trace, buf)
 
 			// todo capture event
+			if lastEvent, ok := trace.GetLastEvent(); !ok {
+				log.Error.PrintlnWithCaller("%s trace with no events", dec.TMB)
+			} else {
+				event := &tracer.Record{
+					Type:        tracer.RecordType_RecordReceive,
+					Timestamp:   time.Now().UnixNano(),
+					MessageName: lastEvent.MessageName,
+					Uuid:        lastEvent.Uuid,
+					Service:     dec.TMB.ServerID,
+				}
+
+				log.Debug.PrintlnWithCaller("%s capture event: %s from event: %s", dec.TMB, log.Stringer.JSON(event), log.Stringer.JSON(lastEvent))
+			}
+
+			m.Trace = trace
 		} // 3milebeach ends
 	case msgTypeApp:
 		var size uint64

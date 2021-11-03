@@ -19,6 +19,9 @@ import (
 	"math"
 	"strings"
 
+	"github.com/AleckDarcy/reload/core/tracer"
+
+	"go.etcd.io/etcd/pkg/types"
 	"go.etcd.io/etcd/raft"
 	pb "go.etcd.io/etcd/raft/raftpb"
 )
@@ -75,6 +78,7 @@ type Storage interface {
 // In particular, no limits are set.
 func defaultRaftConfig(id uint64, applied uint64, s raft.Storage) *raft.Config {
 	return &raft.Config{
+		TMB:             tracer.GetPlugin(types.ID(id).Decimal()), // 3milebeach
 		ID:              id,
 		Applied:         applied,
 		ElectionTick:    3,

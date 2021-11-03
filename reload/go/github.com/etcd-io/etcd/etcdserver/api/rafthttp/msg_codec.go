@@ -18,6 +18,10 @@ import (
 	"encoding/binary"
 	"errors"
 	"io"
+	"time"
+
+	"github.com/AleckDarcy/reload/core/log"
+	"github.com/AleckDarcy/reload/core/tracer"
 
 	"go.etcd.io/etcd/pkg/pbutil"
 	"go.etcd.io/etcd/raft/raftpb"
@@ -26,19 +30,42 @@ import (
 // messageEncoder is a encoder that can encode all kinds of messages.
 // It MUST be used with a paired messageDecoder.
 type messageEncoder struct {
+	TMB *tracer.Plugin // 3milebeach
+
 	w io.Writer
 }
+
+func (enc *messageEncoder) setServerID(id tracer.UUID) { // 3milebeach begins
+	enc.TMB = tracer.GetPlugin(id)
+} // 3milebeach ends
 
 func (enc *messageEncoder) encode(m *raftpb.Message) error {
 	if err := binary.Write(enc.w, binary.BigEndian, uint64(m.Size())); err != nil {
 		return err
 	}
+
+	// 3milebeach todo: capture event && fault injection
+	if trace := m.Trace; trace != nil {
+		uuid := tracer.NewUUID() // 3milebeach begins
+		event := &tracer.Record{
+			Type:        tracer.RecordType_RecordSend,
+			Timestamp:   time.Now().UnixNano(),
+			MessageName: m.Type.String(),
+			Uuid:        uuid,
+			Service:     enc.TMB.ServerID,
+		}
+
+		log.Debug.PrintlnWithCaller("%s capture event: %s", enc.TMB, log.Stringer.JSON(event))
+	} // 3milebeach ends
+
 	_, err := enc.w.Write(pbutil.MustMarshal(m))
 	return err
 }
 
 // messageDecoder is a decoder that can decode all kinds of messages.
 type messageDecoder struct {
+	TMB *tracer.Plugin // 3milebeach
+
 	r io.Reader
 }
 
@@ -64,5 +91,31 @@ func (dec *messageDecoder) decodeLimit(numBytes uint64) (raftpb.Message, error) 
 	if _, err := io.ReadFull(dec.r, buf); err != nil {
 		return m, err
 	}
-	return m, m.Unmarshal(buf)
+
+	// 3milebeach todo: capture events
+
+	if err := m.Unmarshal(buf); err != nil { // 3milebeach begins
+		return m, err
+	}
+
+	trace := m.Trace
+	if trace != nil {
+		if lastEvent, ok := trace.GetLastEvent(); !ok {
+			log.Error.PrintlnWithCaller("%s trace with no events", dec.TMB)
+		} else {
+			event := &tracer.Record{
+				Type:        tracer.RecordType_RecordReceive,
+				Timestamp:   time.Now().UnixNano(),
+				MessageName: lastEvent.MessageName,
+				Uuid:        lastEvent.Uuid,
+				Service:     dec.TMB.ServerID,
+			}
+
+			log.Debug.PrintlnWithCaller("%s capture event: %s from event: %s", dec.TMB, log.Stringer.JSON(event), log.Stringer.JSON(lastEvent))
+		}
+	}
+
+	return m, nil // 3milebeach ends
+
+	// return m, m.Unmarshal(buf)
 }

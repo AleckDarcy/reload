@@ -14,11 +14,16 @@
 
 package rafthttp
 
-import "go.etcd.io/etcd/raft/raftpb"
+import (
+	"github.com/AleckDarcy/reload/core/tracer"
+	"go.etcd.io/etcd/raft/raftpb"
+)
 
 type encoder interface {
 	// encode encodes the given message to an output stream.
 	encode(m *raftpb.Message) error
+
+	setServerID(id tracer.UUID) // 3milebeach
 }
 
 type decoder interface {

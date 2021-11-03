@@ -426,7 +426,7 @@ func (n *node) Campaign(ctx context.Context) error { return n.step(ctx, pb.Messa
 
 func (n *node) Propose(ctx context.Context, trace *tracer.Trace, data []byte) error {
 	// func (n *node) Propose(ctx context.Context, data []byte) error {
-	log.Logger.PrintlnWithCaller("%s stub", n.rn.raft.serverID) // 3milebeach
+	log.Logger.PrintlnWithCaller("%s stub", n.rn.raft.TMB) // 3milebeach
 	return n.stepWait(ctx, pb.Message{Type: pb.MsgProp, Entries: []pb.Entry{{Data: data, Trace: trace}}})
 }
 
@@ -469,7 +469,7 @@ func (n *node) stepWithWaitOption(ctx context.Context, m pb.Message, wait bool) 
 	if m.Type != pb.MsgProp {
 		select {
 		case n.recvc <- m:
-			log.Logger.PrintlnWithCaller("%s recvc<- writing recv channel", n.rn.raft.serverID) // 3milebeach
+			log.Logger.PrintlnWithCaller("%s recvc<- writing recv channel", n.rn.raft.TMB) // 3milebeach
 
 			return nil
 		case <-ctx.Done():
@@ -485,7 +485,7 @@ func (n *node) stepWithWaitOption(ctx context.Context, m pb.Message, wait bool) 
 	}
 	select {
 	case ch <- pm:
-		log.Logger.PrintlnWithCaller("%s propc<- writing prop channel", n.rn.raft.serverID) // 3milebeach
+		log.Logger.PrintlnWithCaller("%s propc<- writing prop channel", n.rn.raft.TMB) // 3milebeach
 		if !wait {
 			return nil
 		}

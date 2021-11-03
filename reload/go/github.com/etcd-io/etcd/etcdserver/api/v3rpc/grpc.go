@@ -39,7 +39,7 @@ const (
 
 // 3milebeach todo: add serverID
 func Server(s *etcdserver.EtcdServer, tls *tls.Config, gopts ...grpc.ServerOption) *grpc.Server {
-	log.Debug.PrintlnWithCaller(s.ServerID()) // 3milebeach
+	log.Debug.PrintlnWithCaller("%s", s.TMB) // 3milebeach
 	var opts []grpc.ServerOption
 	opts = append(opts, grpc.CustomCodec(&codec{}))
 	if tls != nil {
@@ -59,7 +59,7 @@ func Server(s *etcdserver.EtcdServer, tls *tls.Config, gopts ...grpc.ServerOptio
 	opts = append(opts, grpc.MaxSendMsgSize(maxSendBytes))
 	opts = append(opts, grpc.MaxConcurrentStreams(maxStreams))
 	grpcServer := grpc.NewServer(append(opts, gopts...)...)
-	grpcServer.ServerID = s.ServerID() // 3milebeach
+	grpcServer.TMB = s.TMB // 3milebeach
 
 	pb.RegisterKVServer(grpcServer, NewQuotaKVServer(s))
 	pb.RegisterWatchServer(grpcServer, NewWatchServer(s))

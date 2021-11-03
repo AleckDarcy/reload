@@ -105,7 +105,7 @@ func newUnaryInterceptor(s *etcdserver.EtcdServer) grpc.UnaryServerInterceptor {
 				trace.Records = records
 				rspT.SetFI_Trace(trace)
 
-				log.Debug.PrintlnWithCaller("%s rsp: %s", s.ServerID(), log.Stringer.JSON(rsp)) // 3milebeach: tracing
+				log.Debug.PrintlnWithCaller("%s rsp: %s", s.TMB, log.Stringer.JSON(rsp)) // 3milebeach: tracing
 
 				return rsp, err
 			}

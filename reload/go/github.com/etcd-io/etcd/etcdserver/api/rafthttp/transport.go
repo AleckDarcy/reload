@@ -21,6 +21,7 @@ import (
 	"time"
 
 	"github.com/AleckDarcy/reload/core/log"
+	"github.com/AleckDarcy/reload/core/tracer"
 
 	"go.etcd.io/etcd/etcdserver/api/snap"
 	stats "go.etcd.io/etcd/etcdserver/api/v2stats"
@@ -110,6 +111,8 @@ type Transport struct {
 
 	TLSInfo transport.TLSInfo // TLS information used when creating connection
 
+	TMB *tracer.Plugin // 3milebeach
+
 	ID          types.ID   // local member ID
 	URLs        types.URLs // local peer URLs
 	ClusterID   types.ID   // raft cluster ID for request validation
@@ -196,14 +199,14 @@ func (t *Transport) Send(msgs []raftpb.Message) {
 				t.ServerStats.SendAppendReq(m.Size())
 			}
 
-			log.Debug.PrintlnWithCaller("%d message: %s", t.ID, log.Stringer.JSON(m)) // 3milebeach
+			log.Debug.PrintlnWithCaller("%s message: %s", t.TMB, log.Stringer.JSON(m)) // 3milebeach
 
 			p.send(m)
 			continue
 		}
 
 		if rok {
-			log.Debug.PrintlnWithCaller("%d message: %+v", t.ID, m) // 3milebeach
+			log.Debug.PrintlnWithCaller("%s message: %+v", t.TMB, m) // 3milebeach
 
 			g.send(m)
 			continue

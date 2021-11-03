@@ -24,6 +24,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/AleckDarcy/reload/core/tracer"
+
 	"go.etcd.io/etcd/etcdserver/api/rafthttp"
 	"go.etcd.io/etcd/etcdserver/api/snap"
 	stats "go.etcd.io/etcd/etcdserver/api/v2stats"
@@ -274,6 +276,7 @@ func (rc *raftNode) startRaft() {
 		rpeers[i] = raft.Peer{ID: uint64(i + 1)}
 	}
 	c := &raft.Config{
+		TMB:                       tracer.GetPlugin(types.ID(rc.id).Decimal()), // 3milebeach
 		ID:                        uint64(rc.id),
 		ElectionTick:              10,
 		HeartbeatTick:             1,
@@ -295,6 +298,7 @@ func (rc *raftNode) startRaft() {
 
 	rc.transport = &rafthttp.Transport{
 		Logger:      zap.NewExample(),
+		TMB:         tracer.GetPlugin(types.ID(rc.id).Decimal()), // 3milebeach
 		ID:          types.ID(rc.id),
 		ClusterID:   0x1000,
 		Raft:        rc,

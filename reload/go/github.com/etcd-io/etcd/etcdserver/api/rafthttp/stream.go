@@ -26,6 +26,7 @@ import (
 	"time"
 
 	"github.com/AleckDarcy/reload/core/log"
+	"github.com/AleckDarcy/reload/core/tracer"
 
 	stats "go.etcd.io/etcd/etcdserver/api/v2stats"
 	"go.etcd.io/etcd/pkg/httputil"
@@ -248,6 +249,9 @@ func (cw *streamWriter) run() {
 			default:
 				plog.Panicf("unhandled stream type %s", conn.t)
 			}
+
+			enc.setServerID(conn.localID.Decimal()) // 3milebeach todo
+
 			if cw.lg != nil {
 				cw.lg.Info(
 					"set message encoder",
@@ -368,9 +372,9 @@ func (cw *streamWriter) stop() {
 type streamReader struct {
 	lg *zap.Logger
 
-	localID types.ID // 3milebeach
-	peerID  types.ID
-	typ     streamType
+	TMB    *tracer.Plugin // 3milebeach
+	peerID types.ID
+	typ    streamType
 
 	tr     *Transport
 	picker *urlPicker
@@ -494,7 +498,8 @@ func (cr *streamReader) decodeLoop(rc io.ReadCloser, t streamType) error {
 	case streamTypeMsgAppV2:
 		dec = newMsgAppV2Decoder(rc, cr.tr.ID, cr.peerID)
 	case streamTypeMessage:
-		dec = &messageDecoder{r: rc}
+		dec = &messageDecoder{TMB: cr.TMB, r: rc} // 3milebeach
+		// dec = &messageDecoder{r: rc}
 	default:
 		if cr.lg != nil {
 			cr.lg.Panic("unknown stream type", zap.String("type", t.String()))
@@ -550,7 +555,7 @@ func (cr *streamReader) decodeLoop(rc io.ReadCloser, t streamType) error {
 
 		select {
 		case recvc <- m:
-			log.Debug.PrintlnWithCaller("%d recvc<- writing recv channel message: %s", cr.localID, log.Stringer.JSON(m)) // 3milebeach
+			log.Debug.PrintlnWithCaller("%s recvc<- writing recv channel message: %s", cr.TMB, log.Stringer.JSON(m)) // 3milebeach
 		default:
 			if cr.status.isActive() {
 				if cr.lg != nil {

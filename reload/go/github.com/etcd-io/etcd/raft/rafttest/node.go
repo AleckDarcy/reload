@@ -21,6 +21,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/AleckDarcy/reload/core/tracer"
+
+	"go.etcd.io/etcd/pkg/types"
 	"go.etcd.io/etcd/raft"
 	"go.etcd.io/etcd/raft/raftpb"
 )
@@ -42,6 +45,7 @@ type node struct {
 func startNode(id uint64, peers []raft.Peer, iface iface) *node {
 	st := raft.NewMemoryStorage()
 	c := &raft.Config{
+		TMB:                       tracer.GetPlugin(types.ID(id).Decimal()), // 3milebeach
 		ID:                        id,
 		ElectionTick:              10,
 		HeartbeatTick:             1,
@@ -132,6 +136,7 @@ func (n *node) restart() {
 	// wait for the shutdown
 	<-n.stopc
 	c := &raft.Config{
+		TMB:                       tracer.GetPlugin(types.ID(n.id).Decimal()), // 3milebeach
 		ID:                        n.id,
 		ElectionTick:              10,
 		HeartbeatTick:             1,

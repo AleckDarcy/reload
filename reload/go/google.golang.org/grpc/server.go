@@ -92,7 +92,7 @@ type service struct {
 
 // Server is a gRPC server to serve RPC requests.
 type Server struct {
-	ServerID tracer.UUID // 3milebeach
+	TMB *tracer.Plugin // 3milebeach
 
 	opts serverOptions
 
@@ -976,7 +976,7 @@ func (s *Server) processUnaryRPC(t transport.ServerTransport, stream *transport.
 	}
 
 	ctx := NewContextWithServerTransportStream(stream.Context(), stream) // 3milebeach begins
-	ctx = tracer.NewContextWithContextMeta(ctx, tracer.NewContextMeta1(0, "", "", s.ServerID))
+	ctx = tracer.NewContextWithContextMeta(ctx, tracer.NewContextMeta1(0, "", "", s.TMB.ServerID))
 	//log.Logf("new thread: %+v", ctx.Value(tracer.ContextMetaKey{})) // 3milebeach ends
 
 	df := func(v interface{}) error {
@@ -1456,7 +1456,8 @@ func (s *Server) GracefulStop() {
 func (s *Server) getCodec(ctx context.Context, contentSubtype string) baseCodec { // 3milebeach
 	// func (s *Server) getCodec(contentSubtype string) baseCodec {
 	if s.opts.codec != nil {
-		return s.opts.codec
+		return tracer.NewCodec(ctx, s.opts.codec) // 3milebeach
+		// return s.opts.codec
 	}
 	if contentSubtype == "" {
 		return tracer.NewCodec(ctx, encoding.GetCodec(proto.Name)) // 3milebeach
@@ -1467,7 +1468,6 @@ func (s *Server) getCodec(ctx context.Context, contentSubtype string) baseCodec 
 		return tracer.NewCodec(ctx, encoding.GetCodec(proto.Name)) // 3milebeach
 		// return encoding.GetCodec(proto.Name)
 	}
-
 	return tracer.NewCodec(ctx, codec) // 3milebeach
 	// return codec
 }

@@ -20,6 +20,7 @@ import (
 	"time"
 
 	"github.com/AleckDarcy/reload/core/log"
+	"github.com/AleckDarcy/reload/core/tracer"
 
 	"go.etcd.io/etcd/etcdserver/api/snap"
 	stats "go.etcd.io/etcd/etcdserver/api/v2stats"
@@ -206,28 +207,28 @@ func startPeer(t *Transport, urls types.URLs, peerID types.ID, fs *stats.Followe
 	}()
 
 	p.msgAppV2Reader = &streamReader{
-		lg:      t.Logger,
-		localID: p.localID, // 3milebeach
-		peerID:  peerID,
-		typ:     streamTypeMsgAppV2,
-		tr:      t,
-		picker:  picker,
-		status:  status,
-		recvc:   p.recvc,
-		propc:   p.propc,
-		rl:      rate.NewLimiter(t.DialRetryFrequency, 1),
+		lg:     t.Logger,
+		TMB:    tracer.GetPlugin(p.localID.Decimal()), // 3milebeach
+		peerID: peerID,
+		typ:    streamTypeMsgAppV2,
+		tr:     t,
+		picker: picker,
+		status: status,
+		recvc:  p.recvc,
+		propc:  p.propc,
+		rl:     rate.NewLimiter(t.DialRetryFrequency, 1),
 	}
 	p.msgAppReader = &streamReader{
-		lg:      t.Logger,
-		localID: p.localID, // 3milebeach
-		peerID:  peerID,
-		typ:     streamTypeMessage,
-		tr:      t,
-		picker:  picker,
-		status:  status,
-		recvc:   p.recvc,
-		propc:   p.propc,
-		rl:      rate.NewLimiter(t.DialRetryFrequency, 1),
+		lg:     t.Logger,
+		TMB:    tracer.GetPlugin(p.localID.Decimal()), // 3milebeach
+		peerID: peerID,
+		typ:    streamTypeMessage,
+		tr:     t,
+		picker: picker,
+		status: status,
+		recvc:  p.recvc,
+		propc:  p.propc,
+		rl:     rate.NewLimiter(t.DialRetryFrequency, 1),
 	}
 
 	p.msgAppV2Reader.start()

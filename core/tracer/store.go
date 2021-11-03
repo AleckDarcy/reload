@@ -4,7 +4,7 @@ import (
 	"sync"
 )
 
-type store struct {
+type Storage struct {
 	traces map[TraceID]*traces
 	lock   sync.RWMutex
 }
@@ -13,11 +13,17 @@ type traces struct {
 	traces map[UUID]*Trace
 }
 
-var Store = &store{
+var Store = &Storage{
 	traces: map[TraceID]*traces{},
 }
 
-func (s *store) CheckByContextMeta(meta *ContextMeta) bool {
+func NewStore() *Storage {
+	return &Storage{
+		traces: map[TraceID]*traces{},
+	}
+}
+
+func (s *Storage) CheckByContextMeta(meta *ContextMeta) bool {
 	s.lock.RLock()
 	ts, ok := s.traces[meta.traceID]
 	if ok {
@@ -28,7 +34,7 @@ func (s *store) CheckByContextMeta(meta *ContextMeta) bool {
 	return ok
 }
 
-func (s *store) GetByContextMeta(meta *ContextMeta) (*Trace, bool) {
+func (s *Storage) GetByContextMeta(meta *ContextMeta) (*Trace, bool) {
 	var t *Trace
 
 	s.lock.RLock()
@@ -42,7 +48,7 @@ func (s *store) GetByContextMeta(meta *ContextMeta) (*Trace, bool) {
 	return t, ok
 }
 
-func (s *store) SetByContextMeta(meta *ContextMeta, trace *Trace) {
+func (s *Storage) SetByContextMeta(meta *ContextMeta, trace *Trace) {
 	s.lock.Lock()
 	if ts, ok := s.traces[meta.traceID]; ok {
 		if t, ok := ts.traces[meta.uuid]; ok {
@@ -56,7 +62,7 @@ func (s *store) SetByContextMeta(meta *ContextMeta, trace *Trace) {
 	s.lock.Unlock()
 }
 
-func (s *store) UpdateFunctionByContextMeta(meta *ContextMeta, function func(*Trace)) (*Trace, bool) {
+func (s *Storage) UpdateFunctionByContextMeta(meta *ContextMeta, function func(*Trace)) (*Trace, bool) {
 	var t *Trace
 
 	s.lock.Lock()
@@ -73,7 +79,7 @@ func (s *store) UpdateFunctionByContextMeta(meta *ContextMeta, function func(*Tr
 	return t, ok
 }
 
-func (s *store) DeleteByContextMeta(meta *ContextMeta) bool {
+func (s *Storage) DeleteByContextMeta(meta *ContextMeta) bool {
 	s.lock.Lock()
 	ts, ok := s.traces[meta.traceID]
 	if ok {

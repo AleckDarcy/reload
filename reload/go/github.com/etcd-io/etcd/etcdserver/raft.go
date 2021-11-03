@@ -80,7 +80,7 @@ type apply struct {
 }
 
 type raftNode struct {
-	serverID tracer.UUID // 3MileBeach
+	TMB *tracer.Plugin // 3MileBeach
 
 	lg *zap.Logger
 
@@ -106,7 +106,7 @@ type raftNode struct {
 }
 
 type raftNodeConfig struct {
-	serverID tracer.UUID // 3MileBeach
+	TMB *tracer.Plugin // 3MileBeach
 
 	lg *zap.Logger
 
@@ -124,7 +124,7 @@ type raftNodeConfig struct {
 }
 
 func newRaftNode(cfg raftNodeConfig) *raftNode {
-	log2.Logger.PrintlnWithCaller("%s stub", cfg.serverID) // 3milebeach
+	log2.Logger.PrintlnWithCaller("%s stub", cfg.TMB) // 3milebeach
 
 	var lg raft.Logger
 	if cfg.lg != nil {
@@ -139,7 +139,7 @@ func newRaftNode(cfg raftNodeConfig) *raftNode {
 	}
 	raft.SetLogger(lg)
 	r := &raftNode{
-		serverID:       cfg.serverID, // 3MileBeach
+		TMB:            cfg.TMB, // 3MileBeach
 		lg:             cfg.lg,
 		tickMu:         new(sync.Mutex),
 		raftNodeConfig: cfg,
@@ -475,6 +475,7 @@ func startNode(cfg ServerConfig, cl *membership.RaftCluster, ids []types.ID) (id
 	}
 	s = raft.NewMemoryStorage()
 	c := &raft.Config{
+		TMB:             tracer.GetPlugin(id.Decimal()), // 3milebeach
 		ID:              uint64(id),
 		ElectionTick:    cfg.ElectionTicks,
 		HeartbeatTick:   1,
@@ -533,6 +534,7 @@ func restartNode(cfg ServerConfig, snapshot *raftpb.Snapshot) (types.ID, *member
 	s.SetHardState(st)
 	s.Append(ents)
 	c := &raft.Config{
+		TMB:             tracer.GetPlugin(types.ID(id).Decimal()), // 3milebeach
 		ID:              uint64(id),
 		ElectionTick:    cfg.ElectionTicks,
 		HeartbeatTick:   1,
@@ -630,6 +632,7 @@ func restartAsStandaloneNode(cfg ServerConfig, snapshot *raftpb.Snapshot) (types
 	s.SetHardState(st)
 	s.Append(ents)
 	c := &raft.Config{
+		TMB:             tracer.GetPlugin(types.ID(id).Decimal()), // 3milebeach
 		ID:              uint64(id),
 		ElectionTick:    cfg.ElectionTicks,
 		HeartbeatTick:   1,
