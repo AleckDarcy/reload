@@ -149,6 +149,15 @@ var MessageType_value = map[string]int32{
 	"MsgPreVoteResp":    18,
 }
 
+func (x MessageType) TMBType() tracer_v2.MessageType { // 3milebeach begins
+	switch x {
+	case 4, 6, 9, 16, 18:
+		return tracer_v2.MessageType_Message_Response
+	default:
+		return tracer_v2.MessageType_Message_Request
+	}
+} // 3milebeach ends
+
 func (x MessageType) Enum() *MessageType {
 	p := new(MessageType)
 	*p = x

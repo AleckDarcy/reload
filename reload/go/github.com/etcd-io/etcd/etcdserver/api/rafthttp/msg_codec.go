@@ -18,9 +18,7 @@ import (
 	"encoding/binary"
 	"errors"
 	"io"
-	"time"
 
-	"github.com/AleckDarcy/reload/core/log"
 	"github.com/AleckDarcy/reload/core/tracer"
 
 	"go.etcd.io/etcd/pkg/pbutil"
@@ -44,19 +42,7 @@ func (enc *messageEncoder) encode(m *raftpb.Message) error {
 		return err
 	}
 
-	// 3milebeach todo: capture event && fault injection
-	if trace := m.Trace; trace != nil {
-		uuid := tracer.NewUUID() // 3milebeach begins
-		event := &tracer.Record{
-			Type:        tracer.RecordType_RecordSend,
-			Timestamp:   time.Now().UnixNano(),
-			MessageName: m.Type.String(),
-			Uuid:        uuid,
-			Service:     enc.TMB.ServerID,
-		}
-
-		log.Debug.PrintlnWithCaller("%s capture event: %s", enc.TMB, log.Stringer.JSON(event))
-	} // 3milebeach ends
+	beforeEncode(enc.TMB, m) // 3milebeach
 
 	_, err := enc.w.Write(pbutil.MustMarshal(m))
 	return err
@@ -92,28 +78,11 @@ func (dec *messageDecoder) decodeLimit(numBytes uint64) (raftpb.Message, error) 
 		return m, err
 	}
 
-	// 3milebeach todo: capture events
-
 	if err := m.Unmarshal(buf); err != nil { // 3milebeach begins
 		return m, err
 	}
 
-	trace := m.Trace
-	if trace != nil {
-		if lastEvent, ok := trace.GetLastEvent(); !ok {
-			log.Error.PrintlnWithCaller("%s trace with no events", dec.TMB)
-		} else {
-			event := &tracer.Record{
-				Type:        tracer.RecordType_RecordReceive,
-				Timestamp:   time.Now().UnixNano(),
-				MessageName: lastEvent.MessageName,
-				Uuid:        lastEvent.Uuid,
-				Service:     dec.TMB.ServerID,
-			}
-
-			log.Debug.PrintlnWithCaller("%s capture event: %s from event: %s", dec.TMB, log.Stringer.JSON(event), log.Stringer.JSON(lastEvent))
-		}
-	}
+	afterDecode(dec.TMB, &m) // 3milebeach
 
 	return m, nil // 3milebeach ends
 

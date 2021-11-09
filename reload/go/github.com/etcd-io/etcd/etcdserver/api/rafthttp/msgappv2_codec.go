@@ -20,8 +20,6 @@ import (
 	"io"
 	"time"
 
-	"github.com/AleckDarcy/reload/core/log"
-
 	"github.com/AleckDarcy/reload/core/tracer"
 
 	stats "go.etcd.io/etcd/etcdserver/api/v2stats"
@@ -146,18 +144,7 @@ func (enc *msgAppV2Encoder) encode(m *raftpb.Message) error {
 				return err
 			}
 		} else {
-			// 3milebeach todo: capture event && fault injection
-
-			uuid := tracer.NewUUID()
-			event := &tracer.Record{
-				Type:        tracer.RecordType_RecordSend,
-				Timestamp:   time.Now().UnixNano(),
-				MessageName: m.Type.String(),
-				Uuid:        uuid,
-				Service:     enc.TMB.ServerID,
-			}
-
-			log.Debug.PrintlnWithCaller("%s capture event: %s", enc.TMB, log.Stringer.JSON(event))
+			beforeEncode(enc.TMB, m)
 
 			// write size of trace
 			binary.BigEndian.PutUint64(enc.uint64buf, uint64(trace.Size()))
@@ -279,10 +266,10 @@ func (dec *msgAppV2Decoder) decode() (raftpb.Message, error) {
 		// decodes essential fields of pb.Message out of bytes. The order of decoding should be according to
 		// msgAppV2Encoder.
 		if _, err := io.ReadFull(dec.r, dec.uint64buf); err != nil { // 3milebeach begins
-			return m, err
+			return m, err // trace == nil
 		}
 
-		if size := binary.BigEndian.Uint64(dec.uint64buf); size != 0 {
+		if size := binary.BigEndian.Uint64(dec.uint64buf); size != 0 { // trace != nil
 			buf := dec.buf[:size]
 			if _, err := io.ReadFull(dec.r, buf); err != nil {
 				return m, err
@@ -291,22 +278,7 @@ func (dec *msgAppV2Decoder) decode() (raftpb.Message, error) {
 			trace := &tracer.Trace{}
 			pbutil.MustUnmarshal(trace, buf)
 
-			// todo capture event
-			if lastEvent, ok := trace.GetLastEvent(); !ok {
-				log.Error.PrintlnWithCaller("%s trace with no events", dec.TMB)
-			} else {
-				event := &tracer.Record{
-					Type:        tracer.RecordType_RecordReceive,
-					Timestamp:   time.Now().UnixNano(),
-					MessageName: lastEvent.MessageName,
-					Uuid:        lastEvent.Uuid,
-					Service:     dec.TMB.ServerID,
-				}
-
-				log.Debug.PrintlnWithCaller("%s capture event: %s from event: %s", dec.TMB, log.Stringer.JSON(event), log.Stringer.JSON(lastEvent))
-			}
-
-			m.Trace = trace
+			afterDecode(dec.TMB, &m)
 		} // 3milebeach ends
 	case msgTypeApp:
 		var size uint64
