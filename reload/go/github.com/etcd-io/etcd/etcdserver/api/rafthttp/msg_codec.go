@@ -19,6 +19,7 @@ import (
 	"errors"
 	"io"
 
+	"github.com/AleckDarcy/reload/core/log"
 	"github.com/AleckDarcy/reload/core/tracer"
 
 	"go.etcd.io/etcd/pkg/pbutil"
@@ -38,6 +39,7 @@ func (enc *messageEncoder) setServerID(id tracer.UUID) { // 3milebeach begins
 } // 3milebeach ends
 
 func (enc *messageEncoder) encode(m *raftpb.Message) error {
+	log.Logger.PrintlnWithCaller("%s message: %s", enc.TMB, log.Stringer.JSON(m))
 	if err := binary.Write(enc.w, binary.BigEndian, uint64(m.Size())); err != nil {
 		return err
 	}
@@ -78,13 +80,10 @@ func (dec *messageDecoder) decodeLimit(numBytes uint64) (raftpb.Message, error) 
 		return m, err
 	}
 
-	if err := m.Unmarshal(buf); err != nil { // 3milebeach begins
-		return m, err
-	}
+	err := m.Unmarshal(buf) // 3milebeach begins
+	afterDecode(dec.TMB, &m)
 
-	afterDecode(dec.TMB, &m) // 3milebeach
-
-	return m, nil // 3milebeach ends
+	return m, err // 3milebeach ends
 
 	// return m, m.Unmarshal(buf)
 }

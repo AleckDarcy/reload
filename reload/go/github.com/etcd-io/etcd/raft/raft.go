@@ -439,7 +439,7 @@ func (r *raft) send(m pb.Message) {
 		//if len(m.Entries) > 0 {
 		//	log.Debug.PrintlnWithCaller("%s data: %v", r.serverID, m.Entries[0].Data)
 		//}
-		log.Debug.PrintlnWithCaller("%s type (%s) from (%d) to (%d)", r.TMB, m.Type, m.From, m.To) // 3MileBeach ends
+		log.CriticalPath.PrintlnWithCaller("%s type (%s) from (%d) to (%d)", r.TMB, m.Type, m.From, m.To) // 3MileBeach ends
 		if m.Term != 0 {
 			panic(fmt.Sprintf("term should not be set when sending %s (was %d)", m.Type, m.Term))
 		}

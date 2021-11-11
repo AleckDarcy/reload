@@ -49,26 +49,34 @@ func beforeEncode(plugin *tracer.Plugin, m *raftpb.Message) {
 				plugin.Store.DeleteByContextMeta(meta)
 			}
 
-			log.Debug.PrintlnWithCaller("%s capture event: %s", plugin, log.Stringer.JSON(event))
+			log.Trace.PrintlnWithCaller("%s capture event: %s", plugin, log.Stringer.JSON(event))
 			m.SetFI_Trace(trace)
 		} else {
-			log.Error.PrintlnWithCaller("%s UpdateFunctionByContextMeta failed", plugin)
+			log.Error.PrintlnWithCaller("%s UpdateFunctionByContextMeta failed, meta: %+v, store: %+v", plugin, meta, plugin.Store)
 		}
 	}
 }
 
 func afterDecode(plugin *tracer.Plugin, m *raftpb.Message) {
-	if trace := m.Trace; trace != nil {
+	if trace := m.PrepareTrace().Trace; trace != nil { // 3milebeach todo: deprecate PrepareTrace()
+		log.Trace.PrintlnWithCaller("%s lllll", plugin)
+
 		if m.Type.TMBType() == tracer.MessageType_Message_Request {
 			if events := trace.Records; len(events) != 1 {
 				log.Error.PrintlnWithCaller("invalid trace: %s", log.Stringer.JSON(trace))
 			} else if lastEvent := events[0]; lastEvent.Uuid == "" {
 				log.Error.PrintlnWithCaller("invalid trace: %s", log.Stringer.JSON(trace))
 			} else {
-				lastEvent.Type = tracer.RecordType_RecordReceive
-				lastEvent.Timestamp = time.Now().UnixNano()
-				lastEvent.Service = plugin.ServerID
+				event := &tracer.Record{
+					Type:        tracer.RecordType_RecordReceive,
+					Timestamp:   time.Now().UnixNano(),
+					MessageName: m.Type.String(),
+					Uuid:        lastEvent.Uuid,
+					Service:     plugin.ServerID,
+				}
 
+				events[0] = event
+				log.Trace.PrintlnWithCaller("%s capture event: %s from event: %s", plugin, log.Stringer.JSON(event), log.Stringer.JSON(lastEvent))
 				meta := tracer.NewContextMeta(trace.Id, lastEvent.Uuid, plugin.ServerID)
 				plugin.Store.SetByContextMeta(meta, trace)
 			}
@@ -87,7 +95,7 @@ func afterDecode(plugin *tracer.Plugin, m *raftpb.Message) {
 				}
 
 				trace.Records = append(trace.Records, event)
-				log.Debug.PrintlnWithCaller("%s capture event: %s from event: %s", plugin, log.Stringer.JSON(event), log.Stringer.JSON(lastEvent))
+				log.Trace.PrintlnWithCaller("%s capture event: %s from event: %s", plugin, log.Stringer.JSON(event), log.Stringer.JSON(lastEvent))
 				m.SetFI_Trace(trace)
 			}
 		}

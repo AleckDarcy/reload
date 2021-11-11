@@ -52,26 +52,30 @@ func TestV3Put_3MileBeach(t *testing.T) { // 3MileBeach starts
 
 	kvc := toGRPC(clus.RandClient()).KV
 	key := []byte("foo")
-	trace := &tracer.Trace{Id: time.Now().UnixNano()}
+	traceId := time.Now().UnixNano()
+	trace := &tracer.Trace{Id: traceId}
 	reqput := &pb.PutRequest{Key: key, Value: []byte("bar"), PrevKv: true, Trace: trace}
 
+	uuid := tracer.NewUUID()
 	trace.Records = append(trace.Records, &tracer.Record{
 		Type:        tracer.RecordType_RecordSend,
 		Timestamp:   time.Now().UnixNano(),
 		MessageName: "PutRequest",
-		Uuid:        tracer.NewUUID(),
+		Uuid:        uuid,
 		Service:     "client",
 	})
 
 	runtime.Gosched()
 
 	log.SetLoggers([]uint{log.NormalLogger, log.DebugHelperLogger, log.StubLogger, log.CriticalPathLogger}, true)
-	log.Logger.Printf("========== test ready ==========\n")
+	//log.SetLoggers([]uint{log.StubLogger, log.CriticalPathLogger}, true)
+	log.CriticalPath.Printf("========== test ready ==========\n")
 
-	respput, err := kvc.Put(context.TODO(), reqput)
+	ctx := context.WithValue(context.TODO(), tracer.ContextMetaKey{}, tracer.NewContextMeta1(traceId, uuid, "PutRequest", "client"))
+	respput, err := kvc.Put(ctx, reqput)
 
-	log.Logger.PrintlnWithCaller("trace: %s", respput.Trace.JSONString())
-	log.Logger.Printf("========== test ended ==========\n")
+	log.CriticalPath.PrintlnWithCaller("trace: %s", respput.Trace.JSONString())
+	log.CriticalPath.Printf("========== test ended ==========\n")
 	if err != nil {
 		t.Fatalf("couldn't put key (%v)", err)
 	}

@@ -67,7 +67,7 @@ var unaryStreamDesc = &StreamDesc{ServerStreams: false, ClientStreams: false}
 func invoke(ctx context.Context, method string, req, reply interface{}, cc *ClientConn, opts ...CallOption) error {
 	if trace, ok := tracer.Assertion.GetTrace(req); ok { // 3milebeach
 		if lastEvent, ok := trace.GetLastEvent(); ok {
-			ctx = tracer.NewContextWithContextMeta(ctx, tracer.NewContextMeta(trace.Id, lastEvent.Uuid, "client"))
+			ctx = tracer.NewContextWithContextMeta(ctx, tracer.NewContextMeta1(trace.Id, lastEvent.Uuid, lastEvent.MessageName, lastEvent.Service))
 		}
 	} // 3milebeach ends
 	cs, err := newClientStream(ctx, unaryStreamDesc, cc, method, opts...)

@@ -16,24 +16,32 @@ type baseCodec interface {
 
 type codec struct {
 	serverUUID UUID
+	plugin     *Plugin
 	ctx        context.Context
 	basic      baseCodec
 }
 
 func NewCodec(ctx context.Context, basic baseCodec) baseCodec {
 	if obj := ctx.Value(ContextMetaKey{}); obj != nil {
-		return &codec{ctx: ctx, basic: basic, serverUUID: obj.(*ContextMeta).server}
+		cm := obj.(*ContextMeta)
+		return &codec{serverUUID: cm.server, plugin: GetPlugin(cm.server), ctx: ctx, basic: basic}
 	}
 
 	return basic
 }
 
 func (c *codec) Marshal(v interface{}) ([]byte, error) {
+	log.Trace.PrintlnWithCaller("%s lllll", c.plugin)
+
 	if t, ok := v.(Tracer); ok {
+		log.Trace.PrintlnWithCaller("%s lllll", c.plugin)
+
 		if metaVal := c.ctx.Value(ContextMetaKey{}); metaVal != nil {
+			log.Trace.PrintlnWithCaller("%s lllll", c.plugin)
+
 			meta := metaVal.(*ContextMeta)
 
-			if Store.CheckByContextMeta(meta) {
+			if c.plugin.Store.CheckByContextMeta(meta) {
 				//log.Logf("[RELOAD] Marshal, %s, CheckByContextMeta ok", t.GetFI_Name())
 
 				var uuid string
@@ -54,7 +62,7 @@ func (c *codec) Marshal(v interface{}) ([]byte, error) {
 				updateFunction := func(trace *Trace) {
 					trace.Records = append(trace.Records, record)
 				}
-				if trace, ok := Store.UpdateFunctionByContextMeta(meta, updateFunction); ok {
+				if trace, ok := c.plugin.Store.UpdateFunctionByContextMeta(meta, updateFunction); ok {
 					if t.GetFI_MessageType() == MessageType_Message_Request {
 						if tfis := trace.Tfis; tfis != nil {
 							crash, found := true, false
@@ -97,9 +105,10 @@ func (c *codec) Marshal(v interface{}) ([]byte, error) {
 						}
 					} else if t.GetFI_MessageType() == MessageType_Message_Response {
 						//log.Logf("[RELOAD] Marshal send response")
-						Store.DeleteByContextMeta(meta)
+						c.plugin.Store.DeleteByContextMeta(meta)
 					}
 
+					log.Trace.PrintlnWithCaller("%s capture event: %s", record.Service, log.Stringer.JSON(record))
 					t.SetFI_Trace(trace)
 				} else {
 					log.Logf("[RELOAD] Marshal, UpdateFunctionByContextMeta fail")
@@ -120,8 +129,14 @@ func (c *codec) Unmarshal(data []byte, v interface{}) error {
 		return err
 	}
 
+	log.Trace.PrintlnWithCaller("%s lllll", c.plugin)
+
 	if t, ok := v.(Tracer); ok {
+		log.Trace.PrintlnWithCaller("%s lllll", c.plugin)
+
 		if metaVal := c.ctx.Value(ContextMetaKey{}); metaVal != nil {
+			log.Trace.PrintlnWithCaller("%s lllll", c.plugin)
+
 			meta := metaVal.(*ContextMeta)
 
 			trace := t.GetFI_Trace()
@@ -147,7 +162,7 @@ func (c *codec) Unmarshal(data []byte, v interface{}) error {
 							Uuid:        uuid,
 							Service:     c.serverUUID,
 						}
-						Store.SetByContextMeta(meta, trace)
+						c.plugin.Store.SetByContextMeta(meta, trace)
 					}
 				} else if t.GetFI_MessageType() == MessageType_Message_Response {
 					//log.Logf("[RELOAD] Unmarshal, receive response %s", t.GetFI_Name())
@@ -156,27 +171,29 @@ func (c *codec) Unmarshal(data []byte, v interface{}) error {
 					} else if uuid := trace.Records[0].Uuid; uuid == "" {
 						log.Logf("[RELOAD] Unmarshal, receive invalid uuid: %s", uuid)
 					} else {
-						//Store.UpdateFunctionByContextMeta(meta, func(oldTrace *Trace) {
-						//	length := len(trace.Records) + 1
-						//	oldTrace.Records = append(oldTrace.Records, trace.Records...)
-						//	oldTrace.Records = append(oldTrace.Records, &Record{
-						//		Type:        RecordType_RecordReceive,
-						//		Timestamp:   time.Now().UnixNano(),
-						//		MessageName: t.GetFI_Name(),
-						//		Uuid:        uuid,
-						//		Service:     ServiceUUID,
-						//	})
-						//	oldTrace.CalFI(oldTrace.Records[len(oldTrace.Records)-length:])
-						//})
+						c.plugin.Store.UpdateFunctionByContextMeta(meta, func(oldTrace *Trace) {
+							length := len(trace.Records) + 1
+							oldTrace.Records = append(oldTrace.Records, trace.Records...)
+							oldTrace.Records = append(oldTrace.Records, &Record{
+								Type:        RecordType_RecordReceive,
+								Timestamp:   time.Now().UnixNano(),
+								MessageName: t.GetFI_Name(),
+								Uuid:        uuid,
+								Service:     ServiceUUID,
+							})
+							oldTrace.CalFI(oldTrace.Records[len(oldTrace.Records)-length:])
+						})
 
-						trace.Records = append(trace.Records, &Record{
+						record := &Record{
 							Type:        RecordType_RecordReceive,
 							Timestamp:   time.Now().UnixNano(),
 							MessageName: t.GetFI_Name(),
 							Uuid:        uuid,
 							Service:     c.serverUUID,
-						})
+						}
 
+						trace.Records = append(trace.Records, record)
+						log.Trace.PrintlnWithCaller("%s capture event: %s", record.Service, log.Stringer.JSON(record))
 						t.SetFI_Trace(trace)
 					}
 				}

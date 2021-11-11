@@ -794,8 +794,8 @@ func setCallInfoCodec(ctx context.Context, c *callInfo) error { // 3milebeach
 		return nil // 3milebeach ends
 
 		// No codec specified in CallOptions; use proto by default.
-		c.codec = encoding.GetCodec(proto.Name)
-		return nil
+		// c.codec = encoding.GetCodec(proto.Name)
+		// return nil
 	}
 
 	// c.contentSubtype is already lowercased in CallContentSubtype

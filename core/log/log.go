@@ -40,6 +40,7 @@ const (
 	DebugHelperLogger
 	StubLogger
 	CriticalPathLogger
+	TraceLogger
 	ErrorLogger
 	count
 )
@@ -72,6 +73,7 @@ var Logger = logger{NormalLogger}
 var Debug = logger{DebugHelperLogger}
 var Stub = logger{StubLogger}
 var CriticalPath = logger{CriticalPathLogger}
+var Trace = logger{TraceLogger}
 var Error = logger{ErrorLogger}
 
 func (l *logger) PrintlnWithStackTrace(skip int, format string, a ...interface{}) {

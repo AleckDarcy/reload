@@ -90,10 +90,16 @@ func (m *Message) GetFI_MessageType() tracer.MessageType {
 	return tracer.MessageType_Message_ // 3milebeach todo
 }
 
-// 3milebeach todo
+// 3milebeach todo: multiple entries
 func (m *Message) PrepareTrace() *Message {
-	for _, ent := range m.Entries {
-		m.Trace = m.Trace.Merge(ent.Trace)
+	if m.Trace == nil {
+		for _, ent := range m.Entries {
+			if ent.Trace != nil {
+				m.Trace = ent.Trace
+			}
+
+			break
+		}
 	}
 
 	return m

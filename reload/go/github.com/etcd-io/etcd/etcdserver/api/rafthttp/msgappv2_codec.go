@@ -20,6 +20,7 @@ import (
 	"io"
 	"time"
 
+	"github.com/AleckDarcy/reload/core/log"
 	"github.com/AleckDarcy/reload/core/tracer"
 
 	stats "go.etcd.io/etcd/etcdserver/api/v2stats"
@@ -94,11 +95,15 @@ func (enc *msgAppV2Encoder) encode(m *raftpb.Message) error {
 	start := time.Now()
 	switch {
 	case isLinkHeartbeatMessage(m):
+		log.Logger.PrintlnWithCaller("%s message: %s", enc.TMB, log.Stringer.JSON(m))
+
 		enc.uint8buf[0] = msgTypeLinkHeartbeat
 		if _, err := enc.w.Write(enc.uint8buf); err != nil {
 			return err
 		}
 	case enc.index == m.Index && enc.term == m.LogTerm && m.LogTerm == m.Term:
+		log.Logger.PrintlnWithCaller("%s message: %s", enc.TMB, log.Stringer.JSON(m))
+
 		enc.uint8buf[0] = msgTypeAppEntries
 		if _, err := enc.w.Write(enc.uint8buf); err != nil {
 			return err
@@ -159,6 +164,8 @@ func (enc *msgAppV2Encoder) encode(m *raftpb.Message) error {
 
 		enc.fs.Succ(time.Since(start))
 	default:
+		log.Logger.PrintlnWithCaller("%s message: %s", enc.TMB, log.Stringer.JSON(m))
+
 		if err := binary.Write(enc.w, binary.BigEndian, msgTypeApp); err != nil {
 			return err
 		}

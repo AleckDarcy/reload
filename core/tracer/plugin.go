@@ -17,6 +17,10 @@ var pluginLock = sync.RWMutex{}
 var plugins = map[UUID]*Plugin{}
 
 func GetPlugin(id UUID) *Plugin {
+	if id == "" {
+		panic("server id is empty")
+	}
+
 	pluginLock.RLock()
 	p, ok := plugins[id]
 	pluginLock.RUnlock()
