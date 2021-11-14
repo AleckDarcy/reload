@@ -2,6 +2,8 @@ package tracer
 
 import (
 	"sync"
+
+	"github.com/AleckDarcy/reload/core/log"
 )
 
 type Storage struct {
@@ -13,12 +15,12 @@ type traces struct {
 	traces map[UUID]*wrapper
 }
 
-type refer struct {
-	uuid UUID
+type Refer struct {
+	UUID UUID
 }
 
 type wrapper struct {
-	refer *refer
+	refer *Refer
 	trace *Trace
 }
 
@@ -137,9 +139,10 @@ func merge(dst, src *Trace) {
  */
 
 // REQUEST
-func (s *Storage) DoRequest(meta *ContextMeta, trace *Trace, record *Record, ref *refer) {
-	trace.AppendRecord(record)
+func (s *Storage) DoRequest(meta *ContextMeta, trace *Trace, record *Record, ref *Refer) {
 	trace = trace.Copy()
+	trace.Records = nil
+	trace.AppendRecord(record)
 
 	// 3milebeach note:
 	// ref should be nil when receiving requests
@@ -149,6 +152,13 @@ func (s *Storage) DoRequest(meta *ContextMeta, trace *Trace, record *Record, ref
 	} else {
 		s.traces[meta.traceID] = &traces{traces: map[UUID]*wrapper{meta.uuid: {refer: ref, trace: trace}}}
 	}
+
+	if ref == nil {
+		log.Trace.PrintlnWithCaller("%s write trace %d:%s", meta.server, meta.traceID, record.Uuid)
+	} else {
+		log.Trace.PrintlnWithCaller("%s write trace with refer %d:%s -> %s", meta.server, meta.traceID, record.Uuid, ref.UUID)
+	}
+
 	s.lock.Unlock()
 }
 
@@ -161,22 +171,32 @@ func (s *Storage) DoResponse(meta *ContextMeta, trace *Trace, record *Record) {
 
 			// 3milebeach note:
 			// ref should be nil when sending responses
-			if ref := w.refer; ref != nil {
-				if wRef, ok := ts.traces[ref.uuid]; ok {
+			if ref := w.refer; ref != nil { // report to corresponding request's upstream request
+				if wRef, ok := ts.traces[ref.UUID]; ok {
 					merge(wRef.trace, w.trace)
 					*trace = *wRef.trace
+					trace.AppendRecord(record)
+
+					log.Trace.PrintlnWithCaller("%s write trace to refer %d:%s", meta.server, meta.traceID, record.Uuid)
+				} else {
+					log.Trace.PrintlnWithCaller("%s no ref uuid %d:%s", meta.server, meta.traceID, meta.uuid)
 				}
 			} else {
 				*trace = *w.trace
-			}
+				trace.AppendRecord(record)
 
-			trace.AppendRecord(record)
+				log.Trace.PrintlnWithCaller("%s write trace %d:%s", meta.server, meta.traceID, record.Uuid)
+			}
 
 			delete(ts.traces, meta.uuid)
 			if len(ts.traces) == 0 {
 				delete(s.traces, meta.traceID)
 			}
+		} else {
+			log.Trace.PrintlnWithCaller("%s no uuid %d:%s", meta.server, meta.traceID, meta.uuid)
 		}
+	} else {
+		log.Trace.PrintlnWithCaller("%s no trace %d", meta.server, meta.traceID)
 	}
 
 	s.lock.Unlock()

@@ -67,6 +67,7 @@ func (dec *messageDecoder) decode() (raftpb.Message, error) {
 }
 
 func (dec *messageDecoder) decodeLimit(numBytes uint64) (raftpb.Message, error) {
+	log.Trace.PrintlnWithCaller("%s lllll", dec.TMB)
 	var m raftpb.Message
 	var l uint64
 	if err := binary.Read(dec.r, binary.BigEndian, &l); err != nil {
@@ -82,6 +83,7 @@ func (dec *messageDecoder) decodeLimit(numBytes uint64) (raftpb.Message, error) 
 
 	err := m.Unmarshal(buf) // 3milebeach begins
 	afterDecode(dec.TMB, &m)
+	log.Trace.PrintlnWithCaller("%s message: %s", dec.TMB, log.Stringer.JSON(m))
 
 	return m, err // 3milebeach ends
 

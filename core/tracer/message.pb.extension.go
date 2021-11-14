@@ -19,6 +19,19 @@ func (m *Trace) Copy() *Trace {
 	return &newM
 }
 
+func (m *Trace) GetFirstEvent() (*Record, bool) {
+	if m == nil {
+		return nil, false
+	}
+
+	recordC := len(m.Records)
+	if recordC == 0 {
+		return nil, false
+	}
+
+	return m.Records[0], true
+}
+
 func (m *Trace) GetLastEvent() (*Record, bool) {
 	if m == nil {
 		return nil, false

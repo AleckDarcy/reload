@@ -44,7 +44,8 @@ import (
 // kVClient (rpc.pb.go)
 
 func TestV3Put_3MileBeach(t *testing.T) { // 3MileBeach starts
-	log.SetLoggers([]uint{log.NormalLogger, log.DebugHelperLogger, log.StubLogger}, false)
+	log.SetLoggers([]uint{log.NormalLogger, log.DebugHelperLogger, log.StubLogger, log.TraceLogger}, false)
+	//log.SetLoggers([]uint{log.StubLogger, log.CriticalPathLogger}, true)
 
 	defer testutil.AfterTest(t)
 	clus := NewClusterV3(t, &ClusterConfig{Size: 3})
@@ -67,15 +68,18 @@ func TestV3Put_3MileBeach(t *testing.T) { // 3MileBeach starts
 
 	runtime.Gosched()
 
+	log.Trace.PrintlnWithCaller("trace: %s", log.Stringer.JSON(trace))
+	log.Printf("========== test ready ==========\n")
+	//log.SetLoggers([]uint{log.NormalLogger, log.DebugHelperLogger, log.StubLogger, log.CriticalPathLogger}, false)
 	log.SetLoggers([]uint{log.NormalLogger, log.DebugHelperLogger, log.StubLogger, log.CriticalPathLogger}, true)
-	//log.SetLoggers([]uint{log.StubLogger, log.CriticalPathLogger}, true)
-	log.CriticalPath.Printf("========== test ready ==========\n")
+	log.SetLoggers([]uint{log.TraceLogger}, true)
 
 	ctx := context.WithValue(context.TODO(), tracer.ContextMetaKey{}, tracer.NewContextMeta1(traceId, uuid, "PutRequest", "client"))
 	respput, err := kvc.Put(ctx, reqput)
 
-	log.CriticalPath.PrintlnWithCaller("trace: %s", respput.Trace.JSONString())
-	log.CriticalPath.Printf("========== test ended ==========\n")
+	log.Printf("========== test ended ==========\n")
+	log.Trace.PrintlnWithCaller("trace: %s", respput.Trace.JSONString())
+
 	if err != nil {
 		t.Fatalf("couldn't put key (%v)", err)
 	}

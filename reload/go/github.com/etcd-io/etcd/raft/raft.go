@@ -439,7 +439,7 @@ func (r *raft) send(m pb.Message) {
 		//if len(m.Entries) > 0 {
 		//	log.Debug.PrintlnWithCaller("%s data: %v", r.serverID, m.Entries[0].Data)
 		//}
-		log.CriticalPath.PrintlnWithCaller("%s type (%s) from (%d) to (%d)", r.TMB, m.Type, m.From, m.To) // 3MileBeach ends
+		log.Trace.PrintlnWithCaller("%s type (%s) from (%d) to (%d)", r.TMB, m.Type, m.From, m.To) // 3MileBeach ends
 		if m.Term != 0 {
 			panic(fmt.Sprintf("term should not be set when sending %s (was %d)", m.Type, m.Term))
 		}
@@ -454,9 +454,9 @@ func (r *raft) send(m pb.Message) {
 
 	for _, ent := range m.Entries { // 3milebeach begins
 		if ent.Trace != nil {
-			log.Debug.PrintlnWithCaller("%s entry with trace %s", r.TMB, ent.Trace.JSONString())
+			log.Trace.PrintlnWithCaller("%s entry with trace %s", r.TMB, ent.Trace.JSONString())
 		} else {
-			log.Debug.PrintlnWithCaller("%s entry without trace", r.TMB)
+			log.Trace.PrintlnWithCaller("%s entry without trace", r.TMB)
 		}
 	} // 3milebeach ends
 

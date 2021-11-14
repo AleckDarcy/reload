@@ -553,9 +553,9 @@ func (cr *streamReader) decodeLoop(rc io.ReadCloser, t streamType) error {
 			recvc = cr.propc
 		}
 
+		log.Debug.PrintlnWithCaller("%s recvc<- writing recv channel message: %s", cr.TMB, log.Stringer.JSON(m)) // 3milebeach
 		select {
 		case recvc <- m:
-			log.Debug.PrintlnWithCaller("%s recvc<- writing recv channel message: %s", cr.TMB, log.Stringer.JSON(m)) // 3milebeach
 		default:
 			if cr.status.isActive() {
 				if cr.lg != nil {

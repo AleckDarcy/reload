@@ -282,11 +282,12 @@ func (dec *msgAppV2Decoder) decode() (raftpb.Message, error) {
 				return m, err
 			}
 
-			trace := &tracer.Trace{}
-			pbutil.MustUnmarshal(trace, buf)
-
-			afterDecode(dec.TMB, &m)
+			m.Trace = &tracer.Trace{}
+			pbutil.MustUnmarshal(m.Trace, buf)
 		} // 3milebeach ends
+
+		afterDecode(dec.TMB, &m)
+		log.Trace.PrintlnWithCaller("%s message: %s", dec.TMB, log.Stringer.JSON(m))
 	case msgTypeApp:
 		var size uint64
 		if err := binary.Read(dec.r, binary.BigEndian, &size); err != nil {
@@ -297,6 +298,9 @@ func (dec *msgAppV2Decoder) decode() (raftpb.Message, error) {
 			return m, err
 		}
 		pbutil.MustUnmarshal(&m, buf)
+
+		afterDecode(dec.TMB, &m) // 3milebeach
+		log.Trace.PrintlnWithCaller("%s message: %s", dec.TMB, log.Stringer.JSON(m))
 
 		dec.term = m.Term
 		dec.index = m.Index
