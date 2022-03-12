@@ -269,48 +269,6 @@ public class QuorumPeerMainTest extends QuorumPeerTestBase {
 //                TMB_Helper.printf("client-%d capture trace: %s\n", client.hashCode(), trace.toJSON());
 
 // ================================= end ============================
-//
-//        // just make sure that we actually did get it in process at the
-//        // leader
-//        assertTrue(outstanding.size() == 1);
-//        assertTrue(outstanding.values().iterator().next().request.getHdr().getType() == OpCode.create);
-//        // make sure it has a chance to write it to disk
-//        Thread.sleep(1000);
-//        mt[leader].shutdown();
-//        waitForAll(zk, States.CONNECTING);
-//        for (int i = 0; i < SERVER_COUNT; i++) {
-//            if (i != leader) {
-//                mt[i].start();
-//            }
-//        }
-//        for (int i = 0; i < SERVER_COUNT; i++) {
-//            if (i != leader) {
-//                // Recreate a client session since the previous session was not persisted.
-//                zk[i] = new ZooKeeper("127.0.0.1:" + clientPorts[i], ClientBase.CONNECTION_TIMEOUT, this);
-//                waitForOne(zk[i], States.CONNECTED);
-//                zk[i].create("/zk" + i, "zk".getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-//            }
-//        }
-//
-//        mt[leader].start();
-//        waitForAll(zk, States.CONNECTED);
-//        // make sure everything is consistent
-//        for (int i = 0; i < SERVER_COUNT; i++) {
-//            for (int j = 0; j < SERVER_COUNT; j++) {
-//                if (i == leader) {
-//                    assertTrue((j == leader ? ("Leader (" + leader + ")") : ("Follower " + j))
-//                            + " should not have /zk"
-//                            + i, zk[j].exists("/zk" + i, false) == null);
-//                } else {
-//                    assertTrue((j == leader ? ("Leader (" + leader + ")") : ("Follower " + j))
-//                            + " does not have /zk"
-//                            + i, zk[j].exists("/zk" + i, false) != null);
-//                }
-//            }
-//        }
-//        for (int i = 0; i < SERVER_COUNT; i++) {
-//            zk[i].close();
-//        }
         for (int i = 0; i < SERVER_COUNT; i++) {
             mt[i].shutdown();
         }

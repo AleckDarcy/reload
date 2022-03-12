@@ -41,7 +41,7 @@ public class TMB_ClientPlugin {
         TMB_Trace trace = request.getTrace();
         // stub, should be called only once per client-level request
         // TODO: let client generate trace_id
-        if (trace.getId() > 0) {
+        if (trace != null && trace.getId() > 0) {
             long id = TMB_Helper.newTraceId();
             trace.setId(id);
             trace.setEvents(new ArrayList<>(), 0);

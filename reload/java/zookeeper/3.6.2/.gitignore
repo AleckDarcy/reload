@@ -1,4 +1,5 @@
 */target
 */*/target
 
+.DS_Store
 zookeeper-server/src/test/resources/data/invalidsnap/version-2/
