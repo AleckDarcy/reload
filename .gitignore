@@ -1,6 +1,7 @@
 .idea
 .gogradle
 .gradle
+.DS_Store
 vendor/
 *.html
 

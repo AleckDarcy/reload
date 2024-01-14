@@ -12,3 +12,6 @@ html/template<br>
 GRPC-Go: 1.14.0<br>
 GRPC-NodeJS: 1.12.4<br>
 GRPC-Java: 1.10.1<br>
+
+# gradle
+./gradlew buildDarwinAmd64

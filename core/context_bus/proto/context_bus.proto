@@ -1,0 +1,168 @@
+syntax = "proto3";
+
+package context_bus;
+
+option go_package = "github.com/AleckDarcy/reload/core/context_bus/proto";
+
+enum ConditionOperator {
+    ConditionOperator_ = 0;
+    LT                 = 1; // <
+    GT                 = 2; // >
+    LE                 = 3; // <=
+    GE                 = 4; // >=
+    EQ                 = 5; // ==
+    NE                 = 6; // !=
+}
+
+enum ConditionType {
+    ConditionType_ = 0;
+    NumOfInvok     = 1; // number of invocations
+    Latency        = 2; // latency of message calls (e.g., functions, inter-service messages)
+}
+
+message Condition {
+    ConditionType type   = 1;
+    ConditionOperator op = 2;
+    int64 value          = 3;
+}
+
+message Prerequisite {
+    string message_name      = 1;
+    repeated Condition conds = 2; // && todo: other logical operators
+
+    // tree pointers
+    int64 parent            = 100;
+    repeated int64 children = 101;
+}
+
+// prerequisite tree
+message PrerequisiteTree {
+    repeated Prerequisite pres   = 1;
+    repeated Prerequisite leaves = 2;
+}
+
+enum ReactionType {
+    ReactionType_ = 0;
+
+    // fault injection
+    FaultCrash = 1;
+    FaultDelay = 2;
+    FaultDrop  = 3;
+
+    // traffic (e.g., load-balancing, traffic shaping)
+    TrafficBalance = 101;
+    TrafficRouting = 102;
+}
+
+message FaultDelayParam {
+    int64 ms = 1;
+}
+
+message TrafficBalanceParam {
+
+}
+
+message TrafficRoutingParam {
+
+}
+
+message Reaction {
+    ReactionType type = 1;
+    oneof params {
+        FaultDelayParam FaultDelay = 2002;
+
+        TrafficBalanceParam TrafficBalance = 2101;
+        TrafficRoutingParam TrafficRouting = 2102;
+    }
+    repeated PrerequisiteTree pre_tree = 3;
+}
+
+message Observation {
+
+}
+
+message Configure {
+    map<string, Reaction> reactions       = 1; // <event, reaction>
+    map<string, Observation> observations = 2; // <event, observation>
+}
+
+message CPUProfile {
+
+}
+
+message MemProfile {
+
+}
+
+message NetProfile {
+
+}
+
+message HardwareProfile {
+    CPUProfile cpu = 1;
+    MemProfile mem = 2;
+    NetProfile net = 3;
+}
+
+enum LanguageType {
+    LanguageType_ = 0;
+    Other         = 1; // un-specified languages that doesn't need or support language profile
+    Golang        = 2;
+    Java          = 3;
+}
+
+message LanguageGo {
+
+}
+
+message LanguageJava {
+
+}
+
+message LanguageProfile {
+    LanguageType type = 1;
+    oneof Profile {
+        LanguageGo go     = 2002;
+        LanguageJava java = 2003;
+    }
+}
+
+message EnvironmentalSnapshot {
+    int64 timestamp          = 1;
+    HardwareProfile hardware = 2;
+    LanguageProfile language = 3;
+
+    EnvironmentalSnapshot prev = 101;
+    EnvironmentalSnapshot next = 102;
+}
+
+enum MessageType {
+    MessageType_     = 0;
+    Message_Request  = 1;
+    Message_Response = 2;
+}
+
+enum RecordType {
+    RecordType_   = 0;
+    RecordSend    = 1;
+    RecordReceive = 2;
+}
+
+message Record {
+    RecordType type     = 1;
+    int64 timestamp     = 2;
+    string message_name = 3;
+    string uuid         = 4;
+    string service      = 5;
+}
+
+message Payload {
+    int64 request_id         = 1;
+    int64 config_id          = 2;
+    LineageSnapshot snapshot = 3;
+}
+
+message LineageSnapshot {
+    map<string, int64> NumOfInvok = 1;
+    map<string, int64> Latency    = 2;
+}
