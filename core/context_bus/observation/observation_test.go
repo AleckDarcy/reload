@@ -1,4 +1,4 @@
-package prerequisite
+package observation
 
 import (
 	cb "github.com/AleckDarcy/reload/core/context_bus/proto"

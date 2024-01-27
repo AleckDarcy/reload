@@ -77,6 +77,10 @@ message Reaction {
     repeated PrerequisiteTree pre_tree = 3;
 }
 
+message AttributeConfiguration {
+    repeated string path = 1;
+}
+
 message Observation {
 
 }
@@ -86,16 +90,28 @@ message Configure {
     map<string, Observation> observations = 2; // <event, observation>
 }
 
+/******************** Environmental Profile ********************/
 message CPUProfile {
-
+    double percent = 1;
 }
 
 message MemProfile {
-
+    uint64 total       = 1;
+    uint64 available   = 2;
+    uint64 used        = 3;
+    double usedPercent = 4;
+    uint64 free        = 5;
 }
 
 message NetProfile {
-
+    uint64 bytesSent   = 1;
+    uint64 bytesRecv   = 2;
+    uint64 packetsSent = 3;
+    uint64 packetsRecv = 4;
+    uint64 errin       = 5;
+    uint64 errout      = 6;
+    uint64 dropin      = 7;
+    uint64 dropout     = 8;
 }
 
 message HardwareProfile {
@@ -112,7 +128,19 @@ enum LanguageType {
 }
 
 message LanguageGo {
+    uint64 HeapSys     = 1; // HeapSys is bytes of heap memory obtained from the OS.
+    uint64 HeapAlloc   = 2; // HeapAlloc is bytes of allocated heap objects.
+    uint64 HeapInuse   = 3; // HeapInuse is bytes in in-use spans.
+    uint64 StackSys    = 4; // StackSys is bytes of stack memory obtained from the OS.
+    uint64 StackInuse  = 5; // StackInuse is bytes in stack spans.
+    uint64 MSpanInuse  = 6; // MSpanInuse is bytes of allocated mspan structures.
+    uint64 MSpanSys    = 7; // MSpanSys is bytes of memory obtained from the OS for mspan
+    uint64 MCacheInuse = 8; // MCacheInuse is bytes of allocated mcache structures.
+    uint64 MCacheSys   = 9; // MCacheSys is bytes of memory obtained from the OS for mcache structures.
 
+    uint64 LastGC        = 101; // NextGC is the target heap size of the next GC cycle.
+    uint64 NextGC        = 102; // LastGC is the time the last garbage collection finished, as nanoseconds since 1970.
+    double GCCPUFraction = 103; // GCCPUFraction is the fraction of this program's available CPU time used by the GC since the program started.
 }
 
 message LanguageJava {
@@ -127,15 +155,96 @@ message LanguageProfile {
     }
 }
 
-message EnvironmentalSnapshot {
+message EnvironmentalProfile {
     int64 timestamp          = 1;
     HardwareProfile hardware = 2;
     LanguageProfile language = 3;
 
-    EnvironmentalSnapshot prev = 101;
-    EnvironmentalSnapshot next = 102;
+    int64 prev = 101;
+    int64 next = 102;
 }
 
+/******************** Event Data ********************/
+/******************** Event Representation */
+message EventWhen {
+    int64 time = 1;
+}
+
+enum AttributeValueType {
+    AttributeValueType_ = 0;
+    AttributeValueStr   = 1;
+    AttributeValueAttr  = 2;
+}
+
+message AttributeValue {
+    AttributeValueType type = 1;
+    oneof value {
+        string str        = 2001;
+        Attributes struct = 2002;
+    }
+}
+
+message Attributes {
+    map<string, AttributeValue> attrs = 1;
+}
+
+message EventWhere {
+    Attributes attrs  = 1;
+    string stacktrace = 2;
+}
+
+enum EventRecorderType {
+    EventRecorderType_          = 0;
+    EventRecorderServiceHandler = 1;
+    EventRecorderFunction       = 2;
+    EventRecorderThirdParty     = 3;
+}
+
+message EventRecorder {
+    EventRecorderType type = 1;
+    string name            = 2;
+}
+
+message EventMessage {
+    Attributes attrs = 1;
+    string message   = 2;
+}
+
+message LibrariesMessage {
+    map<string, EventMessage> libraries = 1; // key: underlying library name; value: attributes and message
+}
+
+message EventWhat {
+    EventMessage application   = 1; // application developer message
+    LibrariesMessage libraries = 2; // underlying libraries message
+}
+
+message EventRepresentation {
+    EventWhen when         = 1;
+    EventWhere where       = 2;
+    EventRecorder recorder = 3;
+    EventWhat what         = 4;
+}
+
+/******************** Event Metadata */
+message ParentChildPointers {
+    int64 parent            = 1;
+    repeated int64 children = 2;
+}
+
+message EventMetadata {
+    int64 id                = 1;
+    ParentChildPointers pcp = 2; // parent-children pointer
+    int64 esp               = 3; // environmental snapshot pointer
+}
+
+/******************** Event Data */
+message EventData {
+    EventRepresentation event = 1;
+    EventMetadata metadata    = 2;
+}
+
+/******************** from 3mb WIP */
 enum MessageType {
     MessageType_     = 0;
     Message_Request  = 1;
@@ -156,13 +265,14 @@ message Record {
     string service      = 5;
 }
 
+/******************** Integration ********************/
+message LineageSnapshot {
+    map<string, int64> NumOfInvok = 1;
+    map<string, int64> Latency    = 2;
+}
+
 message Payload {
     int64 request_id         = 1;
     int64 config_id          = 2;
     LineageSnapshot snapshot = 3;
-}
-
-message LineageSnapshot {
-    map<string, int64> NumOfInvok = 1;
-    map<string, int64> Latency    = 2;
 }
