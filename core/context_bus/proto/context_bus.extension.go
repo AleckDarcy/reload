@@ -5,41 +5,6 @@ import (
 	"fmt"
 )
 
-// Extension of interface isAttributeValue_Value to support Clone()
-// todo: after re-generating protobuf code, delete the redeclared definition inside pb.go
-type isAttributeValue_Value interface{
-	isAttributeValue_Value()
-	Clone() isAttributeValue_Value
-}
-
-func (m *AttributeValue) Clone() *AttributeValue {
-	return &AttributeValue{Type: m.Type, Value: m.Value.Clone()}
-}
-
-func (m *AttributeValue_Str) Clone() isAttributeValue_Value {
-	return m
-}
-
-func (m *AttributeValue_Struct) Clone() isAttributeValue_Value {
-	return &AttributeValue_Struct{
-		Struct: m.Struct.Clone(),
-	}
-}
-
-func (m *AttributeValue_Struct) Merge(value *AttributeValue) *AttributeValue_Struct {
-	if value != nil {
-		if value.Type == AttributeValueType_AttributeValueAttr {
-			if m.Struct == nil {
-				m.Struct = value.Value.(*AttributeValue_Struct).Struct
-			} else {
-				m.Struct.Merge(value.Value.(*AttributeValue_Struct).Struct)
-			}
-		}
-	}
-
-	return m
-}
-
 func (m *Attributes) Clone() *Attributes {
 	if m == nil {
 		return nil
@@ -61,17 +26,17 @@ func (m *Attributes) GetValue(path []string) (string, error) {
 	for i, name := range path {
 		if val, ok := attrs[name]; ok {
 			if val.Type == AttributeValueType_AttributeValueStr {
-				if i == len(path) - 1 {
-					return val.Value.(*AttributeValue_Str).Str, nil
+				if i == len(path)-1 {
+					return val.Str, nil
 				}
 
 				return "", errors.New("TODO")
 			} else if val.Type == AttributeValueType_AttributeValueAttr {
-				if i == len(path) - 1 {
-					return fmt.Sprintf("%+v", val), errors.New("TODO")
+				if i == len(path)-1 { // todo: not recommended
+					return fmt.Sprintf("%+v", val), nil
 				}
 
-				return val.Value.(*AttributeValue_Struct).Struct.GetValue(path[1:])
+				return val.Struct.GetValue(path[1:])
 			} else {
 				return "", errors.New("TODO")
 			}
@@ -92,7 +57,7 @@ func (m *Attributes) Merge(attrs *Attributes) *Attributes {
 				if val, ok := m.Attrs[key]; !ok {
 					m.Attrs[key] = value
 				} else if val.Type == AttributeValueType_AttributeValueAttr {
-					val.Value.(*AttributeValue_Struct).Merge(value)
+					val.Struct.Merge(value.Struct)
 				}
 			}
 		}
@@ -101,10 +66,35 @@ func (m *Attributes) Merge(attrs *Attributes) *Attributes {
 	return m
 }
 
+func (m *Attributes) SetString(key string, value string) *Attributes {
+	// todo init
+	m.Attrs[key] = &AttributeValue{Type: AttributeValueType_AttributeValueStr, Str: value}
+
+	return m
+}
+
 func (m *EventWhen) Merge(when *EventWhen) *EventWhen {
 	if when != nil {
 		if m.Time == 0 {
 			m.Time = when.Time
+		}
+	}
+
+	return m
+}
+
+func (m *AttributeValue) Clone() *AttributeValue {
+	if m.Type == AttributeValueType_AttributeValueAttr {
+		return &AttributeValue{Type: m.Type, Struct: m.Struct.Clone()}
+	}
+
+	return &AttributeValue{Type: m.Type, Str: m.Str}
+}
+
+func (m *AttributeValue) Merge (value *AttributeValue) *AttributeValue {
+	if value != nil {
+		if m.Type == AttributeValueType_AttributeValueAttr && value.Type == AttributeValueType_AttributeValueAttr{
+			m.Struct.Merge(value.Struct)
 		}
 	}
 
@@ -140,14 +130,63 @@ func (m *EventRecorder) Merge(recorder *EventRecorder) *EventRecorder {
 	return m
 }
 
+func (m *EventMessage) Init() {
+	if m.Attrs == nil {
+		m.Attrs = &Attributes{
+			Attrs: map[string]*AttributeValue{},
+		}
+	} else if m.Attrs.Attrs == nil {
+		m.Attrs.Attrs = map[string]*AttributeValue{}
+	}
+}
+
 func (m *EventMessage) GetValue(path []string) (string, error) {
 	if len(path) == 0 {
 		return "", errors.New("TODO")
-	} else if len(path) == 1 && path[0] == "message" {
+	} else if len(path) == 1 && path[0] == "__message__" {
 		return m.Message, nil
 	}
 
 	return m.Attrs.GetValue(path)
+}
+
+func (m *EventMessage) SetString(key string, value string) *EventMessage {
+	m.Init()
+	m.Attrs.SetString(key, value)
+
+	return m
+}
+
+func (m *EventMessage) SetAttributes(key string, attrs *Attributes) *EventMessage {
+	m.Init()
+	m.Attrs.Attrs[key] = &AttributeValue{Type: AttributeValueType_AttributeValueAttr, Struct: attrs}
+
+	return m
+}
+
+func (m *EventMessage) WithAttributes(key string, attrs *Attributes) *Attributes {
+	value := &AttributeValue{Type: AttributeValueType_AttributeValueAttr, Struct: attrs}
+	if attrs == nil {
+		value.Struct = &Attributes{map[string]*AttributeValue{}}
+	}
+
+	if m.Attrs == nil {
+		m.Attrs = &Attributes{
+			Attrs: map[string]*AttributeValue{},
+		}
+	} else if val, ok := m.Attrs.Attrs[key]; ok {
+		value.Merge(val)
+	}
+
+	m.Attrs.Attrs[key] = value
+
+	return value.Struct
+}
+
+func (m *EventMessage) SetMessage(msg string) *EventMessage {
+	m.Message = msg
+
+	return m
 }
 
 func (m *EventMessage) Merge(msg *EventMessage) *EventMessage {
@@ -196,32 +235,12 @@ func (m *LibrariesMessage) Merge(libs *LibrariesMessage) *LibrariesMessage {
 	return m
 }
 
-func (m *LibrariesMessage) WithLibrary(name string, msg *EventMessage) *EventMessage {
-	if m.Libraries == nil {
-		m.Libraries = map[string]*EventMessage{
-			name: msg,
-		}
-	} else {
-		if val, ok := m.Libraries[name]; !ok {
-			m.Libraries[name] = msg
-		} else {
-			val.Merge(msg)
-		}
+func (m *EventWhat) GetValue(path *Path) (string, error) {
+	if path.Type == PathType_Application {
+		return m.Application.GetValue(path.Path)
 	}
 
-	return m.Libraries[name]
-}
-
-func (m *EventWhat) GetValue(path []string) (string, error) {
-	if len(path) <= 1 {
-		return "", errors.New("TODO")
-	}
-
-	if path[0] == "__application__" {
-		return m.Application.GetValue(path[1:])
-	}
-
-	return m.Libraries.GetValue(path[1:])
+	return m.Libraries.GetValue(path.Path)
 }
 
 func (m *EventWhat) Merge(what *EventWhat) *EventWhat {
@@ -256,18 +275,22 @@ func (m *EventWhat) WithApplication(msg *EventMessage) *EventMessage {
 	return m.Application
 }
 
-func (m *EventWhat) WithLibraries(libs *LibrariesMessage) *LibrariesMessage {
-	if m.Libraries == nil {
-		if libs == nil {
-			m.Libraries = &LibrariesMessage{}
-		} else {
-			m.Libraries = libs
-		}
-	} else {
-		m.Libraries.Merge(libs)
+func (m *EventWhat) WithLibrary(key string, msg *EventMessage) *EventMessage {
+	if msg == nil {
+		msg = &EventMessage{}
 	}
 
-	return m.Libraries
+	if m.Libraries == nil {
+		m.Libraries = &LibrariesMessage{
+			Libraries: map[string]*EventMessage{key: msg},
+		}
+	} else if val, ok := m.Libraries.Libraries[key]; ok {
+		msg.Merge(val)
+	}
+
+	m.Libraries.Libraries[key] = msg
+
+	return msg
 }
 
 func (m *EventRepresentation) WithWhen(when *EventWhen) *EventWhen {

@@ -77,12 +77,60 @@ message Reaction {
     repeated PrerequisiteTree pre_tree = 3;
 }
 
+enum PathType {
+    PathType_ = 0;
+
+    Application = 1;
+    Library     = 2;
+}
+
+message Path {
+    PathType type        = 1;
+    repeated string path = 2;
+}
+
 message AttributeConfiguration {
-    repeated string path = 1;
+    string name = 1;
+    Path path   = 2;
+}
+
+message TimestampConfiguration {
+    string format = 1;
+}
+
+message StackTraceConfiguration {
+
+}
+
+message LoggingConfigure {
+    TimestampConfiguration timestamp      = 1;
+    StackTraceConfiguration stacktrace    = 2;
+    repeated AttributeConfiguration attrs = 3;
+}
+
+message TracingConfigure {
+    repeated AttributeConfiguration attrs = 1;
+}
+
+enum MetricType {
+    MetricType_ = 0;
+
+    Counter = 1;
+    Gauge = 2;
+    Histogram = 3;
+    Summery = 4;
+}
+
+message MetricsConfigure {
+    MetricType type    = 1;
+    string name        = 2;
+    repeated Path tags = 3;
 }
 
 message Observation {
-
+    LoggingConfigure logging          = 1;
+    TracingConfigure tracing          = 2;
+    repeated MetricsConfigure metrics = 3;
 }
 
 message Configure {
@@ -178,10 +226,8 @@ enum AttributeValueType {
 
 message AttributeValue {
     AttributeValueType type = 1;
-    oneof value {
-        string str        = 2001;
-        Attributes struct = 2002;
-    }
+    string str              = 2;
+    Attributes struct       = 3;
 }
 
 message Attributes {
