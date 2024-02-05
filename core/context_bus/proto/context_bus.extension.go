@@ -5,6 +5,15 @@ import (
 	"fmt"
 )
 
+// Be careful of how ProtoBuffer deals with variable-size data structures such as map and slice
+// We need to distinguish if they are empty or null.
+// For example, an empty map (len = 0) will not be encoded during Marshal(),
+// and thus we will get a null value for the map (ptr = nil) after Unmarshal().
+// Instances of ProtoBuffer messages come from both generated code (ensures non-null values) and Unmarshal(),
+// Make sure to check null values before taking operations.
+
+// Most methods are designed for js-style method chaining
+
 func (m *Attributes) Clone() *Attributes {
 	if m == nil {
 		return nil
@@ -30,7 +39,7 @@ func (m *Attributes) GetValue(path []string) (string, error) {
 					return val.Str, nil
 				}
 
-				return "", errors.New("TODO")
+				return "", errors.New("invalid Path for a string value")
 			} else if val.Type == AttributeValueType_AttributeValueAttr {
 				if i == len(path)-1 { // todo: not recommended
 					return fmt.Sprintf("%+v", val), nil
@@ -38,14 +47,14 @@ func (m *Attributes) GetValue(path []string) (string, error) {
 
 				return val.Struct.GetValue(path[1:])
 			} else {
-				return "", errors.New("TODO")
+				return "", errors.New("invalid AttributeValueType")
 			}
 		} else {
-			return "", errors.New("TODO")
+			break
 		}
 	}
 
-	return "", errors.New("TODO")
+	return "", errors.New("value not found")
 }
 
 func (m *Attributes) Merge(attrs *Attributes) *Attributes {
@@ -66,11 +75,45 @@ func (m *Attributes) Merge(attrs *Attributes) *Attributes {
 	return m
 }
 
+// SetString sets a string {value} for the {key},
+// return {m} (self) for method chaining.
 func (m *Attributes) SetString(key string, value string) *Attributes {
-	// todo init
 	m.Attrs[key] = &AttributeValue{Type: AttributeValueType_AttributeValueStr, Str: value}
 
 	return m
+}
+
+// WithAttributes merges {attrs} for the value of given {key},
+// returns the merged value of {key} for method chaining.
+func (m *Attributes) WithAttributes(key string, attrs *Attributes) *Attributes {
+	value := &AttributeValue{Type: AttributeValueType_AttributeValueStr, Struct: attrs}
+	if attrs == nil { // check null pointer for ProtoBuffer Unmarshal()
+		value.Struct = &Attributes{Attrs: map[string]*AttributeValue{}}
+	}
+
+	if m.Attrs == nil { // check null pointer for ProtoBuffer Unmarshal()
+		m.Attrs = map[string]*AttributeValue{}
+	} else if val, ok := m.Attrs[key]; ok {
+		value.Merge(val)
+	}
+
+	m.Attrs[key] = value
+
+	return m
+}
+
+func (m *Attributes) SetAttributes(key string, value *Attributes) *Attributes {
+
+	return m
+}
+
+func (m *Attributes) GetString(key string) (string, bool) {
+	val, ok := m.Attrs[key]
+	if ok && val.Type == AttributeValueType_AttributeValueStr {
+		return val.Str, true
+	}
+
+	return "", false
 }
 
 func (m *EventWhen) Merge(when *EventWhen) *EventWhen {
@@ -91,9 +134,9 @@ func (m *AttributeValue) Clone() *AttributeValue {
 	return &AttributeValue{Type: m.Type, Str: m.Str}
 }
 
-func (m *AttributeValue) Merge (value *AttributeValue) *AttributeValue {
+func (m *AttributeValue) Merge(value *AttributeValue) *AttributeValue {
 	if value != nil {
-		if m.Type == AttributeValueType_AttributeValueAttr && value.Type == AttributeValueType_AttributeValueAttr{
+		if m.Type == AttributeValueType_AttributeValueAttr && value.Type == AttributeValueType_AttributeValueAttr {
 			m.Struct.Merge(value.Struct)
 		}
 	}
@@ -130,19 +173,9 @@ func (m *EventRecorder) Merge(recorder *EventRecorder) *EventRecorder {
 	return m
 }
 
-func (m *EventMessage) Init() {
-	if m.Attrs == nil {
-		m.Attrs = &Attributes{
-			Attrs: map[string]*AttributeValue{},
-		}
-	} else if m.Attrs.Attrs == nil {
-		m.Attrs.Attrs = map[string]*AttributeValue{}
-	}
-}
-
 func (m *EventMessage) GetValue(path []string) (string, error) {
 	if len(path) == 0 {
-		return "", errors.New("TODO")
+		return "", errors.New("invalid Path length for EventMessage")
 	} else if len(path) == 1 && path[0] == "__message__" {
 		return m.Message, nil
 	}
@@ -150,37 +183,39 @@ func (m *EventMessage) GetValue(path []string) (string, error) {
 	return m.Attrs.GetValue(path)
 }
 
-func (m *EventMessage) SetString(key string, value string) *EventMessage {
-	m.Init()
-	m.Attrs.SetString(key, value)
+func (m *EventMessage) SetString(path []string, value string) *EventMessage {
+	//m.Attrs.SetString(key, value)
 
 	return m
 }
 
-func (m *EventMessage) SetAttributes(key string, attrs *Attributes) *EventMessage {
-	m.Init()
-	m.Attrs.Attrs[key] = &AttributeValue{Type: AttributeValueType_AttributeValueAttr, Struct: attrs}
+func (m *EventMessage) SetAttributes(attrs *Attributes) *EventMessage {
+	m.Attrs = attrs
 
 	return m
 }
 
-func (m *EventMessage) WithAttributes(key string, attrs *Attributes) *Attributes {
-	value := &AttributeValue{Type: AttributeValueType_AttributeValueAttr, Struct: attrs}
+func (m *EventMessage) GetAttributes() *Attributes {
+	if m.Attrs == nil {
+		m.Attrs = &Attributes{Attrs: map[string]*AttributeValue{}}
+	}
+
+	return m.Attrs
+}
+
+// todo: move to Attirbutes implementation
+func (m *EventMessage) WithAttributes(attrs *Attributes) *Attributes {
 	if attrs == nil {
-		value.Struct = &Attributes{map[string]*AttributeValue{}}
+		attrs = &Attributes{Attrs: map[string]*AttributeValue{}}
 	}
 
 	if m.Attrs == nil {
-		m.Attrs = &Attributes{
-			Attrs: map[string]*AttributeValue{},
-		}
-	} else if val, ok := m.Attrs.Attrs[key]; ok {
-		value.Merge(val)
+		m.Attrs = attrs
+	} else {
+		m.Attrs.Merge(attrs)
 	}
 
-	m.Attrs.Attrs[key] = value
-
-	return value.Struct
+	return m.Attrs
 }
 
 func (m *EventMessage) SetMessage(msg string) *EventMessage {
@@ -207,14 +242,14 @@ func (m *EventMessage) Merge(msg *EventMessage) *EventMessage {
 
 func (m *LibrariesMessage) GetValue(path []string) (string, error) {
 	if len(path) == 0 {
-		return "", errors.New("TODO")
+		return "", errors.New("invalid Path len for LibrariesMessage")
 	}
 
 	if lib, ok := m.Libraries[path[0]]; ok {
 		return lib.GetValue(path[1:])
 	}
 
-	return "", errors.New("TODO")
+	return "", errors.New("library not found")
 }
 
 func (m *LibrariesMessage) Merge(libs *LibrariesMessage) *LibrariesMessage {

@@ -148,7 +148,7 @@ var what = &EventWhat{
 						},
 						"key2": {
 							Type: AttributeValueType_AttributeValueStr,
-							Str: "value2",
+							Str:  "value2",
 						},
 					},
 				},
@@ -189,12 +189,12 @@ func BenchmarkEventWhat_GetValue(b *testing.B) {
 func TestEventWhat(t *testing.T) {
 	what1 := &EventWhat{}
 	what1.WithApplication(nil).
-		SetMessage("application message").SetString("key1", "value1").
+		SetMessage("application message").GetAttributes().SetString("key1", "value1").
 		WithAttributes("key2", nil).
 		SetString("key21", "value21")
 
 	what1.WithLibrary("lib1", nil).
-		SetMessage("lib1 message").SetString("key2", "value2").
+		SetMessage("lib1 message").GetAttributes().SetString("key2", "value2").
 		WithAttributes("key1", nil).
 		SetString("key11", "value11")
 
@@ -212,12 +212,12 @@ func TestEventWhat(t *testing.T) {
 func BenchmarkEventWhat(b *testing.B) {
 	what1 := &EventWhat{}
 	what1.WithApplication(nil).
-		SetMessage("application message").SetString("key1", "value1").
+		SetMessage("application message").GetAttributes().SetString("key1", "value1").
 		WithAttributes("key2", nil).
 		SetString("key21", "value21")
 
 	what1.WithLibrary("lib1", nil).
-		SetMessage("lib1 message").SetString("key2", "value2").
+		SetMessage("lib1 message").GetAttributes().SetString("key2", "value2").
 		WithAttributes("key1", nil).
 		SetString("key11", "value11")
 

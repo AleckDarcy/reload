@@ -26,19 +26,53 @@ message Condition {
     int64 value          = 3;
 }
 
-message Prerequisite {
-    string message_name      = 1;
-    repeated Condition conds = 2; // && todo: other logical operators
+enum PrerequisiteNodeType {
+    PrerequisiteNodeType_ = 0;
 
-    // tree pointers
-    int64 parent            = 100;
-    repeated int64 children = 101;
+    Message = 1;
+    Logic   = 2;
+}
+
+message PrerequisiteMessage {
+    PrerequisiteNodeType type = 1;
+    string message_name       = 2;
+    repeated Condition conds  = 3;
+
+    int64 parent        = 100;
+    repeated int64 list = 101;
+}
+
+enum PrerequisiteLogicType {
+    PrerequisiteLogicType_ = 0;
+
+    And = 1; // &&
+    Or  = 2; // ||
+    // todo: other logic operators
+}
+
+message PrerequisiteLogic {
+    PrerequisiteLogicType type = 1;
+
+    int64 parent        = 100;
+    repeated int64 list = 101;
+}
+
+message PrerequisiteNode {
+    int64  id                   = 1; // for tree indexing
+    PrerequisiteNodeType type   = 2;
+    PrerequisiteMessage message = 3;
+    PrerequisiteLogic logic     = 4;
 }
 
 // prerequisite tree
 message PrerequisiteTree {
-    repeated Prerequisite pres   = 1;
-    repeated Prerequisite leaves = 2;
+    repeated PrerequisiteNode pres   = 1;
+    repeated int64 leafIDs           = 2;
+}
+
+message PrerequisiteSnapshot {
+    repeated int64 value = 1;
+    bool acc             = 2;
 }
 
 enum ReactionType {
@@ -66,7 +100,7 @@ message TrafficRoutingParam {
 
 }
 
-message Reaction {
+message ReactionConfigure {
     ReactionType type = 1;
     oneof params {
         FaultDelayParam FaultDelay = 2002;
@@ -89,27 +123,27 @@ message Path {
     repeated string path = 2;
 }
 
-message AttributeConfiguration {
+message AttributeConfigure {
     string name = 1;
     Path path   = 2;
 }
 
-message TimestampConfiguration {
+message TimestampConfigure {
     string format = 1;
 }
 
-message StackTraceConfiguration {
+message StackTraceConfigure {
 
 }
 
 message LoggingConfigure {
-    TimestampConfiguration timestamp      = 1;
-    StackTraceConfiguration stacktrace    = 2;
-    repeated AttributeConfiguration attrs = 3;
+    TimestampConfigure timestamp      = 1;
+    StackTraceConfigure stacktrace    = 2;
+    repeated AttributeConfigure attrs = 3;
 }
 
 message TracingConfigure {
-    repeated AttributeConfiguration attrs = 1;
+    repeated AttributeConfigure attrs = 1;
 }
 
 enum MetricType {
@@ -127,15 +161,15 @@ message MetricsConfigure {
     repeated Path tags = 3;
 }
 
-message Observation {
+message ObservationConfigure {
     LoggingConfigure logging          = 1;
     TracingConfigure tracing          = 2;
     repeated MetricsConfigure metrics = 3;
 }
 
 message Configure {
-    map<string, Reaction> reactions       = 1; // <event, reaction>
-    map<string, Observation> observations = 2; // <event, observation>
+    map<string, ReactionConfigure> reactions       = 1; // <event, reaction>
+    map<string, ObservationConfigure> observations = 2; // <event, observation>
 }
 
 /******************** Environmental Profile ********************/
