@@ -16,42 +16,62 @@ enum ConditionOperator {
 
 enum ConditionType {
     ConditionType_ = 0;
-    NumOfInvok     = 1; // number of invocations
-    Latency        = 2; // latency of message calls (e.g., functions, inter-service messages)
+
+    NumOfInvok = 1; // number of invocations
+    Latency    = 2; // latency of message calls (e.g., functions, inter-service messages)
 }
 
-message Condition {
+enum ConditionNodeType {
+    ConditionNodeType_ = 0;
+
+    ConditionMessage_  = 1; // e.g., EventA = 1
+    ConditionLogic_    = 2; // e.g., Condition1 || Condition2
+}
+
+message ConditionMessage {
     ConditionType type   = 1;
     ConditionOperator op = 2;
     int64 value          = 3;
 }
 
-enum PrerequisiteNodeType {
-    PrerequisiteNodeType_ = 0;
-
-    Message = 1;
-    Logic   = 2;
-}
-
-message PrerequisiteMessage {
-    PrerequisiteNodeType type = 1;
-    string message_name       = 2;
-    repeated Condition conds  = 3;
+message ConditionLogic {
+    LogicType type = 1;
 
     int64 parent        = 100;
     repeated int64 list = 101;
 }
 
-enum PrerequisiteLogicType {
-    PrerequisiteLogicType_ = 0;
+message ConditionNode {
+    ConditionNodeType type   = 2;
+    ConditionMessage message = 3;
+    ConditionLogic logic     = 4;
+}
 
-    And = 1; // &&
-    Or  = 2; // ||
+enum LogicType {
+    LogicType_ = 0;
+
+    And_ = 1; // &&
+    Or_  = 2; // ||
     // todo: other logic operators
 }
 
+enum PrerequisiteNodeType {
+    PrerequisiteNodeType_ = 0;
+
+    PrerequisiteMessage_ = 1;
+    PrerequisiteLogic_   = 2;
+}
+
+message PrerequisiteMessage {
+    string name                  = 1;
+    repeated ConditionNode conds = 2;
+
+    int64 parent        = 100;
+    repeated int64 list = 101;
+}
+
 message PrerequisiteLogic {
-    PrerequisiteLogicType type = 1;
+    LogicType type = 1;
 
     int64 parent        = 100;
     repeated int64 list = 101;
@@ -66,8 +86,8 @@ message PrerequisiteNode {
 
 // prerequisite tree
 message PrerequisiteTree {
-    repeated PrerequisiteNode pres   = 1;
-    repeated int64 leafIDs           = 2;
+    repeated PrerequisiteNode nodes = 1;
+    repeated int64 leafIDs          = 2;
 }
 
 message PrerequisiteSnapshot {
@@ -108,7 +128,7 @@ message ReactionConfigure {
         TrafficBalanceParam TrafficBalance = 2101;
         TrafficRoutingParam TrafficRouting = 2102;
     }
-    repeated PrerequisiteTree pre_tree = 3;
+    PrerequisiteTree pre_tree = 3;
 }
 
 enum PathType {

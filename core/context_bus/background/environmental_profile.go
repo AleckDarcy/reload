@@ -1,8 +1,8 @@
-package context_bus
+package background
 
 import (
 	cb "github.com/AleckDarcy/reload/core/context_bus/proto"
-
+	"github.com/AleckDarcy/reload/core/context_bus/public"
 
 	"github.com/shirou/gopsutil/v3/cpu"
 	"github.com/shirou/gopsutil/v3/mem"
@@ -17,14 +17,22 @@ import (
 var MEMSTATS = &runtime.MemStats{}
 
 type environmentProfiler struct {
-	Latest *cb.EnvironmentalProfile
-	sync.RWMutex
+	latest *cb.EnvironmentalProfile
+	lock   sync.RWMutex
 }
 
 var EP = &environmentProfiler{
-	Latest: &cb.EnvironmentalProfile{
+	latest: &cb.EnvironmentalProfile{
 		Hardware: &cb.HardwareProfile{},
 	},
+}
+
+func (e *environmentProfiler) GetLatest() *cb.EnvironmentalProfile {
+	e.lock.RLock()
+	latest := e.latest
+	e.lock.RUnlock()
+
+	return latest
 }
 
 func (e *environmentProfiler) GetNetProfile() *cb.NetProfile {
@@ -56,7 +64,7 @@ func (e *environmentProfiler) GetEnvironmentProfile() *cb.EnvironmentalProfile {
 
 	signal := make(chan *cb.CPUProfile)
 	go func(signal chan *cb.CPUProfile) {
-		if c, err := cpu.Percent(CPU_PROFILE_DURATION, false); err == nil {
+		if c, err := cpu.Percent(public.CPU_PROFILE_DURATION, false); err == nil {
 			signal <- &cb.CPUProfile{
 				Percent: c[0],
 			}
@@ -76,7 +84,7 @@ func (e *environmentProfiler) GetEnvironmentProfile() *cb.EnvironmentalProfile {
 	}
 
 	np := e.GetNetProfile()
-	np_prev := e.Latest.Hardware.Net
+	np_prev := e.latest.Hardware.Net
 	if np_prev == nil {
 		np_prev = np
 	} else if np != nil {
@@ -118,15 +126,15 @@ func (e *environmentProfiler) GetEnvironmentProfile() *cb.EnvironmentalProfile {
 	select {
 	case c := <-signal:
 		ep.Hardware.Cpu = c
-	case <-time.After(CPU_PROFILE_DURATION_MAX):
+	case <-time.After(public.CPU_PROFILE_DURATION_MAX):
 		// todo: report error
 	}
 
-	e.Lock()
-	e.Latest.Next = ep.Timestamp
-	ep.Prev = e.Latest.Timestamp
-	e.Latest = ep
-	e.Unlock()
+	e.lock.Lock()
+	e.latest.Next = ep.Timestamp
+	ep.Prev = e.latest.Timestamp
+	e.latest = ep
+	e.lock.Unlock()
 
 	return ep
 }

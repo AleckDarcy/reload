@@ -1,4 +1,4 @@
-package context_bus
+package background
 
 import (
 	"runtime"
@@ -6,15 +6,14 @@ import (
 	"time"
 )
 
-
 func TestEnvironmentalProfile(t *testing.T) {
-	t.Log(EP.Latest)
+	t.Log(EP.latest)
 
 	signal := make(chan struct{})
 	go EnvironmentProfileProcessor(signal)
 
-	<- time.After(11*time.Second)
-	t.Log(EP.Latest)
+	<-time.After(11 * time.Second)
+	t.Log(EP.latest)
 }
 
 func TestGetEnvironmentProfile(t *testing.T) {

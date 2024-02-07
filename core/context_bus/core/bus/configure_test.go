@@ -1,4 +1,4 @@
-package configure
+package bus
 
 import "testing"
 
