@@ -6,9 +6,9 @@ import (
 	"github.com/AleckDarcy/reload/core/context_bus/core/context"
 	cb "github.com/AleckDarcy/reload/core/context_bus/proto"
 	"github.com/AleckDarcy/reload/core/context_bus/public"
+	"time"
 
 	"testing"
-	"time"
 )
 
 var path = &cb.Path{
@@ -37,7 +37,6 @@ var rest = &cb.EventMessage{
 
 func TestObservation(t *testing.T) {
 	background.Run()
-	time.Sleep(public.ENV_PROFILE_INTERVAL)
 
 	cfg := &cb.Configure{
 		Reactions: nil,
@@ -54,6 +53,7 @@ func TestObservation(t *testing.T) {
 							},
 						},
 					},
+					Out: cb.LogOutType_Stdout,
 				},
 			},
 		},
@@ -70,4 +70,8 @@ func TestObservation(t *testing.T) {
 	// generated code
 	OnSubmission(ctx, &cb.EventWhere{}, &cb.EventRecorder{Name: "EventA"}, app)
 	// application
+
+	time.Sleep(public.ENV_PROFILE_INTERVAL)
+
+	OnSubmission(ctx, &cb.EventWhere{}, &cb.EventRecorder{Name: "EventA"}, app)
 }

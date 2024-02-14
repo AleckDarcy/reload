@@ -64,12 +64,12 @@ enum PrerequisiteNodeType {
 
 message ConditionTree {
     repeated ConditionNode nodes = 1;
-    repeated int64 leafIDs          = 2;
+    repeated int64 leafIDs       = 2; // not in use
 }
 
 message PrerequisiteMessage {
-    string name                      = 1;
-    repeated ConditionTree cond_tree = 2;
+    string name             = 1;
+    ConditionTree cond_tree = 2;
 
     int64 parent        = 100;
     repeated int64 list = 101;
@@ -92,7 +92,7 @@ message PrerequisiteNode {
 // prerequisite tree
 message PrerequisiteTree {
     repeated PrerequisiteNode nodes = 1;
-    repeated int64 leafIDs          = 2;
+    repeated int64 leafIDs          = 2; // not in use
 }
 
 message PrerequisiteSnapshot {
@@ -161,10 +161,19 @@ message StackTraceConfigure {
 
 }
 
+enum LogOutType {
+    LogOutType_ = 0;
+
+    Stdout = 1;
+    Stderr = 2;
+    File   = 3;
+}
+
 message LoggingConfigure {
     TimestampConfigure timestamp      = 1;
     StackTraceConfigure stacktrace    = 2;
     repeated AttributeConfigure attrs = 3;
+    LogOutType out                    = 4;
 }
 
 message TracingConfigure {

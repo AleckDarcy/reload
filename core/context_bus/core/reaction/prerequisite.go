@@ -4,18 +4,6 @@ import (
 	cb "github.com/AleckDarcy/reload/core/context_bus/proto"
 )
 
-func NewConditionMessage(typ cb.ConditionType, op cb.ConditionOperator, val int64) *cb.ConditionMessage {
-	return &cb.ConditionMessage{Type: typ, Op: op, Value: val}
-}
-
-func NewConditionLogic(typ cb.LogicType, parent int64, list []int64) *cb.ConditionLogic {
-	return &cb.ConditionLogic{
-		Type:   typ,
-		Parent: parent,
-		List:   list,
-	}
-}
-
 func NewConditionMessageNode(typ cb.ConditionType, op cb.ConditionOperator, val int64) *cb.ConditionNode {
 	return &cb.ConditionNode{
 		Type:    cb.ConditionNodeType_ConditionMessage_,
@@ -30,19 +18,26 @@ func NewConditionLogicNode(typ cb.LogicType, parent int64, list []int64) *cb.Con
 	}
 }
 
-func NewPrerequisiteMessage(name string, conds []*cb.ConditionNode, parent int64, list []int64) *cb.PrerequisiteMessage {
-	return &cb.PrerequisiteMessage{Name: name, Conds: conds, Parent: parent, List: list}
+func NewConditionTree(nodes []*cb.ConditionNode, leafIDs []int64) *cb.ConditionTree {
+	return &cb.ConditionTree{
+		Nodes:   nodes,
+		LeafIDs: leafIDs,
+	}
+}
+
+func NewPrerequisiteMessage(name string, condTree *cb.ConditionTree, parent int64, list []int64) *cb.PrerequisiteMessage {
+	return &cb.PrerequisiteMessage{Name: name, CondTree: condTree, Parent: parent, List: list}
 }
 
 func NewPrerequisiteLogic(typ cb.LogicType, parent int64, list []int64) *cb.PrerequisiteLogic {
 	return &cb.PrerequisiteLogic{Type: typ, Parent: parent, List: list}
 }
 
-func NewPrerequisiteMessageNode(id int64, name string, conds []*cb.ConditionNode, parent int64, list []int64) *cb.PrerequisiteNode {
+func NewPrerequisiteMessageNode(id int64, name string, condTree *cb.ConditionTree, parent int64, list []int64) *cb.PrerequisiteNode {
 	return &cb.PrerequisiteNode{
 		Id:      id,
 		Type:    cb.PrerequisiteNodeType_PrerequisiteMessage_,
-		Message: NewPrerequisiteMessage(name, conds, parent, list)}
+		Message: NewPrerequisiteMessage(name, condTree, parent, list)}
 }
 
 func NewPrerequisiteLogicNode(id int64, typ cb.LogicType, parent int64, list []int64) *cb.PrerequisiteNode {

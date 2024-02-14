@@ -5,6 +5,7 @@ import (
 	"github.com/AleckDarcy/reload/core/context_bus/core/context"
 	"github.com/AleckDarcy/reload/core/context_bus/core/encoder"
 	cb "github.com/AleckDarcy/reload/core/context_bus/proto"
+	"os"
 	"time"
 )
 
@@ -72,6 +73,17 @@ func (c *LoggingConfigure) Do(ctx *context.Context, er *cb.EventRepresentation) 
 
 	(*TimestampConfigure)(c.Timestamp).Do(ctx)
 	(*StackTraceConfigure)(c.Stacktrace).Do(ctx)
+
+	switch c.Out {
+	case cb.LogOutType_Stdout:
+		fmt.Fprintln(os.Stdout, str)
+	case cb.LogOutType_Stderr:
+		fmt.Fprintln(os.Stderr, str)
+	case cb.LogOutType_File:
+
+	default:
+		fmt.Fprintln(os.Stdout, str)
+	}
 
 	return str
 }

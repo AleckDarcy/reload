@@ -5,7 +5,7 @@ import (
 )
 
 // Preset PrerequisiteTree's for testing
-// Condition naming: cond[tree_id]_[node_id]_[id]
+// Condition naming: cond[tree_id]_[node_id]+_[id]
 
 var cond0_2_0 = NewConditionMessageNode(cb.ConditionType_NumOfInvok, cb.ConditionOperator_EQ, 1)
 
@@ -15,7 +15,7 @@ var tree0 = &PrerequisiteTree{
 		Nodes: []*cb.PrerequisiteNode{
 			NewPrerequisiteLogicNode(0, cb.LogicType_And_, -1, []int64{1, 2}),
 			NewPrerequisiteMessageNode(1, "EventA", nil, 0, nil),
-			NewPrerequisiteMessageNode(2, "EventB", []*cb.ConditionNode{cond0_2_0}, 0, nil),
+			NewPrerequisiteMessageNode(2, "EventB", NewConditionTree([]*cb.ConditionNode{cond0_2_0}, nil), 0, nil),
 		},
 	},
 }
@@ -32,8 +32,8 @@ var tree1 = &PrerequisiteTree{
 			NewPrerequisiteLogicNode(0, cb.LogicType_Or_, -1, []int64{1, 4}),
 			NewPrerequisiteLogicNode(1, cb.LogicType_And_, 0, []int64{2, 3}),
 			NewPrerequisiteMessageNode(2, "EventA", nil, 1, nil),
-			NewPrerequisiteMessageNode(3, "EventB", []*cb.ConditionNode{cond1_3_0}, 1, nil),
-			NewPrerequisiteMessageNode(4, "EventC", []*cb.ConditionNode{cond1_4_0, cond1_4_0_0, cond1_4_0_1}, 0, nil),
+			NewPrerequisiteMessageNode(3, "EventB", NewConditionTree([]*cb.ConditionNode{cond1_3_0}, nil), 1, nil),
+			NewPrerequisiteMessageNode(4, "EventC", NewConditionTree([]*cb.ConditionNode{cond1_4_0, cond1_4_0_0, cond1_4_0_1}, nil), 0, nil),
 		},
 	},
 }

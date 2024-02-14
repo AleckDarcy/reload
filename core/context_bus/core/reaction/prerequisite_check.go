@@ -69,8 +69,8 @@ func (n *ConditionNode) Check(nodes []*cb.ConditionNode, val int64) (bool, error
 func (m *PrerequisiteMessage) Check(snapshot *PrerequisiteSnapshot, id int64) (bool, error) {
 	val := snapshot.Value[id]
 
-	if len(m.Conds) != 0 {
-		return (*ConditionNode)(m.Conds[0]).Check(m.Conds, val)
+	if m.CondTree != nil && len(m.CondTree.Nodes) != 0 {
+		return (*ConditionNode)(m.CondTree.Nodes[0]).Check(m.CondTree.Nodes, val)
 	}
 
 	return true, nil
