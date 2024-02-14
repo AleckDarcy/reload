@@ -2,6 +2,8 @@ package observation
 
 import (
 	cb "github.com/AleckDarcy/reload/core/context_bus/proto"
+	"github.com/delimitrou/DeathStarBench/hotelreservation/vendor/github.com/AleckDarcy/reload/core/context_bus/core/context"
+	"time"
 
 	"testing"
 )
@@ -35,21 +37,20 @@ func BenchmarkName(b *testing.B) {
 		},
 	}
 
-	var what = &cb.EventWhat{}
+	what := new(cb.EventWhat)
 	what.WithApplication(nil).
 		SetMessage("application message").GetAttributes().SetString("key1", "value1").
 		WithAttributes("key2", nil).
 		SetString("key21", "value21")
-	what.WithLibrary("lib1", nil).
-		SetMessage("lib1 message").GetAttributes().SetString("key2", "value2").
-		WithAttributes("key1", nil).
-		SetString("key11", "value11")
 
-	var er = &cb.EventRepresentation{}
+	ctx := context.NewContext(context.NewRequestContext("rest", 0, rest), nil)
+
+	er := new(cb.EventRepresentation)
+	er.WithWhen(&cb.EventWhen{Time: time.Now().Unix()})
 	er.WithWhat(what)
 
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
-		(*LoggingConfigure)(cfg).Do(er)
+		b.Log((*LoggingConfigure)(cfg).Do(ctx, er))
 	}
 }

@@ -1,46 +1,73 @@
 package observation
 
 import (
+	"github.com/AleckDarcy/reload/core/context_bus/core/context"
+	"github.com/AleckDarcy/reload/core/context_bus/core/encoder"
 	cb "github.com/AleckDarcy/reload/core/context_bus/proto"
+
+	"fmt"
+	"time"
 )
 
 // implementations
 
-func (c *Configure) Do(er *cb.EventRepresentation) {
-	(*LoggingConfigure)(c.Logging).Do(er)
+func (c *Configure) Do(ctx *context.Context, er *cb.EventRepresentation) {
+	(*LoggingConfigure)(c.Logging).Do(ctx, er)
 	(*TracingConfigure)(c.Tracing).Do(er)
 	for _, metric := range c.Metrics {
 		(*MetricsConfigure)(metric).Do(er)
 	}
 }
 
-func (c *TimestampConfigure) Do() {
+func (c *TimestampConfigure) Do(ctx *context.Context) {
 	if c != nil {
 		return
 	}
 }
 
-func (c *StackTraceConfigure) Do() {
+func (c *StackTraceConfigure) Do(ctx *context.Context) {
 
 }
 
-func (c *LoggingConfigure) Do(er *cb.EventRepresentation) interface{} {
+func (c *LoggingConfigure) Do(ctx *context.Context, er *cb.EventRepresentation) interface{} {
 	if c == nil {
 		return nil
 	}
 
-	(*TimestampConfigure)(c.Timestamp).Do()
-	(*StackTraceConfigure)(c.Stacktrace).Do()
+	e := newEvent()
+	e.buf = encoder.JSONEncoder.BeginObject(e.buf)
 
-	tags := map[string]string{}
+	e.buf = encoder.JSONEncoder.AppendKey(e.buf, "level")
+	e.buf = encoder.JSONEncoder.AppendString(e.buf, "info")
 
-	for _, path := range c.Attrs {
-		str, err := er.What.GetValue(path.Path)
+	e.buf = encoder.JSONEncoder.AppendKey(e.buf, "time")
 
-		if err == nil {
-			tags[path.Name] = str
-		}
+	e.buf = encoder.JSONEncoder.BeginString(e.buf)
+	e.buf = time.Unix(0, er.When.Time).AppendFormat(e.buf, time.RFC3339)
+	e.buf = encoder.JSONEncoder.EndString(e.buf)
+
+	if reqCtx := ctx.GetRequestContext(); reqCtx != nil {
+		er.What.WithLibrary(reqCtx.GetLib(), reqCtx.GetEventMessage())
 	}
+
+	e.buf = encoder.JSONEncoder.AppendKey(e.buf, "message")
+	msg := er.What.Application.GetMessage()
+	value, _ := er.What.GetValue(path)
+	values := []interface{}{value}
+
+	e.buf = encoder.JSONEncoder.AppendString(e.buf, fmt.Sprintf(msg, values...))
+
+	e.buf = encoder.JSONEncoder.AppendKey(e.buf, "tags")
+	tags := DoTag(c.Attrs, er)
+	e.buf = encoder.JSONEncoder.AppendTags(e.buf, tags)
+
+	e.buf = encoder.JSONEncoder.EndObject(e.buf)
+
+	fmt.Println(string(e.buf))
+	e.finalize()
+
+	(*TimestampConfigure)(c.Timestamp).Do(ctx)
+	(*StackTraceConfigure)(c.Stacktrace).Do(ctx)
 
 	return tags
 }
@@ -55,4 +82,18 @@ func (c *MetricsConfigure) Do(er *cb.EventRepresentation) {
 	if c == nil {
 		return
 	}
+}
+
+func DoTag(cfg []*cb.AttributeConfigure, er *cb.EventRepresentation) map[string]string {
+	tags := map[string]string{}
+
+	for _, path := range cfg {
+		str, err := er.What.GetValue(path.Path)
+
+		if err == nil {
+			tags[path.Name] = str
+		}
+	}
+
+	return tags
 }

@@ -306,8 +306,9 @@ message EventRecorder {
 }
 
 message EventMessage {
-    Attributes attrs = 1;
-    string message   = 2;
+    Attributes attrs    = 1;
+    string message      = 2;
+    repeated Path paths = 3;
 }
 
 message LibrariesMessage {

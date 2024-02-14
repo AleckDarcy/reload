@@ -2,8 +2,8 @@ package bus
 
 import (
 	"github.com/AleckDarcy/reload/core/context_bus/background"
-	"github.com/AleckDarcy/reload/core/context_bus/core/observation"
-	"github.com/AleckDarcy/reload/core/context_bus/core/reaction"
+	"github.com/AleckDarcy/reload/core/context_bus/core/configure"
+	"github.com/AleckDarcy/reload/core/context_bus/core/context"
 	cb "github.com/AleckDarcy/reload/core/context_bus/proto"
 	"github.com/AleckDarcy/reload/core/context_bus/public"
 
@@ -11,7 +11,10 @@ import (
 	"time"
 )
 
-var ctx = &Context{}
+var path = &cb.Path{
+	Type: cb.PathType_Library,
+	Path: []string{"rest", "from"},
+}
 
 var rest = &cb.EventMessage{
 	Attrs: &cb.Attributes{
@@ -30,49 +33,6 @@ var rest = &cb.EventMessage{
 			},
 		},
 	},
-}
-
-var path = &cb.Path{
-	Type: cb.PathType_Library,
-	Path: []string{"rest", "from"},
-}
-
-func OnSubmission(ctx *Context, where *cb.EventWhere, who *cb.EventRecorder, app *cb.EventMessage) {
-	er := &cb.EventRepresentation{
-		When:     &cb.EventWhen{Time: time.Now().UnixNano()},
-		Where:    where,
-		Recorder: who,
-		What:     &cb.EventWhat{Application: app},
-	}
-
-	// write network API attributes
-	er.What.WithLibrary(ctx.GetRequestContext().GetLib(), nil).WithAttributes(ctx.GetRequestContext().GetAttrs())
-
-	esp := background.EP.GetLatest()
-
-	md := &cb.EventMetadata{
-		Id:  0,
-		Pcp: nil,
-		Esp: esp.Timestamp,
-	}
-
-	ed := &cb.EventData{
-		Event:    er,
-		Metadata: md,
-	}
-
-	if cfg := ConfigureStore.GetConfigure(ctx.GetRequestContext().GetConfigureID()); cfg != nil {
-		if obs := cfg.GetObservationConfigure(ed.Event.Recorder.Name); obs != nil {
-			(*observation.Configure)(obs).Do(ed.Event)
-		}
-
-		if rac := cfg.GetReaction(ed.Event.Recorder.Name); rac != nil {
-			_ = (*reaction.Configure)(rac)
-		}
-	}
-
-	// todo update snapshot
-	// todo put ed into bus
 }
 
 func TestObservation(t *testing.T) {
@@ -99,9 +59,9 @@ func TestObservation(t *testing.T) {
 		},
 	}
 
-	ConfigureStore.SetConfigure(0, (*Configure)(cfg))
+	configure.ConfigureStore.SetConfigure(0, cfg)
 
-	ctx = ctx.SetRequestContext(NewRequestContext("rest", 0, rest.Attrs))
+	ctx := context.NewContext(context.NewRequestContext("rest", 0, rest), nil)
 
 	app := new(cb.EventMessage).SetMessage("received message from %s")
 

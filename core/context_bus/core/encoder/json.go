@@ -35,3 +35,14 @@ func (e *jsonEncoder) AppendString(dst []byte, str string) []byte {
 
 	return append(dst, '"')
 }
+
+func (e *jsonEncoder) AppendTags(dst []byte, tags map[string]string) []byte {
+	dst = e.BeginObject(dst)
+	for key, value := range tags {
+		dst = e.AppendKey(dst, key)
+		dst = e.AppendString(dst, value)
+	}
+	dst = e.EndObject(dst)
+
+	return dst
+}

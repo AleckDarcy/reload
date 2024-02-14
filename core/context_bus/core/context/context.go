@@ -1,4 +1,4 @@
-package bus
+package context
 
 import (
 	"github.com/AleckDarcy/reload/core/context_bus/code_generator"
@@ -9,14 +9,14 @@ import (
 type RequestContext struct {
 	lib         string // name of network API
 	configureID int64
-	attrs       *cb.Attributes
+	event       *cb.EventMessage
 }
 
-func NewRequestContext(lib string, configureID int64, attrs *cb.Attributes) *RequestContext {
+func NewRequestContext(lib string, configureID int64, msg *cb.EventMessage) *RequestContext {
 	return &RequestContext{
 		lib:         lib,
 		configureID: configureID,
-		attrs:       attrs,
+		event:       msg,
 	}
 }
 
@@ -28,8 +28,8 @@ func (c *RequestContext) GetConfigureID() int64 {
 	return c.configureID
 }
 
-func (c *RequestContext) GetAttrs() *cb.Attributes {
-	return c.attrs
+func (c *RequestContext) GetEventMessage() *cb.EventMessage {
+	return c.event
 }
 
 // EventContext is the context associated with each observation
@@ -40,6 +40,13 @@ type EventContext struct {
 type Context struct {
 	reqCtx *RequestContext
 	eveCtx *EventContext
+}
+
+func NewContext(reqCtx *RequestContext, eveCtx *EventContext) *Context {
+	return &Context{
+		reqCtx: reqCtx,
+		eveCtx: eveCtx,
+	}
 }
 
 func (c *Context) GetRequestContext() *RequestContext {

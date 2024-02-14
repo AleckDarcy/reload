@@ -3,7 +3,6 @@ package observation
 import (
 	"github.com/AleckDarcy/reload/core/context_bus/core/encoder"
 	cb "github.com/AleckDarcy/reload/core/context_bus/proto"
-	"github.com/delimitrou/DeathStarBench/hotelreservation/vendor/github.com/AleckDarcy/reload/core/context_bus/core/bus"
 
 	"github.com/rs/zerolog/log"
 	"net/http"
@@ -13,6 +12,30 @@ import (
 	"testing"
 	"time"
 )
+
+var rest = &cb.EventMessage{
+	Attrs: &cb.Attributes{
+		Attrs: map[string]*cb.AttributeValue{
+			"from": {
+				Type: cb.AttributeValueType_AttributeValueStr,
+				Str:  "SenderA",
+			},
+			"key": {
+				Type: cb.AttributeValueType_AttributeValueStr,
+				Str:  "This a string attribute",
+			},
+			"key_": {
+				Type: cb.AttributeValueType_AttributeValueStr,
+				Str:  "This another string attribute",
+			},
+		},
+	},
+}
+
+//var path = &cb.Path{
+//	Type: cb.PathType_Library,
+//	Path: []string{"rest", "from"},
+//}
 
 func Observe(what *cb.EventWhat) {
 	ts := time.Now()
@@ -31,8 +54,8 @@ func Observe(what *cb.EventWhat) {
 	e.buf = encoder.JSONEncoder.AppendKey(e.buf, "message")
 
 	msg := what.Application.GetMessage()
-	what.WithLibrary("rest", nil).Merge(bus.rest)
-	value, _ := what.GetValue(bus.path)
+	what.WithLibrary("rest", nil).Merge(rest)
+	value, _ := what.GetValue(path)
 	values := []interface{}{value}
 
 	e.buf = encoder.JSONEncoder.AppendString(e.buf, fmt.Sprintf(msg, values...))

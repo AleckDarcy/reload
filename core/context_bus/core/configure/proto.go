@@ -1,4 +1,4 @@
-package bus
+package configure
 
 import (
 	"github.com/AleckDarcy/reload/core/context_bus/core/reaction"
