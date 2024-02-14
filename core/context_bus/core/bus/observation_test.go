@@ -59,11 +59,12 @@ func TestObservation(t *testing.T) {
 		},
 	}
 
-	configure.ConfigureStore.SetConfigure(0, cfg)
+	id := int64(1)
+	configure.ConfigureStore.SetConfigure(id, cfg)
 
-	ctx := context.NewContext(context.NewRequestContext("rest", 0, rest), nil)
+	ctx := context.NewContext(context.NewRequestContext("rest", id, rest), nil)
 
-	app := new(cb.EventMessage).SetMessage("received message from %s")
+	app := new(cb.EventMessage).SetMessage("received message from %s").SetPaths([]*cb.Path{path})
 
 	// func ServiceHandler(ctx, request) (response, error)
 	// generated code

@@ -21,7 +21,7 @@ func (s *configureStore) SetConfigure(id int64, configure *proto.Configure) {
 		racs = make(map[string]*reaction.Configure, len(reactions))
 		for name, reaction_ := range reactions {
 			pre := &reaction.PrerequisiteTree{
-				PrerequisiteTree: reaction_.PreTree[0],
+				PrerequisiteTree: *reaction_.PreTree,
 			}
 
 			pre.Indexing()

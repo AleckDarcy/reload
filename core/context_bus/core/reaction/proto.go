@@ -8,12 +8,15 @@ import (
 
 // Conditions
 
-type Condition cb.Condition
+type ConditionMessage cb.ConditionMessage
+type ConditionLogic cb.ConditionLogic
+type ConditionNode cb.ConditionNode
+
 type PrerequisiteMessage cb.PrerequisiteMessage
 type PrerequisiteLogic cb.PrerequisiteLogic
 type PrerequisiteNode cb.PrerequisiteNode
 type PrerequisiteTree struct {
-	*cb.PrerequisiteTree
+	cb.PrerequisiteTree
 	Index map[string]*PrerequisiteNode
 }
 

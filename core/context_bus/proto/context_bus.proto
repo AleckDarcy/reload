@@ -62,9 +62,14 @@ enum PrerequisiteNodeType {
     PrerequisiteLogic_   = 2;
 }
 
+message ConditionTree {
+    repeated ConditionNode nodes = 1;
+    repeated int64 leafIDs          = 2;
+}
+
 message PrerequisiteMessage {
-    string name                  = 1;
-    repeated ConditionNode conds = 2;
+    string name                      = 1;
+    repeated ConditionTree cond_tree = 2;
 
     int64 parent        = 100;
     repeated int64 list = 101;

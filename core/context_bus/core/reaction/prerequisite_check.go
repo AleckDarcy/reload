@@ -8,7 +8,7 @@ import (
 // Check if prerequisites are accomplished.
 // Using greedy strategy: does not detect lineage among prerequisite nodes.
 
-func (c *Condition) Check(val int64) (bool, error) {
+func (c *ConditionMessage) Check(val int64) (bool, error) {
 	switch c.Op {
 	case cb.ConditionOperator_LT:
 		return val < c.Value, nil
@@ -27,29 +27,11 @@ func (c *Condition) Check(val int64) (bool, error) {
 	}
 }
 
-// Check
-// Note that Check returns true if Conds is empty
-func (m *PrerequisiteMessage) Check(snapshot *PrerequisiteSnapshot, id int64) (bool, error) {
-	val := snapshot.Value[id]
-
-	for _, cond := range m.Conds {
-		if acc, err := (*Condition)(cond).Check(val); err != nil {
-			return acc, err
-		} else if !acc {
-			return false, err
-		}
-	}
-
-	return true, nil
-}
-
-// Check
-// Note that Check returns true if List is empty
-func (l *PrerequisiteLogic) Check(tree *PrerequisiteTree, snapshot *PrerequisiteSnapshot, id int64) (bool, error) {
-	switch l.Type {
-	case cb.PrerequisiteLogicType_And:
-		for _, nodeID := range l.List {
-			if acc, err := (*PrerequisiteNode)(tree.Pres[nodeID]).Check(tree, snapshot, nodeID); err != nil {
+func (c *ConditionLogic) Check(nodes []*cb.ConditionNode, val int64) (bool, error) {
+	switch c.Type {
+	case cb.LogicType_And_:
+		for _, nodeID := range c.List {
+			if acc, err := (*ConditionNode)(nodes[nodeID]).Check(nodes, val); err != nil {
 				return false, err
 			} else if !acc {
 				return false, nil
@@ -57,9 +39,9 @@ func (l *PrerequisiteLogic) Check(tree *PrerequisiteTree, snapshot *Prerequisite
 		}
 
 		return true, nil
-	case cb.PrerequisiteLogicType_Or:
-		for _, nodeID := range l.List {
-			if acc, err := (*PrerequisiteNode)(tree.Pres[nodeID]).Check(tree, snapshot, nodeID); err != nil {
+	case cb.LogicType_Or_:
+		for _, nodeID := range c.List {
+			if acc, err := (*ConditionNode)(nodes[nodeID]).Check(nodes, val); err != nil {
 				return false, err
 			} else if acc {
 				return true, nil
@@ -70,13 +52,63 @@ func (l *PrerequisiteLogic) Check(tree *PrerequisiteTree, snapshot *Prerequisite
 	default:
 		return false, errors.New("unsupported PrerequisiteLogicType")
 	}
+}
 
+func (n *ConditionNode) Check(nodes []*cb.ConditionNode, val int64) (bool, error) {
+	if n.Type == cb.ConditionNodeType_ConditionMessage_ {
+		return (*ConditionMessage)(n.Message).Check(val)
+	} else if n.Type == cb.ConditionNodeType_ConditionLogic_ {
+		return (*ConditionLogic)(n.Logic).Check(nodes, val)
+	}
+
+	return false, errors.New("unsupported ConditionNodeType")
+}
+
+// Check
+// Note that Check returns true if Conds is empty
+func (m *PrerequisiteMessage) Check(snapshot *PrerequisiteSnapshot, id int64) (bool, error) {
+	val := snapshot.Value[id]
+
+	if len(m.Conds) != 0 {
+		return (*ConditionNode)(m.Conds[0]).Check(m.Conds, val)
+	}
+
+	return true, nil
+}
+
+// Check
+// Note that Check returns true if List is empty
+func (l *PrerequisiteLogic) Check(tree *PrerequisiteTree, snapshot *PrerequisiteSnapshot, id int64) (bool, error) {
+	switch l.Type {
+	case cb.LogicType_And_:
+		for _, nodeID := range l.List {
+			if acc, err := (*PrerequisiteNode)(tree.Nodes[nodeID]).Check(tree, snapshot, nodeID); err != nil {
+				return false, err
+			} else if !acc {
+				return false, nil
+			}
+		}
+
+		return true, nil
+	case cb.LogicType_Or_:
+		for _, nodeID := range l.List {
+			if acc, err := (*PrerequisiteNode)(tree.Nodes[nodeID]).Check(tree, snapshot, nodeID); err != nil {
+				return false, err
+			} else if acc {
+				return true, nil
+			}
+		}
+
+		return false, nil
+	default:
+		return false, errors.New("unsupported PrerequisiteLogicType")
+	}
 }
 
 func (n *PrerequisiteNode) Check(tree *PrerequisiteTree, snapshot *PrerequisiteSnapshot, id int64) (bool, error) {
-	if n.Type == cb.PrerequisiteNodeType_Message {
+	if n.Type == cb.PrerequisiteNodeType_PrerequisiteMessage_ {
 		return (*PrerequisiteMessage)(n.Message).Check(snapshot, id)
-	} else if n.Type == cb.PrerequisiteNodeType_Logic {
+	} else if n.Type == cb.PrerequisiteNodeType_PrerequisiteLogic_ {
 		return (*PrerequisiteLogic)(n.Logic).Check(tree, snapshot, id)
 	}
 
@@ -84,12 +116,12 @@ func (n *PrerequisiteNode) Check(tree *PrerequisiteTree, snapshot *PrerequisiteS
 }
 
 func (t *PrerequisiteTree) Check(snapshot *PrerequisiteSnapshot) (bool, error) {
-	if len(t.Pres) != len(snapshot.Value) {
+	if len(t.Nodes) != len(snapshot.Value) {
 		return false, errors.New("prerequisite length not match")
 	}
 
 	// top-down
-	if ok, err := (*PrerequisiteNode)(t.PrerequisiteTree.Pres[0]).Check(t, snapshot, 0); err != nil {
+	if ok, err := (*PrerequisiteNode)(t.Nodes[0]).Check(t, snapshot, 0); err != nil {
 		return false, err
 	} else if !ok {
 		return false, nil

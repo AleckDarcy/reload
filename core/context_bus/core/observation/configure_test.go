@@ -1,11 +1,11 @@
 package observation
 
 import (
+	"github.com/AleckDarcy/reload/core/context_bus/core/context"
 	cb "github.com/AleckDarcy/reload/core/context_bus/proto"
-	"github.com/delimitrou/DeathStarBench/hotelreservation/vendor/github.com/AleckDarcy/reload/core/context_bus/core/context"
-	"time"
 
 	"testing"
+	"time"
 )
 
 func BenchmarkName(b *testing.B) {

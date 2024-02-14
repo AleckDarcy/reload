@@ -224,6 +224,12 @@ func (m *EventMessage) SetMessage(msg string) *EventMessage {
 	return m
 }
 
+func (m *EventMessage) SetPaths(paths []*Path) *EventMessage {
+	m.Paths = paths
+
+	return m
+}
+
 func (m *EventMessage) Merge(msg *EventMessage) *EventMessage {
 	if msg != nil {
 		if m.Attrs == nil {

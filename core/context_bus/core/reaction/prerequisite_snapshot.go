@@ -8,7 +8,7 @@ import (
 
 func (t *PrerequisiteTree) InitializeSnapshot() *PrerequisiteSnapshot {
 	return &PrerequisiteSnapshot{
-		Value: make([]int64, len(t.Pres)),
+		Value: make([]int64, len(t.Nodes)),
 	}
 }
 
@@ -16,7 +16,7 @@ func (t *PrerequisiteTree) InitializeSnapshot() *PrerequisiteSnapshot {
 // 1. number of occurrence
 
 func (n *PrerequisiteNode) UpdateSnapshot(snapshot *PrerequisiteSnapshot) error {
-	if n.Type != cb.PrerequisiteNodeType_Message {
+	if n.Type != cb.PrerequisiteNodeType_PrerequisiteMessage_ {
 		return errors.New("unexpected PrerequisiteNodeType")
 	}
 
@@ -28,7 +28,7 @@ func (n *PrerequisiteNode) UpdateSnapshot(snapshot *PrerequisiteSnapshot) error 
 func (t *PrerequisiteTree) UpdateSnapshot(name string, snapshot *PrerequisiteSnapshot) error {
 	if snapshot == nil {
 		return errors.New("nil pointer PrerequisiteSnapshot")
-	} else if len(snapshot.Value) != len(t.Pres) {
+	} else if len(snapshot.Value) != len(t.Nodes) {
 		return errors.New("prerequisite length not match")
 	}
 
