@@ -1,7 +1,6 @@
 package observation
 
 import (
-	"github.com/AleckDarcy/reload/core/context_bus/core/context"
 	cb "github.com/AleckDarcy/reload/core/context_bus/proto"
 
 	"testing"
@@ -43,14 +42,12 @@ func BenchmarkName(b *testing.B) {
 		WithAttributes("key2", nil).
 		SetString("key21", "value21")
 
-	ctx := context.NewContext(context.NewRequestContext("rest", 0, rest), nil)
-
 	er := new(cb.EventRepresentation)
 	er.WithWhen(&cb.EventWhen{Time: time.Now().Unix()})
 	er.WithWhat(what)
 
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
-		b.Log((*LoggingConfigure)(cfg).Do(ctx, er))
+		b.Log((*LoggingConfigure)(cfg).Do(er))
 	}
 }

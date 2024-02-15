@@ -17,7 +17,7 @@ type PrerequisiteLogic cb.PrerequisiteLogic
 type PrerequisiteNode cb.PrerequisiteNode
 type PrerequisiteTree struct {
 	cb.PrerequisiteTree
-	Index map[string]*PrerequisiteNode
+	Index map[string]*PrerequisiteNode // <event name, PrerequisiteNode>
 }
 
 // Snapshot
@@ -31,6 +31,7 @@ type TrafficBalanceParam cb.TrafficBalanceParam
 type TrafficRoutingParam cb.TrafficRoutingParam
 
 type Configure struct {
+	Name    string
 	Type    cb.ReactionType
 	Params  interface{} // isReactionConfigure_Params
 	PreTree *PrerequisiteTree

@@ -89,7 +89,7 @@ func ServiceHandlerAContextBus(ctx *cb_context.Context, req *http.Request) *http
 	what.WithLibrary("rest", rest)
 
 	logCfg := &LoggingConfigure{}
-	str := logCfg.Do(ctx, &cb.EventRepresentation{When: &cb.EventWhen{Time: time.Now().UnixNano()}, What: what})
+	str := logCfg.Do(&cb.EventRepresentation{When: &cb.EventWhen{Time: time.Now().UnixNano()}, What: what})
 
 	fmt.Println(str)
 

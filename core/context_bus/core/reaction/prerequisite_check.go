@@ -120,6 +120,10 @@ func (t *PrerequisiteTree) Check(snapshot *PrerequisiteSnapshot) (bool, error) {
 		return false, errors.New("prerequisite length not match")
 	}
 
+	if len(t.Nodes) == 0 {
+		return true, nil
+	}
+
 	// top-down
 	if ok, err := (*PrerequisiteNode)(t.Nodes[0]).Check(t, snapshot, 0); err != nil {
 		return false, err

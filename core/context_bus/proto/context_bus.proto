@@ -100,6 +100,10 @@ message PrerequisiteSnapshot {
     bool acc             = 2;
 }
 
+message PrerequisiteSnapshots {
+    map<string, PrerequisiteSnapshot> snapshots = 1;
+}
+
 enum ReactionType {
     ReactionType_ = 0;
 
@@ -162,7 +166,7 @@ message StackTraceConfigure {
 }
 
 enum LogOutType {
-    LogOutType_ = 0;
+    LogOutType_ = 0; // omit
 
     Stdout = 1;
     Stderr = 2;
@@ -302,6 +306,12 @@ message Attributes {
     map<string, AttributeValue> attrs = 1;
 }
 
+message CodeBaseInfo {
+    string name = 1;
+    string file = 2;
+    int64 line  = 3;
+}
+
 message EventWhere {
     Attributes attrs  = 1;
     string stacktrace = 2;
@@ -381,13 +391,8 @@ message Record {
 }
 
 /******************** Integration ********************/
-message LineageSnapshot {
-    map<string, int64> NumOfInvok = 1;
-    map<string, int64> Latency    = 2;
-}
-
 message Payload {
-    int64 request_id         = 1;
-    int64 config_id          = 2;
-    LineageSnapshot snapshot = 3;
+    int64 request_id                = 1;
+    int64 config_id                 = 2;
+    PrerequisiteSnapshots snapshots = 3;
 }

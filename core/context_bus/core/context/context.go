@@ -35,6 +35,22 @@ func (c *RequestContext) GetEventMessage() *cb.EventMessage {
 // EventContext is the context associated with each observation
 type EventContext struct {
 	codebase *code_generator.CodeInfoBasic
+	snapshot *cb.PrerequisiteSnapshot
+}
+
+func NewEventContext(codebase *code_generator.CodeInfoBasic, snapshot *cb.PrerequisiteSnapshot) *EventContext {
+	return &EventContext{
+		codebase: codebase,
+		snapshot: snapshot,
+	}
+}
+
+func (c *EventContext) GetCodeInfoBasic() *code_generator.CodeInfoBasic {
+	return c.codebase
+}
+
+func (c *EventContext) GetPrerequisiteSnapshot() *cb.PrerequisiteSnapshot {
+	return c.snapshot
 }
 
 type Context struct {

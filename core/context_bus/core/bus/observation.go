@@ -4,8 +4,10 @@ import (
 	"github.com/AleckDarcy/reload/core/context_bus/background"
 	"github.com/AleckDarcy/reload/core/context_bus/core/configure"
 	"github.com/AleckDarcy/reload/core/context_bus/core/context"
+	"github.com/AleckDarcy/reload/core/context_bus/core/reaction"
 	cb "github.com/AleckDarcy/reload/core/context_bus/proto"
 
+	"fmt"
 	"time"
 )
 
@@ -20,7 +22,10 @@ func OnSubmission(ctx *context.Context, where *cb.EventWhere, who *cb.EventRecor
 	}
 
 	// write network API attributes
-	er.What.WithLibrary(ctx.GetRequestContext().GetLib(), ctx.GetRequestContext().GetEventMessage())
+	if reqCtx := ctx.GetRequestContext(); reqCtx != nil {
+		er.What.WithLibrary(reqCtx.GetLib(), reqCtx.GetEventMessage())
+	}
+	// write code base info
 
 	esp := background.EP.GetLatest()
 
@@ -36,15 +41,23 @@ func OnSubmission(ctx *context.Context, where *cb.EventWhere, who *cb.EventRecor
 	}
 
 	if cfg := configure.ConfigureStore.GetConfigure(ctx.GetRequestContext().GetConfigureID()); cfg != nil {
-		if obs := cfg.GetObservationConfigure(ed.Event.Recorder.Name); obs != nil {
-			obs.Do(ctx, ed.Event)
-		}
+		//if obs := cfg.GetObservationConfigure(ed.Event.Recorder.Name); obs != nil {
+		//	obs.Do(ed.Event)
+		//}
 
-		if rac := cfg.GetReaction(ed.Event.Recorder.Name); rac != nil {
-			_ = rac
+		if rac := cfg.GetReaction(who.Name); rac != nil {
+			// todo update snapshot
+
+			if ok, err := rac.PreTree.Check((*reaction.PrerequisiteSnapshot)(ctx.GetEventContext().GetPrerequisiteSnapshot())); err != nil {
+
+			} else if !ok {
+
+			} else {
+				fmt.Println("bbbbbbbb")
+			}
 		}
 	} // todo cfg == nil, default
 
-	// todo update snapshot
 	// todo put ed into bus
+	Bus.OnSubmit(ctx.GetRequestContext().GetConfigureID(), ed)
 }

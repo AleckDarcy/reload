@@ -1,35 +1,37 @@
 package observation
 
 import (
-	"fmt"
-	"github.com/AleckDarcy/reload/core/context_bus/core/context"
 	"github.com/AleckDarcy/reload/core/context_bus/core/encoder"
 	cb "github.com/AleckDarcy/reload/core/context_bus/proto"
+	"github.com/AleckDarcy/reload/core/context_bus/public"
+
+	"fmt"
 	"os"
 	"time"
 )
 
-// implementations
+// Do functions
+// finalize observation
 
-func (c *Configure) Do(ctx *context.Context, er *cb.EventRepresentation) {
-	(*LoggingConfigure)(c.Logging).Do(ctx, er)
+func (c *Configure) Do(er *cb.EventRepresentation) {
+	(*LoggingConfigure)(c.Logging).Do(er)
 	(*TracingConfigure)(c.Tracing).Do(er)
 	for _, metric := range c.Metrics {
 		(*MetricsConfigure)(metric).Do(er)
 	}
 }
 
-func (c *TimestampConfigure) Do(ctx *context.Context) {
+func (c *TimestampConfigure) Do() {
 	if c != nil {
 		return
 	}
 }
 
-func (c *StackTraceConfigure) Do(ctx *context.Context) {
+func (c *StackTraceConfigure) Do() {
 
 }
 
-func (c *LoggingConfigure) Do(ctx *context.Context, er *cb.EventRepresentation) interface{} {
+func (c *LoggingConfigure) Do(er *cb.EventRepresentation) interface{} {
 	if c == nil {
 		return nil
 	}
@@ -43,12 +45,12 @@ func (c *LoggingConfigure) Do(ctx *context.Context, er *cb.EventRepresentation) 
 	e.buf = encoder.JSONEncoder.AppendKey(e.buf, "time")
 
 	e.buf = encoder.JSONEncoder.BeginString(e.buf)
-	e.buf = time.Unix(0, er.When.Time).AppendFormat(e.buf, time.RFC3339)
-	e.buf = encoder.JSONEncoder.EndString(e.buf)
-
-	if reqCtx := ctx.GetRequestContext(); reqCtx != nil {
-		er.What.WithLibrary(reqCtx.GetLib(), reqCtx.GetEventMessage())
+	if ts := c.Timestamp; ts == nil {
+		e.buf = time.Unix(0, er.When.Time).AppendFormat(e.buf, public.TIME_FORMAT_DEFAULT)
+	} else {
+		e.buf = time.Unix(0, er.When.Time).AppendFormat(e.buf, ts.Format)
 	}
+	e.buf = encoder.JSONEncoder.EndString(e.buf)
 
 	// do message
 	e.buf = encoder.JSONEncoder.AppendKey(e.buf, "message")
@@ -71,10 +73,12 @@ func (c *LoggingConfigure) Do(ctx *context.Context, er *cb.EventRepresentation) 
 	str := string(e.buf)
 	e.finalize()
 
-	(*TimestampConfigure)(c.Timestamp).Do(ctx)
-	(*StackTraceConfigure)(c.Stacktrace).Do(ctx)
+	(*TimestampConfigure)(c.Timestamp).Do()
+	(*StackTraceConfigure)(c.Stacktrace).Do()
 
 	switch c.Out {
+	case cb.LogOutType_LogOutType_:
+		// omit print
 	case cb.LogOutType_Stdout:
 		fmt.Fprintln(os.Stdout, str)
 	case cb.LogOutType_Stderr:
