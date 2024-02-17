@@ -57,8 +57,12 @@ func (c *LoggingConfigure) Do(er *cb.EventRepresentation) interface{} {
 	msg := er.What.Application.GetMessage()
 	paths := er.What.Application.GetPaths()
 	values := make([]interface{}, len(paths))
+	var err error
 	for i, path := range paths {
-		values[i], _ = er.What.GetValue(path)
+		values[i], err = er.What.GetValue(path)
+		if err != nil {
+			values[i] = fmt.Sprintf("!error(%s)", err.Error())
+		}
 	}
 	e.buf = encoder.JSONEncoder.AppendString(e.buf, fmt.Sprintf(msg, values...))
 

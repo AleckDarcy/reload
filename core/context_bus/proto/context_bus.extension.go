@@ -86,7 +86,7 @@ func (m *Attributes) SetString(key string, value string) *Attributes {
 // WithAttributes merges {attrs} for the value of given {key},
 // returns the merged value of {key} for method chaining.
 func (m *Attributes) WithAttributes(key string, attrs *Attributes) *Attributes {
-	value := &AttributeValue{Type: AttributeValueType_AttributeValueStr, Struct: attrs}
+	value := &AttributeValue{Type: AttributeValueType_AttributeValueAttr, Struct: attrs}
 	if attrs == nil { // check null pointer for ProtoBuffer Unmarshal()
 		value.Struct = &Attributes{Attrs: map[string]*AttributeValue{}}
 	}
@@ -99,7 +99,7 @@ func (m *Attributes) WithAttributes(key string, attrs *Attributes) *Attributes {
 
 	m.Attrs[key] = value
 
-	return m
+	return value.Struct
 }
 
 func (m *Attributes) SetAttributes(key string, value *Attributes) *Attributes {
@@ -247,7 +247,11 @@ func (m *EventMessage) Merge(msg *EventMessage) *EventMessage {
 }
 
 func (m *LibrariesMessage) GetValue(path []string) (string, error) {
-	if len(path) == 0 {
+	if m == nil {
+		return "", errors.New("no libraries")
+	} else if len(m.Libraries) == 0 {
+		return "", errors.New("empty libraries")
+	} else if len(path) == 0 {
 		return "", errors.New("invalid Path len for LibrariesMessage")
 	}
 

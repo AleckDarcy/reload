@@ -3,31 +3,31 @@ package reaction
 import "testing"
 
 func TestPrerequisiteTree_Check_1(t *testing.T) {
-	snapshot := tree1.InitializeSnapshot()
+	snapshot := Tree1.InitializeSnapshot()
 
 	// only the 2nd and 3rd invocations of EventC lead to true values
 	expected := []bool{false, true, true, false}
 	for _, exp := range expected {
-		tree1.UpdateSnapshot("EventC", snapshot)
-		acc, err := tree1.Check(snapshot)
+		Tree1.UpdateSnapshot("EventC", snapshot)
+		acc, err := Tree1.Check(snapshot)
 		if err != nil || acc != exp {
-			t.Error("fail, err:", err)
+			t.Error("fail, err:", err, "acc:", acc)
 		}
 	}
 
-	tree1.UpdateSnapshot("EventA", snapshot)
-	acc, err := tree1.Check(snapshot)
+	Tree1.UpdateSnapshot("EventA", snapshot)
+	acc, err := Tree1.Check(snapshot)
 	if err != nil || acc {
-		t.Error("fail, err:", err)
+		t.Error("fail, err:", err, "acc:", acc)
 	}
 }
 
 func BenchmarkPrerequisiteTree_Check_0(b *testing.B) {
-	snapshot := tree0.InitializeSnapshot()
-	tree0.UpdateSnapshot("EventA", snapshot)
-	tree0.UpdateSnapshot("EventB", snapshot)
+	snapshot := Tree0.InitializeSnapshot()
+	Tree0.UpdateSnapshot("EventA", snapshot)
+	Tree0.UpdateSnapshot("EventB", snapshot)
 
 	for i := 0; i < b.N; i++ {
-		tree0.Check(snapshot)
+		Tree0.Check(snapshot)
 	}
 }

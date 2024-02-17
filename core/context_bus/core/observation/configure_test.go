@@ -8,42 +8,22 @@ import (
 )
 
 func BenchmarkName(b *testing.B) {
-	var cfg = &cb.LoggingConfigure{
-		Timestamp:  nil,
-		Stacktrace: nil,
-		Attrs: []*cb.AttributeConfigure{
-			{
-				Name: "app.key21",
-				Path: &cb.Path{
-					Type: cb.PathType_Application,
-					Path: []string{"key2", "key21"},
-				},
-			},
-			{
-				Name: "app.message",
-				Path: &cb.Path{
-					Type: cb.PathType_Application,
-					Path: []string{"__message__"},
-				},
-			},
-			{
-				Name: "lib1.key11",
-				Path: &cb.Path{
-					Type: cb.PathType_Library,
-					Path: []string{"lib1", "key1", "key11"},
-				},
-			},
-		},
+	attrCfgs := []*cb.AttributeConfigure{
+		cb.Test_AttributeConfigure_App_Key21,
+		cb.Test_AttributeConfigure_App_Message,
+		cb.Test_AttributeConfigure_Lib1_Key11,
 	}
+	cfg := cb.NewLoggingConfigure(nil, nil, attrCfgs, cb.LogOutType_LogOutType_)
 
 	what := new(cb.EventWhat)
 	what.WithApplication(nil).
 		SetMessage("application message").GetAttributes().SetString("key1", "value1").
 		WithAttributes("key2", nil).
 		SetString("key21", "value21")
+	what.WithLibrary("lib1", nil).GetAttributes().WithAttributes("key1", nil).SetString("key11", "value11")
 
 	er := new(cb.EventRepresentation)
-	er.WithWhen(&cb.EventWhen{Time: time.Now().Unix()})
+	er.WithWhen(&cb.EventWhen{Time: time.Now().UnixNano()})
 	er.WithWhat(what)
 
 	b.StartTimer()

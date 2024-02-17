@@ -22,17 +22,11 @@ func (s *configureStore) SetConfigure(id int64, configure *cb.Configure) {
 	if reactions := configure.Reactions; reactions != nil {
 		racs = make(map[string]*reaction.Configure, len(reactions))
 		for name, reaction_ := range reactions {
-			pre := &reaction.PrerequisiteTree{
-				PrerequisiteTree: *reaction_.PreTree,
-			}
-
-			pre.Indexing()
-
 			rac := &reaction.Configure{
 				Name:    name,
 				Type:    reaction_.Type,
 				Params:  reaction_.Params,
-				PreTree: pre,
+				PreTree: reaction.NewPrerequisiteTree(reaction_.PreTree),
 			}
 			racs[name] = rac
 

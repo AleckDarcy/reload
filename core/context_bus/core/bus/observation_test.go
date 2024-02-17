@@ -11,29 +11,8 @@ import (
 	"time"
 )
 
-var path = &cb.Path{
-	Type: cb.PathType_Library,
-	Path: []string{"rest", "from"},
-}
-
-var rest = &cb.EventMessage{
-	Attrs: &cb.Attributes{
-		Attrs: map[string]*cb.AttributeValue{
-			"from": {
-				Type: cb.AttributeValueType_AttributeValueStr,
-				Str:  "SenderA",
-			},
-			"key": {
-				Type: cb.AttributeValueType_AttributeValueStr,
-				Str:  "This a string attribute",
-			},
-			"key_": {
-				Type: cb.AttributeValueType_AttributeValueStr,
-				Str:  "This another string attribute",
-			},
-		},
-	},
-}
+var path = cb.Test_Path_Rest_From
+var rest = cb.Test_EventMessage_Rest
 
 var cfg1 = &cb.Configure{
 	Reactions: nil,
@@ -41,16 +20,8 @@ var cfg1 = &cb.Configure{
 		"EventA": {
 			Logging: &cb.LoggingConfigure{
 				Timestamp: &cb.TimestampConfigure{Format: public.TIME_FORMAT_RFC3339},
-				Attrs: []*cb.AttributeConfigure{
-					{
-						Name: "rest.key",
-						Path: &cb.Path{
-							Type: cb.PathType_Library,
-							Path: []string{"rest", "key"},
-						},
-					},
-				},
-				Out: cb.LogOutType_Stdout,
+				Attrs:     []*cb.AttributeConfigure{cb.Test_AttributeConfigure_Rest_Key},
+				Out:       cb.LogOutType_Stdout,
 			},
 		},
 	},
@@ -62,16 +33,8 @@ var cfg2 = &cb.Configure{
 		"EventA": {
 			Logging: &cb.LoggingConfigure{
 				Timestamp: &cb.TimestampConfigure{Format: public.TIME_FORMAT_RFC3339Nano},
-				Attrs: []*cb.AttributeConfigure{
-					{
-						Name: "rest.key",
-						Path: &cb.Path{
-							Type: cb.PathType_Library,
-							Path: []string{"rest", "key"},
-						},
-					},
-				},
-				Out: cb.LogOutType_LogOutType_, // omit print
+				Attrs:     []*cb.AttributeConfigure{cb.Test_AttributeConfigure_Rest_Key},
+				Out:       cb.LogOutType_LogOutType_, // omit print
 			},
 		},
 	},
@@ -153,13 +116,14 @@ var cfg3 = &cb.Configure{
 
 func TestObservation(t *testing.T) {
 	background.Run()
+	go Bus.Run(nil)
 
 	id := int64(1)
 	configure.ConfigureStore.SetConfigure(id, cfg1)
 
 	ctx := context.NewContext(context.NewRequestContext("rest", id, rest), nil)
 
-	app := new(cb.EventMessage).SetMessage("received message from %s").SetPaths([]*cb.Path{path})
+	app := new(cb.EventMessage).SetMessage("received message from %s").SetPaths([]*cb.Path{cb.Test_Path_Rest_From})
 
 	// func ServiceHandler(ctx, request) (response, error)
 	// generated code
@@ -169,4 +133,6 @@ func TestObservation(t *testing.T) {
 	time.Sleep(public.ENV_PROFILE_INTERVAL)
 
 	OnSubmission(ctx, &cb.EventWhere{}, &cb.EventRecorder{Name: "EventA"}, app)
+
+	time.Sleep(time.Second)
 }
