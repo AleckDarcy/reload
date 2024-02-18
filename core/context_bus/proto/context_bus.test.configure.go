@@ -6,8 +6,14 @@ var Test_Path_Not_Found = NewPath(PathType_Library, []string{"__not__", "__found
 // Test_Path_Rest_From rest.from
 var Test_Path_Rest_From = NewPath(PathType_Library, []string{"rest", "from"})
 
+// Test_Path_Rest_From rest.to
+var Test_Path_Rest_To = NewPath(PathType_Library, []string{"rest", "to"})
+
 // Test_Path_Rest_Key rest.key
 var Test_Path_Rest_Key = NewPath(PathType_Library, []string{"rest", "key"})
+
+// Test_Path_Rest_Key_ rest.key_
+var Test_Path_Rest_Key_ = NewPath(PathType_Library, []string{"rest", "key_"})
 
 // Test_Path_App_Key21 app.key2.key21
 var Test_Path_App_Key21 = NewPath(PathType_Application, []string{"key2", "key21"})
@@ -32,3 +38,6 @@ var Test_AttributeConfigure_Rest_From = NewAttributeConfigure("rest.from", Test_
 
 // Test_AttributeConfigure_Rest_Key tag["rest.key"] = val(rest.key)
 var Test_AttributeConfigure_Rest_Key = NewAttributeConfigure("rest.key", Test_Path_Rest_Key)
+
+// Test_AttributeConfigure_Rest_Key_ tag["rest.key_"] = val(rest.key_)
+var Test_AttributeConfigure_Rest_Key_ = NewAttributeConfigure("rest.key_", Test_Path_Rest_Key_)

@@ -199,10 +199,20 @@ message MetricsConfigure {
     repeated Path tags = 3;
 }
 
+enum ObservationType {
+    ObservationType_ = 0;
+
+    ObservationSingle = 1;
+    ObservationStart  = 2;
+    ObservationInter  = 3; // intermediate
+    ObservationEnd    = 4;
+}
+
 message ObservationConfigure {
-    LoggingConfigure logging          = 1;
-    TracingConfigure tracing          = 2;
-    repeated MetricsConfigure metrics = 3;
+    ObservationType type              = 1;
+    LoggingConfigure logging          = 2;
+    TracingConfigure tracing          = 3;
+    repeated MetricsConfigure metrics = 4;
 }
 
 message Configure {
@@ -353,12 +363,12 @@ message EventRepresentation {
 
 /******************** Event Metadata */
 message ParentChildPointers {
-    int64 parent            = 1;
-    repeated int64 children = 2;
+    uint64 parent            = 1;
+    repeated uint64 children = 2;
 }
 
 message EventMetadata {
-    int64 id                = 1;
+    uint64 id               = 1;
     ParentChildPointers pcp = 2; // parent-children pointer
     int64 esp               = 3; // environmental snapshot pointer
 }
@@ -367,6 +377,7 @@ message EventMetadata {
 message EventData {
     EventRepresentation event = 1;
     EventMetadata metadata    = 2;
+    EventData prevEventData   = 3;
 }
 
 /******************** from 3mb WIP */

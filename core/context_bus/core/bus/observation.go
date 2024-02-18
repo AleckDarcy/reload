@@ -11,8 +11,7 @@ import (
 	"time"
 )
 
-// user interface
-
+// OnSubmission user interface
 func OnSubmission(ctx *context.Context, where *cb.EventWhere, who *cb.EventRecorder, app *cb.EventMessage) {
 	er := &cb.EventRepresentation{
 		When:     &cb.EventWhen{Time: time.Now().UnixNano()},
@@ -21,8 +20,11 @@ func OnSubmission(ctx *context.Context, where *cb.EventWhere, who *cb.EventRecor
 		What:     &cb.EventWhat{Application: app},
 	}
 
+	reqCtx := ctx.GetRequestContext()
+	eveCtx := ctx.GetEventContext()
+
 	// write network API attributes
-	if reqCtx := ctx.GetRequestContext(); reqCtx != nil {
+	if reqCtx != nil {
 		er.What.WithLibrary(reqCtx.GetLib(), reqCtx.GetEventMessage())
 	}
 	// write code base info
@@ -30,7 +32,7 @@ func OnSubmission(ctx *context.Context, where *cb.EventWhere, who *cb.EventRecor
 	esp := background.EP.GetLatest()
 
 	md := &cb.EventMetadata{
-		Id:  0,
+		Id:  Bus.NewEventID(),
 		Pcp: nil,
 		Esp: esp.Timestamp,
 	}
@@ -40,24 +42,44 @@ func OnSubmission(ctx *context.Context, where *cb.EventWhere, who *cb.EventRecor
 		Metadata: md,
 	}
 
-	if cfg := configure.ConfigureStore.GetConfigure(ctx.GetRequestContext().GetConfigureID()); cfg != nil {
-		//if obs := cfg.GetObservationConfigure(ed.Event.Recorder.Name); obs != nil {
-		//	obs.Do(ed.Event)
-		//}
+	cfg := configure.ConfigureStore.GetConfigure(reqCtx.GetConfigureID())
+	snapshots := cfg.UpdateSnapshots(who.GetName(), eveCtx.GetPrerequisiteSnapshots())
 
-		if rac := cfg.GetReaction(who.Name); rac != nil {
-			// todo update snapshot
+	if obs := cfg.GetObservationConfigure(who.GetName()); obs != nil {
+		// update EventMetadata
+		switch obs.Type {
+		case cb.ObservationType_ObservationSingle:
+			// by pass PrevEvent
 
-			if ok, err := rac.PreTree.Check((*reaction.PrerequisiteSnapshot)(ctx.GetEventContext().GetPrerequisiteSnapshot())); err != nil {
+		case cb.ObservationType_ObservationStart:
+			// initialize event pair
+			newEveCtx := new(context.EventContext).SetPrerequisiteSnapshots(snapshots).SetPrevEvent(eveCtx, ed)
+			ctx.SetEventContext(newEveCtx)
+		case cb.ObservationType_ObservationInter:
+			// todo
+		case cb.ObservationType_ObservationEnd:
+			// finalize event pair
+			_, prevED := eveCtx.GetPrevEvent()
+			if prevED == nil {
+				fmt.Println("eveCtx.GetPrevEvent() get nil")
+			}
+			ed.PrevEventData = prevED
+		}
+	}
+
+	if rac := cfg.GetReaction(who.Name); rac != nil {
+		if snapshot := snapshots.GetPrerequisiteSnapshot(who.Name); snapshot != nil {
+			if ok, err := rac.PreTree.Check((*reaction.PrerequisiteSnapshot)(snapshot)); err != nil {
 
 			} else if !ok {
 
 			} else {
-				fmt.Println("bbbbbbbb")
+				fmt.Println("prerequisites accomplished")
 			}
 		}
-	} // todo cfg == nil, default
+	}
 
-	// todo put ed into bus
-	Bus.OnSubmit(ctx.GetRequestContext().GetConfigureID(), ed)
+	// push EventData to bus
+	Bus.OnSubmit(reqCtx.GetConfigureID(), ed)
+
 }

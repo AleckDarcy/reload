@@ -46,68 +46,18 @@ var cfg3 = &cb.Configure{
 			Type: cb.ReactionType_FaultCrash,
 			PreTree: &cb.PrerequisiteTree{
 				Nodes: []*cb.PrerequisiteNode{
-					{
-						Id:   0,
-						Type: cb.PrerequisiteNodeType_PrerequisiteMessage_,
-						Message: &cb.PrerequisiteMessage{
-							Name:     "EventA",
-							CondTree: &cb.ConditionTree{},
-							Parent:   -1,
-						},
-					},
+					cb.NewPrerequisiteMessageNode(0, "EventA", &cb.ConditionTree{}, -1, nil),
 				},
 			}},
 		"EventC": {
 			Type: cb.ReactionType_FaultCrash,
 			PreTree: &cb.PrerequisiteTree{
 				Nodes: []*cb.PrerequisiteNode{
-					{
-						Id:   0,
-						Type: cb.PrerequisiteNodeType_PrerequisiteLogic_,
-						Logic: &cb.PrerequisiteLogic{
-							Type:   cb.LogicType_And_,
-							Parent: -1,
-							List:   []int64{1, 2},
-						},
-					}, {
-						Id:   1,
-						Type: cb.PrerequisiteNodeType_PrerequisiteMessage_,
-						Message: &cb.PrerequisiteMessage{
-							Name: "EventA",
-							CondTree: &cb.ConditionTree{
-								Nodes: []*cb.ConditionNode{
-									{
-										Type: cb.ConditionNodeType_ConditionMessage_,
-										Message: &cb.ConditionMessage{
-											Type:  cb.ConditionType_NumOfInvok,
-											Op:    cb.ConditionOperator_GE,
-											Value: 1,
-										},
-									},
-								},
-							},
-							Parent: 0,
-						},
-					}, {
-						Id:   2,
-						Type: cb.PrerequisiteNodeType_PrerequisiteMessage_,
-						Message: &cb.PrerequisiteMessage{
-							Name: "EventB",
-							CondTree: &cb.ConditionTree{
-								Nodes: []*cb.ConditionNode{
-									{
-										Type: cb.ConditionNodeType_ConditionMessage_,
-										Message: &cb.ConditionMessage{
-											Type:  cb.ConditionType_NumOfInvok,
-											Op:    cb.ConditionOperator_GE,
-											Value: 0,
-										},
-									},
-								},
-							},
-							Parent: 0,
-						},
-					},
+					cb.NewPrerequisiteLogicNode(0, cb.LogicType_And_, -1, []int64{1, 2}),
+					cb.NewPrerequisiteMessageNode(1, "EventA",
+						cb.NewConditionTree([]*cb.ConditionNode{cb.Test_Condition_C_1_0}, nil), 0, nil),
+					cb.NewPrerequisiteMessageNode(2, "EventB",
+						cb.NewConditionTree([]*cb.ConditionNode{cb.Test_Condition_C_2_0}, nil), 0, nil),
 				},
 			},
 		},
@@ -118,21 +68,77 @@ func TestObservation(t *testing.T) {
 	background.Run()
 	go Bus.Run(nil)
 
-	id := int64(1)
-	configure.ConfigureStore.SetConfigure(id, cfg1)
+	var cfg4 = &cb.Configure{
+		Observations: map[string]*cb.ObservationConfigure{
+			"EventA-starts": {
+				Type: cb.ObservationType_ObservationStart,
+				Logging: &cb.LoggingConfigure{
+					Attrs: []*cb.AttributeConfigure{cb.Test_AttributeConfigure_Rest_Key, cb.Test_AttributeConfigure_Rest_Key_},
+					Out:   cb.LogOutType_Stdout,
+				},
+				Metrics: []*cb.MetricsConfigure{
+					{Type: cb.MetricType_Counter, Name: "cnt_EventA"},
+				},
+			},
+			"EventA-abcdef": {
+				Type: cb.ObservationType_ObservationSingle,
+				Logging: &cb.LoggingConfigure{
+					Out: cb.LogOutType_Stdout,
+				},
+			},
+			"EventA-ends": {
+				Type: cb.ObservationType_ObservationEnd,
+				Logging: &cb.LoggingConfigure{
+					Attrs: []*cb.AttributeConfigure{cb.Test_AttributeConfigure_Rest_Key},
+					Out:   cb.LogOutType_Stdout,
+				},
+				Metrics: []*cb.MetricsConfigure{
+					{Type: cb.MetricType_Histogram, Name: "lat_EventA"},
+				},
+			},
+		},
+		Reactions: map[string]*cb.ReactionConfigure{
+			"EventD": {
+				Type: cb.ReactionType_FaultCrash,
+				PreTree: &cb.PrerequisiteTree{
+					Nodes: []*cb.PrerequisiteNode{
+						cb.NewPrerequisiteMessageNode(0, "EventA", &cb.ConditionTree{}, -1, nil),
+					},
+				}},
+			"EventC": {
+				Type: cb.ReactionType_FaultCrash,
+				PreTree: &cb.PrerequisiteTree{
+					Nodes: []*cb.PrerequisiteNode{
+						cb.NewPrerequisiteLogicNode(0, cb.LogicType_And_, -1, []int64{1, 2}),
+						cb.NewPrerequisiteMessageNode(1, "EventA",
+							cb.NewConditionTree([]*cb.ConditionNode{cb.Test_Condition_C_1_0}, nil), 0, nil),
+						cb.NewPrerequisiteMessageNode(2, "EventB",
+							cb.NewConditionTree([]*cb.ConditionNode{cb.Test_Condition_C_2_0}, nil), 0, nil),
+					},
+				},
+			},
+		},
+	}
 
-	ctx := context.NewContext(context.NewRequestContext("rest", id, rest), nil)
+	id := int64(4)
+	configure.ConfigureStore.SetConfigure(id, cfg4)
 
-	app := new(cb.EventMessage).SetMessage("received message from %s").SetPaths([]*cb.Path{cb.Test_Path_Rest_From})
+	ctx := context.NewContext(context.NewRequestContext("rest", id, rest), context.NewEventContext(nil, nil))
 
 	// func ServiceHandler(ctx, request) (response, error)
 	// generated code
-	OnSubmission(ctx, &cb.EventWhere{}, &cb.EventRecorder{Name: "EventA"}, app)
+	app1 := new(cb.EventMessage).SetMessage("received request from %s").SetPaths([]*cb.Path{cb.Test_Path_Rest_From})
+	OnSubmission(ctx, &cb.EventWhere{}, &cb.EventRecorder{Name: "EventA-starts"}, app1)
+	//t.Logf("%+v", ctx.GetEventContext())
+
 	// application
+	app2 := new(cb.EventMessage).SetMessage("something happened")
+	OnSubmission(ctx, &cb.EventWhere{}, &cb.EventRecorder{Name: "EventA-abcdef"}, app2)
+	//t.Logf("%+v", ctx.GetEventContext())
 
-	time.Sleep(public.ENV_PROFILE_INTERVAL)
-
-	OnSubmission(ctx, &cb.EventWhere{}, &cb.EventRecorder{Name: "EventA"}, app)
+	app3 := new(cb.EventMessage).SetMessage("sent response to %s").SetPaths([]*cb.Path{cb.Test_Path_Rest_From})
+	OnSubmission(ctx, &cb.EventWhere{}, &cb.EventRecorder{Name: "EventA-ends"}, app3)
+	//t.Logf("%+v", ctx.GetEventContext())
 
 	time.Sleep(time.Second)
 }

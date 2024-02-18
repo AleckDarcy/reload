@@ -16,7 +16,7 @@ func TestObservationBus_Observation(t *testing.T) {
 	id := int64(2)
 	configure.ConfigureStore.SetConfigure(id, cfg2)
 
-	ctx := context.NewContext(context.NewRequestContext("rest", id, rest), nil)
+	ctx := context.NewContext(context.NewRequestContext("rest", id, rest), context.NewEventContext(nil, nil))
 	app := new(cb.EventMessage).SetMessage("received message from %s").SetPaths([]*cb.Path{path})
 
 	n := 100
@@ -62,9 +62,11 @@ func TestObservationBus_Reaction(t *testing.T) {
 	t.Log(ss)
 
 	reqCtx := context.NewRequestContext("rest", id, rest)
-	eveCtx := context.NewEventContext(nil, &cb.PrerequisiteSnapshot{
-		Value: []int64{0, 0, 0},
-		Acc:   false,
+	eveCtx := context.NewEventContext(nil, &cb.PrerequisiteSnapshots{
+		Snapshots: map[string]*cb.PrerequisiteSnapshot{
+			"EventD": {Value: []int64{0}},
+			"EventC": {Value: []int64{0, 0, 0}},
+		},
 	})
 	ctx := context.NewContext(reqCtx, eveCtx)
 	app := new(cb.EventMessage).SetMessage("received message from %s").SetPaths([]*cb.Path{path})

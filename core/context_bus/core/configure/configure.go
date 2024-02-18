@@ -69,7 +69,12 @@ func (s *configureStore) GetConfigure(id int64) *Configure {
 	cfg := s.configures[id]
 	s.lock.RUnlock()
 
-	return cfg
+	if cfg != nil {
+		return cfg
+	}
+
+	// return default Configure
+	return &Configure{}
 }
 
 func (c *Configure) InitializeSnapshots() *cb.PrerequisiteSnapshots {
@@ -82,15 +87,15 @@ func (c *Configure) InitializeSnapshots() *cb.PrerequisiteSnapshots {
 	return &cb.PrerequisiteSnapshots{Snapshots: ss}
 }
 
-func (c *Configure) UpdateSnapshots(name string, ss *cb.PrerequisiteSnapshots) {
+func (c *Configure) UpdateSnapshots(name string, ss *cb.PrerequisiteSnapshots) *cb.PrerequisiteSnapshots {
 	racs, ok := c.ReactionIndex[name]
-	if !ok {
-		return
+	if ok {
+		for _, rac := range racs {
+			rac.PreTree.UpdateSnapshot(name, (*reaction.PrerequisiteSnapshot)(ss.Snapshots[rac.Name]))
+		}
 	}
 
-	for _, rac := range racs {
-		rac.PreTree.UpdateSnapshot(name, (*reaction.PrerequisiteSnapshot)(ss.Snapshots[rac.Name]))
-	}
+	return ss
 }
 
 func (c *Configure) GetObservationConfigure(name string) *observation.Configure {

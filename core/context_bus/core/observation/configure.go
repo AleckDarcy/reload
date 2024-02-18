@@ -13,11 +13,11 @@ import (
 // Do functions
 // finalize observation
 
-func (c *Configure) Do(er *cb.EventRepresentation) {
-	(*LoggingConfigure)(c.Logging).Do(er)
-	(*TracingConfigure)(c.Tracing).Do(er)
+func (c *Configure) Do(ed *cb.EventData) {
+	(*LoggingConfigure)(c.Logging).Do(ed)
+	(*TracingConfigure)(c.Tracing).Do(ed)
 	for _, metric := range c.Metrics {
-		(*MetricsConfigure)(metric).Do(er)
+		(*MetricsConfigure)(metric).Do(ed)
 	}
 }
 
@@ -31,10 +31,12 @@ func (c *StackTraceConfigure) Do() {
 
 }
 
-func (c *LoggingConfigure) Do(er *cb.EventRepresentation) interface{} {
+func (c *LoggingConfigure) Do(ed *cb.EventData) interface{} {
 	if c == nil {
 		return nil
 	}
+
+	er := ed.Event
 
 	e := newEvent()
 	e.buf = encoder.JSONEncoder.BeginObject(e.buf)
@@ -96,15 +98,31 @@ func (c *LoggingConfigure) Do(er *cb.EventRepresentation) interface{} {
 	return str
 }
 
-func (c *TracingConfigure) Do(er *cb.EventRepresentation) {
+func (c *TracingConfigure) Do(ed *cb.EventData) {
 	if c == nil {
 		return
 	}
 }
 
-func (c *MetricsConfigure) Do(er *cb.EventRepresentation) {
+func (c *MetricsConfigure) Do(ed *cb.EventData) {
 	if c == nil {
 		return
+	}
+
+	switch c.Type {
+	case cb.MetricType_Counter:
+		fmt.Printf("todo Counter(\"%s\")\n", c.Name)
+	case cb.MetricType_Gauge:
+		fmt.Println("todo MetricsConfigure do", c.Name)
+	case cb.MetricType_Histogram:
+		start := ed.PrevEventData
+		for start.PrevEventData != nil {
+			start = start.PrevEventData
+		}
+		fmt.Printf("todo Histogram(\"%s\")=%d (from %s to %s)\n",
+			c.Name, ed.Event.When.Time-start.Event.When.Time, start.Event.Recorder.Name, ed.Event.Recorder.Name)
+	case cb.MetricType_Summery:
+		fmt.Println("todo MetricsConfigure do", c.Name)
 	}
 }
 

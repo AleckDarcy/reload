@@ -5,8 +5,8 @@ import (
 	cb "github.com/AleckDarcy/reload/core/context_bus/proto"
 	"github.com/AleckDarcy/reload/core/context_bus/public"
 
-	"fmt"
 	"runtime"
+	"sync/atomic"
 	"time"
 )
 
@@ -19,11 +19,16 @@ type Payload struct {
 type observationBus struct {
 	queue  *LockFreeQueue
 	signal chan struct{}
+	eveID  uint64
 }
 
 var Bus = &observationBus{
 	queue:  NewLockFreeQueue(),
 	signal: make(chan struct{}, 1),
+}
+
+func (b *observationBus) NewEventID() uint64 {
+	return atomic.AddUint64(&b.eveID, 1)
 }
 
 func (b *observationBus) OnSubmit(cfgID int64, ed *cb.EventData) {
@@ -35,7 +40,7 @@ func (b *observationBus) OnSubmit(cfgID int64, ed *cb.EventData) {
 	// try to invoke
 	select {
 	case b.signal <- struct{}{}:
-		fmt.Println("notified")
+		// fmt.Println("notified")
 		// message sent
 	default:
 		// fmt.Println("failed")
@@ -53,7 +58,7 @@ func (b *observationBus) doObservation() (cnt int) {
 		pay := v.(*Payload)
 		if cfg := configure.ConfigureStore.GetConfigure(pay.cfgID); cfg != nil {
 			if obs := cfg.GetObservationConfigure(pay.ed.Event.Recorder.Name); obs != nil {
-				obs.Do(pay.ed.Event)
+				obs.Do(pay.ed)
 			}
 		}
 
@@ -73,7 +78,8 @@ func (b *observationBus) Run(sig chan struct{}) {
 			cnt = b.doObservation()
 		}
 
-		fmt.Println("bus processed", cnt, "payloads")
+		_ = cnt
+		// fmt.Println("bus processed", cnt, "payloads")
 		runtime.Gosched()
 	}
 }

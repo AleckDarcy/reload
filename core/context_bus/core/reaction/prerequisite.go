@@ -18,12 +18,3 @@ func NewPrerequisiteTree(tree *cb.PrerequisiteTree) *PrerequisiteTree {
 
 	return t
 }
-
-func (t *PrerequisiteTree) Indexing() {
-	t.Index = map[string]*PrerequisiteNode{}
-	for _, node := range t.Nodes {
-		if node.Type == cb.PrerequisiteNodeType_PrerequisiteMessage_ {
-			t.Index[node.Message.Name] = (*PrerequisiteNode)(node)
-		}
-	}
-}

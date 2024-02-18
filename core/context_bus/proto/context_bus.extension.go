@@ -12,6 +12,14 @@ import (
 // Instances of ProtoBuffer messages come from both generated code (ensures non-null values) and Unmarshal(),
 // Make sure to check null values before taking operations.
 
+func (m *PrerequisiteSnapshots) GetPrerequisiteSnapshot(name string) *PrerequisiteSnapshot {
+	if m == nil || m.Snapshots == nil {
+		return nil
+	}
+
+	return m.Snapshots[name]
+}
+
 // Most methods are designed for js-style method chaining
 
 func (m *Attributes) Clone() *Attributes {

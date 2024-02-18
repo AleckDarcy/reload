@@ -34,23 +34,48 @@ func (c *RequestContext) GetEventMessage() *cb.EventMessage {
 
 // EventContext is the context associated with each observation
 type EventContext struct {
-	codebase *code_generator.CodeInfoBasic
-	snapshot *cb.PrerequisiteSnapshot
+	codebase         *code_generator.CodeInfoBasic
+	snapshots        *cb.PrerequisiteSnapshots
+	prevEventContext *EventContext // todo event-id
+	prevEventData    *cb.EventData // todo event-id
 }
 
-func NewEventContext(codebase *code_generator.CodeInfoBasic, snapshot *cb.PrerequisiteSnapshot) *EventContext {
+func NewEventContext(codebase *code_generator.CodeInfoBasic, snapshots *cb.PrerequisiteSnapshots) *EventContext {
 	return &EventContext{
-		codebase: codebase,
-		snapshot: snapshot,
+		codebase:  codebase,
+		snapshots: snapshots,
 	}
+}
+
+func (c *EventContext) SetCodeInfoBasic(codebase *code_generator.CodeInfoBasic) *EventContext {
+	c.codebase = codebase
+
+	return c
 }
 
 func (c *EventContext) GetCodeInfoBasic() *code_generator.CodeInfoBasic {
 	return c.codebase
 }
 
-func (c *EventContext) GetPrerequisiteSnapshot() *cb.PrerequisiteSnapshot {
-	return c.snapshot
+func (c *EventContext) SetPrerequisiteSnapshots(snapshots *cb.PrerequisiteSnapshots) *EventContext {
+	c.snapshots = snapshots
+
+	return c
+}
+
+func (c *EventContext) GetPrerequisiteSnapshots() *cb.PrerequisiteSnapshots {
+	return c.snapshots
+}
+
+func (c *EventContext) SetPrevEvent(eveCtx *EventContext, ed *cb.EventData) *EventContext {
+	c.prevEventContext = eveCtx
+	c.prevEventData = ed
+
+	return c
+}
+
+func (c *EventContext) GetPrevEvent() (*EventContext, *cb.EventData) {
+	return c.prevEventContext, c.prevEventData
 }
 
 type Context struct {
@@ -72,10 +97,9 @@ func (c *Context) GetRequestContext() *RequestContext {
 // SetRequestContext is written by network APIs on receiving requests. e.g., rest, rpc
 // contains the request-wise static values. e.g., session-id, token
 func (c *Context) SetRequestContext(reqCtx *RequestContext) *Context {
-	newC := *c
-	newC.reqCtx = reqCtx
+	c.reqCtx = reqCtx
 
-	return &newC
+	return c
 }
 
 func (c *Context) GetEventContext() *EventContext {
@@ -85,8 +109,7 @@ func (c *Context) GetEventContext() *EventContext {
 // SetEventContext is written by generated code when user or library submit their observations
 // contains the static code base information
 func (c *Context) SetEventContext(eveCtx *EventContext) *Context {
-	newC := *c
-	newC.eveCtx = eveCtx
+	c.eveCtx = eveCtx
 
-	return &newC
+	return c
 }
