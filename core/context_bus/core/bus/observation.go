@@ -56,12 +56,14 @@ func OnSubmission(ctx *context.Context, where *cb.EventWhere, who *cb.EventRecor
 			newEveCtx := new(context.EventContext).SetPrerequisiteSnapshots(snapshots).SetPrevEvent(eveCtx, ed)
 			ctx.SetEventContext(newEveCtx)
 		case cb.ObservationType_ObservationInter:
-			// todo
+			newEveCtx := new(context.EventContext).SetPrerequisiteSnapshots(snapshots).SetPrevEvent(eveCtx, ed)
+			ctx.SetEventContext(newEveCtx)
+			fallthrough
 		case cb.ObservationType_ObservationEnd:
 			// finalize event pair
 			_, prevED := eveCtx.GetPrevEvent()
 			if prevED == nil {
-				fmt.Println("eveCtx.GetPrevEvent() get nil")
+				fmt.Errorf("eveCtx.GetPrevEvent() get nil")
 			}
 			ed.PrevEventData = prevED
 		}
@@ -81,5 +83,4 @@ func OnSubmission(ctx *context.Context, where *cb.EventWhere, who *cb.EventRecor
 
 	// push EventData to bus
 	Bus.OnSubmit(reqCtx.GetConfigureID(), ed)
-
 }

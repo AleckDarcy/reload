@@ -3,6 +3,7 @@ package context
 import (
 	"github.com/AleckDarcy/reload/core/context_bus/code_generator"
 	cb "github.com/AleckDarcy/reload/core/context_bus/proto"
+	"testing"
 )
 
 // RequestContext is inter-service message context
@@ -38,6 +39,8 @@ type EventContext struct {
 	snapshots        *cb.PrerequisiteSnapshots
 	prevEventContext *EventContext // todo event-id
 	prevEventData    *cb.EventData // todo event-id
+
+	// todo uuid for inter-service communication
 }
 
 func NewEventContext(codebase *code_generator.CodeInfoBasic, snapshots *cb.PrerequisiteSnapshots) *EventContext {
@@ -104,6 +107,15 @@ func (c *Context) SetRequestContext(reqCtx *RequestContext) *Context {
 
 func (c *Context) GetEventContext() *EventContext {
 	return c.eveCtx
+}
+
+func (c *Context) PrintPrevEventData(t *testing.T) {
+	prev := c.eveCtx.prevEventData
+	for prev != nil {
+		t.Logf("%+v", prev.Event.Recorder.Name)
+		prev = prev.PrevEventData
+	}
+	t.Log()
 }
 
 // SetEventContext is written by generated code when user or library submit their observations

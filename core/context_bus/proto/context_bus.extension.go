@@ -401,3 +401,25 @@ func (m *EventRepresentation) WithWhat(what *EventWhat) *EventWhat {
 
 	return m.What
 }
+
+func (m *EventData) GetPreviousEventData(name string) *EventData {
+	prev := m.PrevEventData
+	if prev == nil {
+		// todo not found
+		fmt.Println("todo not found")
+	}
+	found := prev.Event.Recorder.Name == name
+	for !found && prev != nil {
+		if prev.Event.Recorder.Name == name {
+			found = true
+			break
+		}
+		prev = prev.PrevEventData
+	}
+
+	if found {
+		return prev
+	}
+
+	return nil
+}

@@ -181,7 +181,9 @@ message LoggingConfigure {
 }
 
 message TracingConfigure {
-    repeated AttributeConfigure attrs = 1;
+    string name                       = 1;
+    string prev_name                  = 2; // event pair
+    repeated AttributeConfigure attrs = 3;
 }
 
 enum MetricType {
@@ -190,13 +192,14 @@ enum MetricType {
     Counter = 1;
     Gauge = 2;
     Histogram = 3;
-    Summery = 4;
+    Summary = 4;
 }
 
 message MetricsConfigure {
-    MetricType type    = 1;
-    string name        = 2;
-    repeated Path tags = 3;
+    MetricType type                   = 1;
+    string name                       = 2;
+    string prev_name                  = 3; // event pair
+    repeated AttributeConfigure attrs = 4;
 }
 
 enum ObservationType {

@@ -102,6 +102,13 @@ func (c *TracingConfigure) Do(ed *cb.EventData) {
 	if c == nil {
 		return
 	}
+
+	if prev := ed.GetPreviousEventData(c.PrevName); prev != nil {
+		fmt.Printf("todo span(\"%s\")=%d (from %s to %s)\n",
+			c.PrevName, ed.Event.When.Time-prev.Event.When.Time, prev.Event.Recorder.Name, ed.Event.Recorder.Name)
+	} else {
+		fmt.Println("previous event not found", c.PrevName)
+	}
 }
 
 func (c *MetricsConfigure) Do(ed *cb.EventData) {
@@ -115,13 +122,13 @@ func (c *MetricsConfigure) Do(ed *cb.EventData) {
 	case cb.MetricType_Gauge:
 		fmt.Println("todo MetricsConfigure do", c.Name)
 	case cb.MetricType_Histogram:
-		start := ed.PrevEventData
-		for start.PrevEventData != nil {
-			start = start.PrevEventData
+		if prev := ed.GetPreviousEventData(c.PrevName); prev != nil {
+			fmt.Printf("todo Histogram(\"%s\")=%d (from %s to %s)\n",
+				c.Name, ed.Event.When.Time-prev.Event.When.Time, prev.Event.Recorder.Name, ed.Event.Recorder.Name)
+		} else {
+			fmt.Println("previous event not found", c.PrevName)
 		}
-		fmt.Printf("todo Histogram(\"%s\")=%d (from %s to %s)\n",
-			c.Name, ed.Event.When.Time-start.Event.When.Time, start.Event.Recorder.Name, ed.Event.Recorder.Name)
-	case cb.MetricType_Summery:
+	case cb.MetricType_Summary:
 		fmt.Println("todo MetricsConfigure do", c.Name)
 	}
 }
