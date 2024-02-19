@@ -9,6 +9,14 @@ var Test_EventMessage_Rest = &EventMessage{
 				Type: AttributeValueType_AttributeValueStr,
 				Str:  "SenderA",
 			},
+			"method": {
+				Type: AttributeValueType_AttributeValueStr,
+				Str:  "POST",
+			},
+			"handler": {
+				Type: AttributeValueType_AttributeValueStr,
+				Str:  "/request_b",
+			},
 			"key": {
 				Type: AttributeValueType_AttributeValueStr,
 				Str:  "This a string attribute",

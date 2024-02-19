@@ -104,8 +104,8 @@ func (c *TracingConfigure) Do(ed *cb.EventData) {
 	}
 
 	if prev := ed.GetPreviousEventData(c.PrevName); prev != nil {
-		fmt.Printf("todo span(\"%s\")=%d (from %s to %s)\n",
-			c.PrevName, ed.Event.When.Time-prev.Event.When.Time, prev.Event.Recorder.Name, ed.Event.Recorder.Name)
+		fmt.Printf("todo tracing span(\"%s\")=%d (from %s to %s)\n",
+			c.Name, ed.Event.When.Time-prev.Event.When.Time, prev.Event.Recorder.Name, ed.Event.Recorder.Name)
 	} else {
 		fmt.Println("previous event not found", c.PrevName)
 	}
@@ -116,15 +116,26 @@ func (c *MetricsConfigure) Do(ed *cb.EventData) {
 		return
 	}
 
+	labels := DoTag(c.Attrs, ed.Event)
+
 	switch c.Type {
 	case cb.MetricType_Counter:
-		fmt.Printf("todo Counter(\"%s\")\n", c.Name)
+		if len(labels) != 0 {
+			fmt.Printf("todo metrics Counter(\"%s\", %s)\n", c.Name, labels)
+		} else {
+			fmt.Printf("todo metrics Counter(\"%s\")\n", c.Name)
+		}
 	case cb.MetricType_Gauge:
 		fmt.Println("todo MetricsConfigure do", c.Name)
 	case cb.MetricType_Histogram:
 		if prev := ed.GetPreviousEventData(c.PrevName); prev != nil {
-			fmt.Printf("todo Histogram(\"%s\")=%d (from %s to %s)\n",
-				c.Name, ed.Event.When.Time-prev.Event.When.Time, prev.Event.Recorder.Name, ed.Event.Recorder.Name)
+			if len(labels) != 0 {
+				fmt.Printf("todo metrics Histogram(\"%s\", %s)=%d (from %s to %s)\n",
+					c.Name, labels, ed.Event.When.Time-prev.Event.When.Time, prev.Event.Recorder.Name, ed.Event.Recorder.Name)
+			} else {
+				fmt.Printf("todo metrics Histogram(\"%s\", {})=%d (from %s to %s)\n",
+					c.Name, ed.Event.When.Time-prev.Event.When.Time, prev.Event.Recorder.Name, ed.Event.Recorder.Name)
+			}
 		} else {
 			fmt.Println("previous event not found", c.PrevName)
 		}

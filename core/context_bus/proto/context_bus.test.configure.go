@@ -6,8 +6,11 @@ var Test_Path_Not_Found = NewPath(PathType_Library, []string{"__not__", "__found
 // Test_Path_Rest_From rest.from
 var Test_Path_Rest_From = NewPath(PathType_Library, []string{"rest", "from"})
 
-// Test_Path_Rest_From rest.to
-var Test_Path_Rest_To = NewPath(PathType_Library, []string{"rest", "to"})
+// Test_Path_Rest_Method rest.method
+var Test_Path_Rest_Method = NewPath(PathType_Library, []string{"rest", "method"})
+
+// Test_Path_Rest_Handler rest.handler
+var Test_Path_Rest_Handler = NewPath(PathType_Library, []string{"rest", "handler"})
 
 // Test_Path_Rest_Key rest.key
 var Test_Path_Rest_Key = NewPath(PathType_Library, []string{"rest", "key"})
@@ -35,6 +38,12 @@ var Test_AttributeConfigure_Lib1_Key11 = NewAttributeConfigure("lib1.key11", Tes
 
 // Test_AttributeConfigure_Rest_From tag["rest.from"] = val(rest.from)
 var Test_AttributeConfigure_Rest_From = NewAttributeConfigure("rest.from", Test_Path_Rest_From)
+
+// Test_AttributeConfigure_Rest_Method tag["rest.method"] = val(rest.method)
+var Test_AttributeConfigure_Rest_Method = NewAttributeConfigure("rest.method", Test_Path_Rest_Method)
+
+// Test_AttributeConfigure_Rest_Handler tag["rest.handler"] = val(rest.handler)
+var Test_AttributeConfigure_Rest_Handler = NewAttributeConfigure("rest.handler", Test_Path_Rest_Handler)
 
 // Test_AttributeConfigure_Rest_Key tag["rest.key"] = val(rest.key)
 var Test_AttributeConfigure_Rest_Key = NewAttributeConfigure("rest.key", Test_Path_Rest_Key)

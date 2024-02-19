@@ -78,6 +78,14 @@ func TestObservation(t *testing.T) {
 				},
 				Metrics: []*cb.MetricsConfigure{
 					{Type: cb.MetricType_Counter, Name: "cnt_EventA"},
+					{
+						Type: cb.MetricType_Counter,
+						Name: "api_restful_request_total",
+						Attrs: []*cb.AttributeConfigure{
+							cb.Test_AttributeConfigure_Rest_Method,
+							cb.Test_AttributeConfigure_Rest_Handler,
+						},
+					},
 				},
 			},
 			"EventA-abcdef": {
@@ -108,10 +116,19 @@ func TestObservation(t *testing.T) {
 					Out:   cb.LogOutType_Stdout,
 				},
 				Tracing: &cb.TracingConfigure{
+					Name:     "EventA",
 					PrevName: "EventA-starts",
 				},
 				Metrics: []*cb.MetricsConfigure{
-					{Type: cb.MetricType_Histogram, Name: "lat_HandlerA", PrevName: "EventA-starts"},
+					{
+						Type:     cb.MetricType_Histogram,
+						Name:     "lat_HandlerA",
+						PrevName: "EventA-starts",
+						Attrs: []*cb.AttributeConfigure{
+							cb.Test_AttributeConfigure_Rest_Method,
+							cb.Test_AttributeConfigure_Rest_Handler,
+						},
+					},
 				},
 			},
 		},
