@@ -72,9 +72,9 @@ func (b *observationBus) Run(sig chan struct{}) {
 		select {
 		case <-sig:
 			return
-		case <-b.signal:
+		case <-b.signal: // triggered by collector notification
 			cnt = b.doObservation()
-		case <-time.After(public.BUS_OBSERVATION_QUEUE_INTERVAL):
+		case <-time.After(public.BUS_OBSERVATION_QUEUE_INTERVAL): // triggered by timer
 			cnt = b.doObservation()
 		}
 

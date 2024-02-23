@@ -11,6 +11,45 @@ import (
 // and thus we will get a null value for the map (ptr = nil) after Unmarshal().
 // Instances of ProtoBuffer messages come from both generated code (ensures non-null values) and Unmarshal(),
 // Make sure to check null values before taking operations.
+// Most methods are designed for js-style method chaining
+
+func (m *PrerequisiteSnapshot) Clone() *PrerequisiteSnapshot {
+	if m == nil {
+		return nil
+	} else if m.Value == nil {
+		return &PrerequisiteSnapshot{}
+	}
+
+	n := &PrerequisiteSnapshot{
+		Value: make([]int64, len(m.Value)),
+		Acc:   m.Acc,
+	}
+
+	copy(n.Value, m.Value)
+
+	return n
+}
+
+func (m *PrerequisiteSnapshot) MergeOffset(src *PrerequisiteSnapshot) {
+	for i := 0; i < len(m.Value); i++ {
+		m.Value[i] += src.Value[i]
+	}
+}
+
+func (m *PrerequisiteSnapshots) Clone() *PrerequisiteSnapshots {
+	if m == nil {
+		return nil
+	} else if m.Snapshots == nil {
+		return &PrerequisiteSnapshots{}
+	}
+
+	n := &PrerequisiteSnapshots{Snapshots: make(map[string]*PrerequisiteSnapshot, len(m.Snapshots))}
+	for name, snapshot := range m.Snapshots {
+		n.Snapshots[name] = snapshot.Clone()
+	}
+
+	return n
+}
 
 func (m *PrerequisiteSnapshots) GetPrerequisiteSnapshot(name string) *PrerequisiteSnapshot {
 	if m == nil || m.Snapshots == nil {
@@ -20,7 +59,11 @@ func (m *PrerequisiteSnapshots) GetPrerequisiteSnapshot(name string) *Prerequisi
 	return m.Snapshots[name]
 }
 
-// Most methods are designed for js-style method chaining
+func (m *PrerequisiteSnapshots) MergeOffset(src *PrerequisiteSnapshots) {
+	for name, dstS := range m.Snapshots {
+		dstS.MergeOffset(src.Snapshots[name])
+	}
+}
 
 func (m *Attributes) Clone() *Attributes {
 	if m == nil {

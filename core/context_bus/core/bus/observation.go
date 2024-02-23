@@ -44,8 +44,13 @@ func OnSubmission(ctx *context.Context, where *cb.EventWhere, who *cb.EventRecor
 
 	cfg := configure.ConfigureStore.GetConfigure(reqCtx.GetConfigureID())
 	snapshots := cfg.UpdateSnapshots(who.GetName(), eveCtx.GetPrerequisiteSnapshots())
+	offset := eveCtx.GetOffsetSnapshots()
+	if offset != nil {
+		offset = cfg.UpdateSnapshots(who.GetName(), offset)
+	}
 
 	if obs := cfg.GetObservationConfigure(who.GetName()); obs != nil {
+		// todo check stacktrace configure
 		// update EventMetadata
 		switch obs.Type {
 		case cb.ObservationType_ObservationSingle:
@@ -53,10 +58,10 @@ func OnSubmission(ctx *context.Context, where *cb.EventWhere, who *cb.EventRecor
 
 		case cb.ObservationType_ObservationStart:
 			// initialize event pair
-			newEveCtx := new(context.EventContext).SetPrerequisiteSnapshots(snapshots).SetPrevEvent(eveCtx, ed)
+			newEveCtx := new(context.EventContext).SetPrerequisiteSnapshots(snapshots).SetOffsetSnapshots(offset).SetPrevEvent(eveCtx, ed)
 			ctx.SetEventContext(newEveCtx)
 		case cb.ObservationType_ObservationInter:
-			newEveCtx := new(context.EventContext).SetPrerequisiteSnapshots(snapshots).SetPrevEvent(eveCtx, ed)
+			newEveCtx := new(context.EventContext).SetPrerequisiteSnapshots(snapshots).SetOffsetSnapshots(offset).SetPrevEvent(eveCtx, ed)
 			ctx.SetEventContext(newEveCtx)
 			fallthrough
 		case cb.ObservationType_ObservationEnd:
@@ -77,6 +82,14 @@ func OnSubmission(ctx *context.Context, where *cb.EventWhere, who *cb.EventRecor
 
 			} else {
 				fmt.Println("prerequisites accomplished")
+
+				switch rac.Type {
+				case cb.ReactionType_FaultDelay:
+					params := rac.Params.(*cb.ReactionConfigure_FaultDelay).FaultDelay
+
+					time.Sleep(time.Duration(params.Ms) * time.Millisecond)
+					fmt.Println("slept for", params.Ms, "ms")
+				}
 			}
 		}
 	}

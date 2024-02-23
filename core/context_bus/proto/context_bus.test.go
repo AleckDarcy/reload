@@ -15,7 +15,7 @@ var Test_EventMessage_Rest = &EventMessage{
 			},
 			"handler": {
 				Type: AttributeValueType_AttributeValueStr,
-				Str:  "/request_b",
+				Str:  "/handler1",
 			},
 			"key": {
 				Type: AttributeValueType_AttributeValueStr,

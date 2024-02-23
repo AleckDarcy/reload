@@ -98,6 +98,18 @@ func (c *Configure) UpdateSnapshots(name string, ss *cb.PrerequisiteSnapshots) *
 	return ss
 }
 
+func (c *Configure) UpdateBothSnapshots(name string, ss, offset *cb.PrerequisiteSnapshots) (*cb.PrerequisiteSnapshots, *cb.PrerequisiteSnapshots) {
+	racs, ok := c.ReactionIndex[name]
+	if ok {
+		for _, rac := range racs {
+			rac.PreTree.UpdateSnapshot(name, (*reaction.PrerequisiteSnapshot)(ss.Snapshots[rac.Name]))
+			rac.PreTree.UpdateSnapshot(name, (*reaction.PrerequisiteSnapshot)(offset.Snapshots[rac.Name]))
+		}
+	}
+
+	return ss, offset
+}
+
 func (c *Configure) GetObservationConfigure(name string) *observation.Configure {
 	if c.Observations == nil {
 		return nil

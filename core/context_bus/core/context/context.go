@@ -1,7 +1,6 @@
 package context
 
 import (
-	"github.com/AleckDarcy/reload/core/context_bus/code_generator"
 	cb "github.com/AleckDarcy/reload/core/context_bus/proto"
 	"testing"
 )
@@ -35,28 +34,29 @@ func (c *RequestContext) GetEventMessage() *cb.EventMessage {
 
 // EventContext is the context associated with each observation
 type EventContext struct {
-	codebase         *code_generator.CodeInfoBasic
+	codebase         *cb.CodeBaseInfo
 	snapshots        *cb.PrerequisiteSnapshots
+	offsetSnapshots  *cb.PrerequisiteSnapshots
 	prevEventContext *EventContext // todo event-id
 	prevEventData    *cb.EventData // todo event-id
 
 	// todo uuid for inter-service communication
 }
 
-func NewEventContext(codebase *code_generator.CodeInfoBasic, snapshots *cb.PrerequisiteSnapshots) *EventContext {
+func NewEventContext(codebase *cb.CodeBaseInfo, snapshots *cb.PrerequisiteSnapshots) *EventContext {
 	return &EventContext{
 		codebase:  codebase,
 		snapshots: snapshots,
 	}
 }
 
-func (c *EventContext) SetCodeInfoBasic(codebase *code_generator.CodeInfoBasic) *EventContext {
+func (c *EventContext) SetCodeInfoBasic(codebase *cb.CodeBaseInfo) *EventContext {
 	c.codebase = codebase
 
 	return c
 }
 
-func (c *EventContext) GetCodeInfoBasic() *code_generator.CodeInfoBasic {
+func (c *EventContext) GetCodeInfoBasic() *cb.CodeBaseInfo {
 	return c.codebase
 }
 
@@ -68,6 +68,16 @@ func (c *EventContext) SetPrerequisiteSnapshots(snapshots *cb.PrerequisiteSnapsh
 
 func (c *EventContext) GetPrerequisiteSnapshots() *cb.PrerequisiteSnapshots {
 	return c.snapshots
+}
+
+func (c *EventContext) SetOffsetSnapshots(snapshots *cb.PrerequisiteSnapshots) *EventContext {
+	c.offsetSnapshots = snapshots
+
+	return c
+}
+
+func (c *EventContext) GetOffsetSnapshots() *cb.PrerequisiteSnapshots {
+	return c.offsetSnapshots
 }
 
 func (c *EventContext) SetPrevEvent(eveCtx *EventContext, ed *cb.EventData) *EventContext {

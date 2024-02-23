@@ -28,6 +28,7 @@ func BenchmarkName(b *testing.B) {
 
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
-		b.Log((*LoggingConfigure)(cfg).Do(er))
+		//b.Log((*LoggingConfigure)(cfg).Do(&cb.EventData{Event: er}))
+		(*LoggingConfigure)(cfg).Do(&cb.EventData{Event: er})
 	}
 }

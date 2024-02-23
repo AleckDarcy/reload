@@ -71,8 +71,10 @@ func (c *LoggingConfigure) Do(ed *cb.EventData) interface{} {
 	// do tag
 	if len(c.Attrs) != 0 {
 		e.buf = encoder.JSONEncoder.AppendKey(e.buf, "tags")
-		tags := DoTag(c.Attrs, er)
-		e.buf = encoder.JSONEncoder.AppendTags(e.buf, tags)
+		e.buf = DoTagFaster(e.buf, c.Attrs, er)
+
+		//tags := DoTag(c.Attrs, er)
+		//e.buf = encoder.JSONEncoder.AppendTags(e.buf, tags)
 	}
 
 	e.buf = encoder.JSONEncoder.EndObject(e.buf)
@@ -104,8 +106,15 @@ func (c *TracingConfigure) Do(ed *cb.EventData) {
 	}
 
 	if prev := ed.GetPreviousEventData(c.PrevName); prev != nil {
-		fmt.Printf("todo tracing span(\"%s\")=%d (from %s to %s)\n",
-			c.Name, ed.Event.When.Time-prev.Event.When.Time, prev.Event.Recorder.Name, ed.Event.Recorder.Name)
+		tags := DoTag(c.Attrs, ed.Event)
+		if len(tags) != 0 {
+			fmt.Printf("todo tracing span(\"%s\", %s)=%d (from %s to %s)\n",
+				c.Name, tags, ed.Event.When.Time-prev.Event.When.Time, prev.Event.Recorder.Name, ed.Event.Recorder.Name)
+
+		} else {
+			fmt.Printf("todo tracing span(\"%s\")=%d (from %s to %s)\n",
+				c.Name, ed.Event.When.Time-prev.Event.When.Time, prev.Event.Recorder.Name, ed.Event.Recorder.Name)
+		}
 	} else {
 		fmt.Println("previous event not found", c.PrevName)
 	}
@@ -156,4 +165,19 @@ func DoTag(cfg []*cb.AttributeConfigure, er *cb.EventRepresentation) map[string]
 	}
 
 	return tags
+}
+
+func DoTagFaster(dst []byte, cfg []*cb.AttributeConfigure, er *cb.EventRepresentation) []byte {
+	dst = encoder.JSONEncoder.BeginObject(dst)
+
+	for _, path := range cfg {
+		str, err := er.What.GetValue(path.Path)
+
+		if err == nil {
+			dst = encoder.JSONEncoder.AppendKey(dst, path.Name)
+			dst = encoder.JSONEncoder.AppendString(dst, str)
+		}
+	}
+
+	return dst
 }
