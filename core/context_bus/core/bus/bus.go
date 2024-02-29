@@ -2,6 +2,7 @@ package bus
 
 import (
 	"github.com/AleckDarcy/reload/core/context_bus/core/configure"
+	"github.com/AleckDarcy/reload/core/context_bus/core/observation"
 	cb "github.com/AleckDarcy/reload/core/context_bus/proto"
 	"github.com/AleckDarcy/reload/core/context_bus/public"
 
@@ -48,7 +49,7 @@ func (b *observationBus) OnSubmit(cfgID int64, ed *cb.EventData) {
 	}
 }
 
-func (b *observationBus) doObservation() (cnt int) {
+func (b *observationBus) doObservation() (cnt, cntL, cntT, cntM int) {
 	for {
 		v, ok := b.queue.Dequeue()
 		if !ok {
@@ -58,7 +59,10 @@ func (b *observationBus) doObservation() (cnt int) {
 		pay := v.(*Payload)
 		if cfg := configure.ConfigureStore.GetConfigure(pay.cfgID); cfg != nil {
 			if obs := cfg.GetObservationConfigure(pay.ed.Event.Recorder.Name); obs != nil {
-				obs.Do(pay.ed)
+				cntL_, cntT_, cntM_ := obs.Do(pay.ed)
+				cntL += cntL_
+				cntT += cntT_
+				cntM += cntM_
 			}
 		}
 
@@ -66,20 +70,30 @@ func (b *observationBus) doObservation() (cnt int) {
 	}
 }
 
+type observationCounter struct {
+	payload int
+}
+
 func (b *observationBus) Run(sig chan struct{}) {
 	for {
-		cnt := 0
+		cnt, cntL, cntT, cntM := 0, 0, 0, 0
 		select {
 		case <-sig:
 			return
 		case <-b.signal: // triggered by collector notification
-			cnt = b.doObservation()
+			cnt, cntL, cntT, cntM = b.doObservation()
 		case <-time.After(public.BUS_OBSERVATION_QUEUE_INTERVAL): // triggered by timer
-			cnt = b.doObservation()
+			cnt, cntL, cntT, cntM = b.doObservation()
 		}
 
-		_ = cnt
+		if cntM != 0 {
+			observation.MetricVecStore.Push(observation.PrometheusPusher)
+		}
+
 		// fmt.Println("bus processed", cnt, "payloads")
+
+		_, _, _, _ = cnt, cntL, cntT, cntM
+
 		runtime.Gosched()
 	}
 }

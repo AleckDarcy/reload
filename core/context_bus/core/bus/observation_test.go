@@ -4,10 +4,12 @@ import (
 	"github.com/AleckDarcy/reload/core/context_bus/background"
 	"github.com/AleckDarcy/reload/core/context_bus/core/configure"
 	"github.com/AleckDarcy/reload/core/context_bus/core/context"
+	"github.com/AleckDarcy/reload/core/context_bus/core/observation"
 	cb "github.com/AleckDarcy/reload/core/context_bus/proto"
 	"github.com/AleckDarcy/reload/core/context_bus/public"
 
 	"github.com/google/uuid"
+	"github.com/prometheus/client_golang/prometheus"
 
 	"errors"
 	"fmt"
@@ -182,9 +184,68 @@ func sendResponse(rsp *response) error {
 	return nil
 }
 
+var prometheusCfg = &cb.PrometheusConfiguration{
+	Counters: []*cb.PrometheusOpts{
+		{
+			Id:          0,
+			Namespace:   "test_application",
+			Subsystem:   "test_service",
+			Name:        "http_request_count",
+			Help:        "",
+			ConstLabels: nil,
+			LabelNames:  []string{"handler", "method"},
+		},
+	},
+	Gauges: []*cb.PrometheusOpts{
+		{
+			Id:          0,
+			Namespace:   "test_application",
+			Subsystem:   "test_service",
+			Name:        "cpu_usage",
+			Help:        "",
+			ConstLabels: nil,
+			LabelNames:  nil,
+		},
+	},
+	Histograms: []*cb.PrometheusHistogramOpts{
+		{
+			Id:          0,
+			Namespace:   "test_application",
+			Subsystem:   "test_service",
+			Name:        "http_request_latency",
+			Help:        "",
+			ConstLabels: nil,
+			Buckets:     []float64{1, 10, 100, 1000, 10000},
+			LabelNames:  []string{"handler", "method"},
+		},
+	},
+	Summaries: []*cb.PrometheusSummaryOpts{
+		{
+			Id:          0,
+			Namespace:   "test_application",
+			Subsystem:   "test_service",
+			Name:        "http_request_latency",
+			Help:        "",
+			ConstLabels: nil,
+			Objectives: []*cb.PrometheusSummaryObjective{
+				{Key: 0.5, Value: 0.05},
+				{Key: 0.9, Value: 0.01},
+				{Key: 0.99, Value: 0.001},
+			},
+			MaxAge:     int64(prometheus.DefMaxAge),
+			AgeBuckets: prometheus.DefAgeBuckets,
+			BufCap:     prometheus.DefBufCap,
+			LabelNames: []string{"handler", "method"},
+		},
+	},
+}
+
 func TestObservation(t *testing.T) {
 	background.Run()
 	go Bus.Run(nil)
+
+	// set MetricVecStore
+	observation.MetricVecStore.Set(prometheusCfg)
 
 	var cfg4 = &cb.Configure{
 		Observations: map[string]*cb.ObservationConfigure{
@@ -195,7 +256,14 @@ func TestObservation(t *testing.T) {
 					Out:   cb.LogOutType_Stdout,
 				},
 				Metrics: []*cb.MetricsConfigure{
-					{Type: cb.MetricType_Counter, Name: "cnt_EventA"},
+					{
+						Type: cb.MetricType_Counter,
+						Name: "cnt_EventA",
+						Attrs: []*cb.AttributeConfigure{
+							cb.Test_AttributeConfigure_Rest_Method,
+							cb.Test_AttributeConfigure_Rest_Handler,
+						},
+					},
 					{
 						Type: cb.MetricType_Counter,
 						Name: "api_restful_request_total",
@@ -224,7 +292,15 @@ func TestObservation(t *testing.T) {
 					Out: cb.LogOutType_Stdout,
 				},
 				Metrics: []*cb.MetricsConfigure{
-					{Type: cb.MetricType_Histogram, Name: "lat_RequestC", PrevName: "EventA-bcdefg"},
+					{
+						Type:     cb.MetricType_Histogram,
+						Name:     "lat_RequestC",
+						PrevName: "EventA-bcdefg",
+						Attrs: []*cb.AttributeConfigure{
+							cb.Test_AttributeConfigure_Rest_Method,
+							cb.Test_AttributeConfigure_Rest_Handler,
+						},
+					},
 				},
 			},
 			"EventA-ends": {
@@ -260,7 +336,14 @@ func TestObservation(t *testing.T) {
 					Out:   cb.LogOutType_Stdout,
 				},
 				Metrics: []*cb.MetricsConfigure{
-					{Type: cb.MetricType_Counter, Name: "cnt_EventB"},
+					{
+						Type: cb.MetricType_Counter,
+						Name: "cnt_EventB",
+						Attrs: []*cb.AttributeConfigure{
+							cb.Test_AttributeConfigure_Rest_Method,
+							cb.Test_AttributeConfigure_Rest_Handler,
+						},
+					},
 					{
 						Type: cb.MetricType_Counter,
 						Name: "api_restful_request_total",

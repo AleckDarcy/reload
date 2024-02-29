@@ -1,7 +1,11 @@
 package observation
 
 import (
+	"fmt"
 	cb "github.com/AleckDarcy/reload/core/context_bus/proto"
+	"io"
+	"net/http"
+	"net/http/httptest"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/push"
@@ -9,7 +13,22 @@ import (
 	"sync"
 )
 
-type vecStore struct {
+var prometheusFakeGateway = httptest.NewServer(
+	http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var err error
+		lastBody, err := io.ReadAll(r.Body)
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Printf("prometheus fake gateway received payload, len %d, body %v\n", len(lastBody), lastBody)
+		w.WriteHeader(http.StatusOK)
+	}),
+)
+
+var PrometheusPusher = push.New(prometheusFakeGateway.URL, "test")
+
+type metricVecStore struct {
 	lock sync.Mutex
 
 	counters   map[int64]*counterVecWrap
@@ -23,22 +42,22 @@ type vecStore struct {
 	pushSummaries  []int64
 }
 
-var VecStore = &vecStore{
+var MetricVecStore = &metricVecStore{
 	counters:   map[int64]*counterVecWrap{},
 	gauges:     map[int64]*gaugeVecWrap{},
 	histograms: map[int64]*histogramVecWrap{},
 	summaries:  map[int64]*summaryVecWrap{},
 }
 
-func (s *vecStore) Lock() {
+func (s *metricVecStore) Lock() {
 	s.lock.Lock()
 }
 
-func (s *vecStore) Unlock() {
+func (s *metricVecStore) Unlock() {
 	s.lock.Unlock()
 }
 
-func (s *vecStore) Set(cfg *cb.PrometheusConfiguration) {
+func (s *metricVecStore) Set(cfg *cb.PrometheusConfiguration) {
 	s.lock.Lock()
 
 	for _, opt := range cfg.Counters {
@@ -80,7 +99,7 @@ func (s *vecStore) Set(cfg *cb.PrometheusConfiguration) {
 	s.lock.Unlock()
 }
 
-func (s *vecStore) resetWrap() {
+func (s *metricVecStore) resetWrap() {
 	for _, wrap := range s.counters {
 		prometheus.Unregister(wrap.vec)
 	}
@@ -98,14 +117,30 @@ func (s *vecStore) resetWrap() {
 	}
 }
 
-func (s *vecStore) resetPush() {
+func (s *metricVecStore) resetPush() {
+	for _, id := range s.pushCounters {
+		s.counters[id].Pushed()
+	}
+
+	for _, id := range s.pushGauges {
+		s.gauges[id].Pushed()
+	}
+
+	for _, id := range s.pushHistograms {
+		s.histograms[id].Pushed()
+	}
+
+	for _, id := range s.pushSummaries {
+		s.summaries[id].Pushed()
+	}
+
 	s.pushCounters = s.pushCounters[:0]
 	s.pushGauges = s.pushGauges[:0]
 	s.pushHistograms = s.pushHistograms[:0]
 	s.pushSummaries = s.pushSummaries[:0]
 }
 
-func (s *vecStore) Reset() {
+func (s *metricVecStore) Reset() {
 	s.lock.Lock()
 
 	s.resetWrap()
@@ -114,31 +149,30 @@ func (s *vecStore) Reset() {
 	s.lock.Unlock()
 }
 
-func (s *vecStore) Push(pusher push.Pusher) {
+func (s *metricVecStore) Push(pusher *push.Pusher) {
 	s.lock.Lock()
 
 	for _, id := range s.pushCounters {
 		wrap := s.counters[id]
 		pusher.Collector(wrap.vec)
-		wrap.Pushed()
 	}
 
 	for _, id := range s.pushGauges {
 		wrap := s.gauges[id]
 		pusher.Collector(wrap.vec)
-		wrap.Pushed()
 	}
 
 	for _, id := range s.pushHistograms {
 		wrap := s.histograms[id]
 		pusher.Collector(wrap.vec)
-		wrap.Pushed()
 	}
 
+	pusher.Push()
+
+	// todo summary won't push, don't know why
 	for _, id := range s.pushSummaries {
 		wrap := s.summaries[id]
 		pusher.Collector(wrap.vec)
-		wrap.Pushed()
 	}
 
 	s.resetPush()
@@ -146,11 +180,11 @@ func (s *vecStore) Push(pusher push.Pusher) {
 	s.lock.Unlock()
 }
 
-func (s *vecStore) setCounter(id int64, vec *counterVecWrap) {
+func (s *metricVecStore) setCounter(id int64, vec *counterVecWrap) {
 	s.counters[id] = vec
 }
 
-func (s *vecStore) getCounter(id int64) *prometheus.CounterVec {
+func (s *metricVecStore) getCounter(id int64) *prometheus.CounterVec {
 	if wrap := s.counters[id]; wrap != nil {
 		vec, pushFlag := wrap.GetVec()
 
@@ -164,15 +198,15 @@ func (s *vecStore) getCounter(id int64) *prometheus.CounterVec {
 	return nil
 }
 
-func (s *vecStore) deleteCounter(id int64) {
+func (s *metricVecStore) deleteCounter(id int64) {
 	delete(s.counters, id)
 }
 
-func (s *vecStore) setGauge(id int64, vec *gaugeVecWrap) {
+func (s *metricVecStore) setGauge(id int64, vec *gaugeVecWrap) {
 	s.gauges[id] = vec
 }
 
-func (s *vecStore) getGauge(id int64) *prometheus.GaugeVec {
+func (s *metricVecStore) getGauge(id int64) *prometheus.GaugeVec {
 	if wrap := s.gauges[id]; wrap != nil {
 		vec, pushFlag := wrap.GetVec()
 
@@ -186,15 +220,15 @@ func (s *vecStore) getGauge(id int64) *prometheus.GaugeVec {
 	return nil
 }
 
-func (s *vecStore) deleteGauge(id int64) {
+func (s *metricVecStore) deleteGauge(id int64) {
 	delete(s.gauges, id)
 }
 
-func (s *vecStore) setHistogram(id int64, vec *histogramVecWrap) {
+func (s *metricVecStore) setHistogram(id int64, vec *histogramVecWrap) {
 	s.histograms[id] = vec
 }
 
-func (s *vecStore) getHistogram(id int64) *prometheus.HistogramVec {
+func (s *metricVecStore) getHistogram(id int64) *prometheus.HistogramVec {
 	if wrap := s.histograms[id]; wrap != nil {
 		vec, pushFlag := wrap.GetVec()
 
@@ -208,15 +242,15 @@ func (s *vecStore) getHistogram(id int64) *prometheus.HistogramVec {
 	return nil
 }
 
-func (s *vecStore) deleteHistogram(id int64) {
+func (s *metricVecStore) deleteHistogram(id int64) {
 	delete(s.histograms, id)
 }
 
-func (s *vecStore) setSummary(id int64, vec *summaryVecWrap) {
+func (s *metricVecStore) setSummary(id int64, vec *summaryVecWrap) {
 	s.summaries[id] = vec
 }
 
-func (s *vecStore) getSummary(id int64) *prometheus.SummaryVec {
+func (s *metricVecStore) getSummary(id int64) *prometheus.SummaryVec {
 	if wrap := s.summaries[id]; wrap != nil {
 		vec, pushFlag := wrap.GetVec()
 
@@ -230,7 +264,7 @@ func (s *vecStore) getSummary(id int64) *prometheus.SummaryVec {
 	return nil
 }
 
-func (s *vecStore) deleteSummary(id int64) {
+func (s *metricVecStore) deleteSummary(id int64) {
 	delete(s.summaries, id)
 }
 

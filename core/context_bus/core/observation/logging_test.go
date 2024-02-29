@@ -7,7 +7,6 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"context"
-	"fmt"
 	"net/http"
 	"testing"
 	"time"
@@ -40,9 +39,7 @@ func ServiceHandlerAContextBus(ctx *cb_context.Context, req *http.Request) *http
 	what.WithLibrary("rest", rest)
 
 	logCfg := &LoggingConfigure{}
-	str := logCfg.Do(&cb.EventData{Event: &cb.EventRepresentation{When: &cb.EventWhen{Time: time.Now().UnixNano()}, What: what}})
-
-	fmt.Println(str)
+	logCfg.Do(&cb.EventData{Event: &cb.EventRepresentation{When: &cb.EventWhen{Time: time.Now().UnixNano()}, What: what}})
 
 	return &http.Response{}
 }
@@ -75,7 +72,5 @@ func TestLoggingConfigure(t *testing.T) {
 	what.WithLibrary("rest", rest)
 
 	logCfg := &LoggingConfigure{}
-	str := logCfg.Do(&cb.EventData{Event: &cb.EventRepresentation{When: &cb.EventWhen{Time: time.Now().UnixNano()}, What: what}})
-
-	fmt.Println(str)
+	logCfg.Do(&cb.EventData{Event: &cb.EventRepresentation{When: &cb.EventWhen{Time: time.Now().UnixNano()}, What: what}})
 }

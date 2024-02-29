@@ -9,30 +9,38 @@ import (
 	"time"
 )
 
-// Do functions
+// the Do function
 // finalize observation
 
-func (c *Configure) Do(ed *cb.EventData) {
-	(*LoggingConfigure)(c.Logging).Do(ed)
-	(*TracingConfigure)(c.Tracing).Do(ed)
+// Do function returns number of log, trace span and metric entries
+func (c *Configure) Do(ed *cb.EventData) (cntL, cntT, cntM int) {
+	cntL = (*LoggingConfigure)(c.Logging).Do(ed)
+	cntT = (*TracingConfigure)(c.Tracing).Do(ed)
+	cntM = len(c.Metrics)
 	for _, metric := range c.Metrics {
 		(*MetricsConfigure)(metric).Do(ed)
 	}
+
+	return
 }
 
 func (c *TimestampConfigure) Do() {
 	if c != nil {
+		// todo default
 		return
 	}
 }
 
 func (c *StackTraceConfigure) Do() {
-
+	if c != nil {
+		// todo default
+		return
+	}
 }
 
-func (c *LoggingConfigure) Do(ed *cb.EventData) interface{} {
+func (c *LoggingConfigure) Do(ed *cb.EventData) int {
 	if c == nil {
-		return nil
+		return 0
 	}
 
 	er := ed.Event
@@ -96,12 +104,12 @@ func (c *LoggingConfigure) Do(ed *cb.EventData) interface{} {
 		fmt.Fprintln(os.Stdout, str)
 	}
 
-	return str
+	return 1
 }
 
-func (c *TracingConfigure) Do(ed *cb.EventData) {
+func (c *TracingConfigure) Do(ed *cb.EventData) int {
 	if c == nil {
-		return
+		return 0
 	}
 
 	if prev := ed.GetPreviousEventData(c.PrevName); prev != nil {
@@ -109,25 +117,40 @@ func (c *TracingConfigure) Do(ed *cb.EventData) {
 		if len(tags) != 0 {
 			fmt.Printf("todo tracing span(\"%s\", %s)=%d (from %s to %s)\n",
 				c.Name, tags, ed.Event.When.Time-prev.Event.When.Time, prev.Event.Recorder.Name, ed.Event.Recorder.Name)
-
 		} else {
 			fmt.Printf("todo tracing span(\"%s\")=%d (from %s to %s)\n",
 				c.Name, ed.Event.When.Time-prev.Event.When.Time, prev.Event.Recorder.Name, ed.Event.Recorder.Name)
 		}
-	} else {
-		fmt.Println("previous event not found", c.PrevName)
+
+		// todo push span
+
+		return 1
 	}
+
+	fmt.Println("previous event not found", c.PrevName)
+
+	return 0
 }
 
-func (c *MetricsConfigure) Do(ed *cb.EventData) {
+func (c *MetricsConfigure) Do(ed *cb.EventData) int {
 	if c == nil {
-		return
+		return 0
 	}
 
 	labels := DoTag(c.Attrs, ed.Event)
 
 	switch c.Type {
 	case cb.MetricType_Counter:
+		vec := MetricVecStore.getCounter(c.OptsId)
+		if vec == nil { // todo report error
+			fmt.Println("counter vec not found for Opts", c.OptsId)
+
+			return 0
+		}
+
+		fmt.Println(c)
+		vec.With(labels).Inc()
+
 		if len(labels) != 0 {
 			fmt.Printf("todo metrics Counter(\"%s\", %s)\n", c.Name, labels)
 		} else {
@@ -137,6 +160,15 @@ func (c *MetricsConfigure) Do(ed *cb.EventData) {
 		fmt.Println("todo MetricsConfigure do", c.Name)
 	case cb.MetricType_Histogram:
 		if prev := ed.GetPreviousEventData(c.PrevName); prev != nil {
+			vec := MetricVecStore.getHistogram(c.OptsId)
+			if vec == nil { // todo report error
+				fmt.Println("histogram vec not found for Opts", c.OptsId)
+
+				return 0
+			}
+
+			vec.With(labels).Observe(float64(ed.Event.When.Time-prev.Event.When.Time) / float64(time.Millisecond))
+
 			if len(labels) != 0 {
 				fmt.Printf("todo metrics Histogram(\"%s\", %s)=%d (from %s to %s)\n",
 					c.Name, labels, ed.Event.When.Time-prev.Event.When.Time, prev.Event.Recorder.Name, ed.Event.Recorder.Name)
@@ -150,6 +182,8 @@ func (c *MetricsConfigure) Do(ed *cb.EventData) {
 	case cb.MetricType_Summary:
 		fmt.Println("todo MetricsConfigure do", c.Name)
 	}
+
+	return 1
 }
 
 func DoTag(cfg []*cb.AttributeConfigure, er *cb.EventRepresentation) map[string]string {

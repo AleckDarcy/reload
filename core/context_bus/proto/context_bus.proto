@@ -196,9 +196,10 @@ enum MetricType {
 
 message MetricsConfigure {
     MetricType type                   = 1;
-    string name                       = 2;
-    string prev_name                  = 3; // event pair
-    repeated AttributeConfigure attrs = 4; // labels
+    int64 opts_id                     = 2; // prometheus Opts id
+    string name                       = 3;
+    string prev_name                  = 4; // event pair
+    repeated AttributeConfigure attrs = 5; // labels
 }
 
 enum ObservationType {

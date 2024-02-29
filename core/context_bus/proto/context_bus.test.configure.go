@@ -40,10 +40,10 @@ var Test_AttributeConfigure_Lib1_Key11 = NewAttributeConfigure("lib1.key11", Tes
 var Test_AttributeConfigure_Rest_From = NewAttributeConfigure("rest.from", Test_Path_Rest_From)
 
 // Test_AttributeConfigure_Rest_Method tag["rest.method"] = val(rest.method)
-var Test_AttributeConfigure_Rest_Method = NewAttributeConfigure("rest.method", Test_Path_Rest_Method)
+var Test_AttributeConfigure_Rest_Method = NewAttributeConfigure("method", Test_Path_Rest_Method)
 
 // Test_AttributeConfigure_Rest_Handler tag["rest.handler"] = val(rest.handler)
-var Test_AttributeConfigure_Rest_Handler = NewAttributeConfigure("rest.handler", Test_Path_Rest_Handler)
+var Test_AttributeConfigure_Rest_Handler = NewAttributeConfigure("handler", Test_Path_Rest_Handler)
 
 // Test_AttributeConfigure_Rest_Key tag["rest.key"] = val(rest.key)
 var Test_AttributeConfigure_Rest_Key = NewAttributeConfigure("rest.key", Test_Path_Rest_Key)
