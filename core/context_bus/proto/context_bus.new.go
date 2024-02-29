@@ -19,7 +19,7 @@ func NewConditionTree(nodes []*ConditionNode, leafIDs []int64) *ConditionTree {
 }
 
 func NewPrerequisiteMessage(name string, condTree *ConditionTree, parent int64, list []int64) *PrerequisiteMessage {
-	return &PrerequisiteMessage{Name: name, CondTree: condTree, Parent: parent, List: list}
+	return &PrerequisiteMessage{Name: name, CondTree: condTree, Parent: parent}
 }
 
 func NewPrerequisiteLogic(typ LogicType, parent int64, list []int64) *PrerequisiteLogic {

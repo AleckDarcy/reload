@@ -1,6 +1,9 @@
 package proto
 
 import (
+	"github.com/prometheus/client_golang/prometheus"
+	"time"
+
 	"errors"
 	"fmt"
 )
@@ -465,4 +468,54 @@ func (m *EventData) GetPreviousEventData(name string) *EventData {
 	}
 
 	return nil
+}
+
+func (m *PrometheusOpts) ToPrometheusCounterOpts() (prometheus.CounterOpts, []string) {
+	return prometheus.CounterOpts{
+		Namespace:   m.Namespace,
+		Subsystem:   m.Subsystem,
+		Name:        m.Name,
+		Help:        m.Help,
+		ConstLabels: m.ConstLabels,
+	}, m.LabelNames
+}
+
+func (m *PrometheusOpts) ToPrometheusGaugeOpts() (prometheus.GaugeOpts, []string) {
+	return prometheus.GaugeOpts{
+		Namespace:   m.Namespace,
+		Subsystem:   m.Subsystem,
+		Name:        m.Name,
+		Help:        m.Help,
+		ConstLabels: m.ConstLabels,
+	}, m.LabelNames
+}
+
+func (m *PrometheusHistogramOpts) ToPrometheus() (prometheus.HistogramOpts, []string) {
+	return prometheus.HistogramOpts{
+		Namespace:   m.Namespace,
+		Subsystem:   m.Subsystem,
+		Name:        m.Name,
+		Help:        m.Help,
+		ConstLabels: m.ConstLabels,
+		Buckets:     m.Buckets,
+	}, m.LabelNames
+}
+
+func (m *PrometheusSummaryOpts) ToPrometheus() (prometheus.SummaryOpts, []string) {
+	objs := map[float64]float64{}
+	for _, obj := range m.Objectives {
+		objs[obj.Key] = obj.Value
+	}
+
+	return prometheus.SummaryOpts{
+		Namespace:   m.Namespace,
+		Subsystem:   m.Subsystem,
+		Name:        m.Name,
+		Help:        m.Help,
+		ConstLabels: m.ConstLabels,
+		Objectives:  objs,
+		MaxAge:      time.Duration(m.MaxAge),
+		AgeBuckets:  m.AgeBuckets,
+		BufCap:      m.BufCap,
+	}, m.LabelNames
 }

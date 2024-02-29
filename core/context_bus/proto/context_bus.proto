@@ -403,6 +403,61 @@ message Record {
     string uuid         = 4;
     string service      = 5;
 }
+/******************** Prometheus ********************/
+message PrometheusOpts {
+    int64 id = 1;
+
+    string namespace                 = 2;
+    string subsystem                 = 3;
+    string name                      = 4;
+    string help                      = 5;
+    map<string, string> const_labels = 6;
+
+    repeated string label_names = 7;
+}
+
+message PrometheusHistogramOpts {
+    int64 id = 1;
+
+    string namespace                 = 2;
+    string subsystem                 = 3;
+    string name                      = 4;
+    string help                      = 5;
+    map<string, string> const_labels = 6;
+    repeated double buckets          = 7;
+
+    repeated string label_names = 8;
+}
+
+message PrometheusSummaryObjective {
+    int64 id = 1;
+
+    double key   = 2;
+    double value = 3;
+}
+
+message PrometheusSummaryOpts {
+    int64 id = 1;
+
+    string namespace                               = 2;
+    string subsystem                               = 3;
+    string name                                    = 4;
+    string help                                    = 5;
+    map<string, string> const_labels               = 6;
+    repeated PrometheusSummaryObjective objectives = 7; // needed to be converted to map[float64]float64
+    int64 max_age                                  = 8;
+    uint32 age_buckets                             = 9;
+    uint32 buf_cap                                 = 10;
+
+    repeated string label_names = 11;
+}
+
+message PrometheusConfiguration {
+    repeated PrometheusOpts counters            = 1;
+    repeated PrometheusOpts gauges              = 2;
+    repeated PrometheusHistogramOpts histograms = 3;
+    repeated PrometheusSummaryOpts summaries    = 4;
+}
 
 /******************** Integration ********************/
 message Payload {

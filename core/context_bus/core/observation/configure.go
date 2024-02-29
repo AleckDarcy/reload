@@ -1,11 +1,10 @@
 package observation
 
 import (
+	"fmt"
 	"github.com/AleckDarcy/reload/core/context_bus/core/encoder"
 	cb "github.com/AleckDarcy/reload/core/context_bus/proto"
 	"github.com/AleckDarcy/reload/core/context_bus/public"
-
-	"fmt"
 	"os"
 	"time"
 )
